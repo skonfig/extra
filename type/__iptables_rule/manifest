@@ -1,6 +1,5 @@
-#!/bin/sh
 #
-# 2012 Jake Guffey (jake.guffey at eprotex.com)
+# 2013 Nico Schottelius (nico-cdist at schottelius.org)
 #
 # This file is part of cdist.
 #
@@ -18,28 +17,25 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 #
-# The __jail type creates, configures, and deletes FreeBSD jails for use as
-#  virtual machines.
-#
 
-jaildir="$(cat "$__object/parameter/jaildir")"
+base_dir=/etc/iptables.d
 
-jailbase="$(cat "$__object/parameter/jailbase")"
-
+name="$__object_id"
 state="$(cat "$__object/parameter/state")"
 
-if [ "$state" = "present" ] && [ -z "$jailbase" ]; then
-   exec >&2
-   echo "jailbase is a REQUIRED parameter when state=present!"
-   exit 1
-fi
+################################################################################
+# Basic setup
+#
 
-remotebase="${jaildir}/jailbase.tgz"
-basepresent="$(cat "$__object/explorer/basepresent")"
+__directory "$base_dir" --state present
 
-if [ "$state" = "present" ]; then
-   if [ "$basepresent" = "NONE" ]; then
-      echo "$__remote_copy" "${jailbase}" "$__target_host:${remotebase}"
-   fi   # basepresent=NONE
-fi   # state=present
+# Have apply do the real job
+require="$__object_name" __iptables_apply
 
+################################################################################
+# The rule
+#
+
+require="__directory/$base_dir" __file "$base_dir/${name}" \
+    --source "$__object/parameter/rule" \
+    --state "$state"
