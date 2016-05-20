@@ -1,11 +1,8 @@
 cdist-type__issue(7)
 ====================
+Manage issue
+
 Nico Schottelius <nico-cdist--@--schottelius.org>
-
-
-NAME
-----
-cdist-type__issue - Manage issue
 
 
 DESCRIPTION
@@ -20,7 +17,7 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
-source::
+source
    If supplied, use this file as /etc/issue instead of default.
 
 
@@ -28,17 +25,17 @@ source::
 EXAMPLES
 --------
 
---------------------------------------------------------------------------------
-__issue
+.. code-block:: sh
 
-# When called from another type
-__issue --source "$__type/files/myfancyissue"
---------------------------------------------------------------------------------
+    __issue
+
+    # When called from another type
+    __issue --source "$__type/files/myfancyissue"
 
 
 SEE ALSO
 --------
-- cdist-type(7)
+- `cdist-type(7) <cdist-type.html>`_
 
 
 COPYING
