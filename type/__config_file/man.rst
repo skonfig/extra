@@ -1,11 +1,8 @@
 cdist-type__config_file(7)
 ==========================
+Manages config files
+
 Steven Armstrong <steven-cdist--@--armstrong.cc>
-
-
-NAME
-----
-cdist-type__config_file - manages config files
 
 
 DESCRIPTION
@@ -21,37 +18,37 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
-group::
+group
    see cdist-type__file
-mode::
+mode
    see cdist-type__file
-onchange::
+onchange
    the code to run if the file changes
-owner::
+owner
    see cdist-type__file
-source::
+source
    Path to the config file.
    If source is '-' (dash), take what was written to stdin as the config file content.
-state::
+state
    see cdist-type__file
 
 
 EXAMPLES
 --------
 
---------------------------------------------------------------------------------
-__config_file /etc/consul/conf.d/watch_foo.json \
-   --owner root --group consul --mode 640 \
-   --source "$__type/files/watch_foo.json" \
-   --state present \
-   --onchange 'service consul status >/dev/null && service consul reload || true'
---------------------------------------------------------------------------------
+.. code-block:: sh
+
+    __config_file /etc/consul/conf.d/watch_foo.json \
+       --owner root --group consul --mode 640 \
+       --source "$__type/files/watch_foo.json" \
+       --state present \
+       --onchange 'service consul status >/dev/null && service consul reload || true'
 
 
 SEE ALSO
 --------
-- cdist-type(7)
-- cdist-type__file(7)
+- `cdist-type(7) <cdist-type.html>`_
+- `cdist-type__file(7) <cdist-type__file.html>`_
 
 
 COPYING

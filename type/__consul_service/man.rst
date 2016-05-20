@@ -1,11 +1,8 @@
 cdist-type__consul_service(7)
 =============================
+Manages consul services
+
 Steven Armstrong <steven-cdist--@--armstrong.cc>
-
-
-NAME
-----
-cdist-type__consul_service - manages consul services
 
 
 DESCRIPTION
@@ -23,46 +20,53 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
-check-interval::
+check-interval
    the interval in which the script given with --check-script should be run
-check-script::
+
+check-script
    the shell command to run every --check-interval
-check-ttl::
+
+check-ttl
    how long a service is considered healthy without being updated through the
    HTTP interfave
-id::
+
+id
    Defaults to --name
-name::
+
+name
    The name of this service. Defaults to __object_id
-port::
+
+port
    the port at which this service can be reached
-state::
+
+state
    if this service is 'present' or 'absent'. Defaults to 'present'.
-tag::
+
+tag
    a tag to add to this service. Can be specified multiple times.
 
 
 EXAMPLES
 --------
 
---------------------------------------------------------------------------------
-__consul_service redis \
-   --tag master \
-   --tag production \
-   --port 8000 \
-   --check-script /usr/local/bin/check_redis.py \
-   --check-interval 10s
+.. code-block:: sh
 
-__consul_service webapp \
-   --port 80 \
-   --check-ttl 10s
---------------------------------------------------------------------------------
+    __consul_service redis \
+       --tag master \
+       --tag production \
+       --port 8000 \
+       --check-script /usr/local/bin/check_redis.py \
+       --check-interval 10s
+
+    __consul_service webapp \
+       --port 80 \
+       --check-ttl 10s
 
 
 SEE ALSO
 --------
-- cdist-type(7)
-- cdist-type__consul_agent(7)
+- `cdist-type(7) <cdist-type.html>`_
+- `cdist-type__consul_agent(7) <cdist-type__consul_agent.html>`_
 
 
 COPYING

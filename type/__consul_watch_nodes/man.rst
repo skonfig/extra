@@ -1,54 +1,47 @@
-cdist-type__consul_watch_event(7)
+cdist-type__consul_watch_nodes(7)
 =================================
+Manages consul nodes watches
+
 Steven Armstrong <steven-cdist--@--armstrong.cc>
-
-
-NAME
-----
-cdist-type__consul_watch_event - manages consul event watches
 
 
 DESCRIPTION
 -----------
-Generate and deploy watch definitions of type 'event' for a consul agent.
+Generate and deploy watch definitions of type 'nodes' for a consul agent.
 See http://www.consul.io/docs/agent/watches.html for parameter documentation.
 
 
 REQUIRED PARAMETERS
 -------------------
-handler::
+handler
    the handler to invoke when the data view updates
 
 
 OPTIONAL PARAMETERS
 -------------------
-datacenter::
+datacenter
    can be provided to override the agent's default datacenter
-name::
-   restrict the watch to only events with the given name
-state::
+
+state
    if this watch is 'present' or 'absent'. Defaults to 'present'.
-token::
+
+token
    can be provided to override the agent's default ACL token
 
 
 EXAMPLES
 --------
 
---------------------------------------------------------------------------------
-__consul_watch_event some-id \
-   --handler /usr/bin/my-handler.sh
+.. code-block:: sh
 
-__consul_watch_event some-id \
-   --name web-deploy \
-   --handler /usr/bin/my-handler.sh
---------------------------------------------------------------------------------
+    __consul_watch_nodes some-id \
+       --handler /usr/bin/my-key-handler.sh
 
 
 SEE ALSO
 --------
-- cdist-type(7)
-- cdist-type__consul_agent(7)
+- `cdist-type(7) <cdist-type.html>`_
+- `cdist-type__consul_agent(7) <cdist-type__consul_agent.html>`_
 - http://www.consul.io/docs/agent/watches.html
 
 

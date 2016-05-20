@@ -1,11 +1,8 @@
 cdist-type__consul(7)
 =====================
+Install consul
+
 Steven Armstrong <steven-cdist--@--armstrong.cc>
-
-
-NAME
-----
-cdist-type__consul - install consul
 
 
 DESCRIPTION
@@ -22,10 +19,10 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
-state::
+state
    either 'present' or 'absent'. Defaults to 'present'
 
-version::
+version
    which version of consul to install. See ./files/versions for a list of
    supported versions. Defaults to the latest known version.
 
@@ -33,19 +30,19 @@ version::
 EXAMPLES
 --------
 
---------------------------------------------------------------------------------
-# just install using defaults
-__consul
+.. code-block:: sh
 
-# specific version
-__consul \
-   --version 0.4.1
---------------------------------------------------------------------------------
+    # just install using defaults
+    __consul
+
+    # specific version
+    __consul \
+       --version 0.4.1
 
 
 SEE ALSO
 --------
-- cdist-type(7)
+- `cdist-type(7) <cdist-type.html>`_
 
 
 COPYING

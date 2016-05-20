@@ -1,11 +1,8 @@
 cdist-type__consul_template_template(7)
 =======================================
+Manage consul-template templates
+
 Steven Armstrong <steven-cdist--@--armstrong.cc>
-
-
-NAME
-----
-cdist-type__consul_template_template - manage consul-template templates
 
 
 DESCRIPTION
@@ -18,49 +15,52 @@ Either the --source or the --source-file parameter must be given.
 
 REQUIRED PARAMETERS
 -------------------
-destination::
+destination
    the destination where the generated file should go.
 
 
 OPTIONAL PARAMETERS
 -------------------
-command::
+command
    an optional command to run after rendering the template to its destination.
-source::
+
+source
    path to the template source. Conflicts --source-file.
-source-file::
+
+source-file
    path to a local file which is uploaded using the __file type and configured
    as the source.
    If source is '-' (dash), take what was written to stdin as the file content.
    Conflicts --source.
-state::
+
+state
    if this template is 'present' or 'absent'. Defaults to 'present'.
 
 
 EXAMPLES
 --------
 
---------------------------------------------------------------------------------
-# configure template on the target
-__consul_template_template nginx \
-   --source /etc/my-consul-templates/nginx.ctmpl \
-   --destination /etc/nginx/nginx.conf \
-   --command 'service nginx restart'
+.. code-block:: sh
+
+    # configure template on the target
+    __consul_template_template nginx \
+       --source /etc/my-consul-templates/nginx.ctmpl \
+       --destination /etc/nginx/nginx.conf \
+       --command 'service nginx restart'
 
 
-# upload a local file to the target and configure it
-__consul_template_template nginx \
-   --source-file "$__manifest/files/nginx.ctmpl" \
-   --destination /etc/nginx/nginx.conf \
-   --command 'service nginx restart'
---------------------------------------------------------------------------------
+    # upload a local file to the target and configure it
+    __consul_template_template nginx \
+       --source-file "$__manifest/files/nginx.ctmpl" \
+       --destination /etc/nginx/nginx.conf \
+       --command 'service nginx restart'
 
 
 SEE ALSO
 --------
-- cdist-type(7)
-- cdist-type__consul_template(7)
-- cdist-type__consul_template_config(7)
+- `cdist-type(7) <cdist-type.html>`_
+- `cdist-type__consul_template(7) <cdist-type__consul_template.html>`_
+- `cdist-type__consul_template_config(7) <cdist-type__consul_template_config.html>`_
 
 
 COPYING
