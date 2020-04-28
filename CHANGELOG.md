@@ -2,4 +2,4 @@
 
 ## 2020-0?-??: 0.?.? (Not released yet)
 
-* Populate me!
+* New type: __find_exec (Ander Punnar)
