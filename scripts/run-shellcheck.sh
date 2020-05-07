@@ -6,6 +6,9 @@ SHELLCHECKCMD="shellcheck -s sh -f gcc -x"
 SHELLCHECK_SKIP=': __.*is referenced but not assigned.*\[SC2154\]'
 SHELLCHECKTMP=".shellcheck.tmp"
 
+# Move to top-level cdist-contrib directory.
+cd $(dirname $0)/..
+
 check () {
 	find type/ -type f $1 $2 -exec ${SHELLCHECKCMD} {} + | grep -v "${SHELLCHECK_SKIP}"  > "${SHELLCHECKTMP}"
 	test ! -s "${SHELLCHECKTMP}" || { cat "${SHELLCHECKTMP}"; exit 1; }
