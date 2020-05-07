@@ -40,3 +40,16 @@ Join us on [#cdist:ungleich.ch][cdistmatrix] on matrix or on
 [cdistconfig]: https://www.cdi.st/manual/latest/cdist-configuration.html
 [cdistmatrix]: https://matrix.to/#/#cdist:ungleich.ch
 [cdistmattermost]: https://chat.ungleich.ch/ungleich/channels/cdist
+
+## Contributing
+
+The preferred way to submit patches is by opening Merge Requests against the
+[cdist-contrib project on
+code.ungleich.ch](https://code.ungleich.ch/ungleich-public/cdist-contrib) (you
+can make an account on
+[account.ungleich.ch](https://code.ungleich.ch/ungleich-public/cdist-contrib).
+
+Every type in cdist-contrib must:
+
+  * Have a `man.rst` documentation page.
+  * Pass [shellcheck](https://duckduckgo.com/?q=shellcheck&ia=software) without errors.
