@@ -1,5 +1,3 @@
-# cdist-contrib chsangelog
+# cdist-contrib changes
 
-## 2020-0?-??: 0.?.? (Not released yet)
-
-* New type: __find_exec (Ander Punnar)
+* 2020-04-28: New type: __find_exec (Ander Punnar)

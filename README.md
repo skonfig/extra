@@ -5,7 +5,8 @@ tool with community-maitained types which are either too specific to fit/be
 maintained in cdist itself or were not accepted in code cdist but could still
 be useful.
 
-The releases of cdist-contrib are not necessarly synced with cdist itself.
+This project does not have releases and is continously updated: see
+`CHANGELOG.md` for details.
 
 ## Using cdist-contrib
 
