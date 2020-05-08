@@ -47,9 +47,9 @@ The preferred way to submit patches is by opening Merge Requests against the
 [cdist-contrib project on
 code.ungleich.ch](https://code.ungleich.ch/ungleich-public/cdist-contrib) (you
 can make an account on
-[account.ungleich.ch](https://code.ungleich.ch/ungleich-public/cdist-contrib).
+[account.ungleich.ch](https://account.ungleich.ch/).
 
 Every type in cdist-contrib must:
 
   * Have a `man.rst` documentation page.
-  * Pass [shellcheck](https://duckduckgo.com/?q=shellcheck&ia=software) without errors.
+  * Pass [shellcheck](http://shellcheck.net/) without errors.
