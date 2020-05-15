@@ -89,15 +89,18 @@ if [ -f "$__object/parameter/pkey" ]; then
 fi
 
 if [ -f "$__object/parameter/extra-config" ]; then
-    EXTRA_CONFIG=$(cat $__object/parameter/extra-config)
+    EXTRA_CONFIG=$(cat "$__object/parameter/extra-config")
     if [ "$EXTRA_CONFIG" = "-" ]; then
         EXTRA_CONFIG=$(cat "$__object/stdin")
     fi
     export EXTRA_CONFIG
 fi
 
-export MIN_PORT=$(cat "$__object/parameter/min-port")
-export MAX_PORT=$(cat "$__object/parameter/max-port")
+MIN_PORT=$(cat "$__object/parameter/min-port")
+export MIN_PORT
+MAX_PORT=$(cat "$__object/parameter/max-port")
+export MAX_PORT
+
 
 # Generate and deploy configuration file.
 mkdir -p "$__object/files"
