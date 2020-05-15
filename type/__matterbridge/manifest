@@ -55,8 +55,8 @@ config_dir=$(dirname $CONFIG_PATH)
 systemd_unit_path='/etc/systemd/system/matterbridge.service'
 
 # Check if curl is available.
-if [ ! -x "$(which curl)" ]; then
-     echo "curl is required for this type, but could not be found. Exiting." &>2
+if ! command -v curl; then
+     echo "curl is required for this type, but could not be found. Exiting." >&2
      exit 1
 fi
 
@@ -64,12 +64,9 @@ fi
 mkdir -p "$__object/files"
 
 # Download and check matterbridge binary.
-curl -L $binary_url -o "$__object/files/$artefact"
-curl -Ls $checksum_file_url | grep $artefact > "$__object/files/$checksum_file"
-ls $__object/files/ >&2
-cat $__object/files/checksums.txt >&2
-(cd "$__object/files"; sha256sum --check $checksum_file)
-if [ $? -ne 0 ]; then
+curl -L "$binary_url" -o "$__object/files/$artefact"
+curl -Ls "$checksum_file_url" | grep "$artefact" > "$__object/files/$checksum_file"
+if ! (cd "$__object/files"; sha256sum --check $checksum_file); then
     echo "Matterbridge binary checksum failed." >&2
     exit 1
 fi
