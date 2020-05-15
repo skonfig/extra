@@ -51,10 +51,18 @@ cat << EOF
 # Listener IP address of relay server. Multiple listeners can be specified.
 # If no IP(s) specified in the config file or in the command line options,
 # then all IPv4 and IPv6 system IPs will be used for listening.
-#
+
 #listening-ip=172.17.19.101
 #listening-ip=10.207.21.238
 #listening-ip=2607:f0d0:1002:51::4
+
+EOF
+
+for ip in $LISTENING_IPS; do
+    echo "listening-ip=$ip"
+done
+
+cat << EOF
 
 # Auxiliary STUN/TURN server listening endpoint.
 # Aux servers have almost full TURN and STUN functionality.

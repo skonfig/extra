@@ -69,6 +69,11 @@ if [ -f "$__object/parameter/denied-peer" ]; then
     export DENIED_PEERS
 fi
 
+if [ -f "$__object/parameter/listening-ip" ]; then
+    LISTENING_IPS=$(cat "$__object/parameter/listening-ip")
+    export LISTENING_IPS
+fi
+
 if [ -f "$__object/parameter/cert" ]; then
     CERT=$(cat "$__object/parameter/cert")
     export CERT
