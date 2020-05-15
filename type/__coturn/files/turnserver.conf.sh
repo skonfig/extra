@@ -662,11 +662,11 @@ syslog
 EOF
 
 for peer in $DENIED_PEERS; do
-    echo "denied-peer: $peer"
+    echo "denied-peer=$peer"
 done
 
 for peer in $ALLOWED_PEERS; do
-    echo "allowed-peer: $peer"
+    echo "allowed-peer=$peer"
 done
 
 cat << EOF
