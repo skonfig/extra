@@ -157,8 +157,8 @@ cat << EOF
 # Lower and upper bounds of the UDP relay endpoints:
 # (default values are 49152 and 65535)
 #
-min-port=49152
-max-port=65535
+min-port=$MIN_PORT
+max-port=$MAX_PORT
 
 # Uncomment to run TURN server in 'normal' 'moderate' verbose mode.
 # By default the verbose mode is off.
@@ -437,7 +437,15 @@ cat << EOF
 # Uncomment if no UDP relay endpoints are allowed.
 # By default UDP relay endpoints are enabled (like in RFC 5766).
 #
-#no-udp-relay
+EOF
+
+if [ "$NO_UDP_RELAY" ]; then
+    echo 'no-udp-relay'
+else
+    echo '#no-udp-relay'
+fi
+
+cat << EOF
 
 # Uncomment if no TCP relay endpoints are allowed.
 # By default TCP relay endpoints are enabled (like in RFC 6062).
@@ -445,7 +453,7 @@ cat << EOF
 EOF
 
 if [ "$NO_TCP_RELAY" ]; then
-    echo 'no-tcp-releay'
+    echo 'no-tcp-relay'
 else
     echo '#no-tcp-relay'
 fi
@@ -781,3 +789,10 @@ cat << EOF
 #no-tlsv1_1
 #no-tlsv1_2
 EOF
+
+if [ -n "$EXTRA_CONFIG" ]; then
+    cat <<EOF
+# Extra configuration (overrides any previous settings)
+$EXTRA_CONFIG
+EOF
+fi

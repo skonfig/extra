@@ -59,6 +59,10 @@ if [ -f "$__object/parameter/no-tcp-relay" ]; then
     export NO_TCP_RELAY=1
 fi
 
+if [ -f "$__object/parameter/no-udp-relay" ]; then
+    export NO_UDP_RELAY=1
+fi
+
 if [ -f "$__object/parameter/allowed-peer" ]; then
     ALLOWED_PEERS=$(cat "$__object/parameter/allowed-peer")
     export ALLOWED_PEERS
@@ -84,13 +88,22 @@ if [ -f "$__object/parameter/pkey" ]; then
     export PKEY
 fi
 
+if [ -f "$__object/parameter/extra-config" ]; then
+    EXTRA_CONFIG=$(cat $__object/parameter/extra-config)
+    if [ "$EXTRA_CONFIG" = "-" ]; then
+        EXTRA_CONFIG=$(cat "$__object/stdin")
+    fi
+    export EXTRA_CONFIG
+fi
+
+export MIN_PORT=$(cat "$__object/parameter/min-port")
+export MAX_PORT=$(cat "$__object/parameter/max-port")
+
 # Generate and deploy configuration file.
 mkdir -p "$__object/files"
 "$__type/files/turnserver.conf.sh" > "$__object/files/turnserver.conf"
 
 require="__package/coturn" __file $coturn_config \
   --source "$__object/files/turnserver.conf" \
-  --owner turnserver
-
-# Restart coturn server.
-require="__file/$coturn_config" __service coturn --action restart
+  --owner turnserver \
+  --onchange 'service coturn restart'
