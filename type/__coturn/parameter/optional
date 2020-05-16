@@ -1,0 +1,7 @@
+static-auth-secret
+realm
+cert
+pkey
+min-port
+max-port
+extra-config

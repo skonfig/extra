@@ -1,0 +1,5 @@
+use-auth-secret
+no-tcp-relay
+no-udp-relay
+no-tls
+no-dtls

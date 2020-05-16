@@ -1,0 +1,112 @@
+#!/bin/sh -e
+#
+# 2020 Timothée Floure (timothee.floure@ungleich.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+os=$(cat "$__global/explorer/os")
+
+case "$os" in
+    debian|devuan|ubuntu)
+        __package coturn
+        coturn_config='/etc/turnserver.conf'
+    ;;
+   *)
+      printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
+      printf "Please contribute an implementation for it if you can.\n" >&2
+      exit 1
+   ;;
+esac
+
+# Type parameters.
+if [ -f "$__object/parameter/use-auth-secret" ]; then
+    export USE_AUTH_SECRET=1
+fi
+
+if [ -f "$__object/parameter/no-tls" ]; then
+    export NO_TLS=1
+fi
+
+if [ -f "$__object/parameter/no-dtls" ]; then
+    export NO_DTLS=1
+fi
+
+if [ -f "$__object/parameter/static-auth-secret" ]; then
+    STATIC_AUTH_SECRET=$(cat "$__object/parameter/static-auth-secret")
+    export STATIC_AUTH_SECRET
+fi
+
+if [ -f "$__object/parameter/realm" ]; then
+    REALM=$(cat "$__object/parameter/realm")
+    export REALM
+fi
+
+if [ -f "$__object/parameter/no-tcp-relay" ]; then
+    export NO_TCP_RELAY=1
+fi
+
+if [ -f "$__object/parameter/no-udp-relay" ]; then
+    export NO_UDP_RELAY=1
+fi
+
+if [ -f "$__object/parameter/allowed-peer" ]; then
+    ALLOWED_PEERS=$(cat "$__object/parameter/allowed-peer")
+    export ALLOWED_PEERS
+fi
+
+if [ -f "$__object/parameter/denied-peer" ]; then
+    DENIED_PEERS=$(cat "$__object/parameter/denied-peer")
+    export DENIED_PEERS
+fi
+
+if [ -f "$__object/parameter/listening-ip" ]; then
+    LISTENING_IPS=$(cat "$__object/parameter/listening-ip")
+    export LISTENING_IPS
+fi
+
+if [ -f "$__object/parameter/cert" ]; then
+    CERT=$(cat "$__object/parameter/cert")
+    export CERT
+fi
+
+if [ -f "$__object/parameter/pkey" ]; then
+    PKEY=$(cat "$__object/parameter/pkey")
+    export PKEY
+fi
+
+if [ -f "$__object/parameter/extra-config" ]; then
+    EXTRA_CONFIG=$(cat "$__object/parameter/extra-config")
+    if [ "$EXTRA_CONFIG" = "-" ]; then
+        EXTRA_CONFIG=$(cat "$__object/stdin")
+    fi
+    export EXTRA_CONFIG
+fi
+
+MIN_PORT=$(cat "$__object/parameter/min-port")
+export MIN_PORT
+MAX_PORT=$(cat "$__object/parameter/max-port")
+export MAX_PORT
+
+
+# Generate and deploy configuration file.
+mkdir -p "$__object/files"
+"$__type/files/turnserver.conf.sh" > "$__object/files/turnserver.conf"
+
+require="__package/coturn" __file $coturn_config \
+  --source "$__object/files/turnserver.conf" \
+  --owner turnserver \
+  --onchange 'service coturn restart'
