@@ -1,0 +1,47 @@
+#!/bin/sh -e
+#
+# 2020 Dennis Camera (cdist at dtnr.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+DEST=/usr/local/bin
+
+state_should=$(cat "${__object:?}/parameter/state")
+
+case $state_should
+in
+	(present)
+		__package bash --state present  # getssl is written in bash
+		__directory "${DEST}" --state present --parents
+		export require="__package/bash __directory/${DEST}"
+		;;
+	(absent)
+		:
+		;;
+	(*)
+		printf 'Invalid state "%s" given. Valid states are: present, absent.\n'\
+			"${state_should}" >&2
+		exit 1
+		;;
+esac
+
+__staged_file "${DEST}/getssl" --state "${state_should}" \
+	--owner 0 --mode 0755 \
+	--source 'https://raw.githubusercontent.com/srvrco/getssl/v2.27/getssl' \
+	--cksum '2343364619 109164'
+
+__directory '/etc/getssl' --state "${state_should}" --owner 0 --mode 0750
