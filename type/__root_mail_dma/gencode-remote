@@ -1,0 +1,20 @@
+#!/bin/sh -e
+
+if [ -f "${__object}/parameter/send-test-email" ]; then
+	SEND_EMAIL="YES"
+fi
+
+if [ "${SEND_EMAIL}" != "YES" ]; then
+	exit 0
+fi
+
+cat <<EOF
+sendmail root << EOM
+Subject: [cdist] Testing root mail on '${__target_host}'
+
+You can safely ignore this message, it means your system will notify you
+correctly of any relevant messages.
+
+Enjoy!
+EOM
+EOF
