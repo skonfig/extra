@@ -1,9 +1,9 @@
-cdist-type__root_mail_dma(7)
+cdist-type__dma(7)
 ============================
 
 NAME
 ----
-cdist-type__root_mail_dma - Setup root email with the DragonFly Mail Agent
+cdist-type__dma - Setup the DragonFly Mail Agent as the MTA.
 
 
 DESCRIPTION
@@ -57,7 +57,7 @@ EXAMPLES
 
     # Send root email to both our BOFH and the nice-admin.
     # That way they can figure things out together.
-    __root_mail_dma \
+    __dma \
       --root-email bofh@domain.tld \
       --root-email nice-admin@domain.tld \
       --smart-host mx1.domain.tld \
