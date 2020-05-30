@@ -41,7 +41,7 @@ esac
 
 __staged_file "${DEST}/getssl" --state "${state_should}" \
 	--owner 0 --mode 0755 \
-	--source 'https://raw.githubusercontent.com/srvrco/getssl/v2.27/getssl' \
-	--cksum '2343364619 109164'
+	--source 'https://raw.githubusercontent.com/srvrco/getssl/v2.28/getssl' \
+	--cksum '1175685050 110776'
 
 __directory '/etc/getssl' --state "${state_should}" --owner 0 --mode 0750
