@@ -1,0 +1,59 @@
+#!/bin/sh -e
+#
+# 2020 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+# Find aliases for a given name and print the aliases line separated
+
+aliases_file=$("${__type_explorer}/aliases_file")
+test -r "${aliases_file}" || exit 0
+
+name=$__object_id
+
+awk -F ':[[:blank:]]*' '
+function print_aliases (aliases,  matches) {
+	split(aliases, matches, /,[[:blank:]]*/)
+	for (i in matches) {
+		gsub(/^[[:blank:]]*|[[:blank:]]*$/, "", matches[i])
+		print matches[i]
+	}
+}
+
+/^#/ {
+	# comment
+	select = 0; cont = 0; next
+}
+
+{
+	cont = ($0 ~ /\\$/)
+	if (cont) sub(/[[:blank:]]*\\$/, "", $0)
+}
+
+/^[[:blank:]]/ || cont {
+	# continuation line
+	if (select) print_aliases($0)
+	next
+}
+
+$1 == ENVIRON["__object_id"] {
+	select = 1
+	print_aliases($2)
+	next
+}
+
+{ select = 0 }
+' "${aliases_file}"

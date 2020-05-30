@@ -3,12 +3,12 @@ cdist-type__mail_alias(7)
 
 NAME
 ----
-cdist-type__mail_alias - TODO
+cdist-type__mail_alias - Manage mail aliases.
 
 
 DESCRIPTION
 -----------
-This space intentionally left blank.
+This cdist type allows you to configure mail aliases (/etc/mail/aliases).
 
 
 REQUIRED PARAMETERS
@@ -18,7 +18,14 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
-None.
+state
+    'present' or 'absent', defaults to 'present'
+alias
+    the aliases where mail for the given user should be redirected to.
+    This parameter can be specified multiple times to redirect to more than one
+    recipient.
+    See the `aliases(5)` man page for the different forms this parameter can
+    take..
 
 
 BOOLEAN PARAMETERS
@@ -31,13 +38,15 @@ EXAMPLES
 
 .. code-block:: sh
 
-    # TODO
-    __mail_alias
+    # Redirect root mail to a "real" email address
+    __mail_alias root --alias admin@example.com
 
+    # Disable redirection of mail for joe
+    __mail_alias joe --state absent
 
 SEE ALSO
 --------
-:strong:`TODO`\ (7)
+:strong:`aliases`\ (5)
 
 
 AUTHORS

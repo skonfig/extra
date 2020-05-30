@@ -18,3 +18,111 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
+state_should=$(cat "${__object}/parameter/state")
+
+case $state_should
+in
+	(present)
+		if cmp "${__object}/explorer/aliases" "${__object}/parameter/alias"
+		then
+			# all good!
+			exit 0
+		fi
+
+		echo "set aliases" >>"$__messages_out"
+		mode=1
+		;;
+	(absent)
+		# nothing to do if no aliases found.
+		test -s "${__object}/explorer/aliases" || exit 0
+
+		echo "delete aliases" >>"$__messages_out"
+		mode=0
+		;;
+	(*)
+		printf 'Invalid --state given: %s\n' "$state_should" >&2
+		exit 1
+esac
+
+aliases_file=$(cat "${__object}/explorer/aliases_file")
+
+if test -z "${aliases_file}"
+then
+	echo 'Could not determine aliases file path.' >&2
+	exit 1
+fi
+
+# "export" variables to remote
+printf 'mode=%u\n' "${mode}"
+printf "aliases_file='%s'\n" "${aliases_file}"
+
+cat <<'EOF'
+awk -F ':[[:blank:]]*' -v mode="${mode}" '
+function sepafter(f, default,  _) {
+	_ = substr($0, length($f) + 1, index(substr($0, length($f)+1), $(f+1)) - 1)
+	if (_) return _
+	else return default
+}
+
+function write_aliases() {
+	if (aliases_written) return
+
+	printf "%s%s", ENVIRON["__object_id"], sepafter(1, ": ")
+	while ((getline < aliases_should_file) > 0) {
+		if (aliases_written) printf ", "
+		printf "%s", $0
+		aliases_written = 1
+	}
+	printf "\n"
+	close(aliases_should_file)
+}
+
+BEGIN {
+	aliases_should_file = (ENVIRON["__object"] "/parameter/alias")
+}
+
+/^#/ {
+	# comment
+	select = 0; cont = 0
+	print
+	next
+}
+
+{
+	cont = ($0 ~ /\\$/)
+	if (cont) sub(/[[:blank:]]*\\$/, "", $0)
+}
+
+/^[[:blank:]]/ || cont {
+	# continuation line
+	if (select) next
+}
+
+$1 == ENVIRON["__object_id"] {
+	in_list = 1
+	if (mode) write_aliases()
+	next
+}
+
+{
+	in_list = 0
+	print
+}
+
+END {
+	# if the last line as an alias definition, the separator will be reused
+	if (mode && !aliases_written) write_aliases()
+}
+' <"${aliases_file}" >"${aliases_file}.tmp" || {
+	echo 'Generating new aliases file failed!' >&2
+	exit 1
+}
+
+if ! cmp "${aliases_file}" "${aliases_file}.tmp"
+then
+	mv "${aliases_file}.tmp" "${aliases_file}"
+	newaliases
+else
+	rm "${aliases_file}.tmp"
+fi
+EOF

@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2020 Dennis Camera (dennis.camera@ssrq-sds-fds.ch)
+# 2020 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
 #
 # This file is part of cdist.
 #
@@ -17,14 +17,36 @@
 # You should have received a copy of the GNU General Public License
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
+# This explorer tries to find the correct aliases file.
 
+found() { echo "$*"; exit 0; }
 
-os=$(cat "$__global/explorer/os")
+check_file() {
+	if test -f "$1"
+	then
+		found "$1"
+	fi
+}
 
-case "$os" in
-   *)
-      printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
-      printf "Please contribute an implementation for it if you can.\n" >&2
-      exit 1
-   ;;
+case $("$__explorer/os")
+in
+	(freebsd|openbsd|solaris)
+		check_file /etc/mail/aliases
+
+		# default
+		found /etc/mail/aliases
+		;;
+	(debian|devuan|ubuntu)
+		check_file /etc/aliases
+
+		# default
+		found /etc/aliases
+		;;
+	(*)
+		check_file /etc/mail/aliases
+		check_file /etc/aliases
+
+		# default
+		found /etc/mail/aliases
+		;;
 esac
