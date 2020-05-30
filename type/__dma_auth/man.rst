@@ -3,23 +3,29 @@ cdist-type__dma_auth(7)
 
 NAME
 ----
-cdist-type__dma_auth - TODO
+cdist-type__dma_auth - Configure SMTP logins for the DragonFly Mail Agent MTA.
 
 
 DESCRIPTION
 -----------
-This space intentionally left blank.
+This cdist type allows you to set up credentials to log in to remote SMTP
+servers.
 
 
 REQUIRED PARAMETERS
 -------------------
-None.
+password
+    The user's password (in plain text.)
+server
+    The SMTP server on which the login is valid.
 
 
 OPTIONAL PARAMETERS
 -------------------
-None.
-
+login
+    The user's LOGIN name on the SMTP server. Defaults to `__object_id`.
+state
+    Either `present` or `absent`. Defaults to `present`.
 
 BOOLEAN PARAMETERS
 ------------------
@@ -31,13 +37,18 @@ EXAMPLES
 
 .. code-block:: sh
 
-    # TODO
-    __dma_auth
+    # Set the password for smarthost
+    __dma_auth joe --server smarthost --password hunter2
 
+    # Set credentials for user at an external provider
+    __dma_auth paul@example.com --server mail.provider.com --password letmein
+
+    # Delete credentials for example.com
+	__dma_auth paul --server example.com --state absent
 
 SEE ALSO
 --------
-:strong:`TODO`\ (7)
+:strong:`cdist-type__dma`\ (7), :strong:`dma`\ (8)
 
 
 AUTHORS

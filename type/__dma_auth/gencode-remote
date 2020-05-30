@@ -18,3 +18,65 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
+logins=$(cat "${__object}/explorer/logins")
+state_should=$(cat "${__object}/parameter/state")
+
+if test -f "${__object}/parameter/login"
+then
+	login=$(cat "${__object}/parameter/login")
+else
+	login=$__object_id
+fi
+password=$(cat "${__object}/parameter/password")
+server=$(cat "${__object}/parameter/server")
+
+case $state_should
+in
+	(present)
+		conf_line=$(printf '%s|%s:%s\n' "${login}" "${server}" "${password}")
+		cksum_should=$(echo "${conf_line}" | cksum - | cut -d ' ' -f 1)
+		if echo "$logins" | grep -qxF "${cksum_should}"
+		then
+			# correct line already present -> nothing to do
+			exit 0
+		fi
+
+		mode=1
+	;;
+	(absent)
+		if test -z "$logins"
+		then
+			# no logins present -> nothing to do
+			exit 0
+		fi
+
+		# NOTE: password is not needed to delete
+		conf_line=$(printf '%s|%s:%s\n' "${login}" "${server}" "")
+
+		mode=0
+		;;
+	(*)
+		printf 'Invalid --state: %s' "${state_should}" >&2
+		exit 1
+		;;
+esac
+
+cat <<EOF
+read -r CONF_LINE <<'EOL'
+${conf_line}
+EOL
+export CONF_LINE
+
+awk -F: -v print=$mode '
+BEGIN { split(ENVIRON["CONF_LINE"], conf, ":") }
+$1 == conf[1] {
+    if (print && !found) {
+        # remove duplicates
+        print ENVIRON["CONF_LINE"]
+        found = 1
+    }
+    next
+}
+1' </etc/dma/auth.conf >/etc/dma/auth.conf.tmp \
+&& mv /etc/dma/auth.conf.tmp /etc/dma/auth.conf
+EOF

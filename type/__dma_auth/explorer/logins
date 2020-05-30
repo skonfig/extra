@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2020 Dennis Camera (dennis.camera@ssrq-sds-fds.ch)
+# 2020 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
 #
 # This file is part of cdist.
 #
@@ -17,14 +17,25 @@
 # You should have received a copy of the GNU General Public License
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
+# This explorer lines matching user + server in /etc/dma/auth.conf and reports
+# their cksum.
 
+test -r /etc/dma/auth.conf || exit 0
 
-os=$(cat "$__global/explorer/os")
+if test -f "${__object}/parameter/login"
+then
+	login=$(cat "${__object}/parameter/login")
+else
+	login=$__object_id
+fi
+server=$(cat "${__object}/parameter/server")
 
-case "$os" in
-   *)
-      printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
-      printf "Please contribute an implementation for it if you can.\n" >&2
-      exit 1
-   ;;
-esac
+regex=$(printf '^%s|%s:' "$login" "$server")
+
+grep -e "${regex}" /etc/dma/auth.conf \
+| while read -r line
+  do
+	  echo "${line}" \
+	  | cksum - \
+	  | cut -d ' ' -f 1
+  done
