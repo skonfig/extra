@@ -22,13 +22,11 @@
 aliases_file=$("${__type_explorer}/aliases_file")
 test -r "${aliases_file}" || exit 0
 
-name=$__object_id
-
-awk -F ':[[:blank:]]*' '
-function print_aliases (aliases,  matches) {
-	split(aliases, matches, /,[[:blank:]]*/)
+awk -F ':[ \t]*' '
+function print_aliases(aliases,    matches) {
+	split(aliases, matches, /,[ \t]*/)
 	for (i in matches) {
-		gsub(/^[[:blank:]]*|[[:blank:]]*$/, "", matches[i])
+		gsub(/^[ \t]*|[ \t]*$/, "", matches[i])
 		print matches[i]
 	}
 }
@@ -40,7 +38,7 @@ function print_aliases (aliases,  matches) {
 
 {
 	cont = ($0 ~ /\\$/)
-	if (cont) sub(/[[:blank:]]*\\$/, "", $0)
+	if (cont) sub(/[ \t]*\\$/, "", $0)
 }
 
 /^[[:blank:]]/ || cont {
