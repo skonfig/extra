@@ -18,7 +18,7 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 # This explorer looks for lines matching the server parameter in dma's auth.conf
-# and reports the login and server fields (password is stripped off)
+# and reports the login and server fields (password is cksummed)
 
 auth_conf=$("${__type_explorer}/auth_conf")
 test -r "${auth_conf}" || exit 0
@@ -47,5 +47,11 @@ BEGIN {
 	} else endpos = length
 }
 
-host == server { print substr($0, 0, endpos) }
-' "${auth_conf}"
+host == server { print endpos, $0 }
+' "${auth_conf}" \
+| while read pos line
+  do
+	  printf '%s:%s\n' \
+		  "$(printf '%s' "$line" | cut -c $((-pos)))" \
+		  "$(printf '%s' "$line" | cut -c $((pos+2))- | cksum | cut -d' ' -f1)"
+  done
