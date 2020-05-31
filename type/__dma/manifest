@@ -1,8 +1,7 @@
 #!/bin/sh -e
 
-os="$(cat "${__global}/explorer/os")"
+os=$(cat "${__global}/explorer/os")
 
-root_email="$(tr '\n' ',' < "${__object}/parameter/root-email" | sed -E 's/,+$//')"
 smart_host="$(cat "${__object}/parameter/smart-host")"
 
 if [ -f "${__object}/parameter/mailname" ]; then
@@ -21,14 +20,12 @@ else
 	esac
 fi
 
-aliases_file=/etc/mail/aliases
 case ${os} in
 	debian|devuan|ubuntu)
 		# Debian-like requires installing DMA
 		__package dma
 		# Moving forward without DMA doesn't make much sense
 		export require="__package/dma"
-		aliases_file=/etc/aliases
 	;;
 	freebsd)
 		# Disable sendmail + stop if necessary
@@ -134,20 +131,3 @@ EOF
 __file /etc/dma/dma.conf --mode 0644 --source '-' <<EOF
 ${DMA_CONF}
 EOF
-
-# Setup aliases file (Debian doesn't create it by default)
-__file	--state exists \
-	--mode 0644 \
-	--source "${__type}/files/aliases" \
-	"${aliases_file}"
-export require="${require} __file${aliases_file}"
-
-
-# Setup the root alias
-__key_value	--key 'root' \
-		--delimiter ":" \
-		--comment "# Main admin(s) for this host" \
-		--value "${root_email}" \
-		--onchange 'newaliases' \
-		--file "${aliases_file}" \
-		root_mail_alias

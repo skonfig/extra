@@ -19,18 +19,9 @@ email server configured in the `smart-host` parameter.
 REQUIRED PARAMETERS
 -------------------
 smart-host
-    The destination email server. The addresses passed in `root-email` must be
-    either local to the `smart-host` or it must be configured to act as a relay
-    for the host being configured by this type.
-
-
-REQUIRED MULTIPLE PARAMETERS
-----------------------------
-root-email
-    Destination email address. Can be specified multiple times or just once
-    with each address separated by commas.
-    This will be setup in `/etc/aliases` as the destination for the local
-    root mailbox.
+    The email server used to send email.
+    It must be configured to act as a relay for the host being configured by
+    this type so that mail can be sent to users non-local to the smart-host.
 
 
 BOOLEAN PARAMETERS
@@ -55,11 +46,7 @@ EXAMPLES
 
 .. code-block:: sh
 
-    # Send root email to both our BOFH and the nice-admin.
-    # That way they can figure things out together.
     __dma \
-      --root-email bofh@domain.tld \
-      --root-email nice-admin@domain.tld \
       --smart-host mx1.domain.tld \
       --send-test-email
 
@@ -73,11 +60,12 @@ SEE ALSO
 AUTHORS
 -------
 Evilham <contact@evilham.com>
+Dennis Camera <dennis.camera@ssrq-sds-fds.ch>
 
 
 COPYING
 -------
-Copyright \(C) 2020 Evilham. You can redistribute it
+Copyright \(C) 2020 Evilham and Dennis Camera. You can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.
