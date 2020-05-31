@@ -43,12 +43,21 @@ in
 		test -n "${login}" || { echo '--login must be non-empty' >&2; exit 1 }
 
 		mode=1
-	;;
+
+		if test -s "${__object}/explorer/authusers"
+		then
+			printf 'set authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
+		else
+			printf 'add authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
+		fi
+		;;
 	(absent)
 		# no matching logins present -> nothing to do
 		test -s "${__object}/explorer/authusers" || exit 0
 
 		mode=0
+
+		printf 'delete authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
 		;;
 	(*)
 		printf 'Invalid --state: %s' "${state_should}" >&2
