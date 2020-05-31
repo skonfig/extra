@@ -17,25 +17,33 @@
 # You should have received a copy of the GNU General Public License
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
-# This explorer lines matching user + server in /etc/dma/auth.conf and reports
-# their cksum.
+# This explorer determines the path of dma's auth.conf file
 
-test -r /etc/dma/auth.conf || exit 0
+# No dma.conf -> use default
+test -f /etc/dma/dma.conf || {
+	echo /etc/dma/auth.conf
+	exit 0
+}
+test -r /etc/dma/dma.conf || {
+	echo 'Cannot read /etc/dma/dma.conf' >&2
+	exit 1
+}
 
-if test -f "${__object}/parameter/login"
-then
-	login=$(cat "${__object}/parameter/login")
-else
-	login=$__object_id
-fi
-server=$(cat "${__object}/parameter/server")
-
-regex=$(printf '^%s|%s:' "$login" "$server")
-
-grep -e "${regex}" /etc/dma/auth.conf \
-| while read -r line
-  do
-	  echo "${line}" \
-	  | cksum - \
-	  | cut -d ' ' -f 1
-  done
+# Get AUTHPATH from dma.conf
+awk -F'[ \t]' '
+{
+	sub(/#.*$/, "", $0)  # remove comments
+	if (!$0) next  # ignore empty lines
+}
+$1 == "AUTHPATH" {
+	# Store authpath. In dma conf parsing last wins.
+	if ($2) authpath = substr($0, index($0, " ") + 1)
+}
+END {
+	if (authpath) {
+		print authpath
+		exit 0
+	} else exit 1
+}
+' /etc/dma/dma.conf \
+|| echo /etc/dma/auth.conf  # default

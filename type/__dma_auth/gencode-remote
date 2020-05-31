@@ -18,24 +18,24 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
-logins=$(cat "${__object}/explorer/logins")
+authusers=$(cat "${__object}/explorer/authusers")
 state_should=$(cat "${__object}/parameter/state")
 
-if test -f "${__object}/parameter/login"
+if test -f "${__object}/parameter/server"
 then
-	login=$(cat "${__object}/parameter/login")
+	server=$(cat "${__object}/parameter/server")
 else
-	login=$__object_id
+	server=$__object_id
 fi
+login=$(cat "${__object}/parameter/login")
 password=$(cat "${__object}/parameter/password")
-server=$(cat "${__object}/parameter/server")
 
 case $state_should
 in
 	(present)
 		conf_line=$(printf '%s|%s:%s\n' "${login}" "${server}" "${password}")
 		cksum_should=$(echo "${conf_line}" | cksum - | cut -d ' ' -f 1)
-		if echo "$logins" | grep -qxF "${cksum_should}"
+		if echo "$authusers" | grep -qxF "${cksum_should}"
 		then
 			# correct line already present -> nothing to do
 			exit 0
@@ -44,11 +44,8 @@ in
 		mode=1
 	;;
 	(absent)
-		if test -z "$logins"
-		then
-			# no logins present -> nothing to do
-			exit 0
-		fi
+		# no logins present -> nothing to do
+		test -n "$authusers" || exit 0
 
 		# NOTE: password is not needed to delete
 		conf_line=$(printf '%s|%s:%s\n' "${login}" "${server}" "")
@@ -66,11 +63,14 @@ read -r CONF_LINE <<'EOL'
 ${conf_line}
 EOL
 export CONF_LINE
+export mode=${mode}
+EOF
 
-awk -F: -v print=$mode '
+cat <<'EOF'
+awk -F: -v mode=$mode '
 BEGIN { split(ENVIRON["CONF_LINE"], conf, ":") }
 $1 == conf[1] {
-    if (print && !found) {
+    if (mode && !found) {
         # remove duplicates
         print ENVIRON["CONF_LINE"]
         found = 1

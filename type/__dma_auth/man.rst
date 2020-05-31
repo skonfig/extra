@@ -14,16 +14,16 @@ servers.
 
 REQUIRED PARAMETERS
 -------------------
+login
+    The user's LOGIN name on the SMTP server.
 password
     The user's password (in plain text.)
-server
-    The SMTP server on which the login is valid.
 
 
 OPTIONAL PARAMETERS
 -------------------
-login
-    The user's LOGIN name on the SMTP server. Defaults to `__object_id`.
+server
+    The SMTP server on which the login is valid. Defaults to `__object_id`.
 state
     Either `present` or `absent`. Defaults to `present`.
 
@@ -38,13 +38,13 @@ EXAMPLES
 .. code-block:: sh
 
     # Set the password for smarthost
-    __dma_auth joe --server smarthost --password hunter2
+    __dma_auth smarthost.example.com --login joe --password hunter2
 
     # Set credentials for user at an external provider
-    __dma_auth paul@example.com --server mail.provider.com --password letmein
+    __dma_auth mail.provider.com --login paul@example.com --password letmein
 
-    # Delete credentials for example.com
-	__dma_auth paul --server example.com --state absent
+    # Delete credentials for example.com (for all users)
+    __dma_auth example.com --login '' --password '' --state absent
 
 SEE ALSO
 --------
