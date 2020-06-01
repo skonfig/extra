@@ -26,6 +26,14 @@ smart-host
 
 BOOLEAN PARAMETERS
 ------------------
+defer
+    If enabled, the mail queue has to be manually flushed with the `-q` option.
+full-bounce
+    Enable if the bounce message should include the complete original message,
+    not just the headers.
+null-client
+    Enable to bypass aliases and local delivery, and instead forward all mails
+    to the defined `--smart-host`.
 send-test-email
     If present, after setup this type will send an email to root, to allow you
     to easily test your setup.

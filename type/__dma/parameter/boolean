@@ -1,1 +1,4 @@
+defer
+full-bounce
+null-client
 send-test-email

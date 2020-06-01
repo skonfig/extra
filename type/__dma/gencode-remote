@@ -49,6 +49,26 @@ conf_should=$(
 		done <"${__object}/parameter/masquerade"
 	fi
 
+	if test -f "${__object}/parameter/defer"
+	then
+		echo 'DEFER'
+	fi
+
+	if test -f "${__object}/parameter/full-bounce"
+	then
+		echo 'FULLBOUNCE'
+	fi
+
+	if test -f "${__object}/parameter/null-client"
+	then
+		test -s "${__object}/parameter/smart-host" || {
+			echo '--null-client requires a --smart-host to be defined' >&2
+			exit 1
+		}
+
+		echo 'NULLCLIENT'
+	fi
+
 	if test -s "${__object}/explorer/auth_conf"
 	then
 		printf "AUTHPATH %s\n" "$(cat "${__object}/explorer/auth_conf")"
