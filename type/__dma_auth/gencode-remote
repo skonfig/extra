@@ -40,7 +40,7 @@ in
 			exit 0
 		fi
 
-		test -n "${login}" || { echo '--login must be non-empty' >&2; exit 1 }
+		test -n "${login}" || { echo '--login must be non-empty' >&2; exit 1; }
 
 		mode=1
 
