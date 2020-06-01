@@ -49,7 +49,10 @@ conf_should=$(
 		done <"${__object}/parameter/masquerade"
 	fi
 
-
+	if test -s "${__object}/explorer/auth_conf"
+	then
+		printf "AUTHPATH %s\n" "$(cat "${__object}/explorer/auth_conf")"
+	fi
 )
 conf_should=$(echo "$conf_should" | sort -s -k 1,1)
 
