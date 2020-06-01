@@ -49,7 +49,7 @@ BEGIN {
 
 host == server { print endpos, $0 }
 ' "${auth_conf}" \
-| while read pos line
+| while read -r pos line
   do
 	  printf '%s:%s\n' \
 		  "$(printf '%s' "$line" | cut -c $((-pos)))" \
