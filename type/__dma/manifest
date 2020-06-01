@@ -1,32 +1,7 @@
 #!/bin/sh -e
 
-os=$(cat "${__global}/explorer/os")
-
-# mailname: default behaviour is different on certain systems
-if test -f "${__object}/parameter/mailname"
-then
-	mailname=$(cat "${__object}/parameter/mailname")
-else
-	# Otherwise use the hostname
-	mailname=$(cat "${__global}/explorer/hostname")
-fi
-
-case $os
-in
-	(debian|devuan|ubuntu)
-		# On Debian-like systems use /etc/mailname
-		if test -f "${__object}/parameter/mailname"
-		then
-			echo "$mailname" | __file '/etc/mailname' --state present \
-				--mode 0644 --owner root --group root --source -
-		fi
-
-		mailname='/etc/mailname'
-		;;
-esac
-
 # Install DMA
-case $os
+case $(cat "${__global}/explorer/os")
 in
 	(debian|devuan|ubuntu)
 		__package dma --state present

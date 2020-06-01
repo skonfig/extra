@@ -2,12 +2,36 @@
 
 CONF_PATH=/etc/dma  # set in Makefile
 
+# Determine mailname
+if test -f "${__object}/parameter/mailname"
+then
+	mailname=$(cat "${__object}/parameter/mailname")
+else
+	case $(cat "${__global}/explorer/os")
+	in
+		(debian|devuan|ubuntu)
+			# On Debian-like systems use /etc/mailname unless --mailname is used
+			mailname='/etc/mailname'
+			;;
+		(*)
+			mailname=$__target_fqdn
+			;;
+	esac
+fi
+
+
 # Generate config
 conf_should=$(
 	if test -s "${__object}/parameter/smart-host"
 	then
 		printf 'SMARTHOST %s\n' "$(cat "${__object}/parameter/smart-host")"
-		#printf 'AUTHPATH %s\n' "$(cat "${__type}/
+	fi
+
+	printf 'MAILNAME %s\n' "${mailname}"
+
+	if test -s "${__object}/explorer/auth_conf"
+	then
+		printf "AUTHPATH %s\n" "$(cat "${__object}/explorer/auth_conf")"
 	fi
 
 	case $(cat "${__object}/parameter/security")
@@ -67,11 +91,6 @@ conf_should=$(
 		}
 
 		echo 'NULLCLIENT'
-	fi
-
-	if test -s "${__object}/explorer/auth_conf"
-	then
-		printf "AUTHPATH %s\n" "$(cat "${__object}/explorer/auth_conf")"
 	fi
 )
 conf_should=$(echo "$conf_should" | sort -s -k 1,1)
