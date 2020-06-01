@@ -39,7 +39,31 @@ mailname
     If not defined, it defaults to `/etc/mailname` on Debian-derived Operating
     Systems and to `__target_host` otherwise.
     See `dma(8)` for more information.
+masquerade
+    Masquerade the envelope-from addresses with this address/hostname.
+    Use this setting if mails are not accepted by destination mail servers
+    because your sender domain is invalid.
+    This option can be used multiple times.
+    For more information see the `dma(8)` man page.
+port
+    The port on which to deliver email.
+    If not provided, a sensible default port will be used based on the
+    `--security` argument.
+security
+    Configures whether and how DMA should use secure connections.
 
+    ssl/tls
+        Enable TLS/SSL secured transfer.
+    starttls
+        Use STARTTLS to establish a secure connection.
+    opportunistic (default)
+        Will try to establish a secure connection using STARTTLS, but allow
+        unencrypted transfer if STARTTLS fails.
+        Most useful when dma is used without a smarthost, delivering remote
+        messages directly to the outside mail exchangers.
+    insecure
+        allow plain text SMTP login over an insecure connection.
+        Should really not be used anymore!
 
 EXAMPLES
 --------
