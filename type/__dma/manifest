@@ -19,6 +19,9 @@ in
 
 		# Setup mailwrapper accordingly
 		__file '/etc/mail/mailer.conf' --mode 0644 --source - <<-'EOF'
+			#
+			# Execute the "real" sendmail program, named /usr/libexec/sendmail/sendmail
+			#
 			sendmail	/usr/libexec/dma
 			send-mail	/usr/libexec/dma
 			mailq		/usr/libexec/dma

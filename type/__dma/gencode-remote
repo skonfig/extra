@@ -108,7 +108,7 @@ function is_word(s) { return s ~ /^[A-Z_]+$/ }
 
 function first(line, sep) {
 	if (!sep) sep = SUBSEP
-	return index(line, sep) ? substr(line, 0, index(line, sep)) : line
+	return index(line, sep) ? substr(line, 1, index(line, sep) - 1) : line
 }
 
 function rest(line, sep) {
@@ -121,7 +121,7 @@ function conf_pop(word, value) {
 	if (!(word in conf)) return 0
 	if (!value) {
 		if (index(conf[word], SUBSEP))  # more than one element?
-			value = substr(conf[word], 0, index(conf[word], SUBSEP))
+			value = substr(conf[word], 1, index(conf[word], SUBSEP) - 1)
 		else
 			value = conf[word]
 	}
@@ -256,10 +256,13 @@ then
 	then
 		cat <<-EOF
 		sendmail root <<EOM
-		Subject: [cdist] Testing mail on '${__target_host}'
+		Subject: [cdist] Test mail from '${__target_fqdn}'
 
-		You can safely ignore this message. It means your system will notify you
-		correctly of any relevant messages.
+		Hi,
+
+		you can ignore this message.
+		Its sole purpose is to notify you that root mail on ${__target_fqdn}
+		will be redirected to you.
 
 		Enjoy!
 		EOM
