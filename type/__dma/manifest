@@ -1,7 +1,9 @@
 #!/bin/sh -e
 
+os=$(cat "${__global}/explorer/os")
+
 # Install DMA
-case $(cat "${__global}/explorer/os")
+case $os
 in
 	(debian|devuan|ubuntu)
 		__package dma --state present
