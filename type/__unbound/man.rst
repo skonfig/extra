@@ -1,4 +1,4 @@
-cdist-type__ungleich_unbound(7)
+cdist-type__unbound(7)
 ===============================
 
 NAME
