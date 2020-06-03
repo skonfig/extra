@@ -7,7 +7,7 @@ generate_interface() {
 }
 
 generate_access_control() {
-  echo "$ACCESS_CONTROLS" | while read entry; do
+  echo "$ACCESS_CONTROLS" | while read -r entry; do
     echo "	access-control: $entry"
   done
 }
@@ -983,12 +983,12 @@ $(generate_forward_addr)
 # 1. the keys/certs cannot be produced by unbound. You can use dnscrypt-wrapper
 #   for this: https://github.com/cofyc/dnscrypt-wrapper/blob/master/README.md#usage
 # 2. dnscrypt channel attaches to an interface. you MUST set interfaces to
-#   listen on `dnscrypt-port` with the follo0wing snippet:
+#   listen on 'dnscrypt-port' with the follo0wing snippet:
 # server:
 #     interface: 0.0.0.0@443
 #     interface: ::0@443
 #
-# Finally, `dnscrypt` config has its own section.
+# Finally, 'dnscrypt' config has its own section.
 # dnscrypt:
 #     dnscrypt-enable: yes
 #     dnscrypt-port: 443

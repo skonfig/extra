@@ -33,16 +33,20 @@ case "$os" in
 esac
 
 # Required parameters:
-export DNS64_PREFIX=$(cat "$__object/parameter/dns64_prefix")
-export FORWARD_ADDRS=$(cat "$__object/parameter/forward_addr")
+DNS64_PREFIX=$(cat "$__object/parameter/dns64_prefix")
+export DNS64_PREFIX
+FORWARD_ADDRS=$(cat "$__object/parameter/forward_addr")
+export FORWARD_ADDRS
 
 # Optional parameters:
 if [ -f "$__object/parameter/interface" ]; then
-   export INTERFACES=$(cat "$__object/parameter/interface")
+   INTERFACES=$(cat "$__object/parameter/interface")
+   export INTERFACES
 fi
 
 if [ -f "$__object/parameter/access_control" ]; then
-   export ACCESS_CONTROLS=$(cat "$__object/parameter/access_control")
+   ACCESS_CONTROLS=$(cat "$__object/parameter/access_control")
+   export ACCESS_CONTROLS
 fi
 
 # Boolean parameters:
@@ -69,9 +73,9 @@ source_file="$__object/files/unbound.conf"
 target_file="/etc/unbound/unbound.conf"
 
 mkdir -p "$__object/files"
-"$__type/files/unbound.conf.sh" > $source_file
-require="__package/unbound" __file $target_file \
-    --source $source_file \
+"$__type/files/unbound.conf.sh" > "$source_file"
+require="__package/unbound" __file "$target_file" \
+    --source "$source_file" \
     --owner root \
     --mode 644
 
