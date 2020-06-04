@@ -1,0 +1,83 @@
+#!/bin/sh -e
+#
+# 2020 Timothée Floure (timothee.floure@ungleich.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+os=$(cat "$__global/explorer/os")
+
+case "$os" in
+   alpine)
+      __package unbound --state present
+   ;;
+   *)
+      printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
+      printf "Please contribute an implementation for it if you can.\n" >&2
+      exit 1
+   ;;
+esac
+
+# Required parameters:
+DNS64_PREFIX=$(cat "$__object/parameter/dns64_prefix")
+export DNS64_PREFIX
+FORWARD_ADDRS=$(cat "$__object/parameter/forward_addr")
+export FORWARD_ADDRS
+
+# Optional parameters:
+if [ -f "$__object/parameter/interface" ]; then
+   INTERFACES=$(cat "$__object/parameter/interface")
+   export INTERFACES
+fi
+
+if [ -f "$__object/parameter/access_control" ]; then
+   ACCESS_CONTROLS=$(cat "$__object/parameter/access_control")
+   export ACCESS_CONTROLS
+fi
+
+# Boolean parameters:
+if [ -f "$__object/parameter/disable_ip4" ] && \
+   [ -f "$__object/parameter/disable_ip6" ]; then
+    echo "--disable-ip4 and --disable-ip6 cannot be used at the same time." >&2
+    exit 1
+fi
+
+if [ -f "$__object/parameter/disable_ip4" ]; then
+    export DO_IP4='no'
+else
+    export DO_IP4='yes'
+fi
+
+if [ -f "$__object/parameter/disable_ip6" ]; then
+    export DO_IP6='no'
+else
+    export DO_IP6='yes'
+fi
+
+# Generate and deploy configuration files.
+source_file="$__object/files/unbound.conf"
+target_file="/etc/unbound/unbound.conf"
+
+mkdir -p "$__object/files"
+"$__type/files/unbound.conf.sh" > "$source_file"
+require="__package/unbound" __file "$target_file" \
+    --source "$source_file" \
+    --owner root \
+    --mode 644
+
+# Restart unbound server after reconfiguration.
+require="__file/$target_file" __service unbound --action restart
