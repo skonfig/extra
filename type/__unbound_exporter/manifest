@@ -26,6 +26,7 @@ case "$os" in
         # Used in gencode-remote.
         __package curl
         __package tar
+        __package openssl
         __package go
         __package libc-dev
         ;;

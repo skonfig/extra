@@ -95,6 +95,3 @@ require="__package/unbound" __file "$target_file" \
     --source "$source_file" \
     --owner root \
     --mode 644
-
-# Restart unbound server after reconfiguration.
-require="__file/$target_file" __service unbound --action restart
