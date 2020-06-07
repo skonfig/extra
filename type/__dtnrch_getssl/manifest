@@ -45,3 +45,6 @@ __staged_file "${DEST}/getssl" --state "${state_should}" \
 	--cksum '1175685050 110776'
 
 __directory '/etc/getssl' --state "${state_should}" --owner 0 --mode 0750
+
+__cron 'getssl' --state "${state_should}" --user 0 --hour 1 --minute 0 \
+	--command 'getssl -a -q -U'
