@@ -857,14 +857,14 @@ python:
 remote-control:
 	# Enable remote control with unbound-control(8) here.
 	# set up the keys and certificates with unbound-control-setup.
-	# control-enable: no
+	control-enable: $RC_ENABLE
 
 	# what interfaces are listened to for remote control.
 	# give 0.0.0.0 and ::0 to listen to all interfaces.
 	# set to an absolute path to use a unix local name pipe, certificates
 	# are not used for that, so key and cert files need not be present.
 	# control-interface: 127.0.0.1
-	# control-interface: ::1
+	control-interface: $RC_INTERFACE
 
 	# port number for remote control operations.
 	# control-port: 8953
@@ -874,16 +874,16 @@ remote-control:
 	# control-use-cert: "yes"
 
 	# unbound server key file.
-	# server-key-file: "/unbound_server.key"
+	server-key-file: "$RC_SERVER_KEY_FILE"
 
 	# unbound server certificate file.
-	# server-cert-file: "/unbound_server.pem"
+	server-cert-file: "$RC_SERVER_CERT_FILE"
 
 	# unbound-control key file.
-	# control-key-file: "/unbound_control.key"
+	control-key-file: "$RC_CONTROL_KEY_FILE"
 
 	# unbound-control certificate file.
-	# control-cert-file: "/unbound_control.pem"
+	control-cert-file: "$RC_CONTROL_CERT_FILE"
 
 # Stub zones.
 # Create entries like below, to make all queries for 'example.com' and

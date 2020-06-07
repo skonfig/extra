@@ -49,6 +49,11 @@ if [ -f "$__object/parameter/access_control" ]; then
    export ACCESS_CONTROLS
 fi
 
+if [ -f "$__object/parameter/rc_interface" ]; then
+   RC_INTERFACE=$(cat "$__object/parameter/rc_interface")
+   export RC_INTERFACE
+fi
+
 # Boolean parameters:
 if [ -f "$__object/parameter/disable_ip4" ] && \
    [ -f "$__object/parameter/disable_ip6" ]; then
@@ -67,6 +72,18 @@ if [ -f "$__object/parameter/disable_ip6" ]; then
 else
     export DO_IP6='yes'
 fi
+
+if [ -f "$__object/parameter/enable_rc" ]; then
+    export RC_ENABLE='yes'
+else
+    export RC_ENABLE='no'
+fi
+
+# Certs for remote control:
+export RC_SERVER_KEY_FILE='/etc/unbound/unbound_server.key'
+export RC_SERVER_CERT_FILE='/etc/unbound/unbound_server.pem'
+export RC_CONTROL_KEY_FILE='/etc/unbound/unbound_control.key'
+export RC_CONTROL_CERT_FILE='/etc/unbound/unbound_control.pem'
 
 # Generate and deploy configuration files.
 source_file="$__object/files/unbound.conf"
