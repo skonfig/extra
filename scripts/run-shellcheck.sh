@@ -15,7 +15,7 @@ check () {
 }
 
 check -path "*/explorer/*"
-check -path "*/files/*"
+check -path "*/files/*.sh"
 check -name manifest
 check -name gencode-local
 check -name gencode-remote
