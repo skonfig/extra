@@ -78,15 +78,15 @@ conf_should=$(
 		echo 'DEFER'
 	fi
 
-	if test -f "${__object}/parameter/full-bounce"
+	if test -f "${__object}/parameter/fullbounce"
 	then
 		echo 'FULLBOUNCE'
 	fi
 
-	if test -f "${__object}/parameter/null-client"
+	if test -f "${__object}/parameter/nullclient"
 	then
 		test -s "${__object}/parameter/smarthost" || {
-			echo '--null-client requires a --smarthost to be defined' >&2
+			echo '--nullclient requires a --smarthost to be defined' >&2
 			exit 1
 		}
 

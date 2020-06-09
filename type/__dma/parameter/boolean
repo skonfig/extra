@@ -1,4 +1,4 @@
 defer
-full-bounce
-null-client
-send-test-email
+fullbounce
+nullclient
+send-test-mail
