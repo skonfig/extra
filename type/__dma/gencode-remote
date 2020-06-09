@@ -22,9 +22,9 @@ fi
 
 # Generate config
 conf_should=$(
-	if test -s "${__object}/parameter/smart-host"
+	if test -s "${__object}/parameter/smarthost"
 	then
-		printf 'SMARTHOST %s\n' "$(cat "${__object}/parameter/smart-host")"
+		printf 'SMARTHOST %s\n' "$(cat "${__object}/parameter/smarthost")"
 	fi
 
 	printf 'MAILNAME %s\n' "${mailname}"
@@ -85,8 +85,8 @@ conf_should=$(
 
 	if test -f "${__object}/parameter/null-client"
 	then
-		test -s "${__object}/parameter/smart-host" || {
-			echo '--null-client requires a --smart-host to be defined' >&2
+		test -s "${__object}/parameter/smarthost" || {
+			echo '--null-client requires a --smarthost to be defined' >&2
 			exit 1
 		}
 

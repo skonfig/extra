@@ -13,15 +13,15 @@ mails from locally installed Mail User Agents (MUA) and deliver the mails
 to a remote destination.
 
 Remote delivery happens over TLS to one or more mailboxes that are local to the
-email server configured in the `smart-host` parameter.
+mail server configured in the ``smarthost`` parameter.
 
 
 REQUIRED PARAMETERS
 -------------------
-smart-host
-    The email server used to send email.
+smarthost
+    The mail server used to send email.
     It must be configured to act as a relay for the host being configured by
-    this type so that mail can be sent to users non-local to the smart-host.
+    this type so that mail can be sent to users non-local to the smarthost.
 
 
 BOOLEAN PARAMETERS
@@ -33,7 +33,7 @@ full-bounce
     not just the headers.
 null-client
     Enable to bypass aliases and local delivery, and instead forward all mails
-    to the defined `--smart-host`.
+    to the defined ``--smarthost``.
 send-test-email
     If present, after setup this type will send an email to root, to allow you
     to easily test your setup.
@@ -78,9 +78,7 @@ EXAMPLES
 
 .. code-block:: sh
 
-    __dma \
-      --smart-host mx1.domain.tld \
-      --send-test-email
+    __dma --smarthost mx1.domain.tld --send-test-email
 
 
 SEE ALSO
