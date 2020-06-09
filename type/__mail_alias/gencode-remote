@@ -29,7 +29,13 @@ in
 			exit 0
 		fi
 
-		echo "set aliases" >>"$__messages_out"
+		if test -s "${__object}/explorer/aliases"
+		then
+			echo "update aliases" >>"$__messages_out"
+		else
+			echo "add aliases" >>"$__messages_out"
+		fi
+
 		mode=1
 		;;
 	(absent)
@@ -37,6 +43,7 @@ in
 		test -s "${__object}/explorer/aliases" || exit 0
 
 		echo "delete aliases" >>"$__messages_out"
+
 		mode=0
 		;;
 	(*)
@@ -46,11 +53,10 @@ esac
 
 aliases_file=$(cat "${__object}/explorer/aliases_file")
 
-if test -z "${aliases_file}"
-then
+test -n "${aliases_file}" || {
 	echo 'Could not determine aliases file path.' >&2
 	exit 1
-fi
+}
 
 # "export" variables to remote
 printf 'mode=%u\n' "${mode}"
@@ -58,16 +64,18 @@ printf "aliases_file='%s'\n" "${aliases_file}"
 
 cat <<'EOF'
 test -f "${aliases_file}" || touch "${aliases_file}"
-awk -F ':[ \t]*' -v mode="${mode}" '
-function sepafter(f, default,  _) {
+
+awk -F ':[ \t]*' -v mode=$mode '
+function sepafter(f, default,    _) {
+	# finds the separator between field $f and $(f+1)
 	_ = substr($0, length($f) + 1, index(substr($0, length($f)+1), $(f+1)) - 1)
-	if (_) return _
-	else return default
+	return _ ? _ : default
 }
 
 function write_aliases() {
 	if (aliases_written) return
 
+	# print aliases line
 	printf "%s%s", ENVIRON["__object_id"], sepafter(1, ": ")
 	while ((getline < aliases_should_file) > 0) {
 		if (aliases_written) printf ", "
@@ -83,36 +91,45 @@ BEGIN {
 }
 
 /^#/ {
-	# comment
-	select = 0; cont = 0
+	# comment line (leave alone)
+	select = 0; cont = 0  # comments terminate alias lists and continuations
 	print
 	next
 }
 
-{
-	cont = ($0 ~ /\\$/)
-	if (cont) sub(/[ \t]*\\$/, "", $0)
-}
-
 /^[ \t]/ || cont {
-	# continuation line
+	# continuation line (either the previous line ended in a backslash or the
+	# line starts with whitespace)
+
+	# if in the alias list of the "target" user, we drop the line as it has been
+	# rewritten previously
 	if (select) next
 }
 
+{
+	# detect if the line is a line to be continued (ends with a backslash)
+	cont = ($0 ~ /\\$/)
+	# if it is, we drop the backslash from the line.
+	if (cont) sub(/[ \t]*\\$/, "", $0)
+}
+
 $1 == ENVIRON["__object_id"] {
-	in_list = 1
+	# "target" user -> rewrite aliases list
+	select = 1
 	if (mode) write_aliases()
 	next
 }
 
 {
-	in_list = 0
+	# other user
+	select = 0
 	print
 }
 
 END {
-	# if the last line as an alias definition, the separator will be reused
-	if (mode && !aliases_written) write_aliases()
+	# if the last line was an alias, the separator will be reused (looks better)
+	if (mode && !aliases_written)
+		write_aliases()
 }
 ' <"${aliases_file}" >"${aliases_file}.tmp" || {
 	echo 'Generating new aliases file failed!' >&2
@@ -121,9 +138,11 @@ END {
 
 if ! cmp -s "${aliases_file}" "${aliases_file}.tmp"
 then
+	# aliases file was modified, replace and run `newaliases`
 	mv "${aliases_file}.tmp" "${aliases_file}"
 	newaliases
 else
+	# no modifications were made, delete the temp file.
 	rm "${aliases_file}.tmp"
 fi
 EOF

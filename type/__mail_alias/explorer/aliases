@@ -32,26 +32,41 @@ function print_aliases(aliases,    matches) {
 }
 
 /^#/ {
-	# comment
-	select = 0; cont = 0; next
-}
-
-{
-	cont = ($0 ~ /\\$/)
-	if (cont) sub(/[ \t]*\\$/, "", $0)
-}
-
-/^[[:blank:]]/ || cont {
-	# continuation line
-	if (select) print_aliases($0)
+	# comment line (ignore)
+	select = 0; cont = 0  # comments terminate alias lists and continuations
 	next
 }
 
-$1 == ENVIRON["__object_id"] {
+/^[ \t]/ || cont {
+	# continuation line (either the previous line ended in a backslash or the
+	# line starts with whitespace)
+
+	if (select)
+		print_aliases($0)
+}
+
+{
+	# detect if the line is a line to be continued (ends with a backslash)
+	cont = ($0 ~ /\\$/)
+
+	# if it is, we drop the backslash from the line and skip to next line
+	# (the contents have been printed above if they should)
+	if (cont) {
+		sub(/[ \t]*\\$/, "", $0)
+		next
+	}
+}
+
+$1 == ENVIRON["__object_id"] && !select {
+	# "target" user -> print alias list
+	# (only if !select; because of whitespacecontinuation lines)
 	select = 1
 	print_aliases($2)
 	next
 }
 
-{ select = 0 }
+{
+	# other user
+	select = 0
+}
 ' "${aliases_file}"
