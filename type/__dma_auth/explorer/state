@@ -31,27 +31,54 @@ else
 fi
 
 awk -F'\n' -v server="${server}" '
+function getvalue(path) {
+	getline < path
+	close(path)
+	return $0
+}
+
 BEGIN {
 	DP = "[: \t]"  # copied from dma/conf.c
+
+	parameter_dir = ENVIRON["__object"] "/parameter/"
+
+	host_param = getvalue(parameter_dir "server")
+	if (!host_param) host_param = ENVIRON["__object_id"]
+	login_param = getvalue(parameter_dir "login")
+	passwd_param = getvalue(parameter_dir "password")
+
+	state = "absent"
 }
 
-# skip comments and empty lines
-/^#/ || /^$/ { next }
+/^#/ || /^$/ {
+	# skip comments and empty lines
+	next
+}
 
 {
+	# parse line
+
 	login = substr($0, 1, index($0, "|") - 1)
+	if (!login) { login = $0 }  # if no "|" found
+
 	host = substr($0, length(login) + 2)
+
 	if (match(host, DP)) {
+		passwd = substr(host, RSTART)
 		host = substr(host, 1, RSTART - 1)
-		endpos = length(login) + RSTART
-	} else endpos = length
+	} else {
+		passwd = ""
+	}
 }
 
-host == server { print endpos, $0 }
-' "${auth_conf}" \
-| while read -r pos line
-  do
-	  printf '%s:%s\n' \
-		  "$(printf '%s' "$line" | cut -c $((-pos)))" \
-		  "$(printf '%s' "$line" | cut -c $((pos+2))- | cksum | cut -d' ' -f1)"
-  done
+host == host_param && login == login_param {
+	if (passwd == passwd_param)
+		state = "present"
+	else
+		state = "different_password"
+}
+
+END {
+	print state
+}
+' "${auth_conf}"

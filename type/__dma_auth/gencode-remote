@@ -18,6 +18,7 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
+state_is=$(cat "${__object}/explorer/state")
 state_should=$(cat "${__object}/parameter/state")
 
 if test -f "${__object}/parameter/server"
@@ -28,33 +29,27 @@ else
 fi
 login=$(cat "${__object}/parameter/login")
 
+if test "${state_is}" = "${state_should}"
+then
+	# state is as it should
+	exit 0
+fi
+
 case $state_should
 in
 	(present)
-		line_should=$(printf '%s|%s:%s\n' \
-			"${login}" "${server}" \
-			"$(cksum "${__object}/parameter/password" | cut -d' ' -f1)")
-		if grep -qxF "${line_should}" "${__object}/explorer/authusers"
-		then
-			# correct line already present -> nothing to do
-			exit 0
-		fi
-
 		test -n "${login}" || { echo '--login must be non-empty' >&2; exit 1; }
 
 		mode=1
 
-		if test -s "${__object}/explorer/authusers"
+		if test "${state_is}" = 'absent'
 		then
-			printf 'set authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
-		else
 			printf 'add authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
+		else
+			printf 'set authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
 		fi
 		;;
 	(absent)
-		# no matching logins present -> nothing to do
-		test -s "${__object}/explorer/authusers" || exit 0
-
 		mode=0
 
 		printf 'delete authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
@@ -67,16 +62,14 @@ esac
 
 auth_conf=$(cat "${__object}/explorer/auth_conf")
 
-if test -z "${auth_conf}"
-then
+test -n "${auth_conf}" || {
 	echo 'Cannot determine path of dma auth.conf' >&2
 	exit 1
-fi
+}
+
 
 cat <<EOF
-export auth_conf='${auth_conf}'
-export login='${login}'
-export server='${server}'
+auth_conf='${auth_conf}'
 mode=${mode}
 EOF
 
@@ -84,44 +77,71 @@ cat <<'EOF'
 test -f "${auth_conf}" || touch "${auth_conf}"
 
 awk -F '\n' -v mode=$mode '
-function getpw(    line, path) {
-	path = (ENVIRON["__object"] "/parameter/password")
-	getline line < path
+function getvalue(path) {
+	getline < path
 	close(path)
-	return line
+	return $0
+}
+
+function print_should() {
+	printf "%s|%s:%s\n", login_param, host_param, passwd_param
 }
 
 BEGIN {
 	DP = "[: \t]"  # copied from dma/conf.c
+
+	parameter_dir = ENVIRON["__object"] "/parameter/"
+
+	host_param = getvalue(parameter_dir "server")
+	if (!host_param) host_param = ENVIRON["__object_id"]
+	login_param = getvalue(parameter_dir "login")
+	passwd_param = getvalue(parameter_dir "password")
 }
 
 # skip comments and empty lines
 /^#/ || /^$/ { print; next }
 
 {
+	# parse line
+
 	login = substr($0, 1, index($0, "|") - 1)
+	if (!login) { login = $0 }  # if no "|" found
+
 	host = substr($0, length(login) + 2)
+
 	if (match(host, DP)) {
+		passwd = substr(host, RSTART)
 		host = substr(host, 1, RSTART - 1)
-		endpos = length(login) + RSTART
-	} else endpos = length
+	} else {
+		passwd = ""
+	}
 }
 
-host == ENVIRON["server"] {
+host == host_param {
 	if (mode) {
-		if (login == ENVIRON["login"] && !written) {
-			printf "%s%s\n", substr($0, 1, endpos+1), getpw()
+		# state_should == present
+		if (login == login_param && !written) {
+			# replace line if host and login match
+			print_should()
 			written = 1
 			next
 		}
-	} else if (!ENVIRON["login"] || login == ENVIRON["login"]) next
+	} else {
+		# state_should == absent
+		if (!login_param || login == login_param) {
+			# empty --login -> drop all lines for this host
+			next
+		}
+	}
 }
 
+# leave other lines alone
 { print }
 
 END {
 	if (mode && !written) {
-		printf "%s|%s:%s\n", ENVIRON["login"], ENVIRON["server"], getpw()
+		# append line if no match to replace was found
+		print_should()
 	}
 }
 ' <"${auth_conf}" >"${auth_conf}.tmp" \
