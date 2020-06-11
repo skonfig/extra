@@ -17,8 +17,13 @@
 # You should have received a copy of the GNU General Public License
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
-# This explorer looks for lines matching the server parameter in dma's auth.conf
-# and reports the login and server fields (password is cksummed)
+# This explorer looks for a line matching the login and server parameters
+# in dma's auth.conf and reports:
+#   present:            a line matching login + host + password exists
+#   absent:             no line matching login + host exists
+#   different_password: a line exists but with a different pasword
+#   multiple:           multiple lines matching login + host exist
+#                       (should never happen)
 
 auth_conf=$("${__type_explorer}/auth_conf")
 test -r "${auth_conf}" || exit 0
@@ -32,6 +37,7 @@ fi
 
 awk -F'\n' -v server="${server}" '
 function getvalue(path) {
+	# Reads the first line of the file located at path and returns it.
 	getline < path
 	close(path)
 	return $0
@@ -42,6 +48,7 @@ BEGIN {
 
 	parameter_dir = ENVIRON["__object"] "/parameter/"
 
+	# Read the parameters of this object
 	host_param = getvalue(parameter_dir "server")
 	if (!host_param) host_param = ENVIRON["__object_id"]
 	login_param = getvalue(parameter_dir "login")
@@ -72,10 +79,13 @@ BEGIN {
 }
 
 host == host_param && login == login_param {
-	if (passwd == passwd_param)
-		state = "present"
-	else
-		state = "different_password"
+	# a match…
+	if (state == "absent") {
+		state = ((passwd == passwd_param) ? "present" : "different_password")
+	} else {
+		# report "multiple" to that the type can remove the duplicates.
+		state = "multiple"
+	}
 }
 
 END {

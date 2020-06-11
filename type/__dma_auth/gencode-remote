@@ -78,6 +78,7 @@ test -f "${auth_conf}" || touch "${auth_conf}"
 
 awk -F '\n' -v mode=$mode '
 function getvalue(path) {
+	# Reads the first line of the file located at path and returns it.
 	getline < path
 	close(path)
 	return $0
@@ -124,11 +125,12 @@ host == host_param {
 	if (mode) {
 		# state_should == present
 		if (login == login_param && !written) {
-			# replace line if host and login match
+			# replace line if host and login match (but only if no line has
+			# been written already -> no duplicates)
 			print_should()
 			written = 1
-			next
 		}
+		next
 	} else {
 		# state_should == absent
 		if (!login_param || login == login_param) {
@@ -139,7 +141,9 @@ host == host_param {
 }
 
 # leave other lines alone
-{ print }
+{
+	print
+}
 
 END {
 	if (mode && !written) {
