@@ -47,7 +47,8 @@ in
 		mode=0
 		;;
 	(*)
-		printf 'Invalid --state given: %s\n' "$state_should" >&2
+		printf 'Invalid --state: %s.\n' "$state_should" >&2
+		printf 'Acceptable values are: present, absent.\n' >&2
 		exit 1
 esac
 

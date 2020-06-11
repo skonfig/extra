@@ -55,7 +55,8 @@ in
 		printf 'delete authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
 		;;
 	(*)
-		printf 'Invalid --state: %s' "${state_should}" >&2
+		printf 'Invalid --state: %s.\n' "${state_should}" >&2
+		printf 'Acceptable values are: present, absent.\n' >&2
 		exit 1
 		;;
 esac
