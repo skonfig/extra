@@ -20,7 +20,7 @@ else
 fi
 
 
-# Generate config
+# Generate "should" values for config
 conf_should=$(
 	if test -s "${__object}/parameter/smarthost"
 	then
@@ -60,7 +60,7 @@ conf_should=$(
 	if test -s "${__object}/parameter/port"
 	then
 		printf 'PORT %u\n' "$(cat "${__object}/parameter/port")"
-	elif test "${default_smtp_port}" -ne 25
+	elif test "${default_smtp_port}" -ne 25  # DMA uses port 25 by default
 	then
 		printf 'PORT %u\n' "${default_smtp_port}"
 	fi
@@ -93,6 +93,7 @@ conf_should=$(
 		echo 'NULLCLIENT'
 	fi
 )
+# Sort conf_should to compare against "conf_is"
 conf_should=$(echo "$conf_should" | sort -s -k 1,1)
 
 config_updated=false
@@ -100,24 +101,55 @@ if ! echo "$conf_should" | cmp -s "${__object}/explorer/conf" -
 then
 	# config needs to be updated
 	echo "dma_conf='${CONF_PATH:?}/dma.conf'"
+
+	# The following AWK script will output the new config file to be stored on
+	# disk. To do so it reads the current dma.conf file and the config options
+	# that should be set (from stdin).
+	# Note that the path to the current dma.conf is passed to AWK twice, because
+	# the new file cannot be generated in one pass.
+
+	# The logic tries to place options at a sensible location, that is:
+	# a) if the option is already used in the config file:
+	#    group all similar options (e.g. MASQUERADE) at one place in the order
+	#    they are listed in stdin.
+	# b) if it is a new option and a "default comment" (e.g. "#PORT 25") exists:
+	#    place options grouped directly after the comment (the comment is left
+	#    alone)
+	# c) otherwise:
+	#    options are grouped by word (the first word in the line) and appended
+	#    at the end of the file.
+
 	cat <<'EOF'
 awk -F '\n' '
-function comment_line(line) { return match(line, /^[ \t]*#+[ \t]*/) }
-function empty_line(line) { return match(line, /^[ \t]*$/) }
-function is_word(s) { return s ~ /^[A-Z_]+$/ }
+function comment_line(line) {
+	# returns the position in line at which the comment's text starts
+	# (0 if the line is not a comment)
+	match(line, /^[ \t]*\#+[ \t]*/)
+	return RSTART ? (RLENGTH + 1) : 0
+}
+function empty_line(line) { return line ~ /^[ \t]*$/ }
+function is_word(s) { return s ~ /^[A-Z_]+$/ }  # "looks like a plausible word"
 
 function first(line, sep) {
+	# returns the part of the line until sep is found
+	# (or the whole line if sep is not found)
 	if (!sep) sep = SUBSEP
 	return index(line, sep) ? substr(line, 1, index(line, sep) - 1) : line
 }
 
 function rest(line, sep) {
+	# returns the part of the line after the first occurrence of sep is found.
+	# (or nothing if sep is not found)
 	if (!sep) sep = SUBSEP
 	if (index(line, sep))
 		return substr(line, index(line, sep) + 1)
 }
 
 function conf_pop(word, value) {
+	# returns the next value for the config `word` and delete it from the list.
+	# if value is set, this function will only return value if it is the first
+	# option in the list, otherwise it returns 0.
+
 	if (!(word in conf)) return 0
 	if (!value) {
 		if (index(conf[word], SUBSEP))  # more than one element?
@@ -137,12 +169,14 @@ function conf_pop(word, value) {
 }
 
 function print_conf(word, value) {
+	# print a config line with the given parameters
 	printf "%s", word
 	if (value) printf " %s", value
 	printf "\n"
 }
 
 function print_confs(word,    value) {
+	# print config lines for all values stored in conf[word].
 	if (!(word in conf)) return
 	if (conf[word]) {
 		while (value = conf_pop(word))
@@ -154,6 +188,7 @@ function print_confs(word,    value) {
 }
 
 BEGIN {
+	# read the "should" state into the `conf` array.
 	while (getline < "/dev/stdin") {
 		word = first($0, " ")
 		if ((word in conf))
@@ -163,11 +198,12 @@ BEGIN {
 	}
 }
 
-# first pass, gather information
+# first pass, gather information about where which information is stored in the
+# current config file. This information will be used in the second pass.
 NR == FNR {
 	if (comment_line($0)) {
 		# comment line
-		word = first(substr($0, RLENGTH + 1), " ")
+		word = first(substr($0, comment_line($0) + 1), " ")
 		if (is_word(word)) last_occ["#" word] = FNR
 	} else {
 		word = first($0, " ")
@@ -175,19 +211,22 @@ NR == FNR {
 	}
 }
 
+# before second pass prepare hashes containing location information to be used
+# in the second pass.
 NR > FNR && FNR == 1 {
-	# before second pass prepare hashes
-
+	# First we drop the locations of commented-out options if a non-commented
+	# option is available. If a non-commented option is available, we will
+	# append new config options there to have them all at one place.
 	for (k in last_occ)
 		if (k ~ /^\#/ && (substr(k, 2) in last_occ))
 			delete last_occ[k]
 
-	for (k in last_occ) {
-		line_map[last_occ[k]] = k
-	}
+	# Reverse the option => line mapping. The line_map allows for easier lookups
+	# in the second pass.
+	for (k in last_occ) line_map[last_occ[k]] = k
 }
 
-# second pass, output new config
+# second pass, generate and output new config
 NR > FNR {
 	if (comment_line($0) || empty_line($0)) {
 		# comment or empty line
@@ -195,21 +234,24 @@ NR > FNR {
 
 		if ((FNR in line_map)) {
 			if (line_map[FNR] ~ /^\#/) {
-				# the "matching" comment line is here
+				# This line contains a commented config option. If the conf hash
+				# contains options to be set, we output them here because this
+				# option is not used in the current config.
 				k = substr(line_map[FNR], 2)
 				if ((k in conf)) print_confs(k)
 			}
 
 			if (("INSECURE" in conf) && line_map[FNR] ~ /^\#?SECURE$/) {
-				# INSECURE goes where SECURE comment is
+				# INSECURE goes where SECURE comment is.
 				print_confs("INSECURE")
 			}
 		}
 	} else {
-		sub(/[ \t]*\#.*$/, "", $0)  # ignore comments
 		word = first($0, " ")
+		value = rest($0, " ")
+		sub(/[ \t]*\#.*$/, "", value)  # ignore comments in value
 
-		if ((word in conf) && rest($0, " ") == first(conf[word])) {
+		if ((word in conf) && value == first(conf[word])) {
 			# keep config options we want
 			conf_pop(word)
 			print
@@ -223,12 +265,13 @@ NR > FNR {
 }
 
 END {
-	# print rest of config options
+	# print rest of config options (
 	for (word in conf) print_confs(word)
 }
 ' "${dma_conf}" "${dma_conf}" <<'EOF' >"${dma_conf}.tmp" \
  && mv "${dma_conf}.tmp" "${dma_conf}"
 EOF
+	# Pass in "conf_should" via stdin
 	echo "${conf_should}"
 	echo 'EOF'
 
@@ -239,20 +282,9 @@ fi
 
 if test -f "${__object}/parameter/send-test-email"
 then
-	modified=false
-
-	if grep -q '^__mail_alias/root:' "${__messages_in}"
-	then
-		modified=true
-	elif grep -q '^__dma_auth/' "${__messages_in}"
-	then
-		modified=true
-	elif $config_updated
-	then
-		modified=true
-	fi
-
-	if $modified
+	if grep -q '^__mail_alias/root:' "${__messages_in}" \
+	|| grep -q '^__dma_auth/' "${__messages_in}" \
+	|| $config_updated
 	then
 		cat <<-EOF
 		sendmail root <<EOM

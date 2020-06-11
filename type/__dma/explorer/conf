@@ -17,8 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
-# This explorer looks for lines matching the server parameter in dma's auth.conf
-# and reports the login and server fields (password is cksummed)
+# This explorer returns a sorted list of "active" (= non-commented) lines
+# in the dma.conf file.
+# "Trailing" line comments are stripped off.
+#
+# NOTE: This explorer assumes that the sort(1) utility supports the non-POXIX
+#       -s (stable sort) option.
 
 CONF_PATH=/etc/dma  # set in Makefile
 dma_conf="${CONF_PATH:?}/dma.conf"

@@ -44,9 +44,12 @@ OPTIONAL PARAMETERS
 mailname
     If present, this will be the hostname used to identify this host and the
     remote part of the from addresses.
-    If not defined, it defaults to `/etc/mailname` on Debian-derived Operating
-    Systems and to `__target_host` otherwise.
+    If not defined, it defaults to `/etc/mailname` on Debian derivatives and to
+    `__target_fqdn` otherwise.
     See `dma(8)` for more information.
+
+    Note: on Debian derivatives the `/etc/mailname` file should be updated
+    instead of using this parameter.
 masquerade
     Masquerade the envelope-from addresses with this address/hostname.
     Use this setting if mails are not accepted by destination mail servers
