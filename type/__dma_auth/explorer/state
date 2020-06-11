@@ -64,7 +64,7 @@ BEGIN {
 	host = substr($0, length(login) + 2)
 
 	if (match(host, DP)) {
-		passwd = substr(host, RSTART)
+		passwd = substr(host, RSTART + 1)
 		host = substr(host, 1, RSTART - 1)
 	} else {
 		passwd = ""
