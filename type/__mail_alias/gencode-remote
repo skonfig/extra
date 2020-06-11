@@ -69,7 +69,7 @@ test -f "${aliases_file}" || touch "${aliases_file}"
 awk -F ':[ \t]*' -v mode=$mode '
 function sepafter(f, default,    _) {
 	# finds the separator between field $f and $(f+1)
-	_ = substr($0, length($f) + 1, index(substr($0, length($f)+1), $(f+1)) - 1)
+	_ = substr($0, length($f)+1, index(substr($0, length($f)+1), $(f+1))-1)
 	return _ ? _ : default
 }
 
@@ -91,27 +91,28 @@ BEGIN {
 	aliases_should_file = (ENVIRON["__object"] "/parameter/alias")
 }
 
-/^#/ {
+/^[ \t]*\#/ {
 	# comment line (leave alone)
 	select = 0; cont = 0  # comments terminate alias lists and continuations
 	print
 	next
 }
 
-/^[ \t]/ || cont {
-	# continuation line (either the previous line ended in a backslash or the
-	# line starts with whitespace)
-
-	# if in the alias list of the "target" user, we drop the line as it has been
-	# rewritten previously
-	if (select) next
-}
-
 {
+	# is this line a continuation line?
+	# (the prev. line ended in a backslash or the line starts with whitespace)
+	is_cont = /^[ \t]/ || cont
+
 	# detect if the line is a line to be continued (ends with a backslash)
 	cont = ($0 ~ /\\$/)
 	# if it is, we drop the backslash from the line.
 	if (cont) sub(/[ \t]*\\$/, "", $0)
+}
+
+is_cont {
+	# we ignore the line as it has been rewritten previously or is not
+	# interesting
+	next
 }
 
 $1 == ENVIRON["__object_id"] {
@@ -139,7 +140,7 @@ END {
 
 if ! cmp -s "${aliases_file}" "${aliases_file}.tmp"
 then
-	# aliases file was modified, replace and run `newaliases`
+	# aliases file was modified, replace and run `newaliases`.
 	mv "${aliases_file}.tmp" "${aliases_file}"
 	newaliases
 else

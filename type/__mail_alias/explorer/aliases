@@ -17,13 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
-# Find aliases for a given name and print the aliases line separated
+# Find aliases for a given user name and print the aliases (each one on a
+# separate line)
 
 aliases_file=$("${__type_explorer}/aliases_file")
 test -r "${aliases_file}" || exit 0
 
 awk -F ':[ \t]*' '
 function print_aliases(aliases,    matches) {
+	# prints comma-separated aliases (one per line)
 	split(aliases, matches, /,[ \t]*/)
 	for (i in matches) {
 		gsub(/^[ \t]*|[ \t]*$/, "", matches[i])
@@ -37,15 +39,11 @@ function print_aliases(aliases,    matches) {
 	next
 }
 
-/^[ \t]/ || cont {
-	# continuation line (either the previous line ended in a backslash or the
-	# line starts with whitespace)
-
-	if (select)
-		print_aliases($0)
-}
-
 {
+	# is this line a continuation line?
+	# (the prev. line ended in a backslash or the line starts with whitespace)
+	is_cont = /^[ \t]/ || cont
+
 	# detect if the line is a line to be continued (ends with a backslash)
 	cont = ($0 ~ /\\$/)
 
@@ -57,9 +55,14 @@ function print_aliases(aliases,    matches) {
 	}
 }
 
-$1 == ENVIRON["__object_id"] && !select {
+is_cont {
+	# if in the alias list of the "target" user, we also print these aliases.
+	if (select) print_aliases($0)
+	next
+}
+
+$1 == ENVIRON["__object_id"] {
 	# "target" user -> print alias list
-	# (only if !select; because of whitespacecontinuation lines)
 	select = 1
 	print_aliases($2)
 	next
