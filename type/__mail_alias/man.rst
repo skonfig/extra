@@ -44,6 +44,15 @@ EXAMPLES
     # Disable redirection of mail for joe
     __mail_alias joe --state absent
 
+
+BUGS
+----
+- Quoted strings are not parsed by this type. As a result, email addresses
+  containing ``,`` (commas) are treated incorrectly (they are treated as two
+  addresses/aliases.)
+  Make sure that email addresses do not contain commas.
+
+
 SEE ALSO
 --------
 :strong:`aliases`\ (5)
