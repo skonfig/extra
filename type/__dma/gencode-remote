@@ -130,19 +130,20 @@ function comment_line(line) {
 function empty_line(line) { return line ~ /^[ \t]*$/ }
 function is_word(s) { return s ~ /^[A-Z_]+$/ }  # "looks like a plausible word"
 
-function first(line, sep) {
+function first(line, sep_re) {
 	# returns the part of the line until sep is found
 	# (or the whole line if sep is not found)
-	if (!sep) sep = SUBSEP
-	return index(line, sep) ? substr(line, 1, index(line, sep) - 1) : line
+	if (!sep_re) sep_re = "[" SUBSEP "]"
+	match(line, sep_re)
+	return RSTART ? substr(line, 1, RSTART - 1) : line
 }
 
-function rest(line, sep) {
+function rest(line, sep_re) {
 	# returns the part of the line after the first occurrence of sep is found.
 	# (or nothing if sep is not found)
-	if (!sep) sep = SUBSEP
-	if (index(line, sep))
-		return substr(line, index(line, sep) + 1)
+	if (!sep_re) sep_re = "[" SUBSEP "]"
+	if (match(line, sep_re))
+		return substr(line, RSTART + RLENGTH + 1)
 }
 
 function conf_pop(word, value) {
@@ -188,13 +189,15 @@ function print_confs(word,    value) {
 }
 
 BEGIN {
+	EQS = /[ \t]/  # copied from dma/conf.c
+
 	# read the "should" state into the `conf` array.
 	while (getline < "/dev/stdin") {
-		word = first($0, " ")
+		word = first($0, EQS)
 		if ((word in conf))
-			conf[word] = conf[word] SUBSEP rest($0, " ")
+			conf[word] = conf[word] SUBSEP rest($0, EQS)
 		else
-			conf[word] = rest($0, " ")
+			conf[word] = rest($0, EQS)
 	}
 }
 
@@ -203,10 +206,10 @@ BEGIN {
 NR == FNR {
 	if (comment_line($0)) {
 		# comment line
-		word = first(substr($0, comment_line($0) + 1), " ")
+		word = first(substr($0, comment_line($0) + 1), /[ ]/)
 		if (is_word(word)) last_occ["#" word] = FNR
 	} else {
-		word = first($0, " ")
+		word = first($0, EQS)
 		if (is_word(word)) last_occ[word] = FNR
 	}
 }
@@ -247,8 +250,8 @@ NR > FNR {
 			}
 		}
 	} else {
-		word = first($0, " ")
-		value = rest($0, " ")
+		word = first($0, EQS)
+		value = rest($0, EQS)
 		sub(/[ \t]*\#.*$/, "", value)  # ignore comments in value
 
 		if ((word in conf) && value == first(conf[word])) {
