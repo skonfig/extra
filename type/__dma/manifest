@@ -5,6 +5,10 @@ os=$(cat "${__global}/explorer/os")
 # Install DMA
 case $os
 in
+	(alpine)
+		__package dma --state present
+		export require='__package/dma'
+		;;
 	(debian|devuan|ubuntu)
 		__package dma --state present
 		export require='__package/dma'
