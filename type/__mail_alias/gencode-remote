@@ -142,7 +142,9 @@ if ! cmp -s "${aliases_file}" "${aliases_file}.tmp"
 then
 	# aliases file was modified, replace and run `newaliases`.
 	mv "${aliases_file}.tmp" "${aliases_file}"
-	newaliases
+
+	# run newaliases if present
+	command -v newaliases >/dev/null 2>&1 && newaliases || true
 else
 	# no modifications were made, delete the temp file.
 	rm "${aliases_file}.tmp"
