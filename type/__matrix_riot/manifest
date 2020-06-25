@@ -1,0 +1,103 @@
+#!/bin/sh -e
+#
+# 2019 Timothée Floure (timothee.floure@ungleich.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+INSTALL_DIR=$(cat "$__object/parameter/install_dir")
+
+export DEFAULT_SERVER_NAME=$(cat "$__object/parameter/default_server_name")
+export DEFAULT_SERVER_URL=$(cat "$__object/parameter/default_server_url")
+export BRAND=$(cat "$__object/parameter/brand")
+export DEFAULT_COUNTRY_CODE=$(cat "$__object/parameter/default_country_code")
+export ROOM_DIRECTORY_SERVERS=$(cat "$__object/parameter/room_directory_servers")
+export PRIVACY_POLICY_URL=$(cat "$__object/parameter/privacy_policy_url")
+export COOKIE_POLICY_URL=$(cat "$__object/parameter/cookie_policy_url")
+
+if [ -f "$__object/parameter/jitsi_domain" ]; then
+    export JITSI_DOMAIN=$(cat "$__object/parameter/jitsi_domain")
+fi
+
+if [ -f "$__object/parameter/branding_auth_header_logo_url" ]; then
+    export BRANDING_AUTH_HEADER_LOGO_URL=$(cat "$__object/parameter/branding_auth_header_logo_url")
+fi
+
+if [ -f "$__object/parameter/branding_auth_footer_links" ]; then
+    export BRANDING_AUTH_FOOTER_LINKS=$(cat "$__object/parameter/branding_auth_footer_links")
+fi
+
+if [ -f "$__object/parameter/homepage" ]; then
+    export EMBED_HOMEPAGE=1
+    homepage=$(cat "$__object/parameter/homepage")
+fi
+
+if [ -f "$__object/parameter/welcomepage" ]; then
+    export EMBED_WELCOMEPAGE=1
+    welcomepage=$(cat "$__object/parameter/welcomepage")
+fi
+
+if [ -f "$__object/parameter/custom_asset" ]; then
+   for file in $(cat "$__object/parameter/custom_asset"); do
+       require="__directory/$INSTALL_DIR/cdist" __file "$INSTALL_DIR/cdist/$(basename $file)" \
+           --source "$file" \
+           --mode 0664 \
+           --state present
+   done
+fi
+
+if [ -f "$__object/parameter/disable_custom_urls" ]; then
+    export DISABLE_CUSTOM_URLS='true'
+else
+    export DISABLE_CUSTOM_URLS='false'
+fi
+
+# Owner of the uploaded files.
+owner=$(cat "$__object/parameter/owner")
+
+# Ensure that curl and tar are installed, as they will be required by the
+# gencode-remote script.
+__package curl --state present
+__package tar --state present
+
+# Generate and deploy configuration file.
+mkdir -p "$__object/files"
+"$__type/files/config.json.sh" > "$__object/files/config.json"
+
+# Install the config.json configuration file. The application's sources are
+# downloaded and deployed by gencode-remote.
+__directory "$INSTALL_DIR/cdist" \
+    --owner "$owner" --mode 0755 --parents \
+    --state present
+
+require="__directory/$INSTALL_DIR/cdist" __file "$INSTALL_DIR/cdist/config.json" \
+  --source "$__object/files/config.json" \
+  --mode 0664 \
+  --state present
+
+if [ $EMBED_HOMEPAGE ]; then
+    require="__directory/$INSTALL_DIR/cdist" __file "$INSTALL_DIR/cdist/home.html" \
+      --source "$homepage" \
+      --mode 0664 \
+      --state present
+fi
+
+if [ $EMBED_WELCOMEPAGE ]; then
+    require="__directory/$INSTALL_DIR/cdist" __file "$INSTALL_DIR/cdist/welcome.html" \
+      --source "$welcomepage" \
+      --mode 0664 \
+      --state present
+fi
