@@ -47,6 +47,6 @@ in
 		check_file /etc/aliases
 
 		# default
-		found /etc/mail/aliases
+		found /etc/aliases
 		;;
 esac
