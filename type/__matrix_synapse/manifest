@@ -1,0 +1,287 @@
+#!/bin/sh -e
+#
+# 2019 Timothée Floure (timothee.floure@ungleich.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+# OS-specific configuration.
+os=$(cat "$__global/explorer/os")
+distribution=$(cat "$__global/explorer/lsb_codename")
+
+case "$os" in
+   debian)
+     synapse_user=matrix-synapse
+     synapse_pkg=matrix-synapse
+     synapse_service=matrix-synapse
+     ldap_auth_provider_pkg=matrix-synapse-ldap3
+     psycopg2_pkg=python3-psycopg2
+     synapse_conf_dir='/etc/matrix-synapse'
+     synapse_data_dir='/var/lib/matrix-synapse'
+
+     if [ ! -f "$__global/explorer/lsb_codename" ]; then
+       ls "$__global/explorer" >&2
+       echo "Could not determine Debian release, ensure that lsb-release is installed on the target." >&2
+       exit 1
+     fi
+     ;;
+   fedora)
+     synapse_user=synapse
+     synapse_pkg=matrix-synapse
+     synapse_service=synapse
+     ldap_auth_provider_pkg=python-matrix-synapse-ldap3
+     synapse_conf_dir='/etc/synapse'
+     synapse_data_dir='/var/lib/synapse'
+     ;;
+   freebsd)
+     synapse_user=synapse
+     synapse_pkg=py36-matrix-synapse
+     synapse_service=synapse
+     ldap_auth_provider_pkg=py36-matrix-synapse-ldap3
+     synapse_conf_dir='/usr/local/etc/matrix-synapse'
+     synapse_data_dir='/var/matrix-synapse'
+     ;;
+   alpine)
+     echo "As of 2019-12-19  matrix-synapse is not in alpine stable. Exiting."
+     exit 1
+     ;;
+   *)
+      printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
+      printf "Please contribute an implementation for it if you can.\n" >&2
+      exit 1
+   ;;
+esac
+
+# Required parameters:
+export SERVER_NAME=$(cat "$__object/parameter/server_name")
+export BASE_URL=$(cat "$__object/parameter/base_url")
+
+export DATA_DIR=$synapse_data_dir
+export LOG_DIR='/var/log/matrix-synapse'
+export PIDFILE='/var/run/matrix/homeserver.pid'
+export LOG_CONFIG_PATH="$synapse_conf_dir/log.yaml"
+export SIGNING_KEY_PATH="$synapse_conf_dir/signin.key"
+
+export DATABASE_ENGINE=$(cat "$__object/parameter/database_engine")
+export DATABASE_NAME=$(cat "$__object/parameter/database_name")
+
+# Optional parameters:
+export DATABASE_HOST=$(cat "$__object/parameter/database_host")
+export DATABASE_USER=$(cat "$__object/parameter/database_user")
+export DATABASE_PASSWORD=$(cat "$__object/parameter/database_password")
+
+export GLOBAL_CACHE_FACTOR=$(cat "$__object/parameter/global_cache_factor")
+export EVENT_CACHE_SIZE=$(cat "$__object/parameter/event_cache_size")
+
+export LDAP_FILTER=$(cat "$__object/parameter/ldap_filter")
+export LDAP_UID_ATTRIBUTE=$(cat "$__object/parameter/ldap_uid_attribute")
+export LDAP_MAIL_ATTRIBUTE=$(cat "$__object/parameter/ldap_mail_attribute")
+export LDAP_NAME_ATTRIBUTE=$(cat "$__object/parameter/ldap_name_attribute")
+export LDAP_URI=$(cat "$__object/parameter/ldap_uri")
+export LDAP_BASE_DN=$(cat "$__object/parameter/ldap_base_dn")
+export LDAP_BIND_DN=$(cat "$__object/parameter/ldap_bind_dn")
+export LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap_bind_password")
+
+export TURN_USER_LIFETIME=$(cat "$__object/parameter/turn_user_lifetime")
+if [ -f "$__object/parameter/turn_shared_secret" ]; then
+    export TURN_SHARED_SECRET=$(cat "$__object/parameter/turn_shared_secret")
+fi
+if [ -f "$__object/parameter/turn_uri" ]; then
+    uris=$(cat "$__object/parameter/turn_uri" | tr "\n" "," | sed 's/,$//')
+    export TURN_URIS="[$uris]"
+fi
+
+if [ -f "$__object/parameter/registration_allows_email_pattern" ]; then
+    export RESGISTRATION_ALLOWS_EMAIL_PATTERN=$(cat "$__object/parameter/registration_allows_email_pattern")
+fi
+
+if [ -f "$__object/parameter/auto_join_room" ]; then
+    export AUTO_JOIN_ROOMS="$(cat "$__object/parameter/auto_join_room")"
+fi
+
+if [ -f "$__object/parameter/app_service_config_file" ]; then
+    export APP_SERVICE_CONFIG_FILES=$(cat "$__object/parameter/app_service_config_file")
+fi
+
+export MAX_UPLOAD_SIZE=$(cat "$__object/parameter/max_upload_size")
+export RIOT_BASE_URL=$(cat "$__object/parameter/riot_base_url")
+
+export SMTP_HOST=$(cat "$__object/parameter/smtp_host")
+export SMTP_PORT=$(cat "$__object/parameter/smtp_port")
+export SMTP_USER=$(cat "$__object/parameter/smtp_user")
+export SMTP_PASS=$(cat "$__object/parameter/smtp_pass")
+
+export RC_MESSAGE_PER_SECOND=$(cat "$__object/parameter/rc_message_per_second")
+export RC_MESSAGE_BURST=$(cat "$__object/parameter/rc_message_burst")
+export RC_LOGIN_PER_SECOND=$(cat "$__object/parameter/rc_login_per_second")
+export RC_LOGIN_BURST=$(cat "$__object/parameter/rc_login_burst")
+
+if [ -f "$__object/parameter/extra_setting" ]; then
+    export EXTRA_SETTINGS=$(cat "$__object/parameter/extra_setting")
+fi
+
+# Boolean parameters:
+if [ -f "$__object/parameter/report_stats" ]; then
+    export REPORT_STATS='true'
+else
+    export REPORT_STATS='false'
+fi
+if [ -f "$__object/parameter/allow_registration" ]; then
+    export ALLOW_REGISTRATION='true'
+else
+    export ALLOW_REGISTRATION='false'
+fi
+if [ -f "$__object/parameter/enable_ldap_auth" ]; then
+    export ENABLE_LDAP_AUTH='true'
+else
+    export ENABLE_LDAP_AUTH='false'
+fi
+if [ -f "$__object/parameter/ldap_search_mode" ]; then
+    export LDAP_SEARCH_MODE=1
+fi
+if [ -f "$__object/parameter/expose_metrics" ]; then
+    export EXPOSE_METRICS='true'
+else
+    export EXPOSE_METRICS='false'
+fi
+if [ -f "$__object/parameter/enable_notifications" ]; then
+    export ENABLE_NOTIFICATIONS='true'
+else
+    export ENABLE_NOTIFICATIONS='false'
+fi
+if [ -f "$__object/parameter/enable_notifications_by_default" ]; then
+    export ENABLE_NOTIFICATIONS_BY_DEFAULT='true'
+else
+    export ENABLE_NOTIFICATIONS_BY_DEFAULT='false'
+fi
+if [ -f "$__object/parameter/smtp_requires_tls" ]; then
+    export SMTP_TLS='true'
+else
+    export SMTP_TLS='false'
+fi
+if [ -f "$__object/parameter/disable_federation" ]; then
+    export DISABLE_FEDERATION='true'
+else
+    export DISABLE_FEDERATION='false'
+fi
+if [ -f "$__object/parameter/allow_guest_access" ]; then
+    export ALLOW_GUEST_ACCESS='true'
+else
+    export ALLOW_GUEST_ACCESS='false'
+fi
+if [ -f "$__object/parameter/registration_requires_email" ]; then
+    export REGISTRATION_REQUIRES_EMAIL=1
+fi
+if [ -f "$__object/parameter/allow_public_rooms_over_federation" ]; then
+    export ALLOW_PUBLIC_ROOMS_OVER_FEDERATION='true'
+else
+    export ALLOW_PUBLIC_ROOMS_OVER_FEDERATION='false'
+fi
+if [ -f "$__object/parameter/allow_public_rooms_without_auth" ]; then
+    export ALLOW_PUBLIC_ROOMS_WITHOUT_AUTH='true'
+else
+    export ALLOW_PUBLIC_ROOMS_WITHOUT_AUTH='false'
+fi
+if [ -f "$__object/parameter/enable_server_notices" ]; then
+    export ENABLE_SERVER_NOTICES=1
+fi
+
+# Specific case for debian-buster, boilerplate but there's not much I can do
+# about it.
+
+installation_reqs=""
+if [ "$os" == "debian" ] && [ "$distribution" == "buster" ]; then
+  # Enable debian-backports for debian Buster, as the 'stable'
+  # matrix-synapse package is ways too old (< 1.0).
+  __apt_source debian-backports \
+    --uri http://deb.debian.org/debian/ \
+    --distribution "$distribution-backports" \
+    --component main
+   require="__apt_source/debian-backports" __apt_update_index
+
+  # Install base matrix-synapse package.
+  require="__apt_update_index" __package_apt $synapse_pkg \
+    --state present \
+    --target-release "$distribution-backports"
+
+  # Install LdapAuthProvider module if LDAP auth is enabled.
+  if [ "$ENABLE_LDAP_AUTH" == "true" ]; then
+    require="__package_apt/$synapse_pkg" __package_apt $ldap_auth_provider_pkg \
+      --state present \
+      --target-release "$distribution-backports"
+    installation_reqs="$installation_reqs __package_apt/$ldap_auth_provider_pkg"
+  fi
+
+  # For some reason, psycopg2 is not considered a dependency of
+  # matrix-synapse in matrix.org's APT repository.
+  if [ "$DATABASE_ENGINE" == "psycopg2" ]; then
+    require="__package_apt/$synapse_pkg" __package_apt $psycopg2_pkg \
+      --state present
+      installation_reqs="$installation_reqs __package_apt/$psycopg2_pkg"
+  fi
+
+  # Used for dependency order resolution.
+  installation_reqs="$installation_reqs __package_apt/$synapse_pkg"
+else
+  # Install base matrix-synapse package.
+  __package $synapse_pkg --state present
+
+  # Install LdapAuthProvider module if LDAP auth is enabled.
+  if [ "$ENABLE_LDAP_AUTH" == "true" ]; then
+    require="__package/$synapse_pkg" __package $ldap_auth_provider_pkg \
+      --state present
+  fi
+
+  # Used for dependency order resolution.
+  installation_reqs="__package/$synapse_pkg"
+fi
+
+# Generate and deploy configuration files.
+mkdir -p "$__object/files"
+"$__type/files/homeserver.yaml.sh" > "$__object/files/homeserver.yaml"
+"$__type/files/log.config.sh" > "$__object/files/log.config"
+
+require="$installation_reqs" __file "$synapse_conf_dir/homeserver.yaml" \
+  --state present \
+  --owner $synapse_user \
+  --mode 600 \
+  --source "$__object/files/homeserver.yaml"
+require="$installation_reqs" __file "$LOG_CONFIG_PATH" \
+  --state present \
+  --owner $synapse_user \
+  --mode 600 \
+  --source "$__object/files/log.config"
+require="$installation_reqs" __directory $DATA_DIR --state present --owner $synapse_user
+require="$installation_reqs" __directory $LOG_DIR --state present --owner $synapse_user
+
+# Work around dpkg-reconfigure for Debian package.
+RESTART_REQUIRES="__file/$synapse_conf_dir/homeserver.yaml"
+if [ "$os" == "debian" ]; then
+  require="$installation_reqs" __file "$synapse_conf_dir/conf.d/server_name.yaml" \
+    --state present --owner $synapse_user --source - << EOF
+server_name: "$SERVER_NAME"
+EOF
+  require="$installation_reqs" __file "$synapse_conf_dir/conf.d/report_stats.yaml" \
+    --state present --owner $synapse_user --source - << EOF
+report_stats: $REPORT_STATS
+EOF
+
+  RESTART_REQUIRES="$RESTART_REQUIRES __file/$synapse_conf_dir/conf.d/server_name.yaml \
+      __file/$synapse_conf_dir/conf.d/report_stats.yaml"
+fi
+
+# Restart synapse homeserver to reload configuration.
+require="$RESTART_REQUIRES" __service $synapse_service --action restart
