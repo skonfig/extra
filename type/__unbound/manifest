@@ -54,6 +54,11 @@ if [ -f "$__object/parameter/rc_interface" ]; then
    export RC_INTERFACE
 fi
 
+if [ -f "$__object/parameter/local_data" ]; then
+   LOCAL_DATA=$(cat "$__object/parameter/local_data")
+   export LOCAL_DATA
+fi
+
 # Boolean parameters:
 if [ -f "$__object/parameter/disable_ip4" ] && \
    [ -f "$__object/parameter/disable_ip6" ]; then
