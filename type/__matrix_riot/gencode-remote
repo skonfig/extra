@@ -24,10 +24,6 @@ OWNER=$(cat "$__object/parameter/owner")
 
 src="riot-v$VERSION"
 archive="$src.tar.gz"
-config='config.json'
-homepage='home.html'
-welcomepage='welcome.html'
-welcomelogo='welcome-logo.svg'
 url="https://github.com/vector-im/riot-web/releases/download/v$VERSION/$archive"
 
 # tar and curl are installed by the __matrix-riot manifest. mktemp is usually

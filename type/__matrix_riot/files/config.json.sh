@@ -4,7 +4,7 @@
 #   https://github.com/vector-im/riot-web/blob/develop/docs/config.md
 
 generate_embedded_pages () {
-    if [ $EMBED_HOMEPAGE ]; then
+    if [ "$EMBED_HOMEPAGE" != "" ]; then
         cat << EOF
     "embeddedPages": {
         "homeUrl": "home.html"

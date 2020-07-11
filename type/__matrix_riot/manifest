@@ -16,7 +16,10 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
-#
+
+# Ignore "Declare and assign separately to avoid masking return values. [SC2155]"
+# => not relevant for the type arguments.
+# shellcheck disable=SC2155
 
 INSTALL_DIR=$(cat "$__object/parameter/install_dir")
 
@@ -51,8 +54,8 @@ if [ -f "$__object/parameter/welcomepage" ]; then
 fi
 
 if [ -f "$__object/parameter/custom_asset" ]; then
-   for file in $(cat "$__object/parameter/custom_asset"); do
-       require="__directory/$INSTALL_DIR/cdist" __file "$INSTALL_DIR/cdist/$(basename $file)" \
+   "$__object/parameter/custom_asset" | while IFS= read -r file; do
+       require="__directory/$INSTALL_DIR/cdist" __file "$INSTALL_DIR/cdist/$(basename "$file")" \
            --source "$file" \
            --mode 0664 \
            --state present
