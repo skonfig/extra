@@ -31,6 +31,9 @@ access_control
   but localhost is refused by default), can be provided multiple times. The
   format is described in unbound.conf(5).
 
+rc_interface
+  Address or path to socket used for remote control (see `--enable_control`. Defaults to `127.0.0.1`).
+
 BOOLEAN PARAMETERS
 ------------------
 disable-ip4
@@ -40,6 +43,9 @@ disable-ip4
 disable-ip6
   Do not answer or issue queries over IPv6. Cannot be used alongside the
   `--disable-ip4` flag.
+
+enable_rc
+  Enable remote control (see `unbound-control(8)`).
 
 EXAMPLES
 --------

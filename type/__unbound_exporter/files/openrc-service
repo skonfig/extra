@@ -1,0 +1,12 @@
+#!/sbin/openrc-run
+
+name=$RC_SVCNAME
+command="/usr/local/bin/unbound_exporter"
+command_args=""
+command_user="unbound"
+command_background="yes"
+pidfile="/var/run/$RC_SVCNAME.pid"
+
+depend() {
+        need unbound
+}
