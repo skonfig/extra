@@ -1,0 +1,58 @@
+#!/bin/sh
+
+VERSION=$(cat "$__object/parameter/version")
+
+src="netbox-$VERSION"
+archive="v$VERSION.tar.gz"
+url="https://github.com/netbox-community/netbox/archive/$archive"
+install_dir=/opt/netbox/netbox
+
+cat << EOF
+set -e
+
+# Ensure that coreutils is installed.
+if [ ! -x \$(which mktemp) ]; then
+  echo "mktemp is not available on the remote host." >&2
+  exit 1
+fi
+
+# Create temporary working directory.
+tmpdir=\$(mktemp -d)
+cd "\$tmpdir"
+
+# Download and extract sources.
+curl -L '$url' > '$archive'
+tar xf '$archive'
+
+# Save cdist-upload configuration file.
+mkdir -p "\$tmpdir"
+cp '$install_dir/cdist/configuration.py' "\$tmpdir/configuration.py"
+
+# Deploy sources and restore configuration.
+rm -r '$install_dir'
+cp -r '$src/netbox' '$install_dir'
+cp \$tmpdir/configuration.py '$install_dir/netbox/configuration.py'
+
+# Setup & enter python virtualenv.
+virtualenv /opt/netbox/venv
+
+# Install python dependencies.
+/opt/netbox/venv/bin/pip3 install -r "\$tmpdir/$src/requirements.txt"
+
+# Set final permissions.
+chown -R netbox /opt/netbox
+
+# Run database migrations.
+sudo -u netbox /opt/netbox/venv/bin/python3 /opt/netbox/netbox/manage.py migrate
+
+# Generate static assets.
+sudo -u netbox /opt/netbox/venv/bin/python3 /opt/netbox/netbox/manage.py collectstatic --no-input
+
+# Remove temporary working directory.
+cd /
+rm -r "\$tmpdir"
+
+# Restart services.
+service netbox restart
+service netbox-rq restart
+EOF
