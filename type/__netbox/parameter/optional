@@ -1,0 +1,4 @@
+ldap-server
+ldap-bind-dn
+ldap-bind-password
+ldap-user-dn-template

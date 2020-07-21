@@ -27,18 +27,26 @@ tar xf '$archive'
 # Save cdist-upload configuration file.
 mkdir -p "\$tmpdir"
 cp '$install_dir/cdist/configuration.py' "\$tmpdir/configuration.py"
+cp '$install_dir/cdist/ldap_config.py' "\$tmpdir/ldap_config.py"
 
 # Deploy sources and restore configuration.
 rm -r '$install_dir'
 cp -r '$src/netbox' '$install_dir'
 cp \$tmpdir/configuration.py '$install_dir/netbox/configuration.py'
+cp \$tmpdir/ldap_config.py '$install_dir/netbox/ldap_config.py'
 
 # Setup & enter python virtualenv.
 virtualenv /opt/netbox/venv
 
 # Install python dependencies.
 /opt/netbox/venv/bin/pip3 install -r "\$tmpdir/$src/requirements.txt"
+EOF
 
+if [ -f "$__object/parameter/ldap-server" ]; then
+	echo "/opt/netbox/venv/bin/pip3 install django-auth-ldap"
+fi
+
+cat << EOF
 # Set final permissions.
 chown -R netbox /opt/netbox
 

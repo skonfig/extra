@@ -10,6 +10,11 @@ case "$os" in
 			__package $pkg
 		done
 
+		if [ -f "$__object/parameter/ldap-server" ]; then
+			for pkg in libldap2-dev libsasl2-dev libssl-dev; do
+				__package $pkg
+			done
+		fi
 		;;
 	*)
 		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
@@ -23,17 +28,41 @@ export DATABASE_PASSWORD=$(cat "$__object/parameter/database-password")
 export ALLOWED_HOST=$(cat "$__object/parameter/host")
 export SECRET_KEY=$(cat "$__object/parameter/secret-key")
 
+if [ -f "$__object/parameter/ldap-server" ]; then
+	export LDAP_SERVER=$(cat "$__object/parameter/ldap-server")
+fi
+
+if [ -f "$__object/parameter/ldap-bind-dn" ]; then
+	export LDAP_BIND_DN=$(cat "$__object/parameter/ldap-bind-dn")
+fi
+
+if [ -f "$__object/parameter/ldap-bind-password" ]; then
+	export LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap-bind-password")
+fi
+
+if [ -f "$__object/parameter/ldap-user-dn-template" ]; then
+	export LDAP_USER_DN_TEMPLATE=$(cat "$__object/parameter/ldap-user-dn-template")
+fi
+
 # Create system user used to run netbox.
 __user netbox --system --home /opt/netbox --create-home
 
 # Generate and upload netbox configuration.
 mkdir -p "$__object/files"
 "$__type/files/configuration.py.sh" > "$__object/files/configuration.py"
+"$__type/files/ldap_config.py.sh" > "$__object/files/ldap_config.py"
 
 require="__user/netbox" __directory /opt/netbox/netbox/cdist --parents
 require="__directory/opt/netbox/netbox/cdist " __file \
 	/opt/netbox/netbox/cdist/configuration.py --mode 640 --owner netbox \
 	--source "$__object/files/configuration.py"
+
+if [ -f "$__object/parameter/ldap-server" ]; then
+	require="__directory/opt/netbox/netbox/cdist " __file \
+		/opt/netbox/netbox/cdist/ldap_config.py --mode 640 --owner netbox \
+		--source "$__object/files/ldap_config.py"
+fi
+
 
 # Upload systemd units and gunicorn configuration.
 for unit in netbox netbox-rq; do
