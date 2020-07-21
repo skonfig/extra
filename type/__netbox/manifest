@@ -40,8 +40,20 @@ if [ -f "$__object/parameter/ldap-bind-password" ]; then
 	export LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap-bind-password")
 fi
 
-if [ -f "$__object/parameter/ldap-user-dn-template" ]; then
-	export LDAP_USER_DN_TEMPLATE=$(cat "$__object/parameter/ldap-user-dn-template")
+if [ -f "$__object/parameter/ldap-user-base" ]; then
+	export LDAP_USER_BASE=$(cat "$__object/parameter/ldap-user-base")
+fi
+
+if [ -f "$__object/parameter/ldap-group-base" ]; then
+	export LDAP_GROUP_BASE=$(cat "$__object/parameter/ldap-group-base")
+fi
+
+if [ -f "$__object/parameter/ldap-require-group" ]; then
+	export LDAP_REQUIRE_GROUP=$(cat "$__object/parameter/ldap-require-group")
+fi
+
+if [ -f "$__object/parameter/ldap-superuser-group" ]; then
+	export LDAP_SUPERUSER_GROUP=$(cat "$__object/parameter/ldap-superuser-group")
 fi
 
 # Create system user used to run netbox.

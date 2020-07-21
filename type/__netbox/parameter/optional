@@ -1,4 +1,7 @@
 ldap-server
 ldap-bind-dn
 ldap-bind-password
-ldap-user-dn-template
+ldap-user-base
+ldap-group-base
+ldap-require-group
+ldap-superuser-group
