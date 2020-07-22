@@ -46,7 +46,7 @@ cd \$tmpdir
 curl -L '$url' > $archive
 tar xf $archive
 
-# Backup files deployed by __matrix_riot.
+# Backup files deployed by __matrix_element.
 mkdir -p \$custom_files_dir
 for file in $INSTALL_DIR/cdist/*; do
   cp "\$file" "\$custom_files_dir"

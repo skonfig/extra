@@ -1,23 +1,23 @@
-cdist-type__matrix_riot(7)
+cdist-type__matrix_element(7)
 ======================
 
 NAME
 ----
-cdist-type__matrix_riot - Install and configure Riot, a web Matrix client.
+cdist-type__matrix_element - Install and configure Element, a web Matrix client.
 
 
 DESCRIPTION
 -----------
-This type install and configure the Riot web client.
+This type install and configure the Element web client.
 
 
 REQUIRED PARAMETERS
 -------------------
 install_dir
-  Root directory of Riot's static files.
+  Root directory of Element's static files.
 
 version
-  Release of Riot to install.
+  Release of Element to install.
 
 OPTIONAL PARAMETERS
 -------------------
@@ -31,20 +31,20 @@ owner
   Owner of the deployed files, passed to `chown`. Defaults to 'root'.
 
 brand
-  Web UI branding, defaults to 'Riot'.
+  Web UI branding, defaults to 'Element'.
 
 default_country_code
   ISO 3166 alpha2 country code to use when showing country selectors, such as
   phone number inputs. Defaults to GB.
 
 privacy_policy_url
-  Defaults to 'https://riot.im/privacy'.
+  Defaults to 'https://element.io/privacy'.
 
 cookie_policy_url
-  Defaults to 'https://matrix.org/docs/guides/riot_im_cookie_policy'.
+  Defaults to 'https://matrix.org/docs/guides/element_im_cookie_policy'.
 
 jitsi_domain
-  Domain name of preferred Jitsi instance (default is jitsi.riot.im). This is
+  Domain name of preferred Jitsi instance (default is jitsi.element.im). This is
   used whenever a user clicks on the voice/video call buttons.
 
 homepage
@@ -66,7 +66,7 @@ EXAMPLES
 
 .. code-block:: sh
 
-    __matrix_riot my-riot --install_dir /var/www/riot-web --version 1.5.6
+    __matrix_element my-element --install_dir /var/www/element-web --version 1.5.6
 
 
 SEE ALSO

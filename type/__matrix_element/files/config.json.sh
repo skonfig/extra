@@ -39,7 +39,7 @@ EOF
     fi
 
     cat << EOF
-    "welcomeBackgroundUrl": "themes/riot/img/backgrounds/valley.jpg"
+    "welcomeBackgroundUrl": "themes/element/img/backgrounds/lake.jpg"
 EOF
     echo '},'
 }
