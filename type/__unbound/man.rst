@@ -34,6 +34,10 @@ access_control
 rc_interface
   Address or path to socket used for remote control (see `--enable_control`. Defaults to `127.0.0.1`).
 
+local_data
+  Configure local data, which is served in reply to queries for it. Can be
+  specified multiple times.
+
 BOOLEAN PARAMETERS
 ------------------
 disable-ip4
