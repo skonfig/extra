@@ -11,6 +11,6 @@ cat << EOF
 if pgrep unbound; then
 	service unbound reload
 else
-	service unbounb start
+	service unbound start
 fi
 EOF
