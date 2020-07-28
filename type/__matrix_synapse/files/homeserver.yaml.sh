@@ -51,7 +51,7 @@ password_providers:
            name: "$LDAP_NAME_ATTRIBUTE"
         filter: "$LDAP_FILTER"
 EOF
-    if [ $LDAP_SEARCH_MODE ]; then
+    if [ "$LDAP_SEARCH_MODE" ]; then
         cat <<EOF
         mode: "search"
         bind_dn: "$LDAP_BIND_DN"
@@ -652,9 +652,9 @@ acme:
 # responses have passed before deploying it.
 #
 # You can calculate a fingerprint from a given TLS listener via:
-# openssl s_client -connect $host:$port < /dev/null 2> /dev/null |
+# openssl s_client -connect \$host:\$port < /dev/null 2> /dev/null |
 #   openssl x509 -outform DER | openssl sha256 -binary | base64 | tr -d '='
-# or by checking matrix.org/federationtester/api/report?server_name=$host
+# or by checking matrix.org/federationtester/api/report?server_name=\$host
 #
 #tls_fingerprints: [{"sha256": "<base64_encoded_sha256_fingerprint>"}]
 
@@ -693,8 +693,8 @@ caches:
    # Some caches have '*' and other characters that are not
    # alphanumeric or underscores. These caches can be named with or
    # without the special characters stripped. For example, to specify
-   # the cache factor for `*stateGroupCache*` via an environment
-   # variable would be `SYNAPSE_CACHE_FACTOR_STATEGROUPCACHE=2.0`.
+   # the cache factor for \`*stateGroupCache*\` via an environment
+   # variable would be \`SYNAPSE_CACHE_FACTOR_STATEGROUPCACHE=2.0\`.
    #
    per_cache_factors:
      #get_users_who_share_room_with_user: 2.0

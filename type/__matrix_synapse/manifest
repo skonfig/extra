@@ -66,8 +66,10 @@ case "$os" in
 esac
 
 # Required parameters:
-export SERVER_NAME=$(cat "$__object/parameter/server_name")
-export BASE_URL=$(cat "$__object/parameter/base_url")
+SERVER_NAME=$(cat "$__object/parameter/server_name")
+export SERVER_NAME
+BASE_URL=$(cat "$__object/parameter/base_url")
+export BASE_URL
 
 export DATA_DIR=$synapse_data_dir
 export LOG_DIR='/var/log/matrix-synapse'
@@ -75,62 +77,93 @@ export PIDFILE='/var/run/matrix/homeserver.pid'
 export LOG_CONFIG_PATH="$synapse_conf_dir/log.yaml"
 export SIGNING_KEY_PATH="$synapse_conf_dir/signin.key"
 
-export DATABASE_ENGINE=$(cat "$__object/parameter/database_engine")
-export DATABASE_NAME=$(cat "$__object/parameter/database_name")
+DATABASE_ENGINE=$(cat "$__object/parameter/database_engine")
+export DATABASE_ENGINE
+DATABASE_NAME=$(cat "$__object/parameter/database_name")
+export DATABASE_NAME
 
 # Optional parameters:
-export DATABASE_HOST=$(cat "$__object/parameter/database_host")
-export DATABASE_USER=$(cat "$__object/parameter/database_user")
-export DATABASE_PASSWORD=$(cat "$__object/parameter/database_password")
+DATABASE_HOST=$(cat "$__object/parameter/database_host")
+export DATABASE_HOST
+DATABASE_USER=$(cat "$__object/parameter/database_user")
+export DATABASE_USER
+DATABASE_PASSWORD=$(cat "$__object/parameter/database_password")
+export DATABASE_PASSWORD
 
-export GLOBAL_CACHE_FACTOR=$(cat "$__object/parameter/global_cache_factor")
-export EVENT_CACHE_SIZE=$(cat "$__object/parameter/event_cache_size")
+GLOBAL_CACHE_FACTOR=$(cat "$__object/parameter/global_cache_factor")
+export GLOBAL_CACHE_FACTOR
+EVENT_CACHE_SIZE=$(cat "$__object/parameter/event_cache_size")
+export EVENT_CACHE_SIZE
 
-export LDAP_FILTER=$(cat "$__object/parameter/ldap_filter")
-export LDAP_UID_ATTRIBUTE=$(cat "$__object/parameter/ldap_uid_attribute")
-export LDAP_MAIL_ATTRIBUTE=$(cat "$__object/parameter/ldap_mail_attribute")
-export LDAP_NAME_ATTRIBUTE=$(cat "$__object/parameter/ldap_name_attribute")
-export LDAP_URI=$(cat "$__object/parameter/ldap_uri")
-export LDAP_BASE_DN=$(cat "$__object/parameter/ldap_base_dn")
-export LDAP_BIND_DN=$(cat "$__object/parameter/ldap_bind_dn")
-export LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap_bind_password")
+LDAP_FILTER=$(cat "$__object/parameter/ldap_filter")
+export LDAP_FILTER
+LDAP_UID_ATTRIBUTE=$(cat "$__object/parameter/ldap_uid_attribute")
+export LDAP_UID_ATTRIBUTE
+LDAP_MAIL_ATTRIBUTE=$(cat "$__object/parameter/ldap_mail_attribute")
+export LDAP_MAIL_ATTRIBUTE
+LDAP_NAME_ATTRIBUTE=$(cat "$__object/parameter/ldap_name_attribute")
+export LDAP_NAME_ATTRIBUTE
+LDAP_URI=$(cat "$__object/parameter/ldap_uri")
+export LDAP_URI
+LDAP_BASE_DN=$(cat "$__object/parameter/ldap_base_dn")
+export LDAP_BASE_DN
+LDAP_BIND_DN=$(cat "$__object/parameter/ldap_bind_dn")
+export LDAP_BIND_DN
+LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap_bind_password")
+export LDAP_BIND_PASSWORD
 
-export TURN_USER_LIFETIME=$(cat "$__object/parameter/turn_user_lifetime")
+TURN_USER_LIFETIME=$(cat "$__object/parameter/turn_user_lifetime")
+export TURN_USER_LIFETIME
 if [ -f "$__object/parameter/turn_shared_secret" ]; then
-    export TURN_SHARED_SECRET=$(cat "$__object/parameter/turn_shared_secret")
+    TURN_SHARED_SECRET=$(cat "$__object/parameter/turn_shared_secret")
+    export TURN_SHARED_SECRET
 fi
 if [ -f "$__object/parameter/turn_uri" ]; then
-    uris=$(cat "$__object/parameter/turn_uri" | tr "\n" "," | sed 's/,$//')
+    uris=$(tr "\n" "," < "$__object/parameter/turn_uri" | sed 's/,$//')
     export TURN_URIS="[$uris]"
 fi
 
 if [ -f "$__object/parameter/registration_allows_email_pattern" ]; then
-    export RESGISTRATION_ALLOWS_EMAIL_PATTERN=$(cat "$__object/parameter/registration_allows_email_pattern")
+    RESGISTRATION_ALLOWS_EMAIL_PATTERN=$(cat "$__object/parameter/registration_allows_email_pattern")
+    export RESGISTRATION_ALLOWS_EMAIL_PATTERN
 fi
 
 if [ -f "$__object/parameter/auto_join_room" ]; then
-    export AUTO_JOIN_ROOMS="$(cat "$__object/parameter/auto_join_room")"
+    AUTO_JOIN_ROOMS="$(cat "$__object/parameter/auto_join_room")"
+    export AUTO_JOIN_ROOMS
 fi
 
 if [ -f "$__object/parameter/app_service_config_file" ]; then
-    export APP_SERVICE_CONFIG_FILES=$(cat "$__object/parameter/app_service_config_file")
+    APP_SERVICE_CONFIG_FILES=$(cat "$__object/parameter/app_service_config_file")
+    export APP_SERVICE_CONFIG_FILES
 fi
 
-export MAX_UPLOAD_SIZE=$(cat "$__object/parameter/max_upload_size")
-export RIOT_BASE_URL=$(cat "$__object/parameter/riot_base_url")
+MAX_UPLOAD_SIZE=$(cat "$__object/parameter/max_upload_size")
+export MAX_UPLOAD_SIZE
+RIOT_BASE_URL=$(cat "$__object/parameter/riot_base_url")
+export RIOT_BASE_URL
 
-export SMTP_HOST=$(cat "$__object/parameter/smtp_host")
-export SMTP_PORT=$(cat "$__object/parameter/smtp_port")
-export SMTP_USER=$(cat "$__object/parameter/smtp_user")
-export SMTP_PASS=$(cat "$__object/parameter/smtp_pass")
+SMTP_HOST=$(cat "$__object/parameter/smtp_host")
+export SMTP_HOST
+SMTP_PORT=$(cat "$__object/parameter/smtp_port")
+export SMTP_PORT
+SMTP_USER=$(cat "$__object/parameter/smtp_user")
+export SMTP_USER
+SMTP_PASS=$(cat "$__object/parameter/smtp_pass")
+export SMTP_PASS
 
-export RC_MESSAGE_PER_SECOND=$(cat "$__object/parameter/rc_message_per_second")
-export RC_MESSAGE_BURST=$(cat "$__object/parameter/rc_message_burst")
-export RC_LOGIN_PER_SECOND=$(cat "$__object/parameter/rc_login_per_second")
-export RC_LOGIN_BURST=$(cat "$__object/parameter/rc_login_burst")
+RC_MESSAGE_PER_SECOND=$(cat "$__object/parameter/rc_message_per_second")
+export RC_MESSAGE_PER_SECOND
+RC_MESSAGE_BURST=$(cat "$__object/parameter/rc_message_burst")
+export RC_MESSAGE_BURST
+RC_LOGIN_PER_SECOND=$(cat "$__object/parameter/rc_login_per_second")
+export RC_LOGIN_PER_SECOND
+RC_LOGIN_BURST=$(cat "$__object/parameter/rc_login_burst")
+export RC_LOGIN_BURST
 
 if [ -f "$__object/parameter/extra_setting" ]; then
-    export EXTRA_SETTINGS=$(cat "$__object/parameter/extra_setting")
+    EXTRA_SETTINGS=$(cat "$__object/parameter/extra_setting")
+    export EXTRA_SETTINGS
 fi
 
 # Boolean parameters:
@@ -203,7 +236,7 @@ fi
 # about it.
 
 installation_reqs=""
-if [ "$os" == "debian" ] && [ "$distribution" == "buster" ]; then
+if [ "$os" = "debian" ] && [ "$distribution" = "buster" ]; then
   # Enable debian-backports for debian Buster, as the 'stable'
   # matrix-synapse package is ways too old (< 1.0).
   __apt_source debian-backports \
@@ -218,7 +251,7 @@ if [ "$os" == "debian" ] && [ "$distribution" == "buster" ]; then
     --target-release "$distribution-backports"
 
   # Install LdapAuthProvider module if LDAP auth is enabled.
-  if [ "$ENABLE_LDAP_AUTH" == "true" ]; then
+  if [ "$ENABLE_LDAP_AUTH" = "true" ]; then
     require="__package_apt/$synapse_pkg" __package_apt $ldap_auth_provider_pkg \
       --state present \
       --target-release "$distribution-backports"
@@ -227,7 +260,7 @@ if [ "$os" == "debian" ] && [ "$distribution" == "buster" ]; then
 
   # For some reason, psycopg2 is not considered a dependency of
   # matrix-synapse in matrix.org's APT repository.
-  if [ "$DATABASE_ENGINE" == "psycopg2" ]; then
+  if [ "$DATABASE_ENGINE" = "psycopg2" ]; then
     require="__package_apt/$synapse_pkg" __package_apt $psycopg2_pkg \
       --state present
       installation_reqs="$installation_reqs __package_apt/$psycopg2_pkg"
@@ -240,7 +273,7 @@ else
   __package $synapse_pkg --state present
 
   # Install LdapAuthProvider module if LDAP auth is enabled.
-  if [ "$ENABLE_LDAP_AUTH" == "true" ]; then
+  if [ "$ENABLE_LDAP_AUTH" = "true" ]; then
     require="__package/$synapse_pkg" __package $ldap_auth_provider_pkg \
       --state present
   fi
@@ -269,7 +302,7 @@ require="$installation_reqs" __directory $LOG_DIR --state present --owner $synap
 
 # Work around dpkg-reconfigure for Debian package.
 RESTART_REQUIRES="__file/$synapse_conf_dir/homeserver.yaml"
-if [ "$os" == "debian" ]; then
+if [ "$os" = "debian" ]; then
   require="$installation_reqs" __file "$synapse_conf_dir/conf.d/server_name.yaml" \
     --state present --owner $synapse_user --source - << EOF
 server_name: "$SERVER_NAME"
