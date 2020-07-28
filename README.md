@@ -5,8 +5,8 @@ tool with community-maitained types which are either too specific to fit/be
 maintained in cdist itself or were not accepted in code cdist but could still
 be useful.
 
-This project does not have releases and is continously updated: see
-`CHANGELOG.md` for details.
+This project does not have releases and is continously updated: see git history
+for change log.
 
 ## Using cdist-contrib
 
