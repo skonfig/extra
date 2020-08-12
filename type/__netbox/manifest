@@ -23,37 +23,48 @@ case "$os" in
 		;;
 esac
 
-export DATABASE_NAME=$(cat "$__object/parameter/database")
-export DATABASE_PASSWORD=$(cat "$__object/parameter/database-password")
-export ALLOWED_HOST=$(cat "$__object/parameter/host")
-export SECRET_KEY=$(cat "$__object/parameter/secret-key")
+DATABASE_NAME=$(cat "$__object/parameter/database")
+export DATABASE_NAME
+DATABASE_PASSWORD=$(cat "$__object/parameter/database-password")
+export DATABASE_PASSWORD
+ALLOWED_HOST=$(cat "$__object/parameter/host")
+export ALLOWED_HOST
+SECRET_KEY=$(cat "$__object/parameter/secret-key")
+export SECRET_KEY
 
 if [ -f "$__object/parameter/ldap-server" ]; then
-	export LDAP_SERVER=$(cat "$__object/parameter/ldap-server")
+	LDAP_SERVER=$(cat "$__object/parameter/ldap-server")
+	export LDAP_SERVER
 fi
 
 if [ -f "$__object/parameter/ldap-bind-dn" ]; then
-	export LDAP_BIND_DN=$(cat "$__object/parameter/ldap-bind-dn")
+	LDAP_BIND_DN=$(cat "$__object/parameter/ldap-bind-dn")
+	export LDAP_BIND_DN
 fi
 
 if [ -f "$__object/parameter/ldap-bind-password" ]; then
-	export LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap-bind-password")
+	LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap-bind-password")
+	export LDAP_BIND_PASSWORD
 fi
 
 if [ -f "$__object/parameter/ldap-user-base" ]; then
-	export LDAP_USER_BASE=$(cat "$__object/parameter/ldap-user-base")
+	LDAP_USER_BASE=$(cat "$__object/parameter/ldap-user-base")
+	export LDAP_USER_BASE
 fi
 
 if [ -f "$__object/parameter/ldap-group-base" ]; then
-	export LDAP_GROUP_BASE=$(cat "$__object/parameter/ldap-group-base")
+	LDAP_GROUP_BASE=$(cat "$__object/parameter/ldap-group-base")
+	export LDAP_GROUP_BASE
 fi
 
 if [ -f "$__object/parameter/ldap-require-group" ]; then
-	export LDAP_REQUIRE_GROUP=$(cat "$__object/parameter/ldap-require-group")
+	LDAP_REQUIRE_GROUP=$(cat "$__object/parameter/ldap-require-group")
+	export LDAP_REQUIRE_GROUP
 fi
 
 if [ -f "$__object/parameter/ldap-superuser-group" ]; then
-	export LDAP_SUPERUSER_GROUP=$(cat "$__object/parameter/ldap-superuser-group")
+	LDAP_SUPERUSER_GROUP=$(cat "$__object/parameter/ldap-superuser-group")
+	export LDAP_SUPERUSER_GROUP
 fi
 
 # Create system user used to run netbox.
