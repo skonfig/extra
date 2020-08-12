@@ -78,9 +78,9 @@ fi
 
 # Upload systemd units and gunicorn configuration.
 for unit in netbox netbox-rq; do
-	__file /etc/systemd/system/$unit.service \
-		--mode 644 --source "$__type/files/$unit.service" \
-		--onchange 'systemctl daemon-reload'
+	__systemd_unit $unit.service \
+		--source "$__type/files/$unit.service" \
+		--enablement-state enabled
 done
 
 # Python worker configuration.

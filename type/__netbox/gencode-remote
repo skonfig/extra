@@ -25,7 +25,6 @@ curl -L '$url' > '$archive'
 tar xf '$archive'
 
 # Save cdist-upload configuration file.
-mkdir -p "\$tmpdir"
 cp '$install_dir/cdist/configuration.py' "\$tmpdir/configuration.py"
 cp '$install_dir/cdist/ldap_config.py' "\$tmpdir/ldap_config.py"
 
