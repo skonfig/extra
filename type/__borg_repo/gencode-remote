@@ -1,0 +1,36 @@
+#!/bin/sh
+
+passphrase=
+appendonly=
+
+case "$(cat "${__object:?}/parameter/encryption")" in
+	none)
+		enc=none
+		;;
+	repokey)
+		enc=repokey
+		if [ -f "${__object:?}/parameter/passphrase" ];
+		then
+			passphrase="$(cat "${__object:?}/parameter/passphrase")"
+		else
+			echo "__borg_repo cannot use repokey encryption with no passphrase. Aborting." >&2;
+			exit 1;
+		fi
+		;;
+	*)
+		echo "$enc is not a known encryption mode for __borg_repo. Aborting." >&2
+		exit 1;
+esac
+
+if [ -f "${__object:?}/parameter/append-only" ];
+then
+	appendonly='--append-only'
+fi
+
+cat <<- EOF
+	if ! borg check --repository-only 1>&2 2>/dev/null "/${__object_id:?}";
+	then
+		BORG_NEW_PASSPHRASE=$passphrase borg init -e ${enc:?} $appendonly /${__object_id:?}
+	fi
+EOF
+
