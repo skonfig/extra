@@ -48,11 +48,12 @@ fi
 db_pass="$(cat "${__object:?}/parameter/database-password")"
 
 __package nodejs
-__package nghttp2-dev  # Required for some reason, else a symbol is missing
 __package npm
 __directory /var/wiki/
+
+# These things are Alpine-dependant.
 __file /etc/init.d/wikijs --source "${__files:?}/files/wikijs-openrc"
-require='__file/etc/init.d/wikijs' __start_on_boot wikijs
+__package nghttp2-dev  # Required for some reason, else a symbol is missing
 
 mkdir -p "${__object:?}/files"
 "${__type:?}/files/config.yml.sh" "$db_pass" > "${__object:?}/files/config.yml"

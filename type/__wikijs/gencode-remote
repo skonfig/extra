@@ -18,5 +18,4 @@ EOF
 cat << EOF
 cd /var/wiki || exit 1
 npm install
-service start wikijs
 EOF
