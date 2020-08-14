@@ -10,7 +10,7 @@ DESCRIPTION
 
 See wiki.js.org for more information. This type deploys with a postgresql
 database, since it is the upstream recommended for production, and they seem to
-strongly suggest that in thenext releases, they will not support anything else.
+strongly suggest that in the next releases, they will not support anything else.
 
 Currently, this type servers wikijs as standalone, listening on ports 80 and
 443, and with a service file for OpenRC. Feel free to contribute a

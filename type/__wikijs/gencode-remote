@@ -11,10 +11,7 @@ EOF
 
 # Download and copy source
 cat << EOF
-TMPDIR=\$(mktemp -d)
-cd \$TMPDIR || exit 1
-wget https://github.com/Requarks/wiki/releases/download/2.4.107/wiki-js.tar.gz
-tar xf wiki-js.tar.gz -C /var/wiki
+wget -O - https://github.com/Requarks/wiki/releases/download/2.4.107/wiki-js.tar.gz | tar xz -C /var/wiki
 EOF
 
 # Install deps and launch
