@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# Check for installation
+cat << EOF
+if [ -f '/var/wiki/LICENSE' ];
+then
+	# Assume everything is done already.
+	exit 0;
+fi
+EOF
+
+# Download and copy source
+cat << EOF
+TMPDIR=\$(mktemp -d)
+cd \$TMPDIR || exit 1
+wget https://github.com/Requarks/wiki/releases/download/2.4.107/wiki-js.tar.gz
+tar xf wiki-js.tar.gz -C /var/wiki
+EOF
+
+# Install deps and launch
+cat << EOF
+cd /var/wiki || exit 1
+npm install
+service start wikijs
+EOF

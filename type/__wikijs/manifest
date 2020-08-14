@@ -1,0 +1,60 @@
+#!/bin/sh
+
+os="$(cat "${__global:?}"/explorer/os)"
+
+case "$os" in
+	alpine)
+		:
+		;;
+	*)
+		echo "This type has no implementation for $os. Aborting." >&2;
+		exit 1;
+esac
+
+DB_USER=wikijs
+if [ -f "${__object:?}/parameter/database-user" ];
+then
+	DB_USER="$(cat "${__object:?}/parameter/database-user")"
+fi
+export DB_USER
+
+DB_NAME=wikijs
+if [ -f "${__object:?}/parameter/database" ];
+then
+	DB_NAME="$(cat "${__object:?}/parameter/database")"
+fi
+export DB_NAME
+
+SSL=false
+if [ -f "${__object:?}/parameter/ssl" ];
+then
+	SSL=true
+fi
+export SSL
+
+if ! [ "$SSL" = "false" ];
+then
+	if [ -f "${__object:?}/parameter/letsencrypt-mail" ];
+	then
+		LE_EMAIL="$(cat "${__object:?}/parameter/letsencrypt-mail")"
+		export LE_EMAIL
+	else
+		echo "You must specify an email account if you request SSL."
+		echo "Hit me."
+		exit 1
+	fi
+fi
+
+db_pass="$(cat "${__object:?}/parameter/database-password")"
+
+__package nodejs
+__package nghttp2-dev  # Required for some reason, else a symbol is missing
+__package npm
+__directory /var/wiki/
+__file /etc/init.d/wikijs --source "${__files:?}/files/wikijs-openrc"
+require='__file/etc/init.d/wikijs' __start_on_boot wikijs
+
+mkdir -p "${__object:?}/files"
+"${__type:?}/files/config.yml.sh" "$db_pass" > "${__object:?}/files/config.yml"
+require='__directory/var/wiki' \
+	__file /var/wiki/config.yml --source "${__object:?}/files/config.yml"
