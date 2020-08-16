@@ -1,5 +1,8 @@
 #!/bin/sh
 
+echo "set -e"
+
+old_version="$(cat "$__object/explorer/version")"
 VERSION=$(cat "$__object/parameter/version")
 
 src="netbox-$VERSION"
@@ -7,9 +10,8 @@ archive="v$VERSION.tar.gz"
 url="https://github.com/netbox-community/netbox/archive/$archive"
 install_dir=/opt/netbox/netbox
 
-cat << EOF
-set -e
-
+if [ "$VERSION" != "$old_version" ]; then
+    cat << EOF
 # Ensure that coreutils is installed.
 if [ ! -x \$(which mktemp) ]; then
   echo "mktemp is not available on the remote host." >&2
@@ -41,11 +43,11 @@ virtualenv /opt/netbox/venv
 /opt/netbox/venv/bin/pip3 install -r "\$tmpdir/$src/requirements.txt"
 EOF
 
-if [ -f "$__object/parameter/ldap-server" ]; then
-	echo "/opt/netbox/venv/bin/pip3 install django-auth-ldap"
-fi
+    if [ -f "$__object/parameter/ldap-server" ]; then
+        echo "/opt/netbox/venv/bin/pip3 install django-auth-ldap"
+    fi
 
-cat << EOF
+    cat << EOF
 # Set final permissions.
 chown -R netbox /opt/netbox
 
@@ -59,7 +61,33 @@ sudo -u netbox /opt/netbox/venv/bin/python3 /opt/netbox/netbox/manage.py collect
 cd /
 rm -r "\$tmpdir"
 
+# Save version after successful installation
+printf "%s\\n" "$VERSION" > '$install_dir/cdist/version'
+EOF
+
+    # meta
+    printf "%s %s\n" "installed" "$VERSION" >> "$__messages_out"
+    changes=yes
+
+# check if configuration changed
+elif grep -q "^__file/opt/netbox/" "$__messages_in"; then
+    cat <<EOF
+# Copy configuration
+cp '$install_dir/cdist/configuration.py' '$install_dir/netbox/configuration.py'
+cp '$install_dir/cdist/ldap_config.py' '$install_dir/netbox/ldap_config.py'
+EOF
+
+    # meta
+    printf "%s\n" "configuration" >> "$__messages_out"
+    changes=yes
+fi
+
+
+# check for changes
+if [ "$changes" = "yes" ]; then
+    cat <<EOF
 # Restart services.
 service netbox restart
 service netbox-rq restart
 EOF
+fi

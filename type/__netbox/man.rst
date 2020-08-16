@@ -58,6 +58,16 @@ BOOLEAN PARAMETERS
 ------------------
 None.
 
+MESSAGES
+--------
+installed $VERSION
+    Netbox was fresh installed or updated. The new version number is appended.
+
+configuration
+    Some configuration files got updated and therefore the service was
+    restarted. This message will not be echoed if configuration got updated due
+    a standard installation.
+
 
 EXAMPLES
 --------
