@@ -9,7 +9,11 @@ cdist-type__netbox - Install and configure NetBox
 DESCRIPTION
 -----------
 This (singleton) type installs and configures a NetBox instance, a web
-application to help manage and document computer networks
+application to help manage and document computer networks.
+
+It installs it with the user ``netbox`` at ``/opt/netbox`` with `python-venv`.
+Netbox will be run via `gnuicorn` as WSGI service. It setup systemd unit files
+for the services `netbox` and `netbox-rq`.
 
 
 REQUIRED PARAMETERS
