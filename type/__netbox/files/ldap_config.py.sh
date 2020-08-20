@@ -1,5 +1,19 @@
 #!/bin/sh
 
+# no configuration if there are no ldap parameters
+if ls -1qA "$__object/parameter"/ldap-* | grep -q .; then
+    # skip
+    cat << EOF
+##############################
+# LDAP-backed authentication #
+##############################
+
+# no options set
+EOF
+    exit 0
+fi
+
+
 cat << EOF
 ##############################
 # LDAP-backed authentication #
