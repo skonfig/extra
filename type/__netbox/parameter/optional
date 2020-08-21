@@ -5,3 +5,15 @@ ldap-user-base
 ldap-group-base
 ldap-require-group
 ldap-superuser-group
+redis-host
+redis-port
+redis-password
+redis-dbid-offset
+smtp-host
+smtp-port
+smtp-user
+smtp-password
+smtp-from-email
+basepath
+http-proxy
+https-proxy

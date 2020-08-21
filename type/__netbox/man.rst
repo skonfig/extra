@@ -58,9 +58,62 @@ ldap-require-group
 ldap-superuser-group
   Make members of this groups superusers.
 
+redis-host
+  Redis database hostname. Defaults to ``localhost``.
+
+redis-port
+  Redis database port. Defaults to ``6379``.
+
+redis-password
+  Redis password. Defaults to empty password.
+
+redis-dbid-offset
+  Offset to set the redis database id's. The `tasks` database id is `offset + 0`
+  and `caching` is `offset + 1`. The offset defaults to ``0``.
+
+smtp-host
+  Host of the SMTP email server. Defaults to ``localhost``.
+
+smtp-port
+  Port of the SMTP email server. Defaults to ``25``.
+
+smtp-user
+  Username to access the SMTP email server. Defaults to empty.
+
+smtp-password
+  Password to access the SMTP email server. Defaults to empty.
+
+smtp-from-email
+  Email from which NetBox will be sent of. Defaults to empty.
+
+basepath
+  Base URL path if accessing netbox within a directory instead of directly the
+  webroot ``/``. For example, if installed at https://example.com/netbox/, set
+  the value ``netbox/``.
+
+http-proxy
+https-proxy
+  Proxy which will be used with any HTTP request like webhooks.
+
 BOOLEAN PARAMETERS
 ------------------
-None.
+redis-ssl
+  Enables a secure TLS/SSL connection to the redis database. By default, ssl
+  is disabled.
+
+smtp-use-tls
+  Uses TLS to connect to the SMTP email server. `See documentation
+  <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-tls`_
+  for more information.
+
+smtp-use-ssl
+  Uses implicit TLS with the SMTP email server. `See documentation
+  <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-ssl`_
+  for more information.
+
+login-required
+  Sets if a login is required to access all sites. By default, anounymous users
+  can see most data (excluding secrets) but not make any changes.
 
 MESSAGES
 --------
@@ -90,6 +143,16 @@ EXAMPLES
 			--ldap-require-group "cn=netbox-login,ou=groups,dc=domain,dc=tld" \
 			--ldap-superuser-group "cn=netbox-admin,ou=groups,dc=domain,dc=tld"
 
+
+NOTES
+-----
+The configuration of NetBox contains more optional settings than that what can
+be set with this type. If you think an important setting is missing or there
+is a more good way to inject python code for dynamic configuration variables,
+you are welcome to contribute!
+
+- `Possible optional settings
+  <https://netbox.readthedocs.io/en/stable/configuration/optional-settings/>`
 
 SEE ALSO
 --------

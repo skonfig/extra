@@ -23,6 +23,7 @@ case "$os" in
 		;;
 esac
 
+
 DATABASE_NAME=$(cat "$__object/parameter/database")
 export DATABASE_NAME
 DATABASE_PASSWORD=$(cat "$__object/parameter/database-password")
@@ -66,6 +67,70 @@ if [ -f "$__object/parameter/ldap-superuser-group" ]; then
 	LDAP_SUPERUSER_GROUP=$(cat "$__object/parameter/ldap-superuser-group")
 	export LDAP_SUPERUSER_GROUP
 fi
+
+# have default values
+REDIS_HOST="$(cat "$__object/parameter/redis-host")"
+export REDIS_HOST
+REDIS_PORT="$(cat "$__object/parameter/redis-port")"
+export REDIS_PORT
+REDIS_PASSWORD="$(cat "$__object/parameter/redis-password")"
+export REDIS_PASSWORD
+REDIS_DBID_OFFSET="$(cat "$__object/parameter/redis-dbid-offset")"
+export REDIS_DBID_OFFSET
+if [ -f "$__object/parameter/redis-ssl" ]; then
+    REDIS_SSL="True"
+else
+    REDIS_SSL="False"
+fi
+export REDIS_SSL
+
+SMTP_HOST="$(cat "$__object/parameter/smtp-host")"
+export SMTP_HOST
+SMTP_PORT="$(cat "$__object/parameter/smtp-port")"
+export SMTP_PORT
+SMTP_USER="$(cat "$__object/parameter/smtp-user")"
+export SMTP_USER
+SMTP_PASSWORD="$(cat "$__object/parameter/smtp-password")"
+export SMTP_PASSWORD
+SMTP_FROM_EMAIL="$(cat "$__object/parameter/smtp-from-email")"
+export SMTP_FROM_EMAIL
+
+if [ -f "$__object/parameter/smtp-use-ssl" ]; then
+    SMTP_USE_SSL="True"
+else
+    SMTP_USE_SSL="False"
+fi
+export SMTP_USE_SSL
+if [ -f "$__object/parameter/smtp-use-tls" ]; then
+    if [ "$SMTP_USE_SSL" = "True" ]; then
+        echo "options --smtp-use-ssl and --smtp-use-tls are not compatible"
+        exit 2
+    fi
+    SMTP_USE_TLS="True"
+else
+    SMTP_USE_TLS="False"
+fi
+export SMTP_USE_TLS
+
+BASEPATH="$(cat "$__object/parameter/basepath")"
+export BASEPATH
+
+if [ -f "$__object/parameter/http-proxy" ]; then
+	HTTP_PROXY=$(cat "$__object/parameter/http-proxy")
+	export HTTP_PROXY
+fi
+if [ -f "$__object/parameter/https-proxy" ]; then
+	HTTPS_PROXY=$(cat "$__object/parameter/https-proxy")
+	export HTTPS_PROXY
+fi
+
+if [ -f "$__object/parameter/login-required" ]; then
+    LOGIN_REQUIRED="True"
+else
+    LOGIN_REQUIRED="False"
+fi
+export LOGIN_REQUIRED
+
 
 # Create system user used to run netbox.
 __user netbox --system --home /opt/netbox --create-home

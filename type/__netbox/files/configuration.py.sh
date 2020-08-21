@@ -29,26 +29,26 @@ DATABASE = {
 # to use two separate database IDs.
 REDIS = {
     'tasks': {
-        'HOST': 'localhost',
-        'PORT': 6379,
+        'HOST': '$REDIS_HOST',
+        'PORT': $REDIS_PORT,
         # Comment out \`HOST\` and \`PORT\` lines and uncomment the following if using Redis Sentinel
         # 'SENTINELS': [('mysentinel.redis.example.com', 6379)],
         # 'SENTINEL_SERVICE': 'netbox',
-        'PASSWORD': '',
-        'DATABASE': 0,
+        'PASSWORD': '$REDIS_PASSWORD',
+        'DATABASE': $((REDIS_DBID_OFFSET + 0)),
         'DEFAULT_TIMEOUT': 300,
-        'SSL': False,
+        'SSL': $REDIS_SSL,
     },
     'caching': {
-        'HOST': 'localhost',
-        'PORT': 6379,
+        'HOST': '$REDIS_HOST',
+        'PORT': $REDIS_PORT,
         # Comment out \`HOST\` and \`PORT\` lines and uncomment the following if using Redis Sentinel
         # 'SENTINELS': [('mysentinel.redis.example.com', 6379)],
         # 'SENTINEL_SERVICE': 'netbox',
-        'PASSWORD': '',
-        'DATABASE': 1,
+        'PASSWORD': '$REDIS_PASSWORD',
+        'DATABASE': $((REDIS_DBID_OFFSET + 1)),
         'DEFAULT_TIMEOUT': 300,
-        'SSL': False,
+        'SSL': $REDIS_SSL,
     }
 }
 
@@ -86,7 +86,7 @@ BANNER_LOGIN = ''
 
 # Base URL path if accessing NetBox within a directory. For example, if installed at http://example.com/netbox/, set:
 # BASE_PATH = 'netbox/'
-BASE_PATH = ''
+BASE_PATH = '$BASEPATH'
 
 # Cache timeout in seconds. Set to 0 to dissable caching. Defaults to 900 (15 minutes)
 CACHE_TIMEOUT = 900
@@ -112,14 +112,14 @@ DEBUG = False
 
 # Email settings
 EMAIL = {
-    'SERVER': 'localhost',
-    'PORT': 25,
-    'USERNAME': '',
-    'PASSWORD': '',
-    'USE_SSL': False,
-    'USE_TLS': False,
+    'SERVER': '$SMTP_HOST',
+    'PORT': $SMTP_PORT,
+    'USERNAME': '$SMTP_USER',
+    'PASSWORD': '$SMTP_PASSWORD',
+    'USE_SSL': $SMTP_USE_SSL,
+    'USE_TLS': $SMTP_USE_TLS,
     'TIMEOUT': 10,  # seconds
-    'FROM_EMAIL': '',
+    'FROM_EMAIL': '$SMTP_FROM_EMAIL',
 }
 
 # Enforcement of unique IP space can be toggled on a per-VRF basis. To enforce unique IP space within the global table
@@ -134,12 +134,38 @@ EXEMPT_VIEW_PERMISSIONS = [
     # 'ipam.prefix',
 ]
 
+EOF
+
+if [ "$HTTP_PROXY" != "" ] || [ "$HTTPS_PROXY" != "" ]; then
+    cat << EOF
+# HTTP proxies NetBox should use when sending outbound HTTP requests (e.g. for webhooks).
+HTTP_PROXIES = {
+EOF
+    if [ "$HTTP_PROXY" != "" ]; then
+        cat << EOF
+    'http': '$HTTP_PROXY',
+EOF
+    fi
+    if [ "$HTTPS_PROXY" != "" ]; then
+        cat << EOF
+    'https': '$HTTPS_PROXY',
+EOF
+    fi
+    cat << EOF
+}
+EOF
+
+else
+    cat << EOF
 # HTTP proxies NetBox should use when sending outbound HTTP requests (e.g. for webhooks).
 # HTTP_PROXIES = {
 #     'http': 'http://10.10.1.10:3128',
 #     'https': 'http://10.10.1.10:1080',
 # }
+EOF
+fi
 
+cat << EOF
 # IP addresses recognized as internal to the system. The debugging toolbar will be available only to clients accessing
 # NetBox from an internal IP.
 INTERNAL_IPS = ('127.0.0.1', '::1')
@@ -150,7 +176,7 @@ LOGGING = {}
 
 # Setting this to True will permit only authenticated users to access any part of NetBox. By default, anonymous users
 # are permitted to access most data in NetBox (excluding secrets) but not make any changes.
-LOGIN_REQUIRED = False
+LOGIN_REQUIRED = $LOGIN_REQUIRED
 
 # The length of time (in seconds) for which a user will remain logged into the web UI before being prompted to
 # re-authenticate. (Default: 1209600 [14 days])
