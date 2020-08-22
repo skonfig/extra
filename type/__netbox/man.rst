@@ -43,88 +43,89 @@ host
 OPTIONAL PARAMETERS
 -------------------
 database-host
-  PostgreSQL database hostname. Defaults to ``localhost``.
+    PostgreSQL database hostname. Defaults to ``localhost``.
 
 database-port
-  PostgreSQL database port. Defaults to empty (uses the default port).
+    PostgreSQL database port. Defaults to empty (uses the default port).
 
 ldap-server
-  LDAP server URI. Enables LDAP-backed authentication if specified.
+    LDAP server URI. Enables LDAP-backed authentication if specified.
 
 ldap-bind-dn
-  DN for the NetBox service account. Required for LDAP authentication.
+    DN for the NetBox service account. Required for LDAP authentication.
 
 ldap-bind-password
-  Password for the NetBox service account. Required for LDAP authentication.
+    Password for the NetBox service account. Required for LDAP authentication.
 
 ldap-user-base
-  Base used for searching user entries. Required for LDAP authentication.
+    Base used for searching user entries. Required for LDAP authentication.
 
 ldap-group-base
-  Base used for searching group entries.
+    Base used for searching group entries.
 
 ldap-require-group
-  Group required to login.
+    Group required to login.
 
 ldap-superuser-group
-  Make members of this groups superusers.
+    Make members of this groups superusers.
 
 redis-host
-  Redis database hostname. Defaults to ``localhost``.
+    Redis database hostname. Defaults to ``localhost``.
 
 redis-port
-  Redis database port. Defaults to ``6379``.
+    Redis database port. Defaults to ``6379``.
 
 redis-password
-  Redis password. Defaults to empty password.
+    Redis password. Defaults to empty password.
 
 redis-dbid-offset
-  Offset to set the redis database id's. The `tasks` database id is `offset + 0`
-  and `caching` is `offset + 1`. The offset defaults to ``0``.
+    Offset to set the redis database id's. The `tasks` database id is
+    `offset + 0`     and `caching` is `offset + 1`. The offset defaults
+    to ``0``.
 
 smtp-host
-  Host of the SMTP email server. Defaults to ``localhost``.
+    Host of the SMTP email server. Defaults to ``localhost``.
 
 smtp-port
-  Port of the SMTP email server. Defaults to ``25``.
+    Port of the SMTP email server. Defaults to ``25``.
 
 smtp-user
-  Username to access the SMTP email server. Defaults to empty.
+    Username to access the SMTP email server. Defaults to empty.
 
 smtp-password
-  Password to access the SMTP email server. Defaults to empty.
+    Password to access the SMTP email server. Defaults to empty.
 
 smtp-from-email
-  Email from which NetBox will be sent of. Defaults to empty.
+    Email from which NetBox will be sent of. Defaults to empty.
 
 basepath
-  Base URL path if accessing netbox within a directory instead of directly the
-  webroot ``/``. For example, if installed at https://example.com/netbox/, set
-  the value ``netbox/``.
+    Base URL path if accessing netbox within a directory instead of directly the
+    webroot ``/``. For example, if installed at https://example.com/netbox/, set
+    the value ``netbox/``.
 
 http-proxy
 https-proxy
-  Proxy which will be used with any HTTP request like webhooks.
+    Proxy which will be used with any HTTP request like webhooks.
 
 BOOLEAN PARAMETERS
 ------------------
 redis-ssl
-  Enables a secure TLS/SSL connection to the redis database. By default, ssl
-  is disabled.
+    Enables a secure TLS/SSL connection to the redis database. By default, ssl
+    is disabled.
 
 smtp-use-tls
-  Uses TLS to connect to the SMTP email server. `See documentation
-  <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-tls`_
-  for more information.
+    Uses TLS to connect to the SMTP email server. `See documentation
+    <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-tls`_
+    for more information.
 
 smtp-use-ssl
-  Uses implicit TLS with the SMTP email server. `See documentation
-  <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-ssl`_
-  for more information.
+    Uses implicit TLS with the SMTP email server. `See documentation
+    <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-ssl`_
+    for more information.
 
 login-required
-  Sets if a login is required to access all sites. By default, anounymous users
-  can see most data (excluding secrets) but not make any changes.
+    Sets if a login is required to access all sites. By default, anounymous users
+    can see most data (excluding secrets) but not make any changes.
 
 MESSAGES
 --------
