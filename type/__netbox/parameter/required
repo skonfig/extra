@@ -1,5 +1,6 @@
 version
 database
+database-user
 database-password
 secret-key
 host

@@ -26,6 +26,9 @@ version
 database
     PostgreSQL database name.
 
+database-user
+    PostgreSQL database user.
+
 database-password
     PostgreSQL database password.
 
@@ -39,6 +42,12 @@ host
 
 OPTIONAL PARAMETERS
 -------------------
+database-host
+  PostgreSQL database hostname. Defaults to ``localhost``.
+
+database-port
+  PostgreSQL database port. Defaults to empty (uses the default port).
+
 ldap-server
   LDAP server URI. Enables LDAP-backed authentication if specified.
 

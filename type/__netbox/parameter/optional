@@ -1,3 +1,5 @@
+database-host
+database-port
 ldap-server
 ldap-bind-dn
 ldap-bind-password

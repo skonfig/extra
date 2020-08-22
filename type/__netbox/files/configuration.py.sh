@@ -19,8 +19,8 @@ DATABASE = {
     'NAME': '$DATABASE_NAME', # Database name
     'USER': '$DATABASE_USER', # PostgreSQL username
     'PASSWORD': '$DATABASE_PASSWORD', # PostgreSQL password
-    'HOST': 'localhost',      # Database server
-    'PORT': '',               # Database port (leave blank for default)
+    'HOST': '$DATABASE_HOST', # Database server
+    'PORT': '$DATABASE_PORT', # Database port (leave blank for default)
     'CONN_MAX_AGE': 300,      # Max database connection age
 }
 

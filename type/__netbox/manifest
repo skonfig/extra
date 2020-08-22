@@ -26,8 +26,15 @@ esac
 
 DATABASE_NAME=$(cat "$__object/parameter/database")
 export DATABASE_NAME
+DATABASE_USER="$(cat "$__object/parameter/database-user")"
+export DATABASE_USER
 DATABASE_PASSWORD=$(cat "$__object/parameter/database-password")
 export DATABASE_PASSWORD
+DATABASE_HOST="$(cat "$__object/parameter/database-host")"
+export DATABASE_HOST
+DATABASE_PORT="$(cat "$__object/parameter/database-port")"
+export DATABASE_PORT
+
 ALLOWED_HOST=$(cat "$__object/parameter/host")
 export ALLOWED_HOST
 SECRET_KEY=$(cat "$__object/parameter/secret-key")
