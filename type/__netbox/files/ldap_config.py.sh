@@ -43,7 +43,7 @@ AUTH_LDAP_USER_ATTR_MAP = {
 EOF
 
 if [ "$LDAP_GROUP_BASE" != "" ]; then
-	cat << EOF
+    cat << EOF
 
 # This search ought to return all groups to which the user belongs. django_auth_ldap uses this to determine group
 # hierarchy.
@@ -55,21 +55,21 @@ AUTH_LDAP_GROUP_TYPE = PosixGroupType()
 AUTH_LDAP_MIRROR_GROUPS = True
 EOF
 
-	if [ "$LDAP_REQUIRE_GROUP" != "" ]; then
-		cat << EOF
+    if [ "$LDAP_REQUIRE_GROUP" != "" ]; then
+        cat << EOF
 
 # Define a group required to login.
 AUTH_LDAP_REQUIRE_GROUP = "$LDAP_REQUIRE_GROUP"
 EOF
-	fi
+    fi
 
-	if [ "$LDAP_SUPERUSER_GROUP" != "" ]; then
-		cat << EOF
+    if [ "$LDAP_SUPERUSER_GROUP" != "" ]; then
+        cat << EOF
 
 # Define special user types using groups. Exercise great caution when assigning superuser status.
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     "is_superuser": "$LDAP_SUPERUSER_GROUP",
 }
 EOF
-	fi
+    fi
 fi

@@ -3,24 +3,24 @@
 os=$(cat "$__global/explorer/os")
 
 case "$os" in
-	debian|ubuntu)
-		# Install netbox dependencies.
-		for pkg in python3-pip python3-venv python3-dev build-essential libxml2-dev \
-			libxslt1-dev libffi-dev libpq-dev libssl-dev zlib1g-dev curl virtualenv sudo; do
-			__package $pkg
-		done
+    debian|ubuntu)
+        # Install netbox dependencies.
+        for pkg in python3-pip python3-venv python3-dev build-essential libxml2-dev \
+            libxslt1-dev libffi-dev libpq-dev libssl-dev zlib1g-dev curl virtualenv sudo; do
+            __package $pkg
+        done
 
-		if [ -f "$__object/parameter/ldap-server" ]; then
-			for pkg in libldap2-dev libsasl2-dev libssl-dev; do
-				__package $pkg
-			done
-		fi
-		;;
-	*)
-		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
-		printf "Please contribute an implementation for it if you can.\n" >&2
-		exit 1
-		;;
+        if [ -f "$__object/parameter/ldap-server" ]; then
+            for pkg in libldap2-dev libsasl2-dev libssl-dev; do
+                __package $pkg
+            done
+        fi
+        ;;
+    *)
+        printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
+        printf "Please contribute an implementation for it if you can.\n" >&2
+        exit 1
+        ;;
 esac
 
 
@@ -41,38 +41,38 @@ SECRET_KEY=$(cat "$__object/parameter/secret-key")
 export SECRET_KEY
 
 if [ -f "$__object/parameter/ldap-server" ]; then
-	LDAP_SERVER=$(cat "$__object/parameter/ldap-server")
-	export LDAP_SERVER
+    LDAP_SERVER=$(cat "$__object/parameter/ldap-server")
+    export LDAP_SERVER
 fi
 
 if [ -f "$__object/parameter/ldap-bind-dn" ]; then
-	LDAP_BIND_DN=$(cat "$__object/parameter/ldap-bind-dn")
-	export LDAP_BIND_DN
+    LDAP_BIND_DN=$(cat "$__object/parameter/ldap-bind-dn")
+    export LDAP_BIND_DN
 fi
 
 if [ -f "$__object/parameter/ldap-bind-password" ]; then
-	LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap-bind-password")
-	export LDAP_BIND_PASSWORD
+    LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap-bind-password")
+    export LDAP_BIND_PASSWORD
 fi
 
 if [ -f "$__object/parameter/ldap-user-base" ]; then
-	LDAP_USER_BASE=$(cat "$__object/parameter/ldap-user-base")
-	export LDAP_USER_BASE
+    LDAP_USER_BASE=$(cat "$__object/parameter/ldap-user-base")
+    export LDAP_USER_BASE
 fi
 
 if [ -f "$__object/parameter/ldap-group-base" ]; then
-	LDAP_GROUP_BASE=$(cat "$__object/parameter/ldap-group-base")
-	export LDAP_GROUP_BASE
+    LDAP_GROUP_BASE=$(cat "$__object/parameter/ldap-group-base")
+    export LDAP_GROUP_BASE
 fi
 
 if [ -f "$__object/parameter/ldap-require-group" ]; then
-	LDAP_REQUIRE_GROUP=$(cat "$__object/parameter/ldap-require-group")
-	export LDAP_REQUIRE_GROUP
+    LDAP_REQUIRE_GROUP=$(cat "$__object/parameter/ldap-require-group")
+    export LDAP_REQUIRE_GROUP
 fi
 
 if [ -f "$__object/parameter/ldap-superuser-group" ]; then
-	LDAP_SUPERUSER_GROUP=$(cat "$__object/parameter/ldap-superuser-group")
-	export LDAP_SUPERUSER_GROUP
+    LDAP_SUPERUSER_GROUP=$(cat "$__object/parameter/ldap-superuser-group")
+    export LDAP_SUPERUSER_GROUP
 fi
 
 # have default values
@@ -123,12 +123,12 @@ BASEPATH="$(cat "$__object/parameter/basepath")"
 export BASEPATH
 
 if [ -f "$__object/parameter/http-proxy" ]; then
-	HTTP_PROXY=$(cat "$__object/parameter/http-proxy")
-	export HTTP_PROXY
+    HTTP_PROXY=$(cat "$__object/parameter/http-proxy")
+    export HTTP_PROXY
 fi
 if [ -f "$__object/parameter/https-proxy" ]; then
-	HTTPS_PROXY=$(cat "$__object/parameter/https-proxy")
-	export HTTPS_PROXY
+    HTTPS_PROXY=$(cat "$__object/parameter/https-proxy")
+    export HTTPS_PROXY
 fi
 
 if [ -f "$__object/parameter/login-required" ]; then
@@ -149,23 +149,23 @@ mkdir -p "$__object/files"
 
 require="__user/netbox" __directory /opt/netbox/netbox/cdist --parents
 require="__directory/opt/netbox/netbox/cdist " __file \
-	/opt/netbox/netbox/cdist/configuration.py --mode 640 --owner netbox \
-	--source "$__object/files/configuration.py"
+    /opt/netbox/netbox/cdist/configuration.py --mode 640 --owner netbox \
+    --source "$__object/files/configuration.py"
 
 if [ -f "$__object/parameter/ldap-server" ]; then
-	require="__directory/opt/netbox/netbox/cdist " __file \
-		/opt/netbox/netbox/cdist/ldap_config.py --mode 640 --owner netbox \
-		--source "$__object/files/ldap_config.py"
+    require="__directory/opt/netbox/netbox/cdist " __file \
+        /opt/netbox/netbox/cdist/ldap_config.py --mode 640 --owner netbox \
+        --source "$__object/files/ldap_config.py"
 fi
 
 
 # Upload systemd units and gunicorn configuration.
 for unit in netbox netbox-rq; do
-	__systemd_unit $unit.service \
-		--source "$__type/files/$unit.service" \
-		--enablement-state enabled
+    __systemd_unit $unit.service \
+        --source "$__type/files/$unit.service" \
+        --enablement-state enabled
 done
 
 # Python worker configuration.
 require="__user/netbox" __file /opt/netbox/gunicorn.py \
-	--mode 644 --source "$__type/files/gunicorn.py"
+    --mode 644 --source "$__type/files/gunicorn.py"

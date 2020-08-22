@@ -144,16 +144,16 @@ EXAMPLES
 .. code-block:: sh
 
   __netbox --version 2.8.7 --database netbox \
-			--database-password "secretsecretsecret" \
-			--secret-key "secretsecretsecret" \
-			--host "${__target_host:?}" \
-			--ldap-server "ldaps://ldap.domain.tld" \
-			--ldap-bind-dn "uid=netbox,ou=services,dc=domain,dc=tld" \
-			--ldap-bind-password "secretsecretsecret" \
-			--ldap-user-base "ou=users,dc=domain,dc=tld" \
-			--ldap-group-base "ou=groups,dc=domain,dc=tld" \
-			--ldap-require-group "cn=netbox-login,ou=groups,dc=domain,dc=tld" \
-			--ldap-superuser-group "cn=netbox-admin,ou=groups,dc=domain,dc=tld"
+                --database-password "secretsecretsecret" \
+                --secret-key "secretsecretsecret" \
+                --host "${__target_host:?}" \
+                --ldap-server "ldaps://ldap.domain.tld" \
+                --ldap-bind-dn "uid=netbox,ou=services,dc=domain,dc=tld" \
+                --ldap-bind-password "secretsecretsecret" \
+                --ldap-user-base "ou=users,dc=domain,dc=tld" \
+                --ldap-group-base "ou=groups,dc=domain,dc=tld" \
+                --ldap-require-group "cn=netbox-login,ou=groups,dc=domain,dc=tld" \
+                --ldap-superuser-group "cn=netbox-admin,ou=groups,dc=domain,dc=tld"
 
 
 NOTES
