@@ -66,26 +66,29 @@ printf "%s\\n" "$VERSION" > '$install_dir/cdist/version'
 EOF
 
     # meta
-    printf "%s %s\n" "installed" "$VERSION" >> "$__messages_out"
+    printf "installed %s\n" "$VERSION" >> "$__messages_out"
     changes=yes
 
 # check if configuration changed
 elif grep -q "^__file/opt/netbox/" "$__messages_in"; then
-    cat <<EOF
+    # check if coping is required
+    if grep -q "^__file/opt/netbox/netbox/cdist/" "$__messages_in"; then
+        cat << EOF
 # Copy configuration
 cp '$install_dir/cdist/configuration.py' '$install_dir/netbox/configuration.py'
 cp '$install_dir/cdist/ldap_config.py' '$install_dir/netbox/ldap_config.py'
 EOF
+    fi
 
     # meta
-    printf "%s\n" "configuration" >> "$__messages_out"
+    printf "configuration\n" >> "$__messages_out"
     changes=yes
 fi
 
 
 # check for changes
 if [ "$changes" = "yes" ]; then
-    cat <<EOF
+    cat << EOF
 # Restart services.
 service netbox restart
 service netbox-rq restart
