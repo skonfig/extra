@@ -23,7 +23,7 @@ tmpdir=\$(mktemp -d)
 cd "\$tmpdir"
 
 # Download and extract sources.
-curl -L '$url' > '$archive'
+curl -sS -L '$url' > '$archive'
 tar xf '$archive'
 
 # Save cdist-upload configuration file.
