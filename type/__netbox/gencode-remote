@@ -33,6 +33,8 @@ cp '$install_dir/cdist/ldap_config.py' "\$tmpdir/ldap_config.py"
 # Deploy sources and restore configuration.
 rm -r '$install_dir'
 cp -r '$src/netbox' '$install_dir'
+mkdir '$install_dir/cdist'
+
 cp \$tmpdir/configuration.py '$install_dir/netbox/configuration.py'
 cp \$tmpdir/ldap_config.py '$install_dir/netbox/ldap_config.py'
 
