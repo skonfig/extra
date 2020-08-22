@@ -37,7 +37,8 @@ cp \$tmpdir/configuration.py '$install_dir/netbox/configuration.py'
 cp \$tmpdir/ldap_config.py '$install_dir/netbox/ldap_config.py'
 
 # Setup & enter python virtualenv.
-virtualenv /opt/netbox/venv
+#  forcing python3 to be sure (till python4 gets released ..)
+virtualenv -p python3 /opt/netbox/venv
 
 # Install python dependencies.
 /opt/netbox/venv/bin/pip3 install -r "\$tmpdir/$src/requirements.txt"
