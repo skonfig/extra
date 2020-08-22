@@ -166,6 +166,11 @@ you are welcome to contribute!
 - `Possible optional settings
   <https://netbox.readthedocs.io/en/stable/configuration/optional-settings/>`
 
+If you not setup ldap authentification, you may be interested into how to
+`setting up a super user
+<https://netbox.readthedocs.io/en/stable/installation/3-netbox/#create-a-super-user>`
+directly on the machine to be able to access and use NetBox.
+
 SEE ALSO
 --------
 - `NetBox documentation <https://netbox.readthedocs.io/en/stable/>`_
