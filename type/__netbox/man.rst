@@ -19,7 +19,9 @@ for the services `netbox` and `netbox-rq`.
 REQUIRED PARAMETERS
 -------------------
 version
-    NetBox version to be installed.
+    NetBox version to be installed. You can find the correct and newest version
+    on GitHub at the NetBox project page under
+    "`Releases <https://github.com/netbox-community/netbox/releases>`_".
 
 database
     PostgreSQL database name.
