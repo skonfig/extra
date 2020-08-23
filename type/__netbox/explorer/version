@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # output version if exist
 version_path="/opt/netbox/netbox/cdist/version"

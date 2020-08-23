@@ -32,16 +32,22 @@ database-user
 database-password
     PostgreSQL database password.
 
-secret-key
-    Random secret key of at least 50 alphanumeric characters. This key must be
-    unique to this installation and must not be shared outside the local
-    system.
-
 host
     Hostname (domain or IP address) on which the application is served.
 
 OPTIONAL PARAMETERS
 -------------------
+secret-key
+    Random secret key of at least 50 alphanumeric characters and symbols. This
+    key must be unique to this installation and must not be shared outside the
+    local system. If no secret key is given, the type generates an own 50 chars
+    long key and saves it on the remote host to remember it for the next run.
+
+    The secret, random string is used to assist in the creation new
+    cryptographic hashes for passwords and HTTP cookies. It is not directly
+    used for hasing user passwords or for encrpted storage. It can be changed
+    at any time, but will invalidate all existing sessions.
+
 database-host
     PostgreSQL database hostname. Defaults to ``localhost``.
 
