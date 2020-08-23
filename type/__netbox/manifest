@@ -138,6 +138,25 @@ else
 fi
 export LOGIN_REQUIRED
 
+if [ -f "$__object/parameter/data-root" ]; then
+    data_root="$(cat "$__object/parameter/data-root")"
+    MEDIA_ROOT="$data_root/media"
+    REPORTS_ROOT="$data_root/reports"
+    SCRIPTS_ROOT="$data_root/scripts"
+fi
+if [ -f "$__object/parameter/media-root" ]; then
+    MEDIA_ROOT="$(cat "$__object/parameter/media-root")"
+fi
+export MEDIA_ROOT
+if [ -f "$__object/parameter/reports-root" ]; then
+    REPORTS_ROOT="$(cat "$__object/parameter/reports-root")"
+fi
+export REPORTS_ROOT
+if [ -f "$__object/parameter/scripts-root" ]; then
+    SCRIPTS_ROOT="$(cat "$__object/parameter/scripts-root")"
+fi
+export SCRIPTS_ROOT
+
 
 # Create system user used to run netbox.
 __user netbox --system --home /opt/netbox --create-home

@@ -107,6 +107,39 @@ http-proxy
 https-proxy
     Proxy which will be used with any HTTP request like webhooks.
 
+data-root
+    This parameter set's the media, reports and scripts root to subdirectories
+    of the given directory. Values can be overwritten by special parameters like
+    `--media-root` for example. Use this option if you want to store persistant
+    data of netbox on an other partition. A trailing shlash is not needed.
+
+    The data directories have following predefined sub-directory names:
+
+    media root:
+        ``$data_root/media``
+    reports root:
+        ``$data_root/reports``
+    scripts root:
+        ``$data_root/scripts``
+
+media-root
+    The file path to where media files (like image attachments) are stored.
+    Change this path if you require to store data on an other partiotion.
+    A trailing slash is not needed. By default, it will be stored into the
+    installation directory (``/opt/netbox/netbox/netbox/media``).
+
+reports-root
+    The file path of where custom reports are kept. Change this path if you
+    require to store data on an other partition. A trailing slash is not
+    needed. By default, it will be stored into the installation directory
+    (``/opt/netbox/netbox/netbox/reports``).
+
+scripts-root
+    The file path of where custom scripts are kept. Change this path if you
+    require to store data on an other partition. A trailing slash is not
+    needed. By default, it will be stored into the installation directory
+    (``/opt/netbox/netbox/netbox/scripts``).
+
 BOOLEAN PARAMETERS
 ------------------
 redis-ssl

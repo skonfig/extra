@@ -19,3 +19,7 @@ smtp-from-email
 basepath
 http-proxy
 https-proxy
+data-root
+media-root
+reports-root
+scripts-root

@@ -154,15 +154,6 @@ EOF
     cat << EOF
 }
 EOF
-
-else
-    cat << EOF
-# HTTP proxies NetBox should use when sending outbound HTTP requests (e.g. for webhooks).
-# HTTP_PROXIES = {
-#     'http': 'http://10.10.1.10:3128',
-#     'https': 'http://10.10.1.10:1080',
-# }
-EOF
 fi
 
 cat << EOF
@@ -190,10 +181,18 @@ MAINTENANCE_MODE = False
 # all objects by specifying "?limit=0".
 MAX_PAGE_SIZE = 1000
 
+EOF
+
+if [ "$MEDIA_ROOT" != "" ]; then
+    cat << EOF
 # The file path where uploaded media such as image attachments are stored. A trailing slash is not needed. Note that
 # the default value of this setting is derived from the installed location.
-# MEDIA_ROOT = '/opt/netbox/netbox/media'
+MEDIA_ROOT = '$MEDIA_ROOT'
 
+EOF
+fi
+
+cat << EOF
 # By default uploaded media is stored on the local filesystem. Using Django-storages is also supported. Provide the
 # class path of the storage driver in STORAGE_BACKEND and any configuration options in STORAGE_CONFIG. For example:
 # STORAGE_BACKEND = 'storages.backends.s3boto3.S3Boto3Storage'
@@ -257,14 +256,27 @@ RELEASE_CHECK_TIMEOUT = 24 * 3600
 RELEASE_CHECK_URL = None
 # RELEASE_CHECK_URL = 'https://api.github.com/repos/netbox-community/netbox/releases'
 
+EOF
+
+if [ "$REPORTS_ROOT" != "" ]; then
+    cat << EOF
 # The file path where custom reports will be stored. A trailing slash is not needed. Note that the default value of
 # this setting is derived from the installed location.
-# REPORTS_ROOT = '/opt/netbox/netbox/reports'
+REPORTS_ROOT = '$REPORTS_ROOT'
 
+EOF
+fi
+
+if [ "$SCRIPTS_ROOT" != "" ]; then
+    cat << EOF
 # The file path where custom scripts will be stored. A trailing slash is not needed. Note that the default value of
 # this setting is derived from the installed location.
-# SCRIPTS_ROOT = '/opt/netbox/netbox/scripts'
+SCRIPTS_ROOT = '$SCRIPTS_ROOT'
 
+EOF
+fi
+
+cat << EOF
 # By default, NetBox will store session data in the database. Alternatively, a file path can be specified here to use
 # local file storage instead. (This can be useful for enabling authentication on a standby instance with read-only
 # database access.) Note that the user as which NetBox runs must have read and write permissions to this path.
