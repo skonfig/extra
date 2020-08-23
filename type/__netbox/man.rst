@@ -217,11 +217,13 @@ SEE ALSO
 AUTHORS
 -------
 Timothée Floure <t.floure@e-durable.ch>
+Matthias Stecher <matthiasstecher@gmx.de>
 
 
 COPYING
 -------
-Copyright \(C) 2020 Timothée Floure. You can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+Copyright \(C) 2020 Timothée Floure.
+Copyright \(C) 2020 Matthias Stecher.
+You can redistribute it and/or modify it under the terms of the GNU
+General Public License as published by the Free Software Foundation,
+either version 3 of the License, or (at your option) any later version.
