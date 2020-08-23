@@ -242,7 +242,7 @@ RACK_ELEVATION_DEFAULT_UNIT_WIDTH = 220
 
 # Remote authentication support
 REMOTE_AUTH_ENABLED = False
-REMOTE_AUTH_BACKEND = 'utilities.auth_backends.RemoteUserBackend'
+REMOTE_AUTH_BACKEND = 'netbox.authentication.RemoteUserBackend'
 REMOTE_AUTH_HEADER = 'HTTP_REMOTE_USER'
 REMOTE_AUTH_AUTO_CREATE_USER = True
 REMOTE_AUTH_DEFAULT_GROUPS = []
