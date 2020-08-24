@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # no configuration if there are no ldap parameters
-if [ "$(find "$__object/parameter/" -type f -name 'ldap-*' -print)" ]; then
+if [ -z "$(find "$__object/parameter/" -type f -name 'ldap-*' -print)" ]; then
     # skip
     cat << EOF
 ##############################
