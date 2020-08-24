@@ -163,8 +163,12 @@ smtp-use-ssl
     for more information.
 
 login-required
-    Sets if a login is required to access all sites. By default, anounymous users
-    can see most data (excluding secrets) but not make any changes.
+    Sets if a login is required to access all sites. By default, anonymous
+    users can see most data (excluding secrets) but not make any changes.
+
+update-notify
+    Enables the NetBox version check for new upstream updates. It checks every
+    24 hours for new releases and notify the admin users in the gui if any.
 
 MESSAGES
 --------

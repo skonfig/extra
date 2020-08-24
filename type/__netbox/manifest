@@ -168,6 +168,11 @@ if [ -f "$__object/parameter/scripts-root" ]; then
 fi
 export SCRIPTS_ROOT
 
+if [ -f "$__object/parameter/update-notify" ]; then
+    UPDATE_CHECK="yes"
+    export UPDATE_CHECK
+fi
+
 
 # Create system user used to run netbox.
 __user netbox --system --home /opt/netbox --create-home

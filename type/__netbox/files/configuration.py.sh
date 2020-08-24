@@ -253,10 +253,20 @@ RELEASE_CHECK_TIMEOUT = 24 * 3600
 
 # This repository is used to check whether there is a new release of NetBox available. Set to None to disable the
 # version check or use the URL below to check for release in the official NetBox repository.
-RELEASE_CHECK_URL = None
-# RELEASE_CHECK_URL = 'https://api.github.com/repos/netbox-community/netbox/releases'
 
 EOF
+
+if [ "$UPDATE_CHECK" != "" ]; then
+    cat << EOF
+RELEASE_CHECK_URL = None
+
+EOF
+else
+    cat << EOF
+RELEASE_CHECK_URL = 'https://api.github.com/repos/netbox-community/netbox/releases'
+
+EOF
+fi
 
 if [ "$REPORTS_ROOT" != "" ]; then
     cat << EOF
