@@ -34,6 +34,7 @@ database-password
 
 host
     Hostname (domain or IP address) on which the application is served.
+    Multiple hostnames are possible; given as multiple arguments.
 
 OPTIONAL PARAMETERS
 -------------------
@@ -190,6 +191,7 @@ EXAMPLES
                 --database-password "secretsecretsecret" \
                 --secret-key "secretsecretsecret" \
                 --host "${__target_host:?}" \
+                --host "cool-netbox.xyz" \
                 --ldap-server "ldaps://ldap.domain.tld" \
                 --ldap-bind-dn "uid=netbox,ou=services,dc=domain,dc=tld" \
                 --ldap-bind-password "secretsecretsecret" \
