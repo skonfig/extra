@@ -67,10 +67,10 @@ cat <<'EOF'
 test -f "${aliases_file}" || touch "${aliases_file}"
 
 awk -F ':[ \t]*' -v mode=$mode '
-function sepafter(f, default,    _) {
+function sepafter(f, def,    _) {
 	# finds the separator between field $f and $(f+1)
 	_ = substr($0, length($f)+1, index(substr($0, length($f)+1), $(f+1))-1)
-	return _ ? _ : default
+	return _ ? _ : def
 }
 
 function write_aliases() {
@@ -134,6 +134,7 @@ END {
 		write_aliases()
 }
 ' <"${aliases_file}" >"${aliases_file}.tmp" || {
+	rm -f "${aliases_file}.tmp"
 	echo 'Generating new aliases file failed!' >&2
 	exit 1
 }
