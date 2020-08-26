@@ -204,13 +204,7 @@ $SECRET_KEY
 SECRET
 
 
-# Upload systemd units and gunicorn configuration.
-for unit in netbox netbox-rq; do
-    __systemd_unit $unit.service \
-        --source "$__type/files/$unit.service" \
-        --enablement-state enabled
-done
-
-# Python worker configuration.
-require="__user/netbox" __file /opt/netbox/gunicorn.py \
-    --mode 644 --source "$__type/files/gunicorn.py"
+# Upload systemd unit for worker service
+__systemd_unit netbox-rq.service \
+    --source "$__type/files/netbox-rq.service" \
+    --enablement-state enabled

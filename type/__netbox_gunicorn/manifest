@@ -1,0 +1,20 @@
+#!/bin/sh -e
+
+HOST=""
+while read -r host; do
+    HOST="$HOST '$host',"
+done < "$__object/parameter/bind-to"
+export HOST
+
+# process template
+mkdir "$__object/files"
+"$__type/files/gunicorn.py.sh" > "$__object/files/gunicorn.py"
+
+# gunicorn config file
+__file /opt/netbox/gunicorn.py \
+    --mode 644 --source "$__object/files/gunicorn.py"
+
+# install service file
+__systemd_unit gunicorn-netbox.service \
+    --source "$__type/files/netbox.service" \
+    --enablement-state enabled --restart

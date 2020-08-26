@@ -35,6 +35,7 @@ rm -r '$install_dir'
 cp -r '$src/netbox' '$install_dir'
 mkdir '$install_dir/cdist'
 
+cp '$src/requirements.txt' /opt/netbox/  # backup dependency info
 cp \$tmpdir/configuration.py '$install_dir/netbox/configuration.py'
 cp \$tmpdir/ldap_config.py '$install_dir/netbox/ldap_config.py'
 
@@ -43,7 +44,9 @@ cp \$tmpdir/ldap_config.py '$install_dir/netbox/ldap_config.py'
 virtualenv -p python3 /opt/netbox/venv
 
 # Install python dependencies.
-/opt/netbox/venv/bin/pip3 install -r "\$tmpdir/$src/requirements.txt"
+#  avoid gunicorn, because it will be done in an other type
+grep -v "^gunicorn==" "\$tmpdir/$src/requirements.txt" \
+    | xargs /opt/netbox/venv/bin/pip3 install
 EOF
 
     if [ -f "$__object/parameter/ldap-server" ]; then
@@ -94,8 +97,7 @@ fi
 # check for changes
 if [ "$changes" = "yes" ]; then
     cat << EOF
-# Restart services.
-service netbox restart
+# Restart service.
 service netbox-rq restart
 EOF
 fi

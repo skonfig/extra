@@ -1,5 +1,5 @@
 [Unit]
-Description=NetBox WSGI Service
+Description=NetBox Gunicorn WSGI Service
 Documentation=https://netbox.readthedocs.io/en/stable/
 After=network-online.target
 Wants=network-online.target
@@ -19,4 +19,5 @@ RestartSec=30
 PrivateTmp=true
 
 [Install]
+Alias=netbox.service
 WantedBy=multi-user.target
