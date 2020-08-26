@@ -48,6 +48,8 @@ EOF
 
     if [ -f "$__object/parameter/ldap-server" ]; then
         echo "/opt/netbox/venv/bin/pip3 install django-auth-ldap"
+    else
+        echo "/opt/netbox/venv/bin/pip3 uninstall django-auth-ldap"
     fi
 
     cat << EOF
