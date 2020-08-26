@@ -57,38 +57,38 @@ export SECRET_KEY
 
 if [ -f "$__object/parameter/ldap-server" ]; then
     LDAP_SERVER=$(cat "$__object/parameter/ldap-server")
+    USE_LDAP=yes
     export LDAP_SERVER
 fi
-
 if [ -f "$__object/parameter/ldap-bind-dn" ]; then
     LDAP_BIND_DN=$(cat "$__object/parameter/ldap-bind-dn")
+    USE_LDAP=yes
     export LDAP_BIND_DN
 fi
-
 if [ -f "$__object/parameter/ldap-bind-password" ]; then
     LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap-bind-password")
+    USE_LDAP=yes
     export LDAP_BIND_PASSWORD
 fi
-
 if [ -f "$__object/parameter/ldap-user-base" ]; then
     LDAP_USER_BASE=$(cat "$__object/parameter/ldap-user-base")
+    USE_LDAP=yes
     export LDAP_USER_BASE
 fi
-
 if [ -f "$__object/parameter/ldap-group-base" ]; then
     LDAP_GROUP_BASE=$(cat "$__object/parameter/ldap-group-base")
     export LDAP_GROUP_BASE
 fi
-
 if [ -f "$__object/parameter/ldap-require-group" ]; then
     LDAP_REQUIRE_GROUP=$(cat "$__object/parameter/ldap-require-group")
     export LDAP_REQUIRE_GROUP
 fi
-
 if [ -f "$__object/parameter/ldap-superuser-group" ]; then
     LDAP_SUPERUSER_GROUP=$(cat "$__object/parameter/ldap-superuser-group")
     export LDAP_SUPERUSER_GROUP
 fi
+# export if base ldap parameters are used
+export USE_LDAP
 
 # have default values
 REDIS_HOST="$(cat "$__object/parameter/redis-host")"

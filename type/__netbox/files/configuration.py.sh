@@ -240,9 +240,23 @@ PREFER_IPV4 = False
 RACK_ELEVATION_DEFAULT_UNIT_HEIGHT = 22
 RACK_ELEVATION_DEFAULT_UNIT_WIDTH = 220
 
+EOF
+
+if [ "$USE_LDAP" ]; then
+    cat << EOF
+# Remote authentication support with ldap
+REMOTE_AUTH_ENABLED = True
+REMOTE_AUTH_BACKEND = 'netbox.authentication.LDAPBackend'
+EOF
+else
+    cat << EOF
 # Remote authentication support
 REMOTE_AUTH_ENABLED = False
 REMOTE_AUTH_BACKEND = 'netbox.authentication.RemoteUserBackend'
+EOF
+fi
+
+cat << EOF
 REMOTE_AUTH_HEADER = 'HTTP_REMOTE_USER'
 REMOTE_AUTH_AUTO_CREATE_USER = True
 REMOTE_AUTH_DEFAULT_GROUPS = []
