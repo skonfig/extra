@@ -3,7 +3,7 @@ cdist-type__netbox_uwsgi(7)
 
 NAME
 ----
-cdist-type__netbox_gunicorn - run netbox with gunicorn
+cdist-type__netbox_uwsgi - run netbox with uwsgi
 
 
 DESCRIPTION
@@ -19,9 +19,8 @@ None.
 OPTIONAL PARAMETERS
 -------------------
 bind-to
-    The hosts the gunicorn socket should be bind to. Formats are `IP`,
-    `IP:PORT`, `unix:PATH` and `fd://FD`. Parameter can be set a multiple
-    times. Defaults to ``127.0.0.1:8001``.
+    The socket uwsgi should bind to. Must be UNIX/TCP for the uwsgi protocol.
+    Defaults to ``127.0.0.1:3031``.
 
 
 BOOLEAN PARAMETERS
@@ -31,11 +30,14 @@ None.
 
 MESSAGES
 --------
-updated $old to $new
-    The version of the gunicorn software was updated from `$old` to `$new`.
+installed
+    The uwsgi service was installed.
+
+upgraded
+    The uwsgi service was upgraded.
 
 configured
-    Configuration for gunicorn changed.
+    The uwsgi configuration got updated.
 
 In both cases, and at messages from the `__netbox` type, it restarts the
 service to using the up-to-date version.
@@ -48,18 +50,16 @@ EXAMPLES
 
     # simple
     __netbox $args
-    require="__netbox" __netbox_gunicorn
+    require="__netbox" __netbox_uwsgi
 
-    # with arguments
-    __netbox $args
-    require="__netbox" __netbox_gunicorn \
-        --bind-to 0.0.0.0:8001 \
-        --bind-to 1.2.3.4:5678
+    # with special bind
+    require="__netbox" __netbox_uwsgi --bind-to 0.0.0.0:3032 \
+                                      --bind-to 0.0.0.0:3033
 
 
 SEE ALSO
 --------
-:strong:`__netbox`\ (7)
+:strong:`TODO`\ (7)
 
 
 AUTHORS

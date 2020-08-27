@@ -1,0 +1,23 @@
+[Unit]
+Description=Netbox uWSGI WSGI Service
+Documentation=https://netbox.readthedocs.io/en/stable/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+User=netbox
+Group=netbox
+PIDFile=/var/tmp/netbox.pid
+WorkingDirectory=/opt/netbox
+
+ExecStart=/opt/netbox/venv/bin/uwsgi --master --wsgi-file netbox/netbox/wsgi.py uwsgi.ini
+
+Restart=on-failure
+RestartSec=30
+PrivateTmp=true
+
+[Install]
+Alias=netbox.service
+WantedBy=multi-user.target

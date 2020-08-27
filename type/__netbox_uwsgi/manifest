@@ -1,0 +1,18 @@
+#!/bin/sh -e
+
+HOST="$__object/parameter/bind-to"
+export HOST
+
+# process template
+mkdir "$__object/files"
+"$__type/files/uwsgi.ini.sh" > "$__object/files/uwsgi.ini"
+
+# uwsgi config file
+# TODO maybe patching with __key_value cause of .ini ?
+__file /opt/netbox/uwsgi.ini \
+    --mode 644 --source "$__object/files/uwsgi.ini"
+
+# install service file
+__systemd_unit uwsgi-netbox.service \
+    --source "$__type/files/netbox.service" \
+    --enablement-state enabled --restart

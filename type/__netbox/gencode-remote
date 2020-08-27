@@ -89,7 +89,7 @@ EOF
     fi
 
     # meta
-    printf "configuration\n" >> "$__messages_out"
+    printf "configured\n" >> "$__messages_out"
     changes=yes
 fi
 

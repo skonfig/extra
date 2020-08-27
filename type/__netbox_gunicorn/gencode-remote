@@ -16,7 +16,7 @@ fi
 # configuration changes
 if grep -q "^__file/opt/netbox/gunicorn.py:" "$__messages_in"; then
     do_restart=yes
-    printf "configuration\n" >> "$__messages_out"
+    printf "configured\n" >> "$__messages_out"
 fi
 
 # application
@@ -27,10 +27,9 @@ fi
 
 
 # restart gunicorn
-if [ "$do_restart"]; then
+if [ "$do_restart" ]; then
     cat << EOF
 # Restart service
 service gunicorn-netbox restart
 EOF
-    echo restarted >> "$__messages_out"
 fi

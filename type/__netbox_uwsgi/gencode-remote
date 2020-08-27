@@ -1,0 +1,35 @@
+#!/bin/sh -e
+
+# not installed
+if ! [ -s "$__object/explorer/installed" ]; then
+    echo "/opt/netbox/venv/bin/pip3 install uwsgi"
+    do_restart=yes
+    printf "installed\n" >> "$__messages_out"
+
+# updates available
+elif [ -s "$__object/explorer/upgradeable" ]; then
+    echo "/opt/netbox/venv/bin/pip3 install --upgrade uwsgi"
+    do_restart=yes
+    printf "upgraded\n" >> "$__messages_out"
+fi
+
+# changed configuration
+if grep -q "^__file/opt/netbox/uwsgi.ini:" "$__messages_in"; then
+    do_restart=yes
+    printf "configured\n" >> "$__messages_out"
+fi
+
+# application
+if grep -q "^__netbox:" "$__messages_in"; then
+    do_restart=yes
+    # no messages cause this is obvious
+fi
+
+
+# restart uwsgi
+if [ "$do_restart" ]; then
+    cat << EOF
+# Restart service
+service uwsgi-netbox restart
+EOF
+fi
