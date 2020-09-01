@@ -2,9 +2,10 @@
 
 HOST=""
 while read -r host; do
+    # shellcheck disable=SC2089
     HOST="$HOST '$host',"
 done < "$__object/parameter/bind-to"
-export HOST
+export HOST  # shellcheck disable=SC2090
 
 # process template
 mkdir "$__object/files"

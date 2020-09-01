@@ -38,9 +38,10 @@ export DATABASE_PORT
 # list of hosts
 ALLOWED_HOSTS=""
 while read -r hostname; do
+    # shellcheck disable=SC2089
     ALLOWED_HOSTS="$ALLOWED_HOSTS '$hostname',"
 done < "$__object/parameter/host"
-export ALLOWED_HOSTS
+export ALLOWED_HOSTS  # shellcheck disable=SC2090
 
 if [ -f "$__object/parameter/secret-key" ]; then
     SECRET_KEY=$(cat "$__object/parameter/secret-key")
