@@ -204,7 +204,9 @@ $SECRET_KEY
 SECRET
 
 
-# Upload systemd unit for worker service
-__systemd_unit netbox-rq.service \
-    --source "$__type/files/netbox-rq.service" \
-    --enablement-state enabled
+# Upload systemd unit for worker and wsgi service
+for unit in netbox netbox-rq; do
+    __systemd_unit $unit.service \
+        --source "$__type/files/$unit.service" \
+        --enablement-state enabled
+done

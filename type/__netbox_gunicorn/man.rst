@@ -37,8 +37,7 @@ updated $old to $new
 configured
     Configuration for gunicorn changed.
 
-In both cases, and at messages from the `__netbox` type, it restarts the
-service to using the up-to-date version.
+In both cases, it restarts the service to use the up-to-date version.
 
 
 EXAMPLES

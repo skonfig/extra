@@ -98,6 +98,7 @@ fi
 if [ "$changes" = "yes" ]; then
     cat << EOF
 # Restart service.
+service netbox restart
 service netbox-rq restart
 EOF
 fi

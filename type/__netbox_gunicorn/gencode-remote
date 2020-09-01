@@ -19,12 +19,6 @@ if grep -q "^__file/opt/netbox/gunicorn.py:" "$__messages_in"; then
     printf "configured\n" >> "$__messages_out"
 fi
 
-# application
-if grep -q "^__netbox:" "$__messages_in"; then
-    do_restart=yes
-    # no message cause it should be obvious
-fi
-
 
 # restart gunicorn
 if [ "$do_restart" ]; then
