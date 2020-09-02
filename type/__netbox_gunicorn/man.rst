@@ -3,12 +3,16 @@ cdist-type__netbox_uwsgi(7)
 
 NAME
 ----
-cdist-type__netbox_gunicorn - run netbox with gunicorn
+cdist-type__netbox_gunicorn - Run NetBox with Gunicorn
 
 
 DESCRIPTION
 -----------
-This space intentionally left blank.
+This (singleton) type installs Gunicorn into the NetBox `python-venv` to host
+the NetBox WSGI application. It provides the application as HTTP over the given
+sockets. Static content must be served independent of Gunicorn. The Gunicorn
+daemon is available as the `gunicorn-netbox` systemd service, but also
+available via the `netbox` wrapper service.
 
 
 REQUIRED PARAMETERS
@@ -58,7 +62,10 @@ EXAMPLES
 
 SEE ALSO
 --------
-:strong:`__netbox`\ (7)
+`Gunicorn Documentation <https://docs.gunicorn.org/en/stable/>`_
+
+:strong:`cdist-type__netbox`\ (7)
+:strong:`cdist-type__netbox_uwsgi`\ (7)
 
 
 AUTHORS

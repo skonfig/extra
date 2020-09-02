@@ -3,12 +3,16 @@ cdist-type__netbox_uwsgi(7)
 
 NAME
 ----
-cdist-type__netbox_uwsgi - run netbox with uwsgi
+cdist-type__netbox_uwsgi - Run NetBox with uWSGI
 
 
 DESCRIPTION
 -----------
-This space intentionally left blank.
+This (singleton) type installs uWSGI into the NetBox `python-venv`. It hosts
+the NetBox WSGI application over the WSGI protocol. A further server must be
+installed to provide it as HTTP. This application is available via the
+`uwsgi-netbox` systemd service. It is controllable via the `netbox` wrapper
+service, too.
 
 
 REQUIRED PARAMETERS
@@ -58,7 +62,10 @@ EXAMPLES
 
 SEE ALSO
 --------
-:strong:`TODO`\ (7)
+`uWSGI Documentation <https://uwsgi-docs.readthedocs.io/en/latest/>`_
+
+:strong:`cdist-type__netbox`\ (7)
+:strong:`cdist-type__netbox_gunicorn`\ (7)
 
 
 AUTHORS

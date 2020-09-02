@@ -12,8 +12,12 @@ This (singleton) type installs and configures a NetBox instance, a web
 application to help manage and document computer networks.
 
 It installs it with the user ``netbox`` at ``/opt/netbox`` with `python-venv`.
-Netbox will be run via `gnuicorn` as WSGI service. It setup systemd unit files
-for the services `netbox` and `netbox-rq`.
+It setup systemd unit files for the services `netbox` and `netbox-rq`. To
+access the application through WSGI, uWSGI or Gunicorn can be used. The setup
+can be done via there own types `__netbox_gunicorn` and `__netbox_uwsgi`.
+
+The Gunicorn setup is recommended from the NetBox documentation. Consult each
+manual page to decide. The types must be called after the `__netbox` type.
 
 
 REQUIRED PARAMETERS
@@ -35,6 +39,7 @@ database-password
 host
     Hostname (domain or IP address) on which the application is served.
     Multiple hostnames are possible; given as multiple arguments.
+
 
 OPTIONAL PARAMETERS
 -------------------
@@ -147,6 +152,7 @@ scripts-root
     needed. By default, it will be stored into the installation directory
     (``/opt/netbox/netbox/netbox/scripts``).
 
+
 BOOLEAN PARAMETERS
 ------------------
 redis-ssl
@@ -170,6 +176,7 @@ login-required
 update-notify
     Enables the NetBox version check for new upstream updates. It checks every
     24 hours for new releases and notify the admin users in the gui if any.
+
 
 MESSAGES
 --------
@@ -199,6 +206,8 @@ EXAMPLES
                 --ldap-group-base "ou=groups,dc=domain,dc=tld" \
                 --ldap-require-group "cn=netbox-login,ou=groups,dc=domain,dc=tld" \
                 --ldap-superuser-group "cn=netbox-admin,ou=groups,dc=domain,dc=tld"
+  # using recommended gunicorn setup
+  require="__netbox" __netbox_gunicorn
 
 
 NOTES
@@ -216,9 +225,14 @@ If you not setup ldap authentification, you may be interested into how to
 <https://netbox.readthedocs.io/en/stable/installation/3-netbox/#create-a-super-user>`
 directly on the machine to be able to access and use NetBox.
 
+
 SEE ALSO
 --------
-- `NetBox documentation <https://netbox.readthedocs.io/en/stable/>`_
+`NetBox documentation <https://netbox.readthedocs.io/en/stable/>`_
+
+:strong:`cdist-type__netbox_gunicorn`\ (7)
+:strong:`cdist-type__netbox_uwsgi`\ (7)
+
 
 AUTHORS
 -------
