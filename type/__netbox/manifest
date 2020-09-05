@@ -127,7 +127,7 @@ fi
 export SMTP_USE_SSL
 if [ -f "$__object/parameter/smtp-use-tls" ]; then
     if [ "$SMTP_USE_SSL" = "True" ]; then
-        echo "options --smtp-use-ssl and --smtp-use-tls are not compatible"
+        echo "options --smtp-use-ssl and --smtp-use-tls are not compatible" >&2
         exit 2
     fi
     SMTP_USE_TLS="True"

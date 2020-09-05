@@ -9,10 +9,11 @@ cdist-type__netbox_uwsgi - Run NetBox with uWSGI
 DESCRIPTION
 -----------
 This (singleton) type installs uWSGI into the NetBox `python-venv`. It hosts
-the NetBox WSGI application over the WSGI protocol. A further server must be
-installed to provide it as HTTP. This application is available via the
-`uwsgi-netbox` systemd service. It is controllable via the `netbox` wrapper
-service, too.
+the NetBox WSGI application via the WSGI protocol. A further server must be
+installed to provide it as HTTP and serve static content. It supports multiple
+protocols like uwsgi, fastcgi or HTTP to comunicate with the proxy server. This
+application is available via the `uwsgi-netbox` systemd service. It is
+controllable via the `netbox` wrapper service, too.
 
 
 REQUIRED PARAMETERS
@@ -24,7 +25,15 @@ OPTIONAL PARAMETERS
 -------------------
 bind-to
     The socket uwsgi should bind to. Must be UNIX/TCP for the uwsgi protocol.
-    Defaults to ``127.0.0.1:3031``.
+    Defaults to ``127.0.0.1:3031``. Can be set multiple times.
+
+uwsgi-bind
+http-bind
+fastcgi-bind
+scgi-bind
+    Bind the application to a specific protocol instead of implicit uwsgi via
+    ``--bind-to``. If such parameter given, ``--bind-to`` will be ignored. Must
+    be a UNIX/TCP socket. Can be set multiple times.
 
 
 BOOLEAN PARAMETERS
@@ -55,9 +64,17 @@ EXAMPLES
     __netbox $args
     require="__netbox" __netbox_uwsgi
 
-    # with special bind
+    # with multiple binds
+    __netbox $args
     require="__netbox" __netbox_uwsgi --bind-to 0.0.0.0:3032 \
                                       --bind-to 0.0.0.0:3033
+
+    # with multiple protocols
+    #  parameter `--bind-to` will be ignored
+    __netbox $args
+    require="__netbox" __netbox_uwsgi --uwsgi-bind 0.0.0.0:3031 \
+                                      --http-bind 0.0.0.0:8080 \
+                                      --fastcgi-bind 1.2.3.4:5678
 
 
 SEE ALSO
