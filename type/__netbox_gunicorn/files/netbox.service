@@ -3,22 +3,24 @@ Description=NetBox Gunicorn WSGI Service
 Documentation=https://netbox.readthedocs.io/en/stable/
 PartOf=netbox.service
 After=netbox.service
-After=network-online.target
-Wants=network-online.target
+After=network.target
+Wants=network.target
 
 [Service]
 Type=simple
 
 User=netbox
 Group=netbox
-PIDFile=/var/tmp/netbox.pid
 WorkingDirectory=/opt/netbox
 
-ExecStart=/opt/netbox/venv/bin/gunicorn --pid /var/tmp/netbox.pid --pythonpath /opt/netbox/netbox --config /opt/netbox/gunicorn.py netbox.wsgi
+ExecStart=/opt/netbox/venv/bin/gunicorn --pythonpath /opt/netbox/netbox --config /opt/netbox/gunicorn.py netbox.wsgi
+# signals: https://docs.gunicorn.org/en/stable/signals.html
+ExecReload=kill -HUP $MAINPID
+ExecStop=kill -TERM $MAINPID
+KillSignal=SIGQUIT
 
 Restart=on-failure
 RestartSec=30
-PrivateTmp=true
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=netbox.service

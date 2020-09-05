@@ -1,12 +1,13 @@
 [Unit]
 Description=NetBox Service Wrapper
 Documentation=https://netbox.readthedocs.io/en/stable/
-After=network-online.target
-Wants=network-online.target
+After=network.target
+Wants=network.target
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+ExecStart=/bin/true
 
 [Install]
 WantedBy=multi-user.target

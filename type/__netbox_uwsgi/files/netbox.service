@@ -3,22 +3,24 @@ Description=Netbox uWSGI WSGI Service
 Documentation=https://netbox.readthedocs.io/en/stable/
 PartOf=netbox.service
 After=netbox.service
-After=network-online.target
-Wants=network-online.target
+After=network.target
+Wants=network.target
 
 [Service]
 Type=simple
 
 User=netbox
 Group=netbox
-PIDFile=/var/tmp/netbox.pid
-WorkingDirectory=/opt/netbox
+WorkingDirectory=/opt/netbox/netbox/
 
-ExecStart=/opt/netbox/venv/bin/uwsgi --master --wsgi-file netbox/netbox/wsgi.py uwsgi.ini
+ExecStart=/opt/netbox/venv/bin/uwsgi --master --module netbox.wsgi uwsgi.ini
+# signals: https://uwsgi-docs.readthedocs.io/en/latest/Management.html#signals-for-controlling-uwsgi
+ExecReload=kill -HUP $MAINPID
+ExecStop=kill -INT $MAINPID
+KillSignal=SIGQUIT
 
 Restart=on-failure
 RestartSec=30
-PrivateTmp=true
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=netbox.service
