@@ -11,9 +11,9 @@ Type=simple
 
 User=netbox
 Group=netbox
-WorkingDirectory=/opt/netbox/netbox/
+WorkingDirectory=/opt/netbox
 
-ExecStart=/opt/netbox/venv/bin/uwsgi --master --module netbox.wsgi uwsgi.ini
+ExecStart=/opt/netbox/venv/bin/uwsgi --master --chdir /opt/netbox/netbox --module netbox.wsgi uwsgi.ini
 # signals: https://uwsgi-docs.readthedocs.io/en/latest/Management.html#signals-for-controlling-uwsgi
 ExecReload=kill -HUP $MAINPID
 ExecStop=kill -INT $MAINPID
