@@ -1,5 +1,11 @@
 #!/bin/sh -e
 
+# *bind* parameters are directly processed in the gen script
+if [ -f "$__object/parameter/serve-static" ]; then
+    STATIC_MAP="yes"
+    export STATIC_MAP
+fi
+
 # process template
 mkdir "$__object/files"
 "$__type/files/uwsgi.ini.sh" > "$__object/files/uwsgi.ini"

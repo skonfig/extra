@@ -43,9 +43,20 @@ if [ -z "$socket_changes" ]; then
 fi
 
 
+# multi-process settings
 cat << EOF
 
 ; processes and threads
 processes = $(( 2*cores + 1 ))
 threads = 2
 EOF
+
+
+# optional mapping of static content
+if [ "$STATIC_MAP" != "" ]; then
+    cat << EOF
+
+; map static content
+static-map = /static=/opt/netbox/netbox/static
+EOF
+fi

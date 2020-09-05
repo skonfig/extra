@@ -38,7 +38,12 @@ scgi-bind
 
 BOOLEAN PARAMETERS
 ------------------
-None.
+serve-static
+    Setup uWSGI to serve the static content, too. This is generally not
+    recommended for real production setups, as it is the job of the reverse
+    proxy server, who will thread it as static cachable content. This option
+    is only recommended for small setups or direct usage of the uWSGI socket
+    like using it as standalone HTTP server for NetBox.
 
 
 MESSAGES
@@ -75,6 +80,10 @@ EXAMPLES
     require="__netbox" __netbox_uwsgi --uwsgi-bind 0.0.0.0:3031 \
                                       --http-bind 0.0.0.0:8080 \
                                       --fastcgi-bind 1.2.3.4:5678
+
+    # as standalone server
+    __netbox $args
+    require="__netbox" __netbox_uwsgi --serve-static --http-bind 0.0.0.0:80
 
 
 SEE ALSO
