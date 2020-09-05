@@ -45,6 +45,11 @@ serve-static
     is only recommended for small setups or direct usage of the uWSGI socket
     like using it as standalone HTTP server for NetBox.
 
+    **Hint**: This parameter does not work in junction with the `__netbox`
+    parameter ``--basepath``. It is because this type does not know the
+    parameter value and this case is very unlikly to happen; although an
+    implementation is not difficult.
+
 
 MESSAGES
 --------
