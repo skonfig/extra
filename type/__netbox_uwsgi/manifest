@@ -1,8 +1,5 @@
 #!/bin/sh -e
 
-HOST="$__object/parameter/bind-to"
-export HOST
-
 # process template
 mkdir "$__object/files"
 "$__type/files/uwsgi.ini.sh" > "$__object/files/uwsgi.ini"

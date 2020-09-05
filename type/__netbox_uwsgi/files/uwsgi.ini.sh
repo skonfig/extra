@@ -29,10 +29,14 @@ cat << EOF
 EOF
 
 # special protocol to bind
-for param in $(find "$__object/parameter/" -maxdepth 1 -name "*-bind" -print); do
+while read -r param; do
     multi_options "$(basename "$param" | awk -F'-' '{print $1}')-socket" "$param"
-    socket_changes=yes
-done
+    socket_changes="yes"
+
+done << INPUT  # here-doc cause of SC2031
+$( find "$__object/parameter/" -maxdepth 1 -name "*-bind" -print )
+INPUT
+
 # else, default bind to
 if [ -z "$socket_changes" ]; then
     multi_options "socket" "$__object/parameter/bind-to"
