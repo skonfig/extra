@@ -1,6 +1,4 @@
-#!/bin/sh
-
-echo "set -e"
+#!/bin/sh -e
 
 old_version="$(cat "$__object/explorer/version")"
 VERSION=$(cat "$__object/parameter/version")
