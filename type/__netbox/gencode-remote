@@ -30,6 +30,17 @@ tar xf '$archive'
 cp '$install_dir/cdist/configuration.py' "\$tmpdir/configuration.py"
 cp '$install_dir/cdist/ldap_config.py' "\$tmpdir/ldap_config.py"
 
+EOF
+
+    # Stop everything in the pyenv to update
+    cat << EOF
+# Try to kill everything in the venv
+systemctl stop netbox gunicorn-netbox uwsgi-netbox || true
+ps -axo pid,cmd | awk '\$2 ~ "^/opt/netbox/venv/"{print \$1}' | xargs kill || true
+
+EOF
+
+    cat << EOF
 # Deploy sources and restore configuration.
 rm -r '$install_dir'
 cp -r '$src/netbox' '$install_dir'
