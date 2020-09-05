@@ -14,7 +14,8 @@ mkdir "$__object/files"
 
 # gunicorn config file
 __file /opt/netbox/gunicorn.py \
-    --mode 644 --source "$__object/files/gunicorn.py"
+    --mode 644 --owner netbox \
+    --source "$__object/files/gunicorn.py"
 
 # install service file
 __systemd_unit gunicorn-netbox.service \
