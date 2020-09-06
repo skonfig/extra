@@ -30,6 +30,8 @@ EOF
 
 # special protocol to bind
 while read -r param; do
+    if [ -z "$param" ]; then continue; fi  # ignore empty lines from the here-doc
+
     multi_options "$(basename "$param" | awk -F'-' '{print $1}')-socket" "$param"
     socket_changes="yes"
 
