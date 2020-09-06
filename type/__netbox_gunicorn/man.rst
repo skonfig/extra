@@ -1,5 +1,5 @@
-cdist-type__netbox_uwsgi(7)
-===========================
+cdist-type__netbox_gunicorn(7)
+==============================
 
 NAME
 ----
@@ -22,6 +22,20 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
+state
+    Represents the state of the Gunciron application. Defaults to ``enabled``.
+
+    enabled
+        The Gunicorn service is enabled and running.
+    disabled
+        The Gunicorn service is installed, but disabled.
+    absent
+        The uWSGI service is not installed and all configuration removed.
+
+    This type does not guarantee anything about the running state of the
+    service. To be sure about the service is stopped or not, use the type
+    :strong:`cdist-type__systemd_service`\ (7) after this execution.
+
 bind-to
     The hosts the gunicorn socket should be bind to. Formats are `IP`,
     `IP:PORT`, `unix:PATH` and `fd://FD`. Parameter can be set a multiple
@@ -35,13 +49,20 @@ None.
 
 MESSAGES
 --------
-updated $old to $new
+installed
+    The software was installed.
+
+upgraded $old to $new
     The version of the gunicorn software was updated from `$old` to `$new`.
 
 configured
     Configuration for gunicorn changed.
 
-In both cases, it restarts the service to use the up-to-date version.
+uninstalled
+    The Gunicorn application was removed.
+
+In all cases where the application is still present, it restarts the service to
+use the up-to-date version.
 
 
 EXAMPLES
@@ -58,6 +79,17 @@ EXAMPLES
     require="__netbox" __netbox_gunicorn \
         --bind-to 0.0.0.0:8001 \
         --bind-to 1.2.3.4:5678
+
+    # replace uwsgi with gunicorn
+    __netbox $args
+    require="__netbox" __netbox_uwsgi --state absent
+    # it should depend on __netbox_uwsgi if they use the same socket
+    require="__netbox_uwsgi" __netbox_gunicorn --state enabled
+
+    # be sure the service is disabled
+    __netbox $args
+    require="__netbox" __netbox_gunicorn --state disabled
+    require="__netbox_gunicorn" __systemd_service gunicorn-netbox --state stopped
 
 
 SEE ALSO

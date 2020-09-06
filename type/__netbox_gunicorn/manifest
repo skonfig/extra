@@ -1,23 +1,55 @@
 #!/bin/sh -e
+# __netbox_gunicorn/manifest
 
-HOST=""
-while read -r host; do
-    # shellcheck disable=SC2089
-    HOST="$HOST '$host',"
-done < "$__object/parameter/bind-to"
-# shellcheck disable=SC2090
-export HOST
+# Check states
+state=""
+unit_state=""
+param_state="$(cat "$__object/parameter/state")"
 
-# process template
-mkdir "$__object/files"
-"$__type/files/gunicorn.py.sh" > "$__object/files/gunicorn.py"
+case "$param_state" in
+    enabled|disabled)
+        state="present"
+        unit_state="$param_state"
+        ;;
 
-# gunicorn config file
-__file /opt/netbox/gunicorn.py \
-    --mode 644 --owner netbox \
-    --source "$__object/files/gunicorn.py"
+    absent)
+        state="absent"
+        unit_state="disabled"
+        ;;
+
+    *)
+        # does not exist
+        printf "The state '%s' does not exist, can't continue!\n" "$param_state" >&2
+        exit 2
+        ;;
+esac
+
+
+if [ "$state" = "present" ]; then
+    HOST=""
+    while read -r host; do
+        # shellcheck disable=SC2089
+        HOST="$HOST '$host',"
+    done < "$__object/parameter/bind-to"
+    # shellcheck disable=SC2090
+    export HOST
+
+    # process template
+    mkdir "$__object/files"
+    "$__type/files/gunicorn.py.sh" > "$__object/files/gunicorn.py"
+
+    # gunicorn config file
+    __file /opt/netbox/gunicorn.py \
+        --mode 644 --owner netbox \
+        --source "$__object/files/gunicorn.py"
+
+else
+    # absent config file
+    __file /opt/netbox/gunicorn.py --state absent
+fi
+
 
 # install service file
 __systemd_unit gunicorn-netbox.service \
-    --source "$__type/files/netbox.service" \
-    --enablement-state enabled --restart
+    --state "$state" --enablement-state "$unit_state" \
+    --source "$__type/files/netbox.service" --restart

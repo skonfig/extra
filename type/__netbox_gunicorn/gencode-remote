@@ -1,29 +1,50 @@
 #!/bin/sh -e
 
-curr_installed="$(cat "$__object/explorer/installed")"
-should_installed="$(cat "$__object/explorer/should_installed")"
+# control state
+state="$(cat "$__object/parameter/state")"
 
-# gunicorn version change
-if [ "$curr_installed" != "$should_installed" ]; then
-    # (re)installing gunicorn
-    echo "/opt/netbox/venv/bin/pip3 install 'gunicorn==$should_installed'"
+case "$state" in
+    # install gunicorn
+    enabled|disabled)
+        curr_installed="$(cat "$__object/explorer/installed")"
+        should_installed="$(cat "$__object/explorer/should_installed")"
 
-    do_restart=yes
-    printf "updated %s to %s\n" "$curr_installed" "$should_installed" \
-        >> "$__messages_out"
-fi
+        # gunicorn version change
+        if [ "$curr_installed" != "$should_installed" ]; then
+            # (re)installing gunicorn
+            echo "/opt/netbox/venv/bin/pip3 install 'gunicorn==$should_installed'"
 
-# configuration changes
-if grep -q "^__file/opt/netbox/gunicorn.py:" "$__messages_in"; then
-    do_restart=yes
-    printf "configured\n" >> "$__messages_out"
-fi
+            if [ "$curr_installed" != "" ]; then
+                printf "updated %s to %s\n" "$curr_installed" "$should_installed" \
+                    >> "$__messages_out"
+            else
+                printf "installed\n" >> "$__messages_out"
+            fi
+            do_restart=yes
+        fi
+
+        # configuration changes
+        if grep -q "^__file/opt/netbox/gunicorn.py:" "$__messages_in"; then
+            do_restart=yes
+            printf "configured\n" >> "$__messages_out"
+        fi
 
 
-# restart gunicorn
-if [ "$do_restart" ]; then
-    cat << EOF
+        # restart gunicorn
+        if [ "$do_restart" ] && [ "$state" != "disabled" ]; then
+            cat << EOF
 # Restart service
 service gunicorn-netbox restart
 EOF
-fi
+        fi
+        ;;
+
+    # uninstall
+    absent)
+        # check if installed
+        if [ -s "$__object/explorer/installed" ]; then
+            # service already disabled
+            echo "/opt/netbox/venv/bin/pip3 uninstall -y gunicorn"
+            printf "uninstalled\n" >> "$__messages_out"
+        fi
+esac

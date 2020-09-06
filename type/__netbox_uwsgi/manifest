@@ -1,22 +1,54 @@
 #!/bin/sh -e
+# __netbox_uwsgi/manifest
 
-# *bind* parameters are directly processed in the gen script
-if [ -f "$__object/parameter/serve-static" ]; then
-    STATIC_MAP="yes"
-    export STATIC_MAP
+# Check states
+state=""
+unit_state=""
+param_state="$(cat "$__object/parameter/state")"
+
+case "$param_state" in
+    enabled|disabled)
+        state="present"
+        unit_state="$param_state"
+        ;;
+
+    absent)
+        state="absent"
+        unit_state="disabled"
+        ;;
+
+    *)
+        # does not exist
+        printf "The state '%s' does not exist, can't continue!\n" "$param_state" >&2
+        exit 2
+        ;;
+esac
+
+
+if [ "$state" = "present" ]; then
+    # *bind* parameters are directly processed in the gen script
+    if [ -f "$__object/parameter/serve-static" ]; then
+        STATIC_MAP="yes"
+        export STATIC_MAP
+    fi
+
+    # process template
+    mkdir "$__object/files"
+    "$__type/files/uwsgi.ini.sh" > "$__object/files/uwsgi.ini"
+
+    # uwsgi config file
+    # TODO maybe patching with __key_value cause of .ini ?
+    __file /opt/netbox/uwsgi.ini \
+        --mode 644 --owner netbox \
+        --source "$__object/files/uwsgi.ini"
+
+else
+    # absent config file
+    __file /opt/netbox/uwsgi.ini --state absent
 fi
 
-# process template
-mkdir "$__object/files"
-"$__type/files/uwsgi.ini.sh" > "$__object/files/uwsgi.ini"
-
-# uwsgi config file
-# TODO maybe patching with __key_value cause of .ini ?
-__file /opt/netbox/uwsgi.ini \
-    --mode 644 --owner netbox \
-    --source "$__object/files/uwsgi.ini"
 
 # install service file
 __systemd_unit uwsgi-netbox.service \
-    --source "$__type/files/netbox.service" \
-    --enablement-state enabled --restart
+    --state "$state" --enablement-state "$unit_state" \
+    --source "$__type/files/netbox.service" --restart

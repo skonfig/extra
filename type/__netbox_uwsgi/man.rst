@@ -23,6 +23,21 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
+state
+    Represents the state of the uWSGI application. Defaults to ``enabled``.
+
+    enabled
+        The uWSGI service is enabled and running.
+    disabled
+        The uWSGI service is installed, but disabled.
+    absent
+        The uWSGI service is not installed and all configuration removed.
+
+    This type does not guarantee anything about the running state of the
+    service. To be sure about the service is stopped or not, use the type
+    :strong:`cdist-type__systemd_service`\ (7) after this execution.
+
+
 bind-to
     The socket uwsgi should bind to. Must be UNIX/TCP for the uwsgi protocol.
     Defaults to ``127.0.0.1:3031``. Can be set multiple times.
@@ -62,7 +77,11 @@ upgraded
 configured
     The uwsgi configuration got updated.
 
-In all cases, it restarts the service to use the up-to-date version.
+uninstalled
+    The uWSGI application was removed.
+
+In all cases where the application is still present, it restarts the service to
+use the up-to-date version.
 
 
 EXAMPLES
@@ -89,6 +108,17 @@ EXAMPLES
     # as standalone server
     __netbox $args
     require="__netbox" __netbox_uwsgi --serve-static --http-bind 0.0.0.0:80
+
+    # replace gunicorn with uwsgi
+    __netbox $args
+    require="__netbox" __netbox_gunicorn --state absent
+    # it should depend on __netbox_gunicorn if they use the same socket
+    require="__netbox_gunicorn" __netbox_uwsgi --state enabled
+
+    # be sure the service is disabled
+    __netbox $args
+    require="__netbox" __netbox_uwsgi --state disabled
+    require="__netbox_uwsgi" __systemd_service uwsgi-netbox --state stopped
 
 
 SEE ALSO
