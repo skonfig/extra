@@ -89,6 +89,10 @@ if [ -f "$__object/parameter/ldap-superuser-group" ]; then
     LDAP_SUPERUSER_GROUP=$(cat "$__object/parameter/ldap-superuser-group")
     export LDAP_SUPERUSER_GROUP
 fi
+if [ -f "$__object/parameter/ldap-staff-group" ]; then
+    LDAP_STAFF_GROUP="$(cat "$__object/parameter/ldap-staff-group")"
+    export LDAP_STAFF_GROUP
+fi
 # export if base ldap parameters are used
 export USE_LDAP
 

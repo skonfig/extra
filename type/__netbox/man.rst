@@ -78,6 +78,10 @@ ldap-group-base
 ldap-require-group
     Group required to login.
 
+ldap-staff-group
+    Make members of this group to "staff". This gives the users "Admin Access",
+    which means access to the "NetBox Administration" site.
+
 ldap-superuser-group
     Make members of this groups superusers.
 

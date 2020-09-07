@@ -53,6 +53,8 @@ AUTH_LDAP_GROUP_TYPE = PosixGroupType()
 
 # Mirror LDAP group assignments.
 AUTH_LDAP_MIRROR_GROUPS = True
+# For more granular permissions, map LDAP groups to Django groups.
+AUTH_LDAP_FIND_GROUP_PERMS = True
 EOF
 
     if [ "$LDAP_REQUIRE_GROUP" != "" ]; then
@@ -63,13 +65,18 @@ AUTH_LDAP_REQUIRE_GROUP = "$LDAP_REQUIRE_GROUP"
 EOF
     fi
 
-    if [ "$LDAP_SUPERUSER_GROUP" != "" ]; then
-        cat << EOF
+    cat << EOF
 
 # Define special user types using groups. Exercise great caution when assigning superuser status.
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-    "is_superuser": "$LDAP_SUPERUSER_GROUP",
-}
 EOF
+    # superuser
+    if [ "$LDAP_SUPERUSER_GROUP" != "" ]; then
+        echo "    \"is_superuser\": \"$LDAP_SUPERUSER_GROUP\","
     fi
+    # staff user
+    if [ "$LDAP_STAFF_GROUP" != "" ]; then
+        echo "    \"is_staff\": \"$LDAP_STAFF_GROUP\","
+    fi
+    echo "}"
 fi

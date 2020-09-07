@@ -7,6 +7,7 @@ ldap-bind-password
 ldap-user-base
 ldap-group-base
 ldap-require-group
+ldap-staff-group
 ldap-superuser-group
 redis-host
 redis-port
