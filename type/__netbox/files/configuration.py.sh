@@ -272,12 +272,12 @@ EOF
 
 if [ "$UPDATE_CHECK" != "" ]; then
     cat << EOF
-RELEASE_CHECK_URL = None
+RELEASE_CHECK_URL = 'https://api.github.com/repos/netbox-community/netbox/releases'
 
 EOF
 else
     cat << EOF
-RELEASE_CHECK_URL = 'https://api.github.com/repos/netbox-community/netbox/releases'
+RELEASE_CHECK_URL = None
 
 EOF
 fi
