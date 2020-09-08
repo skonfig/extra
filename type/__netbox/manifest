@@ -50,10 +50,11 @@ elif [ -s "$__object/explorer/secretkey" ]; then
     # take the key that is already used
     SECRET_KEY="$(cat "$__object/explorer/secretkey")"
 else
-    # Can be done over netbox/generate_secret_key.py too, but it's to
-    # complicated with the variable setup (can't generated right now!).
+    # Can be done over netbox/generate_secret_key.py too, but it can't be
+    # generated right now where it's required (only if it's preloaded for
+    # this type to execute it now).
     # Generates a 50-character long key (without ' cause of python quotes)
-    SECRET_KEY="$(tr -cd '[:graph:]' < /dev/random | tr -d \' | head -c50)"
+    SECRET_KEY="$(tr -cd '[:graph:]' < /dev/urandom | tr -d \' | head -c50)"
 fi
 export SECRET_KEY
 
