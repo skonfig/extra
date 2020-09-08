@@ -53,8 +53,9 @@ else
     # Can be done over netbox/generate_secret_key.py too, but it can't be
     # generated right now where it's required (only if it's preloaded for
     # this type to execute it now).
-    # Generates a 50-character long key (without ' cause of python quotes)
-    SECRET_KEY="$(tr -cd '[:graph:]' < /dev/urandom | tr -d \' | head -c50)"
+    # Generates a 50-character long key with the same character set like
+    # the helper script. Must escape the '-' to be no character range.
+    SECRET_KEY="$(tr -cd '!@#$%^&*(\-_=+)[:alnum:]' < /dev/urandom | head -c50)"
 fi
 export SECRET_KEY
 
