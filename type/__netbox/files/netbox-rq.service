@@ -1,8 +1,11 @@
 [Unit]
 Description=NetBox Request Queue Worker
 Documentation=https://netbox.readthedocs.io/en/stable/
-After=network-online.target
-Wants=network-online.target
+PartOf=netbox.service
+Wants=network.target
+After=netbox.service
+After=network.target
+After=redis-server.service postgresql.service
 
 [Service]
 Type=simple

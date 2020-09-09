@@ -1,8 +1,8 @@
 [Unit]
 Description=NetBox Service Wrapper
 Documentation=https://netbox.readthedocs.io/en/stable/
-After=network.target
 Wants=network.target
+After=network.target
 
 [Service]
 Type=oneshot

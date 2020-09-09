@@ -2,9 +2,11 @@
 Description=NetBox Gunicorn WSGI Service
 Documentation=https://netbox.readthedocs.io/en/stable/
 PartOf=netbox.service
+Requires=netbox-rq.service
+Wants=network.target
 After=netbox.service
 After=network.target
-Wants=network.target
+After=redis-server.service postgresql.service
 
 [Service]
 Type=simple

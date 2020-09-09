@@ -30,7 +30,7 @@ case "$state" in
         if [ "$do_restart" ] && [ "$state" != "disabled" ]; then
             cat << EOF
 # Restart service
-service uwsgi-netbox restart
+systemctl restart uwsgi-netbox
 EOF
         fi
         ;;

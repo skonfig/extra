@@ -12,7 +12,11 @@ This (singleton) type installs and configures a NetBox instance, a web
 application to help manage and document computer networks.
 
 It installs it with the user ``netbox`` at ``/opt/netbox`` with `python-venv`.
-It setup systemd unit files for the services `netbox` and `netbox-rq`. To
+It setup systemd unit files for the services `netbox` and `netbox-rq`. The
+`netbox` service only wrap all netbox related services, e.g. restarting and
+so one will be delegated to all related services.
+
+The application is still not accessable because WSGI server is required. To
 access the application through WSGI, uWSGI or Gunicorn can be used. The setup
 can be done via there own types `__netbox_gunicorn` and `__netbox_uwsgi`.
 
@@ -228,6 +232,24 @@ If you not setup ldap authentification, you may be interested into how to
 `setting up a super user
 <https://netbox.readthedocs.io/en/stable/installation/3-netbox/#create-a-super-user>`
 directly on the machine to be able to access and use NetBox.
+
+If you change a configuration, the database may go corrupt if two instances of
+the application are running with different configurations at the same time.
+This most commonly happens when the WSGI server and RQ-worker restarts after a
+configuration change. This occours in the following case for example:
+
+.. code-block:: sh
+
+   systemctl restart gunicorn-netbox  # WSGI-server already online with new
+                                      # configuration after this command.
+   systemctl restart netbox-rq  # RQ-Worker still worked with the old
+                                # configuration till here.
+
+This type handles the restart of both services correctly to avoid such database
+corruptions. To safely manual restart the whole netbox instance manual, simply
+restart all services in one ``systemctl restart netbox`` command, as it ensures
+that first all services are shut down before starting one of them. The service
+``netbox`` wraps all required services that are available.
 
 
 SEE ALSO

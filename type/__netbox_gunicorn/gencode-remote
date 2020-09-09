@@ -34,7 +34,7 @@ case "$state" in
         if [ "$do_restart" ] && [ "$state" != "disabled" ]; then
             cat << EOF
 # Restart service
-service gunicorn-netbox restart
+systemctl restart gunicorn-netbox
 EOF
         fi
         ;;

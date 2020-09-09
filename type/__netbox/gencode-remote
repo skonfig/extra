@@ -105,9 +105,10 @@ fi
 
 # check for changes
 if [ "$changes" = "yes" ]; then
+    # to avoid database corruption at config changes, both services must be
+    # stopped at the same time (noted in the manual, too).
     cat << EOF
-# Restart service.
-service netbox restart
-service netbox-rq restart
+# Restart service. All required services are included with netbox.service.
+systemctl restart netbox
 EOF
 fi
