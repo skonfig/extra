@@ -64,11 +64,17 @@ EOF
 # Set final permissions.
 chown -R netbox /opt/netbox
 
+# NetBox manage scripts
 # Run database migrations.
 sudo -u netbox /opt/netbox/venv/bin/python3 /opt/netbox/netbox/manage.py migrate
-
 # Generate static assets.
 sudo -u netbox /opt/netbox/venv/bin/python3 /opt/netbox/netbox/manage.py collectstatic --no-input
+# Delete any stale content types
+sudo -u netbox /opt/netbox/venv/bin/python3 /opt/netbox/netbox/manage.py remove_stale_contenttypes --no-input
+# Delete any expired user sessions
+sudo -u netbox /opt/netbox/venv/bin/python3 /opt/netbox/netbox/manage.py clearsessions
+# Clear all cached data
+sudo -u netbox /opt/netbox/venv/bin/python3 /opt/netbox/netbox/manage.py invalidate all
 
 # Remove temporary working directory.
 cd /
