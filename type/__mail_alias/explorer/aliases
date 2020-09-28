@@ -20,8 +20,10 @@
 # Find aliases for a given user name and print the aliases (each one on a
 # separate line)
 
-aliases_file=$("${__type_explorer}/aliases_file")
+aliases_file=$("${__type_explorer:?}/aliases_file")
 test -r "${aliases_file}" || exit 0
+
+: "${__object_id:?}"  # assert __object_id is set, because it is used in AWK
 
 awk -F ':[ \t]*' '
 function print_aliases(aliases,    matches) {

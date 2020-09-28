@@ -20,14 +20,14 @@
 
 drop_awk_comments() { sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@"; }
 
-state_is=$(cat "${__object}/explorer/state")
-state_should=$(cat "${__object}/parameter/state")
+state_is=$(cat "${__object:?}/explorer/state")
+state_should=$(cat "${__object:?}/parameter/state")
 
-server=$__object_id
-login=$(cat "${__object}/parameter/login")
+server=${__object_id:?}
+login=$(cat "${__object:?}/parameter/login")
 
 
-auth_conf=$(cat "${__object}/explorer/auth_conf")
+auth_conf=$(cat "${__object:?}/explorer/auth_conf")
 test -n "${auth_conf}" || {
 	echo 'Cannot determine path of dma auth.conf' >&2
 	exit 1
@@ -46,13 +46,13 @@ in
 
 		if test "${state_is}" = 'absent'
 		then
-			printf 'add authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
+			printf 'add authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out:?}"
 		else
-			printf 'set authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
+			printf 'set authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out:?}"
 		fi
 		;;
 	(absent)
-		printf 'delete authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
+		printf 'delete authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out:?}"
 		;;
 	(*)
 		printf 'Invalid --state: %s.\n' "${state_should}" >&2
@@ -65,7 +65,7 @@ esac
 cat <<EOF
 test -f "${auth_conf}" || touch "${auth_conf}"
 
-awk '$(drop_awk_comments "${__type}/files/update_dma_auth.awk")' <'${auth_conf}' >'${auth_conf}.tmp' \
+awk '$(drop_awk_comments "${__type:?}/files/update_dma_auth.awk")' <'${auth_conf}' >'${auth_conf}.tmp' \
 && cat '${auth_conf}.tmp' >'${auth_conf}'
 rm -f '${auth_conf}.tmp'
 EOF

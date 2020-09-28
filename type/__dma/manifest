@@ -18,7 +18,7 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os=$(cat "${__global}/explorer/os")
+os=$(cat "${__global:?}/explorer/os")
 
 # Install DMA
 case $os

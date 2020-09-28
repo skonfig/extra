@@ -28,7 +28,7 @@ check_file() {
 	fi
 }
 
-case $("${__explorer}/os")
+case $("${__explorer:?}/os")
 in
 	(freebsd|openbsd|solaris)
 		check_file /etc/mail/aliases

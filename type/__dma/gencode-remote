@@ -23,18 +23,18 @@ drop_awk_comments() { sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@"; }
 CONF_PATH=/etc/dma  # set in Makefile
 
 # Determine mailname
-if test -f "${__object}/parameter/mailname"
+if test -f "${__object:?}/parameter/mailname"
 then
-	mailname=$(cat "${__object}/parameter/mailname")
+	mailname=$(cat "${__object:?}/parameter/mailname")
 else
-	case $(cat "${__global}/explorer/os")
+	case $(cat "${__global:?}/explorer/os")
 	in
 		(debian|devuan|ubuntu)
 			# On Debian-like systems use /etc/mailname unless --mailname is used
 			mailname='/etc/mailname'
 			;;
 		(*)
-			mailname=$__target_fqdn
+			mailname=${__target_fqdn:?}
 			;;
 	esac
 fi
@@ -42,19 +42,19 @@ fi
 
 # Generate "should" values for config
 conf_should=$(
-	if test -s "${__object}/parameter/smarthost"
+	if test -s "${__object:?}/parameter/smarthost"
 	then
-		printf 'SMARTHOST %s\n' "$(cat "${__object}/parameter/smarthost")"
+		printf 'SMARTHOST %s\n' "$(cat "${__object:?}/parameter/smarthost")"
 	fi
 
 	printf 'MAILNAME %s\n' "${mailname}"
 
-	if test -s "${__object}/explorer/auth_conf"
+	if test -s "${__object:?}/explorer/auth_conf"
 	then
-		printf "AUTHPATH %s\n" "$(cat "${__object}/explorer/auth_conf")"
+		printf "AUTHPATH %s\n" "$(cat "${__object:?}/explorer/auth_conf")"
 	fi
 
-	case $(cat "${__object}/parameter/security")
+	case $(cat "${__object:?}/parameter/security")
 	in
 		(ssl|tls)
 			default_smtp_port=465
@@ -77,35 +77,35 @@ conf_should=$(
 			;;
 	esac
 
-	if test -s "${__object}/parameter/port"
+	if test -s "${__object:?}/parameter/port"
 	then
-		printf 'PORT %u\n' "$(cat "${__object}/parameter/port")"
+		printf 'PORT %u\n' "$(cat "${__object:?}/parameter/port")"
 	elif test "${default_smtp_port}" -ne 25  # DMA uses port 25 by default
 	then
 		printf 'PORT %u\n' "${default_smtp_port}"
 	fi
 
-	if test -f "${__object}/parameter/masquerade"
+	if test -f "${__object:?}/parameter/masquerade"
 	then
 		while read -r line
 		do
 			printf 'MASQUERADE %s\n' "${line}"
-		done <"${__object}/parameter/masquerade"
+		done <"${__object:?}/parameter/masquerade"
 	fi
 
-	if test -f "${__object}/parameter/defer"
+	if test -f "${__object:?}/parameter/defer"
 	then
 		echo 'DEFER'
 	fi
 
-	if test -f "${__object}/parameter/fullbounce"
+	if test -f "${__object:?}/parameter/fullbounce"
 	then
 		echo 'FULLBOUNCE'
 	fi
 
-	if test -f "${__object}/parameter/nullclient"
+	if test -f "${__object:?}/parameter/nullclient"
 	then
-		test -s "${__object}/parameter/smarthost" || {
+		test -s "${__object:?}/parameter/smarthost" || {
 			echo '--nullclient requires a --smarthost to be defined' >&2
 			exit 1
 		}
@@ -114,10 +114,10 @@ conf_should=$(
 	fi
 )
 # Sort conf_should to compare against "conf_is"
-conf_should=$(echo "$conf_should" | sort -s -k 1,1)
+conf_should=$(echo "${conf_should}" | sort -s -k 1,1)
 
 config_updated=false
-if ! echo "$conf_should" | cmp -s "${__object}/explorer/conf" -
+if ! echo "${conf_should}" | cmp -s "${__object:?}/explorer/conf" -
 then
 	# config needs to be updated
 	dma_conf="${CONF_PATH:?}/dma.conf"
@@ -140,7 +140,7 @@ then
 	#    at the end of the file.
 
 	cat <<CODE
-awk '$(drop_awk_comments "${__type}/files/update_dma_conf.awk")' '${dma_conf}' '${dma_conf}' <<'EOF' >'${dma_conf}.tmp' \
+awk '$(drop_awk_comments "${__type:?}/files/update_dma_conf.awk")' '${dma_conf}' '${dma_conf}' <<'EOF' >'${dma_conf}.tmp' \
 && cat '${dma_conf}.tmp' >'${dma_conf}'
 ${conf_should}
 EOF
@@ -148,28 +148,28 @@ rm '${dma_conf}.tmp'
 CODE
 
 	config_updated=true
-	echo 'config updated' >>"${__messages_out}"
+	echo 'config updated' >>"${__messages_out:?}"
 fi
 
 
-if test -f "${__object}/parameter/send-test-email"
+if test -f "${__object:?}/parameter/send-test-email"
 then
-	if grep -q '^__mail_alias/root:' "${__messages_in}" \
-	|| grep -q '^__dma_auth/' "${__messages_in}" \
+	if grep -q '^__mail_alias/root:' "${__messages_in:?}" \
+	|| grep -q '^__dma_auth/' "${__messages_in:?}" \
 	|| $config_updated
 	then
-		cat <<-EOF
-		sendmail root <<EOM
-		Subject: [cdist] Test mail from '${__target_fqdn}'
+		cat <<-CODE
+		sendmail root <<'EOF'
+		Subject: [cdist] Test mail from '${__target_fqdn:?}'
 
 		Hi,
 
 		you can ignore this message.
-		Its sole purpose is to notify you that root mail on ${__target_fqdn}
+		Its sole purpose is to notify you that root mail on ${__target_fqdn:?}
 		will be redirected to you.
 
 		Enjoy!
-		EOM
 		EOF
+		CODE
 	fi
 fi

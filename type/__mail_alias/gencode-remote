@@ -20,7 +20,7 @@
 
 drop_awk_comments() { sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@"; }
 
-aliases_file=$(cat "${__object}/explorer/aliases_file")
+aliases_file=$(cat "${__object:?}/explorer/aliases_file")
 
 test -n "${aliases_file}" || {
 	echo 'Could not determine aliases file path.' >&2
@@ -28,29 +28,29 @@ test -n "${aliases_file}" || {
 }
 
 
-state_should=$(cat "${__object}/parameter/state")
+state_should=$(cat "${__object:?}/parameter/state")
 
 case $state_should
 in
 	(present)
-		if cmp -s "${__object}/explorer/aliases" "${__object}/parameter/alias"
+		if cmp -s "${__object:?}/explorer/aliases" "${__object:?}/parameter/alias"
 		then
 			# all good!
 			exit 0
 		fi
 
-		if test -s "${__object}/explorer/aliases"
+		if test -s "${__object:?}/explorer/aliases"
 		then
-			echo "update aliases" >>"$__messages_out"
+			echo "update aliases" >>"${__messages_out:?}"
 		else
-			echo "add aliases" >>"$__messages_out"
+			echo "add aliases" >>"${__messages_out:?}"
 		fi
 		;;
 	(absent)
 		# nothing to do if no aliases found.
-		test -s "${__object}/explorer/aliases" || exit 0
+		test -s "${__object:?}/explorer/aliases" || exit 0
 
-		echo "delete aliases" >>"$__messages_out"
+		echo "delete aliases" >>"${__messages_out:?}"
 		;;
 	(*)
 		printf 'Invalid --state: %s.\n' "${state_should}" >&2
@@ -61,7 +61,7 @@ esac
 cat <<EOF
 test -f '${aliases_file}' || touch '${aliases_file}'
 
-awk '$(drop_awk_comments "${__type}/files/update_aliases.awk")' <'${aliases_file}' >'${aliases_file}.tmp' \
+awk '$(drop_awk_comments "${__type:?}/files/update_aliases.awk")' <'${aliases_file}' >'${aliases_file}.tmp' \
 || {
 	rm -f '${aliases_file}.tmp'
 	echo 'Generating new aliases file failed!' >&2
