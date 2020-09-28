@@ -18,6 +18,8 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
+drop_awk_comments() { sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@"; }
+
 state_is=$(cat "${__object}/explorer/state")
 state_should=$(cat "${__object}/parameter/state")
 
@@ -42,8 +44,6 @@ in
 	(present)
 		test -n "${login}" || { echo '--login must be non-empty' >&2; exit 1; }
 
-		mode=1
-
 		if test "${state_is}" = 'absent'
 		then
 			printf 'add authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
@@ -52,8 +52,6 @@ in
 		fi
 		;;
 	(absent)
-		mode=0
-
 		printf 'delete authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out}"
 		;;
 	(*)
@@ -65,87 +63,9 @@ esac
 
 
 cat <<EOF
-auth_conf='${auth_conf}'
-mode=${mode}
-EOF
-
-cat <<'EOF'
 test -f "${auth_conf}" || touch "${auth_conf}"
 
-awk -F '\n' -v mode=$mode '
-function getvalue(path) {
-	# Reads the first line of the file located at path and returns it.
-	getline < path
-	close(path)
-	return $0
-}
-
-function print_should() {
-	printf "%s|%s:%s\n", login_param, host_param, passwd_param
-}
-
-BEGIN {
-	DP = "[: \t]"  # copied from dma/conf.c
-
-	parameter_dir = ENVIRON["__object"] "/parameter/"
-
-	host_param = ENVIRON["__object_id"]
-	login_param = getvalue(parameter_dir "login")
-	passwd_param = getvalue(parameter_dir "password")
-}
-
-# skip comments and empty lines
-/^#/ || /^$/ {
-	print
-	next
-}
-
-{
-	# parse line
-
-	login = substr($0, 1, index($0, "|") - 1)
-	if (!login) { login = $0 }  # if no "|" found
-
-	host = substr($0, length(login) + 2)
-
-	if (match(host, DP)) {
-		passwd = substr(host, RSTART + 1)
-		host = substr(host, 1, RSTART - 1)
-	} else {
-		passwd = ""
-	}
-}
-
-host == host_param {
-	if (mode) {
-		# state_should == present
-		if (login == login_param && !written) {
-			# replace line if host and login match (but only if no line has
-			# been written already -> no duplicates)
-			print_should()
-			written = 1
-		}
-		next
-	} else {
-		# state_should == absent
-		if (!login_param || login == login_param) {
-			# empty --login -> drop all lines for this host
-			next
-		}
-	}
-}
-
-# leave other lines alone
-{
-	print
-}
-
-END {
-	if (mode && !written) {
-		# append line if no match to replace was found
-		print_should()
-	}
-}
-' <"${auth_conf}" >"${auth_conf}.tmp" \
- && mv "${auth_conf}.tmp" "${auth_conf}"
+awk '$(drop_awk_comments "${__type}/files/update_dma_auth.awk")' <'${auth_conf}' >'${auth_conf}.tmp' \
+&& cat '${auth_conf}.tmp' >'${auth_conf}'
+rm -f '${auth_conf}.tmp'
 EOF
