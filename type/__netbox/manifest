@@ -194,20 +194,23 @@ mkdir -p "$__object/files"
 "$__type/files/configuration.py.sh" > "$__object/files/configuration.py"
 "$__type/files/ldap_config.py.sh" > "$__object/files/ldap_config.py"
 
-require="__user/netbox" __directory /opt/netbox/netbox/cdist --parents
-require="__directory/opt/netbox/netbox/cdist " __file \
-    /opt/netbox/netbox/cdist/configuration.py --mode 640 --owner netbox \
+require="__user/netbox" __directory /opt/netbox/cdist
+require="__directory/opt/netbox/cdist" __file \
+    /opt/netbox/cdist/configuration.py --mode 640 --owner netbox \
     --source "$__object/files/configuration.py"
 
 if [ -f "$__object/parameter/ldap-server" ]; then
-    require="__directory/opt/netbox/netbox/cdist " __file \
-        /opt/netbox/netbox/cdist/ldap_config.py --mode 640 --owner netbox \
+    require="__directory/opt/netbox/cdist" __file \
+        /opt/netbox/cdist/ldap_config.py --mode 640 --owner netbox \
         --source "$__object/files/ldap_config.py"
+else
+    require="__directory/opt/netbox/cdist" __file \
+        /opt/netbox/cdist/ldap_config.py --state absent
 fi
 
 # save secret
-require="__user/netbox" __file /opt/netbox/.secretkey --mode 400 \
-    --owner netbox --source - << SECRET
+require="__directory/opt/netbox/cdist" __file /opt/netbox/cdist/secretkey \
+    --mode 400 --owner netbox --source - << SECRET
 $SECRET_KEY
 SECRET
 

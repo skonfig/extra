@@ -24,16 +24,13 @@ cd "\$tmpdir"
 curl -sS -L '$url' > '$archive'
 tar xf '$archive'
 
-# Save cdist-upload configuration file.
-cp '$install_dir/cdist/configuration.py' "\$tmpdir/configuration.py"
-cp '$install_dir/cdist/ldap_config.py' "\$tmpdir/ldap_config.py"
-
 EOF
 
     # Stop everything in the pyenv to update
     cat << EOF
 # Try to kill everything in the venv
-systemctl stop netbox gunicorn-netbox uwsgi-netbox || true
+systemctl -q --wait stop netbox gunicorn-netbox uwsgi-netbox || true
+# don't know if this is required since using --wait
 ps -axo pid,cmd | awk '\$2 ~ "^/opt/netbox/venv/"{print \$1}' | xargs kill || true
 
 EOF
@@ -42,11 +39,10 @@ EOF
 # Deploy sources and restore configuration.
 rm -r '$install_dir'
 cp -r '$src/netbox' '$install_dir'
-mkdir '$install_dir/cdist'
 
 cp '$src/requirements.txt' /opt/netbox/  # backup dependency info
-cp \$tmpdir/configuration.py '$install_dir/netbox/configuration.py'
-cp \$tmpdir/ldap_config.py '$install_dir/netbox/ldap_config.py'
+ln -s /opt/netbox/cdist/configuration.py '$install_dir/netbox/configuration.py'
+ln -s /opt/netbox/cdist/ldap_config.py '$install_dir/netbox/ldap_config.py'
 
 # Setup & enter python virtualenv.
 #  forcing python3 to be sure (till python4 gets released ..)
@@ -79,24 +75,16 @@ cd /
 rm -r "\$tmpdir"
 
 # Save version after successful installation
-printf "%s\\n" "$VERSION" > '$install_dir/cdist/version'
+printf "%s\\n" "$VERSION" > /opt/netbox/cdist/version
 EOF
 
     # meta
     printf "installed %s\n" "$VERSION" >> "$__messages_out"
     changes=yes
+fi
 
 # check if configuration changed
-elif grep -q "^__file/opt/netbox/" "$__messages_in"; then
-    # check if coping is required
-    if grep -q "^__file/opt/netbox/netbox/cdist/" "$__messages_in"; then
-        cat << EOF
-# Copy configuration
-cp '$install_dir/cdist/configuration.py' '$install_dir/netbox/configuration.py'
-cp '$install_dir/cdist/ldap_config.py' '$install_dir/netbox/ldap_config.py'
-EOF
-    fi
-
+if grep -q "^__file/opt/netbox/" "$__messages_in"; then
     # meta
     printf "configured\n" >> "$__messages_out"
     changes=yes
