@@ -21,13 +21,15 @@
 state_is=$(cat "${__object}/explorer/state")
 state_should=$(cat "${__object}/parameter/state")
 
-if test -f "${__object}/parameter/server"
-then
-	server=$(cat "${__object}/parameter/server")
-else
-	server=$__object_id
-fi
+server=$__object_id
 login=$(cat "${__object}/parameter/login")
+
+
+auth_conf=$(cat "${__object}/explorer/auth_conf")
+test -n "${auth_conf}" || {
+	echo 'Cannot determine path of dma auth.conf' >&2
+	exit 1
+}
 
 if test "${state_is}" = "${state_should}"
 then
@@ -61,13 +63,6 @@ in
 		;;
 esac
 
-auth_conf=$(cat "${__object}/explorer/auth_conf")
-
-test -n "${auth_conf}" || {
-	echo 'Cannot determine path of dma auth.conf' >&2
-	exit 1
-}
-
 
 cat <<EOF
 auth_conf='${auth_conf}'
@@ -94,8 +89,7 @@ BEGIN {
 
 	parameter_dir = ENVIRON["__object"] "/parameter/"
 
-	host_param = getvalue(parameter_dir "server")
-	if (!host_param) host_param = ENVIRON["__object_id"]
+	host_param = ENVIRON["__object_id"]
 	login_param = getvalue(parameter_dir "login")
 	passwd_param = getvalue(parameter_dir "password")
 }

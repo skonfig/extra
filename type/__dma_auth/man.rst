@@ -11,6 +11,10 @@ DESCRIPTION
 This cdist type allows you to set up credentials to log in to remote SMTP
 servers.
 
+NB: dma currently (v0.13) does not differentiate between users on a host.
+    It will use whatever user it finds in the ``auth.conf`` first.
+    Thus, this type will use the ``__object_id`` as the host specifier.
+
 
 REQUIRED PARAMETERS
 -------------------
@@ -22,8 +26,6 @@ password
 
 OPTIONAL PARAMETERS
 -------------------
-server
-    The SMTP server on which the login is valid. Defaults to `__object_id`.
 state
     Either `present` or `absent`. Defaults to `present`.
 
