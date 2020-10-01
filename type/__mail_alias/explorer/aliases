@@ -31,7 +31,7 @@ function print_aliases(aliases,    matches) {
 	split(aliases, matches, /,[ \t]*/)
 	for (i in matches) {
 		gsub(/^[ \t]*|[ \t]*$/, "", matches[i])
-		print matches[i]
+		if (matches[i]) print matches[i]
 	}
 }
 
@@ -47,14 +47,10 @@ function print_aliases(aliases,    matches) {
 	is_cont = /^[ \t]/ || cont
 
 	# detect if the line is a line to be continued (ends with a backslash)
-	cont = ($0 ~ /\\$/)
+	cont = /\\$/
 
-	# if it is, we drop the backslash from the line and skip to next line
-	# (the contents have been printed above if they should)
-	if (cont) {
-		sub(/[ \t]*\\$/, "", $0)
-		next
-	}
+	# if it is, we drop the backslash from the line
+	if (cont) sub(/[ \t]*\\$/, "", $0)
 }
 
 is_cont {

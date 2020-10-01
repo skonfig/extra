@@ -67,14 +67,12 @@ BEGIN {
 	is_cont = /^[ \t]/ || cont
 
 	# detect if the line is a line to be continued (ends with a backslash)
-	cont = ($0 ~ /\\$/)
-	# if it is, we drop the backslash from the line.
-	if (cont) sub(/[ \t]*\\$/, "", $0)
+	cont = /\\$/
 }
 
 is_cont {
-	# we ignore the line as it has been rewritten previously or is not
-	# interesting
+	# we only print the line if it has not been rewritten (select)
+	if (!select) print
 	next
 }
 
