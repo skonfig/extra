@@ -39,6 +39,12 @@ in
 			exit 0
 		fi
 
+		test -s "${__object:?}/parameter/alias" || {
+			printf 'The --alias parameter is required if --state present.\n' >&2
+			printf 'Use --state absent to remove all aliases.\n' >&2
+			exit 1
+		}
+
 		if test -s "${__object:?}/explorer/aliases"
 		then
 			echo "update aliases" >>"${__messages_out:?}"

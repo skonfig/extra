@@ -8,7 +8,7 @@ cdist-type__mail_alias - Manage mail aliases.
 
 DESCRIPTION
 -----------
-This cdist type allows you to configure mail aliases (/etc/mail/aliases).
+This cdist type allows you to configure mail aliases (/etc/aliases).
 
 
 REQUIRED PARAMETERS
@@ -21,11 +21,12 @@ OPTIONAL PARAMETERS
 state
     'present' or 'absent', defaults to 'present'
 alias
-    the aliases where mail for the given user should be redirected to.
-    This parameter can be specified multiple times to redirect to more than one
-    recipient.
-    See the `aliases(5)` man page for the different forms this parameter can
-    take..
+    an alias, i.e. a mail address where mail for the user should be redirected
+    to.
+    This parameter can be specified multiple times to redirect to multiple
+    recipients.
+    If ``--state`` is ``present`` this parameter is required.
+    See `aliases(5)` for the different forms this parameter can take.
 
 
 BOOLEAN PARAMETERS
@@ -51,7 +52,7 @@ BUGS
   containing ``,`` (commas) are treated incorrectly (they are treated as two
   addresses/aliases.)
   Make sure that email addresses do not contain commas.
-
+- ``:include:`` directives in the aliases file are ignored by this type.
 
 SEE ALSO
 --------
