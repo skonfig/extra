@@ -66,7 +66,7 @@ conf_should=$(
 			echo 'STARTTLS'
 			;;
 		(opportunistic)
-			default_smtp_port=25  # XXX: correct?
+			default_smtp_port=25
 			echo 'SECURETRANSFER'
 			echo 'STARTTLS'
 			echo 'OPPORTUNISTIC_TLS'
@@ -152,7 +152,8 @@ CODE
 fi
 
 
-if test -f "${__object:?}/parameter/send-test-email"
+# Send a test email if enabled and necessary (=configuration changed)
+if test -f "${__object:?}/parameter/send-test-mail"
 then
 	if grep -q '^__mail_alias/root:' "${__messages_in:?}" \
 	|| grep -q '^__dma_auth/' "${__messages_in:?}" \

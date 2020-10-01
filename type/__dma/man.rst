@@ -8,47 +8,46 @@ cdist-type__dma - Setup the DragonFly Mail Agent as the MTA.
 
 DESCRIPTION
 -----------
-This (singleton) type uses dma, a small Mail Transport Agent (MTA), to accept
-mails from locally installed Mail User Agents (MUA) and deliver the mails
-to a remote destination.
-
-Remote delivery happens over TLS to one or more mailboxes that are local to the
-mail server configured in the ``smarthost`` parameter.
+This (singleton) type uses DMA, a small Mail Transport Agent (MTA), to accept
+mails from locally installed Mail User Agents (MUA) and either deliver the mails
+to a remote smart host for delivery or communicate with remote SMTP servers
+directly.
 
 
 REQUIRED PARAMETERS
 -------------------
-smarthost
-    The mail server used to send email.
-    It must be configured to act as a relay for the host being configured by
-    this type so that mail can be sent to users non-local to the smarthost.
+None.
 
 
 BOOLEAN PARAMETERS
 ------------------
 defer
-    If enabled, the mail queue has to be manually flushed with the `-q` option.
-full-bounce
-    Enable if the bounce message should include the complete original message,
+    If enabled, mail will not be sent immediately, but stored in a queue.
+    To flush the queue and send the mails, ```dma -q`` has to be run
+    periodically (e.g. using a cron job.)
+    This type does not manage such a cron job, but some operating systems ship
+    such a cron job with the package.
+fullbounce
+    Enable if bounce messages should include the complete original message,
     not just the headers.
-null-client
+nullclient
     Enable to bypass aliases and local delivery, and instead forward all mails
     to the defined ``--smarthost``.
-send-test-email
-    If present, after setup this type will send an email to root, to allow you
-    to easily test your setup.
+send-test-mail
+    If set, this type will send a test email to root after setup, to check if
+    the configured settings work.
 
 
 OPTIONAL PARAMETERS
 -------------------
 mailname
     If present, this will be the hostname used to identify this host and the
-    remote part of the from addresses.
-    If not defined, it defaults to `/etc/mailname` on Debian derivatives and to
-    `__target_fqdn` otherwise.
+    remote part of the sender addresses.
+    If not defined, it defaults to ``/etc/mailname`` on Debian derivatives and
+    to ``__target_fqdn`` otherwise.
     See `dma(8)` for more information.
 
-    Note: on Debian derivatives the `/etc/mailname` file should be updated
+    Note: on Debian derivatives the ``/etc/mailname`` file should be updated
     instead of using this parameter.
 masquerade
     Masquerade the envelope-from addresses with this address/hostname.
@@ -59,7 +58,7 @@ masquerade
 port
     The port on which to deliver email.
     If not provided, a sensible default port will be used based on the
-    `--security` argument.
+    ``--security`` argument.
 security
     Configures whether and how DMA should use secure connections.
 
@@ -74,14 +73,23 @@ security
         messages directly to the outside mail exchangers.
     insecure
         allow plain text SMTP login over an insecure connection.
-        Should really not be used anymore!
+        Should really *not* be used anymore!
+smarthost
+    The mail server used to send email.
+    It must be configured to act as a relay for the host being configured by
+    this type so that mail can be sent to users non-local to the smarthost.
+
 
 EXAMPLES
 --------
 
 .. code-block:: sh
 
-    __dma --smarthost mx1.domain.tld --send-test-email
+    # Install DMA and use the smarthost mx1.domain.tld to send mail.
+    __dma --smarthost mx1.domain.tld --send-test-mail
+
+    # Install DMA in a default configuration.
+    __dma
 
 
 SEE ALSO
