@@ -27,7 +27,7 @@ password
 OPTIONAL PARAMETERS
 -------------------
 state
-    Either `present` or `absent`. Defaults to `present`.
+    Either ``present`` or ``absent``. Defaults to ``present``.
 
 BOOLEAN PARAMETERS
 ------------------
