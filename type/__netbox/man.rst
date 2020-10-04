@@ -131,7 +131,7 @@ data-root
     This parameter set's the media, reports and scripts root to subdirectories
     of the given directory. Values can be overwritten by special parameters like
     `--media-root` for example. Use this option if you want to store persistant
-    data of netbox on an other partition. A trailing shlash is not needed.
+    data of netbox on an other partition. A trailing slash is not needed.
 
     The data directories have following predefined sub-directory names:
 
@@ -142,23 +142,26 @@ data-root
     scripts root:
         ``$data_root/scripts``
 
+    To preserve all data from installation upgrades - which just replace the
+    installation directory - the data will be kept in the netbox home directory
+    rather than the installation directory by default (``/opt/netbox/data/``).
+    This way, no data will be deleted after the installation directory
+    replacement because it remains outside of the installation directory.
+
 media-root
     The file path to where media files (like image attachments) are stored.
     Change this path if you require to store data on an other partiotion.
-    A trailing slash is not needed. By default, it will be stored into the
-    installation directory (``/opt/netbox/netbox/netbox/media``).
+    A trailing slash is not needed. Defaults to ``$data_root/media``.
 
 reports-root
     The file path of where custom reports are kept. Change this path if you
     require to store data on an other partition. A trailing slash is not
-    needed. By default, it will be stored into the installation directory
-    (``/opt/netbox/netbox/netbox/reports``).
+    needed. Defaults to ``$data_root/reports``.
 
 scripts-root
     The file path of where custom scripts are kept. Change this path if you
     require to store data on an other partition. A trailing slash is not
-    needed. By default, it will be stored into the installation directory
-    (``/opt/netbox/netbox/netbox/scripts``).
+    needed. Defaults to ``$data_root/scripts``.
 
 
 BOOLEAN PARAMETERS

@@ -161,12 +161,11 @@ else
 fi
 export LOGIN_REQUIRED
 
-if [ -f "$__object/parameter/data-root" ]; then
-    data_root="$(cat "$__object/parameter/data-root")"
-    MEDIA_ROOT="$data_root/media"
-    REPORTS_ROOT="$data_root/reports"
-    SCRIPTS_ROOT="$data_root/scripts"
-fi
+data_root="$(cat "$__object/parameter/data-root")"
+MEDIA_ROOT="$data_root/media"
+REPORTS_ROOT="$data_root/reports"
+SCRIPTS_ROOT="$data_root/scripts"
+
 if [ -f "$__object/parameter/media-root" ]; then
     MEDIA_ROOT="$(cat "$__object/parameter/media-root")"
 fi
