@@ -48,9 +48,9 @@ cp '$src/requirements.txt' /opt/netbox/
 # Deploy sources and restore configuration.
 rm -r '$install_dir'
 cp -r '$src/netbox' '$install_dir'
-
-ln -s /opt/netbox/cdist/configuration.py '$install_dir/netbox/configuration.py'
-ln -s /opt/netbox/cdist/ldap_config.py '$install_dir/netbox/ldap_config.py'
+# force links to the cdist directory
+ln -fs /opt/netbox/cdist/configuration.py '$install_dir/netbox/configuration.py'
+ln -fs /opt/netbox/cdist/ldap_config.py '$install_dir/netbox/ldap_config.py'
 
 
 # Setup & enter python virtualenv.
