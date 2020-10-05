@@ -36,17 +36,34 @@ ps -axo pid,cmd | awk '\$2 ~ "^/opt/netbox/venv/"{print \$1}' | xargs kill || tr
 EOF
 
     cat << EOF
+# backup requirement files
+if [ -f /opt/netbox/requirements.txt]; then
+    cp /opt/netbox/requirements.txt /opt/netbox/old-requirements.txt
+else
+    # preseve file-not-found errors and warnings
+    touch /opt/netbox/old-requirements.txt
+fi
+cp '$src/requirements.txt' /opt/netbox/
+
 # Deploy sources and restore configuration.
 rm -r '$install_dir'
 cp -r '$src/netbox' '$install_dir'
 
-cp '$src/requirements.txt' /opt/netbox/  # backup dependency info
 ln -s /opt/netbox/cdist/configuration.py '$install_dir/netbox/configuration.py'
 ln -s /opt/netbox/cdist/ldap_config.py '$install_dir/netbox/ldap_config.py'
+
 
 # Setup & enter python virtualenv.
 #  forcing python3 to be sure (till python4 gets released ..)
 virtualenv -p python3 /opt/netbox/venv
+
+# Uninstall packages not required anymore
+# if versions not shortend, they will be ignored by pip, but not by comm
+# all of this could be done with grep, too, but it's still must be shortend with awk
+awk -F== '{print $1}' '/opt/netbox/requirements.txt' | sort > "\$tmpdir/curr-reqs.txt"
+awk -F== '{print $1}' '/opt/netbox/old-requirements.txt' | sort > "\$tmpdir/old-reqs.txt"
+comm -23 "\$tmpdir/curr-reqs.txt" "\$tmpdir/old-reqs.txt" \
+    | xargs /opt/netbox/venv/bin/pip3 uninstall -y
 
 # Install python dependencies.
 #  avoid gunicorn, because it will be done in an other type
@@ -57,7 +74,7 @@ EOF
     if [ -f "$__object/parameter/ldap-server" ]; then
         echo "/opt/netbox/venv/bin/pip3 install django-auth-ldap"
     else
-        echo "/opt/netbox/venv/bin/pip3 uninstall django-auth-ldap"
+        echo "/opt/netbox/venv/bin/pip3 uninstall -y django-auth-ldap"
     fi
 
     cat << EOF
