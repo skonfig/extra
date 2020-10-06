@@ -63,18 +63,18 @@ virtualenv -p python3 /opt/netbox/venv
 awk -F== '{print $1}' '/opt/netbox/requirements.txt' | sort > "\$tmpdir/curr-reqs.txt"
 awk -F== '{print $1}' '/opt/netbox/old-requirements.txt' | sort > "\$tmpdir/old-reqs.txt"
 comm -23 "\$tmpdir/curr-reqs.txt" "\$tmpdir/old-reqs.txt" \
-    | xargs /opt/netbox/venv/bin/pip3 uninstall -y
+    | xargs /opt/netbox/venv/bin/pip3 uninstall -qy
 
 # Install python dependencies.
 #  avoid gunicorn, because it will be done in an other type
 grep -v "^gunicorn==" "\$tmpdir/$src/requirements.txt" \
-    | xargs /opt/netbox/venv/bin/pip3 install
+    | xargs /opt/netbox/venv/bin/pip3 install -q
 EOF
 
     if [ -f "$__object/parameter/ldap-server" ]; then
-        echo "/opt/netbox/venv/bin/pip3 install django-auth-ldap"
+        echo "/opt/netbox/venv/bin/pip3 install -q django-auth-ldap"
     else
-        echo "/opt/netbox/venv/bin/pip3 uninstall -y django-auth-ldap"
+        echo "/opt/netbox/venv/bin/pip3 uninstall -qy django-auth-ldap"
     fi
 
     cat << EOF
@@ -95,7 +95,7 @@ sudo -u netbox /opt/netbox/venv/bin/python3 /opt/netbox/netbox/manage.py invalid
 
 # Remove temporary working directory.
 cd /
-rm -r "\$tmpdir"
+rm -rf "\$tmpdir"
 
 # Save version after successful installation
 printf "%s\\n" "$VERSION" > /opt/netbox/cdist/version
