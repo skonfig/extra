@@ -28,16 +28,24 @@ EOF
 
     # Stop everything in the pyenv to update
     cat << EOF
-# Try to kill everything in the venv
-systemctl -q --wait stop netbox gunicorn-netbox uwsgi-netbox || true
-# don't know if this is required since using --wait
-ps -axo pid,cmd | awk '\$2 ~ "^/opt/netbox/venv/"{print \$1}' | xargs kill || true
+# Try to stop everything in the venv (ignore non-existant services)
+systemctl -q stop netbox gunicorn-netbox uwsgi-netbox || true
+
+# kill and poll till all venv processes end
+# at least if they are called with full path in the cmd (like in the services)
+pids="\$( ps -axo pid,cmd | awk '\$2 ~ "^/opt/netbox/venv/"{print \$1}' )"
+if [ "\$pids" ]; then
+    kill \$pids
+    while ps -axo pid,cmd | awk '\$2 ~ "^/opt/netbox/venv/"{print \$1}' | grep -q . ; do
+        sleep 0.5
+    done
+fi
 
 EOF
 
     cat << EOF
 # backup requirement files
-if [ -f /opt/netbox/requirements.txt]; then
+if [ -f /opt/netbox/requirements.txt ]; then
     cp /opt/netbox/requirements.txt /opt/netbox/old-requirements.txt
 else
     # preseve file-not-found errors and warnings
@@ -46,7 +54,7 @@ fi
 cp '$src/requirements.txt' /opt/netbox/
 
 # Deploy sources and restore configuration.
-rm -r '$install_dir'
+rm -rf '$install_dir'
 cp -r '$src/netbox' '$install_dir'
 # force links to the cdist directory
 ln -fs /opt/netbox/cdist/configuration.py '$install_dir/netbox/configuration.py'
@@ -62,7 +70,7 @@ virtualenv -p python3 /opt/netbox/venv
 # all of this could be done with grep, too, but it's still must be shortend with awk
 awk -F== '{print $1}' '/opt/netbox/requirements.txt' | sort > "\$tmpdir/curr-reqs.txt"
 awk -F== '{print $1}' '/opt/netbox/old-requirements.txt' | sort > "\$tmpdir/old-reqs.txt"
-comm -23 "\$tmpdir/curr-reqs.txt" "\$tmpdir/old-reqs.txt" \
+comm -23 "\$tmpdir/old-reqs.txt" "\$tmpdir/curr-reqs.txt" \
     | xargs /opt/netbox/venv/bin/pip3 uninstall -qy
 
 # Install python dependencies.
