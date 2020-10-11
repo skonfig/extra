@@ -13,7 +13,7 @@ cores="$(cat "$__explorer/cpu_cores")"
 
 cat << EOF
 # The IP address (typically localhost) and port that the Netbox WSGI process should listen on
-bind = [$HOST ]
+#bind = done via systemd socket 'gunicorn-netbox.socket'
 
 # Number of gunicorn workers to spawn. This should typically be 2n+1, where
 # n is the number of CPU cores present.

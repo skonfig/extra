@@ -28,20 +28,16 @@ cat << EOF
 ; socket(s) to bind
 EOF
 
-# special protocol to bind
-while read -r param; do
-    if [ -z "$param" ]; then continue; fi  # ignore empty lines from the here-doc
-
-    multi_options "$(basename "$param" | awk -F'-' '{print $1}')-socket" "$param"
-    socket_changes="yes"
-
-done << INPUT  # here-doc cause of SC2031
-$( find "$__object/parameter/" -maxdepth 1 -name "*-bind" -print )
-INPUT
-
-# else, default bind to
-if [ -z "$socket_changes" ]; then
-    multi_options "socket" "$__object/parameter/bind-to"
+if [ "$SYSTEMD_SOCKET" != "yes" ]; then
+    # special protocol to bind
+    find "$__object/parameter/" -maxdepth 1 -name "*-bind" -print \
+     | while read -r param; do
+        multi_options "$(basename "$param" | awk -F'-' '{print $1}')-socket" "$param"
+    done
+else
+    # else, systemd will offer socket
+    echo "; sockets managed via 'uwsgi-netbox.socket'"
+    printf "protocol = %s\n" "$PROTOCOL"
 fi
 
 

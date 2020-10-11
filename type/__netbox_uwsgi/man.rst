@@ -15,6 +15,19 @@ protocols like uwsgi, fastcgi or HTTP to comunicate with the proxy server. This
 application is available via the `uwsgi-netbox` systemd service. It is
 controllable via the `netbox` wrapper service, too.
 
+**As uWSGI will be started as netbox user, it does not have privileges to
+bind to a privileaged port (all ports below 1024).** Because uWSGI will
+drop privileages anyway before binding to a port, solutions are to use
+the systemd sockets to activate the ports as root or set linux kernel
+capabilites to bind to such a privileaged port.
+
+As systemd sockets (or uwsgi itself) do not allow to distinguish multiple
+sockets if different protocols are used for different sockets, this type does
+not use systemd sockets if it is requested from the user. Using the
+``--bind-to`` and ``--protocol`` parameters, it uses the systemd socket
+activation. Else, it set the different sockets and protocols natively to uwsgi
+and add kernel capabilities to be able to listen to privileaged ports.
+
 
 REQUIRED PARAMETERS
 -------------------
@@ -39,8 +52,18 @@ state
 
 
 bind-to
-    The socket uwsgi should bind to. Must be UNIX/TCP for the uwsgi protocol.
-    Defaults to ``127.0.0.1:3031``. Can be set multiple times.
+    The socket uwsgi should bind to. Must be UNIX/TCP (or anything that
+    systemd sockets accept as stream). Defaults to ``127.0.0.1:3031``. Can be
+    set multiple times. The used protocol is defined by ``--protocol``.
+
+    **By setting up the socket via this parameter, it uses systemd sockets to
+    handle these.** This parameter will be ignored if a more detailed paramter
+    is given (``--$proto-bind``).
+
+protocol
+    The protocol which should be used for the socket given by the ``--bind-to``
+    parameter. Possible values are ``uwsgi``, ``http``, ``fastcgi`` and
+    ``scgi``. If nothing given, it defaults to ``uwsgi``.
 
 uwsgi-bind
 http-bind
@@ -49,6 +72,12 @@ scgi-bind
     Bind the application to a specific protocol instead of implicit uwsgi via
     ``--bind-to``. If such parameter given, ``--bind-to`` will be ignored. Must
     be a UNIX/TCP socket. Can be set multiple times.
+
+    **By using such parameters instead of ``--bind-to``, no systemd sockets
+    will be used because it can not handle sockets for multiple protocols.**
+    Instead, the native socket binding will be used. It will add kernel
+    capabilites to bind to privileaged ports, too. This allow binds to ports
+    like 80 as netbox user.
 
 
 BOOLEAN PARAMETERS

@@ -14,6 +14,9 @@ sockets. Static content must be served independent of Gunicorn. The Gunicorn
 daemon is available as the `gunicorn-netbox` systemd service, but also
 available via the `netbox` wrapper service.
 
+It will use systemd socket activation to listen to the given sockets. This
+should allow to bind to privileaged ports (all below 1024) and hot reloads.
+
 
 REQUIRED PARAMETERS
 -------------------
@@ -38,8 +41,9 @@ state
 
 bind-to
     The hosts the gunicorn socket should be bind to. Formats are `IP`,
-    `IP:PORT`, `unix:PATH` and `fd://FD`. Parameter can be set a multiple
-    times. Defaults to ``127.0.0.1:8001``.
+    `IP:PORT`, `PATH` or anything other that systemd socket units will
+    understand as stream. Parameter can be set multiple times. Defaults
+    to ``127.0.0.1:8001``.
 
 
 BOOLEAN PARAMETERS

@@ -25,15 +25,30 @@ case "$param_state" in
 esac
 
 
+mkdir "$__object/files"
+
+# check if systemd sockets will be used
+if [ -f "$__object/parameter/bind-to" ]; then
+    SYSTEMD_SOCKET="yes"
+fi
+if find "$__object/parameter/" -maxdepth 1 -name "*-bind" -print -quit | grep -q .; then
+    SYSTEMD_SOCKET="no"
+fi
+echo "$SYSTEMD_SOCKET" > "$__object/files/systemd_socket"
+
 if [ "$state" = "present" ]; then
-    # *bind* parameters are directly processed in the gen script
+    # already checked outside this if-clause
+    export SYSTEMD_SOCKET
+
+    PROTOCOL="$(cat "$__object/parameter/protocol")"
+    export PROTOCOL
+
     if [ -f "$__object/parameter/serve-static" ]; then
         STATIC_MAP="yes"
         export STATIC_MAP
     fi
 
     # process template
-    mkdir "$__object/files"
     "$__type/files/uwsgi.ini.sh" > "$__object/files/uwsgi.ini"
 
     # uwsgi config file
@@ -48,7 +63,24 @@ else
 fi
 
 
+# handle the systemd socket
+if [ "$SYSTEMD_SOCKET" = "yes" ]; then
+    TYPE="uWSGI"
+    export TYPE
+
+    # generate and set the socket unit
+    "$__type/files/netbox.socket.sh" "$__object/parameter/bind-to" \
+        > "$__object/files/netbox.socket"
+    __systemd_unit uwsgi-netbox.socket \
+        --state "$state" --enablement-state "$unit_state" \
+        --source "$__object/files/netbox.socket" --restart
+else
+    # remove the systemd socket unit
+    __systemd_unit uwsgi-netbox.socket --state absent
+fi
+
 # install service file
+"$__type/files/netbox.service.sh" > "$__object/files/netbox.service"
 __systemd_unit uwsgi-netbox.service \
     --state "$state" --enablement-state "$unit_state" \
-    --source "$__type/files/netbox.service" --restart
+    --source "$__object/files/netbox.service" --restart

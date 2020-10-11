@@ -3,13 +3,14 @@ Description=NetBox Gunicorn WSGI Service
 Documentation=https://netbox.readthedocs.io/en/stable/
 PartOf=netbox.service
 Requires=netbox-rq.service
+Requires=gunicorn-netbox.socket
 Wants=network.target
 After=netbox.service
 After=network.target
 After=redis-server.service postgresql.service
 
 [Service]
-Type=simple
+Type=notify
 
 User=netbox
 Group=netbox
