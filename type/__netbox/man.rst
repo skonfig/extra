@@ -16,7 +16,7 @@ It setup systemd unit files for the services `netbox` and `netbox-rq`. The
 `netbox` service only wrap all netbox related services, e.g. restarting and
 so one will be delegated to all related services.
 
-The application is still not accessable because WSGI server is required. To
+The application is still not accessable because a WSGI server is required. To
 access the application through WSGI, uWSGI or Gunicorn can be used. The setup
 can be done via there own types `__netbox_gunicorn` and `__netbox_uwsgi`.
 
@@ -236,23 +236,21 @@ If you not setup ldap authentification, you may be interested into how to
 <https://netbox.readthedocs.io/en/stable/installation/3-netbox/#create-a-super-user>`
 directly on the machine to be able to access and use NetBox.
 
-If you change a configuration, the database may go corrupt if two instances of
-the application are running with different configurations at the same time.
-This most commonly happens when the WSGI server and RQ-worker restarts after a
-configuration change. This occours in the following case for example:
+You may also be interested of writing a own type which handles the creation of
+the super user. To do this non-interactivly, see the ansible role as `reference
+<https://github.com/lae/ansible-role-netbox/blob/18f46a3345f100936c5116abe716c480e1886676/vars/main.yml#L15>`.
 
-.. code-block:: sh
+If you change the secret key while the netbox instance is running, there is a
+time frame where the access to the application corrupts the whole database.
+Then, you need to restore a backup or wipe the database.
 
-   systemctl restart gunicorn-netbox  # WSGI-server already online with new
-                                      # configuration after this command.
-   systemctl restart netbox-rq  # RQ-Worker still worked with the old
-                                # configuration till here.
+Currently, the cause is not clear, but it should work if you do not touch
+netbox while the configuration is done (do not shut it down, too). It only
+applies for changes of the secret key, which not happen normally.
 
-This type handles the restart of both services correctly to avoid such database
-corruptions. To safely manual restart the whole netbox instance manual, simply
-restart all services in one ``systemctl restart netbox`` command, as it ensures
-that first all services are shut down before starting one of them. The service
-``netbox`` wraps all required services that are available.
+Maybe the `--restart` flag for the `__systemd_unit` types is not the best idea,
+but avoids that the changes will not be applied. It could be solved if the type
+would send messages from his actions.
 
 
 SEE ALSO

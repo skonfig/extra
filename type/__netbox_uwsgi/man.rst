@@ -129,6 +129,7 @@ EXAMPLES
 
     # with multiple protocols
     #  parameter `--bind-to` will be ignored
+    #  avoids systemd sockets, but can handle multiple protocols
     __netbox $args
     require="__netbox" __netbox_uwsgi --uwsgi-bind 0.0.0.0:3031 \
                                       --http-bind 0.0.0.0:8080 \
@@ -148,6 +149,20 @@ EXAMPLES
     __netbox $args
     require="__netbox" __netbox_uwsgi --state disabled
     require="__netbox_uwsgi" __systemd_service uwsgi-netbox --state stopped
+
+
+NOTES
+-----
+If systemd sockets are used, uwsgi can not be reloaded because it does not
+handle the socket correctly. It works by completly restarting uwsgi (because
+it is near the same cause of the systemd socket) or tweaking the service unit
+with the line ``StandardInput=socket``, which limits you to only one address
+to bind to (else, the service will not start).
+
+Maybe someone is interested in enabling log files, because the "log to stdout"
+is not the fanciest approach (because it is shown in the journal). See the
+`uwsgi documentation <https://uwsgi.readthedocs.io/en/latest/Logging.html>` for
+reference.
 
 
 SEE ALSO
