@@ -36,7 +36,6 @@ REDIS = {
         # 'SENTINEL_SERVICE': 'netbox',
         'PASSWORD': '$REDIS_PASSWORD',
         'DATABASE': $((REDIS_DBID_OFFSET + 0)),
-        'DEFAULT_TIMEOUT': 300,
         'SSL': $REDIS_SSL,
     },
     'caching': {
@@ -47,10 +46,10 @@ REDIS = {
         # 'SENTINEL_SERVICE': 'netbox',
         'PASSWORD': '$REDIS_PASSWORD',
         'DATABASE': $((REDIS_DBID_OFFSET + 1)),
-        'DEFAULT_TIMEOUT': 300,
         'SSL': $REDIS_SSL,
     }
 }
+RQ_DEFAULT_TIMEOUT = 300
 
 # This key is used for secure generation of random numbers and strings. It must never be exposed outside of this file.
 # For optimal security, SECRET_KEY should be at least 50 characters in length and contain a mix of letters, numbers, and
