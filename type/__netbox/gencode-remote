@@ -25,30 +25,22 @@ curl -sS -L '$url' > '$archive'
 tar xf '$archive'
 
 
+# virtualenv is given already by __pyvenv, just using it
+
 # backup requirement files
 if [ -f /opt/netbox/requirements.txt ]; then
-    cp /opt/netbox/requirements.txt /opt/netbox/old-requirements.txt
+    mv /opt/netbox/requirements.txt /opt/netbox/old-requirements.txt
 else
     # preseve file-not-found errors and warnings
     touch /opt/netbox/old-requirements.txt
 fi
 cp '$src/requirements.txt' /opt/netbox/
 
-# Deploy sources and restore configuration.
-rm -rf '$install_dir'
-cp -r '$src/netbox' '$install_dir'
-# force links to the cdist directory
-ln -fs /opt/netbox/cdist/configuration.py '$install_dir/netbox/configuration.py'
-ln -fs /opt/netbox/cdist/ldap_config.py '$install_dir/netbox/ldap_config.py'
-
-
-# virtualenv is given already by __pyvenv, just using it
-
 # Uninstall packages not required anymore
 # if versions not be shortend, they will be ignored by pip, but not by comm
 # all of this could be done with grep, too, but it's still must be shortend with awk
-awk -F== '{print $1}' '/opt/netbox/requirements.txt' | sort > "\$tmpdir/curr-reqs.txt"
-awk -F== '{print $1}' '/opt/netbox/old-requirements.txt' | sort > "\$tmpdir/old-reqs.txt"
+awk -F== '{print \$1}' '/opt/netbox/requirements.txt' | sort > "\$tmpdir/curr-reqs.txt"
+awk -F== '{print \$1}' '/opt/netbox/old-requirements.txt' | sort > "\$tmpdir/old-reqs.txt"
 comm -23 "\$tmpdir/old-reqs.txt" "\$tmpdir/curr-reqs.txt" > "\$tmpdir/pip-uninstall.txt"
 
 # only uninstall if something is available (to avoid errors cause of this)
@@ -70,8 +62,16 @@ EOF
 
     cat << EOF
 
+# Deploy sources and restore configuration.
+rm -rf '$install_dir'
+cp -r '$src/netbox' '$install_dir'
+# force links to the cdist directory
+ln -fs /opt/netbox/cdist/configuration.py '$install_dir/netbox/configuration.py'
+ln -fs /opt/netbox/cdist/ldap_config.py '$install_dir/netbox/ldap_config.py'
+
 # Set final permissions.
 chown -R netbox /opt/netbox
+
 
 # NetBox manage scripts
 # Run database migrations.
