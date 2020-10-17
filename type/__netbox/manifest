@@ -187,6 +187,8 @@ fi
 
 # Create system user used to run netbox.
 __user netbox --system --home /opt/netbox --create-home
+# Generate python environment (user will be set by gencode-remote)
+require="__user/netbox" __pyvenv /opt/netbox/venv/
 
 # Generate and upload netbox configuration.
 mkdir -p "$__object/files"

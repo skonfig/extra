@@ -24,26 +24,7 @@ cd "\$tmpdir"
 curl -sS -L '$url' > '$archive'
 tar xf '$archive'
 
-EOF
 
-    # Stop everything in the pyenv to update
-    cat << EOF
-# Try to stop everything in the venv (ignore non-existant services)
-systemctl -q stop netbox gunicorn-netbox uwsgi-netbox || true
-
-# kill and poll till all venv processes end
-# at least if they are called with full path in the cmd (like in the services)
-pids="\$( ps -axo pid,cmd | awk '\$2 ~ "^/opt/netbox/venv/"{print \$1}' )"
-if [ "\$pids" ]; then
-    kill \$pids
-    while ps -axo pid,cmd | awk '\$2 ~ "^/opt/netbox/venv/"{print \$1}' | grep -q . ; do
-        sleep 0.5
-    done
-fi
-
-EOF
-
-    cat << EOF
 # backup requirement files
 if [ -f /opt/netbox/requirements.txt ]; then
     cp /opt/netbox/requirements.txt /opt/netbox/old-requirements.txt
@@ -61,9 +42,7 @@ ln -fs /opt/netbox/cdist/configuration.py '$install_dir/netbox/configuration.py'
 ln -fs /opt/netbox/cdist/ldap_config.py '$install_dir/netbox/ldap_config.py'
 
 
-# Setup & enter python virtualenv.
-#  forcing python3 to be sure (till python4 gets released ..)
-virtualenv -p python3 /opt/netbox/venv
+# virtualenv is given already by __pyvenv, just using it
 
 # Uninstall packages not required anymore
 # if versions not be shortend, they will be ignored by pip, but not by comm
@@ -112,6 +91,7 @@ rm -rf "\$tmpdir"
 
 # Save version after successful installation
 printf "%s\\n" "$VERSION" > /opt/netbox/cdist/version
+
 EOF
 
     # meta
@@ -127,10 +107,12 @@ if grep -q "^__file/opt/netbox/" "$__messages_in"; then
 fi
 
 
-# check for changes
+# Check for changes
 if [ "$changes" = "yes" ]; then
-    # to avoid database corruption at config changes, both services must be
-    # stopped at the same time (noted in the manual, too).
+    # After the upstream upgrade.sh script, it's ok to migrate while the
+    # application is running ;)
+
+    # restarting after changes
     cat << EOF
 # Restart service. All required services are included with netbox.service.
 systemctl restart netbox
