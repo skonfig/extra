@@ -1,0 +1,34 @@
+#!/bin/sh -e
+# __nextcloud/explorer/webroot
+
+# Detects the webroot if any
+
+
+# Just check if there is some directory and echo + exit on success
+#
+# Arguments:
+#  1: the directory to check
+check_dir() {
+    if [ -d "$1" ]; then
+        echo "$1"
+        exit
+    fi
+}
+
+
+# Check the user choice
+parameter="$__object/parameter/webroot"
+if [ -f "$parameter" ]; then
+    cat "$parameter"
+    exit
+fi
+
+# Maybe checking standard webserver configs ..
+
+# Check if there are default directories
+check_dir "/srv/www"
+check_dir "/var/www/html"
+check_dir "/var/www"
+
+
+# do nothing if no webroot found

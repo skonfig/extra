@@ -1,0 +1,19 @@
+#!/bin/sh -e
+# __nextcloud/explorer/version
+
+# Check the currently installed version. Outputs nothing if nothing found.
+
+
+# Get the install directory
+installdir="$( "$__type_explorer/installdir" )"
+
+# Check if the installation directory exists
+if [ -d "$installdir" ]; then
+    cd "$installdir"
+
+    # if those files exist, everything should be good
+    if [ -f "occ" ] && [ -f "version.php" ]; then
+        # detect php version with the version file
+        php -r 'require("version.php"); print($OC_VersionString);'
+    fi
+fi

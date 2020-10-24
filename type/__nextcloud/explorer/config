@@ -1,0 +1,28 @@
+#!/bin/sh -e
+# __nextcloud/explorer/config
+
+# Checks the nextcloud configuration
+
+
+# Get the installdir
+user="$( cat "$__object/parameter/user" )"
+installdir="$( "$__type_explorer/installdir" )"
+
+# Check if the tools are available
+if [ -d "$installdir" ]; then
+    cd "$installdir"
+
+    # if those files exist, everything should be good
+    if [ -f "occ" ] && [ -f "config/config.php" ]; then
+        # dump out config instead of fuzz every possible option through
+        # `occ config:system:get`. Or parse through the whole json or
+        # yaml-like output of `occ config:list system --private`.
+        php -r 'require("lib/private/Config.php"); $config = new OC\Config("config/");
+                function printv($key, $value) {printf("%s = %s\n", $key, $value);}
+                foreach($config->getKeys() as $key){
+                    $value = $config->getValue($key);
+                    if(is_array($value)) foreach($value as $n => $in) printv($n."|".$key, $in);
+                    else printv($key, $value);
+                };'
+    fi
+fi

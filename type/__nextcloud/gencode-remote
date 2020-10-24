@@ -1,0 +1,209 @@
+#!/bin/sh -e
+# __nextcloud/gencode-remote
+
+# Install if not installed
+
+# Legacy:
+# curl -sS -L '$nextcloud_uri' | tar xj --strip-components=1 nextcloud/
+
+
+# Call the nextcloud occ script as the designed user. Maybe this can be a bit
+# more effictive with user switching, but currently the easiest way of doing
+# it.
+#
+# All arguments are directly passed to occ (injection alarm ;-) )
+occ() {
+    # su creates a new shell, so it does not affect the current session
+    #  will not use -q as it supresses errors, too
+    cat << SHELL
+su -s /bin/sh -l "$user" -- -e <<SU
+cd '$installdir' && php occ --no-interaction $@
+SU
+SHELL
+}
+
+# Get existing versions
+version_is="$( cat "$__object/explorer/version" )"
+version_should="$( cat "$__object/parameter/version" )"
+
+# the install directory
+installdir="$( cat "$__object/explorer/installdir" )"
+updatedir="$( dirname "$installdir" )"
+tarballdir="$updatedir/.$__object_id"
+
+# get used user and group
+user="$( cat "$__object/parameter/user" )"
+group="$( cat "$__object/parameter/group" )"
+
+
+
+# Detect if we can install or upgrade.
+# Check if this will be a new installation.
+if [ -z "$version_is" ]; then
+    install="yes"
+
+# Check if upgrades are available. Not do this if it's not wanted by the user.
+elif ! [ -f "$__object/parameter/install-only" ]; then
+    # installation upgrade
+    if [ "$version_is" != "$version_should" ]; then
+        upgrade="yes"
+    fi
+fi
+
+
+# Check if the installation will be upgraded.
+# Remove the old folder and replace it with the new one.
+if [ "$upgrade" ]; then
+    cat << REMOTE
+cd '$updatedir'
+
+chown '$user':'$group' -R '$tarballdir'
+REMOTE
+
+    occ maintenance:mode --on
+    cat << REMOTE
+
+cp -pf '$installdir/config/config.php' '$tarballdir/config/config.php'
+mv '$installdir/data' '$tarballdir'
+
+rm -rf '$installdir'
+mv '$tarballdir' '$installdir'
+
+cd '$installdir'
+
+REMOTE
+
+    # do some maintainer stuff
+    occ upgrade
+    occ db:add-missing-columns
+    occ db:add-missing-indices
+
+    # send upgrade message
+    printf "upgraded %s to %s\n" "$version_is" "$version_should" >> "$__messages_out"
+
+# Apply some misc to the installation folder.
+elif [ "$install" ]; then
+    cat << REMOTE
+chown '$user':'$group' -R '$installdir'
+REMOTE
+fi
+
+
+# Check if the nextcloud application needs to be installed.
+# This checks the state of the configuration, not of the directory.
+if ! grep -q -F "installed = 1" "$__object/explorer/config"; then
+    # argument construction
+    occ_install_args=""
+
+    # Database
+    db_setup() {
+        if ! [ -f "$__object/parameter/db-host" ]; then
+            echo "no hostname given! can't proceed." >&2
+            exit 3
+        fi
+        occ_install_args="$occ_install_args --database '$1'"
+        occ_install_args="$occ_install_args --database-host '$(cat "$__object/parameter/db-host")'"
+
+        db_name="$__object/parameter/database-name"
+        if [ -f "$db_name" ]; then
+            occ_install_args="$occ_install_args --database-name '$(cat "$db_name")'"
+        fi
+        db_user="$__object/parameter/database-user"
+        if [ -f "$db_user" ]; then
+            occ_install_args="$occ_install_args --database-user '$(cat "$db_user")'"
+        fi
+        db_pass="$__object/parameter/database-password"
+        if [ -f "$db_pass" ]; then
+            occ_install_args="$occ_install_args --database-pass '$(cat "$db_pass")'"
+        fi
+        db_prefix="$__object/parameter/database-prefix"
+        if [ -f "$db_prefix" ]; then
+            occ_install_args="$occ_install_args --database-table-prefix '$(cat "$db_prefix")'"
+        fi
+    }
+
+    database_type="$(cat "$__object/parameter/database-type")"
+    case "$database_type" in
+        sqlite|sqlite3)
+            occ_install_args="$occ_install_args --database sqlite"
+            ;;
+        mysql|mariadb)
+            db_setup mysql
+            ;;
+        pgsql|postgres|postgresql)
+            db_setup pgsql
+            ;;
+
+        *)
+            printf "Database type '%s' is unkown!\n" "" >&2
+            exit 3
+            ;;
+    esac
+
+    # Admin stuff
+    occ_install_args="$occ_install_args --admin-pass '$(cat "$__object/parameter/admin-password")'"
+
+    admin_user="$__object/parameter/admin-user"
+    if [ -f "$admin_user" ]; then
+        occ_install_args="$occ_install_args --admin-user '$(cat "$admin_user")'"
+    fi
+    admin_email="$__object/parameter/admin-email"
+    if [ -f "$admin_email" ]; then
+        occ_install_args="$occ_install_args --admin-email '$(cat "$admin_email")'"
+    fi
+
+    # Data directory
+    datadir="$__object/parameter/datadir"
+    if [ -f "$datadir" ]; then
+        occ_install_args="$occ_install_args --data-dir '$(cat "$datadir")'"
+    fi
+
+
+    # Execute the install command
+    occ maintenance:install $occ_install_args
+
+    # send install message
+    echo installed >> "$__messages_out"
+fi
+
+
+# Handle the config
+mkdir "$__object/files"
+"$__type/map-conf-changes.sh" > "$__object/files/conf-cmds"
+
+# only print if there are changes listed
+if [ -s "$__object/files/conf-cmds" ]; then
+    # save that we did changes
+    changes="yes"
+
+    # print change commands incl. the switch of user context
+    #  using -e to abort if the commands failed
+    printf "su -s /bin/sh -l '%s' -- -e << 'SU'\n" "$user"
+    printf "cd '%s'\n" "$installdir"
+    cat "$__object/files/conf-cmds"
+    printf "SU\n"
+
+    # print a message
+    echo config >> "$__messages_out"
+fi
+
+
+# Check if this is the fist install
+if [ "$install" ]; then
+    # do some convert stuff etc.
+
+    # variable accessible from the last $install if-clause
+    case "$database_type" in
+        mysql|mariadb)
+            # only available for mysql
+            occ db:convert-mysql-charset
+            ;;
+    esac
+
+    occ db:convert-filecache-bigint
+fi
+
+# Disable maintainer mode
+if [ "$install" ] || [ "$upgrade" ] || [ "$changes" ]; then
+    occ maintenance:mode --off
+fi

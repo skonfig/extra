@@ -1,0 +1,16 @@
+#!/bin/sh -e
+# __nextcloud/explorer/installdir
+
+# Detects the directory nextcloud should be installed to.
+
+
+# by parameter or auto-detection
+webroot="$( "$__type_explorer/webroot" )"
+if [ -z "$webroot" ]; then
+    echo "no installdir given and no webroot directory found" >&2
+    echo "no place to install found; set it via --webroot" >&2
+    exit 1
+fi
+
+# assemble directory with the object id
+printf "%s/%s\n" "$webroot" "$__object_id"
