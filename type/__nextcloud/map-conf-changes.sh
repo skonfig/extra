@@ -53,9 +53,10 @@ paramexist() {
 #  2: nextcloud config name
 #  3: conditially mandatory argument, value "required" if true
 #  4: occ printf pattern to set the value
+#  5: "installation" default value, can be used to backup the user value
 conf_base() {
-    if [ -f "$__object/parameter/$1" ]; then
-        value="$(cat "$__object/parameter/$1")"
+    if [ -f "$__object/parameter/$1" ] || [ "$5" ]; then
+        value="$(cat "$__object/parameter/$1" || printf "%s" "$5")"
         if ! testparam "$2" "$value"; then
             # set it because it does not exist
             # shellcheck disable=SC2059  # $4 contains patterns
@@ -81,14 +82,15 @@ conf_base() {
 #  1: cdist type parameter name
 #  2: nextcloud config name
 #  3: conditional mandatory of this parameter; value "required" if true
+#  4: default value; will be used if parameter is absent
 conf_string() {
-    conf_base "$1" "$2" "$3" "set '%s' --type=string --value='%s'"
+    conf_base "$1" "$2" "$3" "$4" "set '%s' --type=string --value='%s'"
 }
 conf_number() {
-    conf_base "$1" "$2" "$3" "set '%s' --type=integer --value='%s'"
+    conf_base "$1" "$2" "$3" "$4" "set '%s' --type=integer --value='%s'"
 }
 conf_decimal() {
-    conf_base "$1" "$2" "$3" "set '%s' --type=double --value='%s'"
+    conf_base "$1" "$2" "$3" "$4" "set '%s' --type=double --value='%s'"
 }
 
 # Sets the nextcloud configuration option after a boolean cdist parameter.
@@ -96,6 +98,7 @@ conf_decimal() {
 # Arguments:
 #  1: cdist type parameter name
 #  2: nextcloud config name
+# FIXME default value required for booleans?
 conf_boolean() {
     # map parameter to a php boolean (are outputted as 0 or 1)
     if [ -f "$__object/parameter/$1" ]; then
@@ -119,6 +122,7 @@ conf_boolean() {
 #  1: cdist type parameter name
 #  2: nextcloud config name
 #  3: conditional mandatory of this parameter; value "required" if true
+# FIXME currently no default value due to complexity of arrays
 conf_array() {
     if [ -f "$__object/parameter/$1" ]; then
         # reset array if installation is fresh
@@ -204,6 +208,7 @@ fi
 conf_array host trusted_domains
 
 # Already set via the installer
+# set default values from the nextcloud installer to do not override them
 if [ -z "$install" ]; then
     # database
     database_type="$(cat "$__object/parameter/database-type")"
@@ -214,7 +219,7 @@ if [ -z "$install" ]; then
 
         mysql|pgsql)
             conf_string database-type dbtype
-            conf_string database-host dbhost
+            conf_string database-host dbhost installdef "localhost"
             conf_string database-name dbname required
             conf_string database-user dbuser required
             conf_string database-password dbpassword required
@@ -228,5 +233,5 @@ if [ -z "$install" ]; then
     esac
 
     # data-dir
-    conf_string data-directory datadirectory
+    conf_string data-directory datadirectory installdef "$(cat "$__object/explorer/installdir")/$__object_id/data"
 fi
