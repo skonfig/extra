@@ -97,27 +97,28 @@ if ! grep -q -F "installed = 1" "$__object/explorer/config"; then
     # argument construction
     occ_install_args=""
 
-    # Database
+    # Error function if value not found
+    die_err() {
+        echo "parameter not found but required; can't continue!!" >&2
+        exit 1
+    }
+    # Database setup for mysql and pgsql
     db_setup() {
         if ! [ -f "$__object/parameter/db-host" ]; then
             echo "no hostname given! can't proceed." >&2
             exit 3
         fi
         occ_install_args="$occ_install_args --database '$1'"
-        occ_install_args="$occ_install_args --database-host '$(cat "$__object/parameter/db-host")'"
 
-        db_name="$__object/parameter/database-name"
-        if [ -f "$db_name" ]; then
-            occ_install_args="$occ_install_args --database-name '$(cat "$db_name")'"
+        db_host="$__object/parameter/database-host"
+        if [ -f "$db_host" ]; then
+            occ_install_args="$occ_install_args --database-host '$(cat "$db_host")'"
         fi
-        db_user="$__object/parameter/database-user"
-        if [ -f "$db_user" ]; then
-            occ_install_args="$occ_install_args --database-user '$(cat "$db_user")'"
-        fi
-        db_pass="$__object/parameter/database-password"
-        if [ -f "$db_pass" ]; then
-            occ_install_args="$occ_install_args --database-pass '$(cat "$db_pass")'"
-        fi
+
+        occ_install_args="$occ_install_args --database-name '$(cat "$__object/parameter/database-name" || die_err)'"
+        occ_install_args="$occ_install_args --database-user '$(cat "$__object/parameter/database-user" || die_err)'"
+        occ_install_args="$occ_install_args --database-pass '$(cat "$__object/parameter/database-password" || die_err)'"
+
         db_prefix="$__object/parameter/database-prefix"
         if [ -f "$db_prefix" ]; then
             occ_install_args="$occ_install_args --database-table-prefix '$(cat "$db_prefix")'"
@@ -126,18 +127,18 @@ if ! grep -q -F "installed = 1" "$__object/explorer/config"; then
 
     database_type="$(cat "$__object/parameter/database-type")"
     case "$database_type" in
-        sqlite|sqlite3)
+        sqlite3)
             occ_install_args="$occ_install_args --database sqlite"
             ;;
-        mysql|mariadb)
+        mysql)
             db_setup mysql
             ;;
-        pgsql|postgres|postgresql)
+        pgsql)
             db_setup pgsql
             ;;
 
         *)
-            printf "Database type '%s' is unkown!\n" "" >&2
+            printf "Database type '%s' is unkown!\n" "$database_type" >&2
             exit 3
             ;;
     esac
@@ -197,7 +198,7 @@ if [ "$install" ]; then
 
     # variable accessible from the last $install if-clause
     case "$database_type" in
-        mysql|mariadb)
+        mysql)
             # only available for mysql
             occ db:convert-mysql-charset
             ;;

@@ -51,16 +51,23 @@ paramexist() {
 # Arguments:
 #  1: cdist type parameter name
 #  2: nextcloud config name
-#  3: occ printf pattern to set the value
+#  3: conditially mandatory argument, value "required" if true
+#  4: occ printf pattern to set the value
 conf_base() {
     if [ -f "$__object/parameter/$1" ]; then
         value="$(cat "$__object/parameter/$1")"
         if ! testparam "$2" "$value"; then
             # set it because it does not exist
-            # shellcheck disable=SC2059  # $3 contains patterns
-            printf "php occ config:system:$3\n" "$2" "$value"
+            # shellcheck disable=SC2059  # $4 contains patterns
+            printf "php occ config:system:$4\n" "$2" "$value"
         fi
     else
+        if [ "$3" = "required" ]; then
+            # error because the parameter should be set
+            printf "Parameter '%s' not set by user, but required!\n" "$1" >&2
+            exit 4
+        fi
+
         if paramexist "$2"; then
             # remove it because it exists
             printf "php occ config:system:delete '%s'\n" "$2"
@@ -73,14 +80,15 @@ conf_base() {
 # Arguments:
 #  1: cdist type parameter name
 #  2: nextcloud config name
+#  3: conditional mandatory of this parameter; value "required" if true
 conf_string() {
-    conf_base "$1" "$2" "set '%s' --type=string --value='%s'"
+    conf_base "$1" "$2" "$3" "set '%s' --type=string --value='%s'"
 }
 conf_number() {
-    conf_base "$1" "$2" "set '%s' --type=integer --value='%s'"
+    conf_base "$1" "$2" "$3" "set '%s' --type=integer --value='%s'"
 }
 conf_decimal() {
-    conf_base "$1" "$2" "set '%s' --type=double --value='%s'"
+    conf_base "$1" "$2" "$3" "set '%s' --type=double --value='%s'"
 }
 
 # Sets the nextcloud configuration option after a boolean cdist parameter.
@@ -110,6 +118,7 @@ conf_boolean() {
 # Arguments:
 #  1: cdist type parameter name
 #  2: nextcloud config name
+#  3: conditional mandatory of this parameter; value "required" if true
 conf_array() {
     if [ -f "$__object/parameter/$1" ]; then
         # reset array if installation is fresh
@@ -167,6 +176,12 @@ conf_array() {
             done < "$_dir/$2"
         fi
     else
+        if [ "$3" = "required" ]; then
+            # error because the parameter should be set
+            printf "Parameter '%s' not set by user, but required!\n" "$1" >&2
+            exit 4
+        fi
+
         # remove everything because we don't know which was set by the user
         if paramexist "$2"; then
             # remove the whole array
@@ -190,13 +205,27 @@ conf_array host trusted_domains
 
 # Already set via the installer
 if [ -z "$install" ]; then
-    # db
-    conf_string database-type dbtype
-    conf_string database-host dbhost  # FIXME host included here (takes port also)
-    conf_string database-name dbname
-    conf_string database-user dbuser
-    conf_string database-password dbpassword
-    conf_string database-prefix dbtableprefix
+    # database
+    database_type="$(cat "$__object/parameter/database-type")"
+    case "$database_type" in
+        sqlite3)
+            conf_string database-type dbtype
+            ;;
+
+        mysql|pgsql)
+            conf_string database-type dbtype
+            conf_string database-host dbhost
+            conf_string database-name dbname required
+            conf_string database-user dbuser required
+            conf_string database-password dbpassword required
+            conf_string database-prefix dbtableprefix
+            ;;
+
+        *)
+            printf "Databasetype '%s' is unkown!\n" "$database_type" >&2
+            exit 3
+            ;;
+    esac
 
     # data-dir
     conf_string data-directory datadirectory

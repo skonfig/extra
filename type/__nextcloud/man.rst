@@ -74,8 +74,8 @@ host
 
 admin-user
     The username of the administrative user which will be created while the
-    installation. This parameter has no effect if nextcloud will not be
-    installed.
+    installation. If not set, nextcloud defaults to "admin". This parameter has
+    no effect if nextcloud will not be installed.
 
 admin-email
     The email address of the administrative user. This parameter has no effect
@@ -86,7 +86,7 @@ database-type
     are:
 
     SQLite
-        Use ``sqlite`` or ``sqlite3``. Saves everything in a database file
+        Use ``sqlite3`` as value. Saves everything in a database file
         stored in the data directory. It is only recommended for very small
         installations or test environments from upstream.
 
@@ -94,12 +94,12 @@ database-type
         database backend.*
 
     MariaDB
-        Use ``mysql`` or ``mariadb``. MariaDB and MySQL are threated the same
+        Use ``mysql`` as value. MariaDB and MySQL are threated the same
         way. They are the recommended database backends recommended from
         upstream.
 
     PostgreSQL
-        Use ``pgsql``, ``postgres`` or ``postgresql``.
+        Use ``pgsql`` as value.
 
     **This parameter defaults to the SQLite database backend, as it is the
     simplest one to setup and do not require extra parameters.**
@@ -110,17 +110,22 @@ database-host
     ``localhost:/path/to/socket``. If an non-standard port is used, set it
     after the hostname or ip address seperated by an colon (``:``).
 
+    If this value is not set, nextcloud defaults to the value ``localhost``.
+
 database-name
-    The name of the database to connect to.
+    The name of the database to connect to. Required if MariaDB or PostgreSQL
+    is used.
 
 database-user
-    The username to access the database.
+    The username to access the database. Required if MariaDB or PostgreSQL is
+    used.
 
 database-password
-    The password required to authorize the given user.
+    The password required to authorize the given user. Required if MariaDB or
+    PostgreSQL is used.
 
 database-prefix
-    The table prefix used by nextcloud. If nothing set, it defaults to
+    The table prefix used by nextcloud. If nothing set, nextcloud defaults to
     ``oc_``.
 
 
