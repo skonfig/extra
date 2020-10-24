@@ -155,7 +155,7 @@ if ! grep -q -F "installed = 1" "$__object/explorer/config"; then
     fi
 
     # Data directory
-    datadir="$__object/parameter/datadir"
+    datadir="$__object/parameter/data-directory"
     if [ -f "$datadir" ]; then
         occ_install_args="$occ_install_args --data-dir '$(cat "$datadir")'"
     fi

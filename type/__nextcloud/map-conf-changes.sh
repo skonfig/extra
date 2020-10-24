@@ -197,4 +197,7 @@ if [ -z "$install" ]; then
     conf_string database-user dbuser
     conf_string database-password dbpassword
     conf_string database-prefix dbtableprefix
+
+    # data-dir
+    conf_string data-directory datadirectory
 fi
