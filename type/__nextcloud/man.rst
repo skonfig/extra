@@ -81,6 +81,15 @@ admin-email
     The email address of the administrative user. This parameter has no effect
     if nextcloud will not be installed.
 
+data-directory
+    This will set or change the data directory where nextcloud will keep all
+    its data, including the SQLite database if any. By default, it will be
+    saved in the ``data`` directory below the nextcloud directory.
+
+    If this directory change, this type will move the old location to the new
+    one to preserve all data. This is not supported by upstream, as some apps
+    may not handle this.
+
 database-type
     Sets the type of database that should be used as backend. Possible backends
     are:
@@ -158,6 +167,11 @@ the version that is currently installed or use the parameter `--install-only`.
 The type aborts if there is no webroot given as parameter and no could be
 detected by the type itself. Please set the webroot via `--webroot` or extend
 this type.
+
+It may abort if the data directory can not be moved correctly. Then, the
+nextcloud configuration is broken and must be resolved manually: Move the data
+directory to the correct location or change the configuration to point to the
+old destination and retry.
 
 
 EXAMPLES

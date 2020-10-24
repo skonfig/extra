@@ -22,6 +22,28 @@ SU
 SHELL
 }
 
+# Turn the maintainer mode on, but print it only once at all.
+#
+# No arguments.
+occ_maintainer_mode_on() {
+    # Check if this was not already done
+    if [ "$_maintainer_mode_on" != "yes" ]; then
+        occ maintenance:mode --on
+        _maintainer_mode_on="yes"
+    fi
+}
+
+# Print the value of the given configuration.
+#
+# Arguments:
+#  1: the nextcloud configuration name
+getparam() {
+    awk -v FS=" = " -v name="$1" '
+             function ntostring(n) { ret=""; for(i=n; i<=NF; i++) ret=ret $i (i<NF ? OFS : ""); return ret }
+             $1 == name { print ntostring(2); }
+             ' "$__object/explorer/config"
+}
+
 # Get existing versions
 version_is="$( cat "$__object/explorer/version" )"
 version_should="$( cat "$__object/parameter/version" )"
@@ -60,7 +82,7 @@ cd '$updatedir'
 chown '$user':'$group' -R '$tarballdir'
 REMOTE
 
-    occ maintenance:mode --on
+    occ_maintainer_mode_on
     cat << REMOTE
 
 cp -pf '$installdir/config/config.php' '$tarballdir/config/config.php'
@@ -179,6 +201,7 @@ mkdir "$__object/files"
 if [ -s "$__object/files/conf-cmds" ]; then
     # save that we did changes
     changes="yes"
+    occ_maintainer_mode_on
 
     # print change commands incl. the switch of user context
     #  using -e to abort if the commands failed
@@ -186,8 +209,33 @@ if [ -s "$__object/files/conf-cmds" ]; then
     printf "cd '%s'\n" "$installdir"
     cat "$__object/files/conf-cmds"
     printf "SU\n"
+fi
 
-    # print a message
+
+# Get the current and future data directory
+data_old="$(getparam datadirectory)"
+data_new="$(cat "$__object/parameter/data-directory" 2>/dev/null || printf "%s/data" "$installdir")"
+
+# Move if they should be moved. Avoid false positives if $data_old is empty
+if [ "$data_old" ] && [ "$data_old" != "$data_new" ]; then
+    # save that we did changes
+    changes="yes"
+    occ_maintainer_mode_on
+
+    # Change the configuration variable and then move the folder. This order is
+    # important if SQLite is used, but the config already corrupted if it can
+    # not be moved.
+    occ config:system:set datadirectory --type=string --value "'$data_new'"
+    cat << REMOTE
+rm -rf '$data_new'
+mkdir -p '$(dirname "$data_new")'  # if the parent not exists
+mv '$data_old' '$data_new'
+
+REMOTE
+fi
+
+# Print configured message if changes where done to the configuration
+if [ "$changes" ]; then
     echo configured >> "$__messages_out"
 fi
 
@@ -208,6 +256,6 @@ if [ "$install" ]; then
 fi
 
 # Disable maintainer mode
-if [ "$install" ] || [ "$upgrade" ] || [ "$changes" ]; then
+if [ "$_maintainer_mode_on" = "yes" ]; then
     occ maintenance:mode --off
 fi

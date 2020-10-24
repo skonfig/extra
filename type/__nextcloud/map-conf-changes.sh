@@ -84,13 +84,13 @@ conf_base() {
 #  3: conditional mandatory of this parameter; value "required" if true
 #  4: default value; will be used if parameter is absent
 conf_string() {
-    conf_base "$1" "$2" "$3" "$4" "set '%s' --type=string --value='%s'"
+    conf_base "$1" "$2" "$3" "set '%s' --type=string --value='%s'" "$4"
 }
 conf_number() {
-    conf_base "$1" "$2" "$3" "$4" "set '%s' --type=integer --value='%s'"
+    conf_base "$1" "$2" "$3" "set '%s' --type=integer --value='%s'" "$4"
 }
 conf_decimal() {
-    conf_base "$1" "$2" "$3" "$4" "set '%s' --type=double --value='%s'"
+    conf_base "$1" "$2" "$3" "set '%s' --type=double --value='%s'" "$4"
 }
 
 # Sets the nextcloud configuration option after a boolean cdist parameter.
@@ -232,6 +232,6 @@ if [ -z "$install" ]; then
             ;;
     esac
 
-    # data-dir
-    conf_string data-directory datadirectory installdef "$(cat "$__object/explorer/installdir")/$__object_id/data"
+    # data-dir is handled in the gencode-remote
+    #conf_string data-directory datadirectory installdef "$(cat "$__object/explorer/installdir")/$__object_id/data"
 fi
