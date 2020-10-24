@@ -91,6 +91,8 @@ fi
 
 # Check if the nextcloud application needs to be installed.
 # This checks the state of the configuration, not of the directory.
+#
+# shellcheck disable=SC2089  # disabled to write args string
 if ! grep -q -F "installed = 1" "$__object/explorer/config"; then
     # argument construction
     occ_install_args=""
@@ -159,8 +161,9 @@ if ! grep -q -F "installed = 1" "$__object/explorer/config"; then
     fi
 
 
-    # Execute the install command
-    occ maintenance:install $occ_install_args
+    # Execute the install command.
+    # generated parameters will be splited in the remote shell
+    occ maintenance:install "$occ_install_args"
 
     # send install message
     echo installed >> "$__messages_out"

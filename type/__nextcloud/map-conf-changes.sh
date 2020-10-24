@@ -57,6 +57,7 @@ conf_base() {
         value="$(cat "$__object/parameter/$1")"
         if ! testparam "$2" "$value"; then
             # set it because it does not exist
+            # shellcheck disable=SC2059  # $3 contains patterns
             printf "php occ config:system:$3\n" "$2" "$value"
         fi
     else
@@ -122,6 +123,7 @@ conf_array() {
         # else, default behaviour of the array
         else
             # save counter of the next free index
+            # shellcheck disable=SC1004  # the \ is required for awk
             counter=$( awk -v FS=" = " -v name="$2" '
                         BEGIN { counter = 0 }
                         split($1, header, "|") == 2 && header[1] ~ /^[[:digit:]]+$/ && header[2] == name \
@@ -156,6 +158,8 @@ conf_array() {
         if [ -z "$install" ]; then
             # interate through the leftover values
             # remove them, as they should not exist (at least can be)
+            #
+            # shellcheck disable=SC2034  # $equal left for readability
             while read -r start equal value; do
                 # remove those specific elements from the array
                 printf "php occ config:system:delete '%s' '%s' --error-if-not-exists\n" \
