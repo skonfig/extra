@@ -187,7 +187,7 @@ if [ -s "$__object/files/conf-cmds" ]; then
     printf "SU\n"
 
     # print a message
-    echo config >> "$__messages_out"
+    echo configured >> "$__messages_out"
 fi
 
 

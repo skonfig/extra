@@ -94,27 +94,33 @@ nextcloud_uri="https://download.nextcloud.com/server/releases/nextcloud-${versio
 nextcloud_sum="${nextcloud_uri}.sha256"
 
 
-# Only check if there is a current installation
+# Check if there is a current installation. It depends where the upstream
+# tarball should be unpacked (directly or moved in a later stage).
 if [ "$version_is" ]; then
-    # Block downgrades as there are may caused from the automatic upgrader
-    # if the current version is higher than the version that should be installed
-    if version_ge "$version_is" "$version_should"; then
-        # it's an error if the current version is higher than the one that should be installed
-        printf "The current nextcloud version '%s' is higher than the version that should be installed (%s)\n" \
-           "$version_is" "$version_should" >&2
-        printf "Please bump the nextcloud version to '%s' or higher!\n" "$version_is" >&2
-        exit 2
-    fi
+    # Only set and check the version if a upgrade is allowed.
+    #  if this block will be skipped, no upgrade will be done
+    if ! [ -f "$__object/parameter/install-only" ]; then
+        # Block downgrades as there are may caused from the automatic upgrader
+        # if the current version is higher than the version that should be installed
+        if version_ge "$version_is" "$version_should"; then
+            # it's an error if the current version is higher than the one that should be installed
+            printf "The current nextcloud version '%s' is higher than the version that should be installed (%s)\n" \
+               "$version_is" "$version_should" >&2
+            printf "Please bump the nextcloud version to '%s' or higher!\n" "$version_is" >&2
+            exit 2
+        fi
 
-    # Set destination to a temporary directory
-    destination="$webroot/.$__object_id"
+        # Set destination to a temporary directory
+        destination="$webroot/.$__object_id"
+    fi
 else
     # Set destination to the real destination
     destination="$webroot/$__object_id"
 fi
 
-# Upgrade the nextcloud version
-if [ "$version_is" != "$version_should" ]; then
+# Install/Upgrade the nextcloud version if there is a destination set.
+#  it checks if it is necessary and intended to upgrade
+if [ "$destination" ] && [ "$version_is" != "$version_should" ]; then
     updatedir="$( dirname "$installdir" )"
 
     # Be sure the parent directory exists for installation
