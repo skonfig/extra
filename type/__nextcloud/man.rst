@@ -22,6 +22,11 @@ version
     installed version lower, it will upgrade nextcloud if ``--install-only`` is
     not set.
 
+    You get version numbers from the `official changelog
+    <https://nextcloud.com/changelog/>`_ or from the `GitHub Releases
+    <https://github.com/nextcloud/server/releases>`_ page. The type will
+    download the tarball over the official nextcloud website.
+
     The type will never downgrade a nextcloud instance. Rather, it will fail,
     as this is a missconfiguration. Downgrades are not recommended and
     supported by upstream. Such cases can happen if the nextcloud instance was
@@ -255,13 +260,19 @@ it is not handled for the following cases:
     do not delete configuration options and set all available nextcloud options
     that are available through this type.
 
+If the nextcloud installation does not work and you stuck in a plaintext error
+screen, try to restart your Apache WWW server first! This type will install all
+php dependencies, but there are not recognised by the server-internal php
+environment. This can happen after a database migration between different
+database types, as it installs the database module only when it is required.
+
 
 AUTHORS
 -------
 Matthias Stecher <matthiasstecher at gmx.de>
 
 
-COPYRIGHT
+COPYING
 ---------
 Copyright \(C) 2020 Matthias Stecher. You can redistribute it
 and/or modify it under the terms of the GNU General Public License as

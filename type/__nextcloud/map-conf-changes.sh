@@ -230,6 +230,7 @@ migrate_db() {
         database_port="${database_host##*:}"
     else
         # set default port because the tool can not do this for pgsql
+        # it looks like mysql get struggles, too
         case "$database_type" in
             mysql)
                 database_port=3306
@@ -244,6 +245,7 @@ migrate_db() {
     printf "php occ db:convert-type --no-interaction --no-ansi --clear-schema --all-apps \
         '%s' '%s' --password '%s' '%s' --port '%u' '%s'\n" \
         "$database_type" "$database_user" "$database_pass" "$database_host" "$database_port" "$database_name"
+    printf "php occ maintenance:mode --on\n"  # was disabled by database convertion
 }
 
 
