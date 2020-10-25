@@ -149,7 +149,14 @@ database-prefix
 
 WEBROOT DETECTION
 -----------------
-TBA.
+As the `object id` is the install path relatively from the webroot, it must be
+known somehow. Therefor, it will try to detect a good location for it. You can
+set a custom webroot via the `--webroot` parameter. As default, following
+directories will be checked if they exist to be the webroot:
+
+1.  ``/srv/www/``
+2.  ``/var/www/html/``
+3.  ``/var/www/``
 
 
 MESSAGES
@@ -185,10 +192,68 @@ old destination and retry.
 It aborts if it should migrate to a SQLite database. This will be done before
 the upstream migration script is executed, as it would throw the same error.
 
+The explorers will abort if they found a valid nextcloud installation, but no
+installed `php`. Currently, this is intended behaviour, because it can not
+safely get the current nextcloud version, also do not get the nextcloud
+configuration. For more information, see the *NOTES section*.
+
 
 EXAMPLES
 --------
-TBA.
+
+.. code-block:: sh
+
+  # minimal nextcloud installation with sqlite and other defaults
+  # please only use sqlite for minimal or test installations as recommend :)
+  __nextcloud nextcloud --version 20.0.0 --admin-password "iaminsecure" \
+        --host localhost --host nextcloud
+
+  # more extensive configuration
+  __nextcloud cloud --version 20.0.0 --admin-password "iaminsecure" \
+        --host localhost --host nextcloud --host 192.168.1.67 \
+        --data-directory /var/lib/nextcloud/what \
+        --database-type mysql --database-host "localhost" --database-name "nextcloud" \
+        --database-user "test" --database-password "not-a-good-password"
+
+  # install it in the webroot /var/www/html
+  __nextcloud html --version 20.0.0 --admin-password "notthatsecure" \
+        --webroot "/var/www" --host localhost
+
+
+NOTES
+-----
+This cdist type does not cover all configuration options that nextcloud offer.
+If you need more configuration options for nextcloud, you are welcome to extend
+this type and contribute it upstream!
+
+- `Nextcloud configuration reference
+  <https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/config_sample_php_parameters.html>`_
+
+Database migration is only partly supported if the database will be changed to
+``mysql` or ``pgsql``, because it is supported by an upstream script. You are
+welcome to extend this type for database migrations between the same database
+type. For an implementation, you may use shell utilites like ``mysqldump(1)``
+(be aware that this may not already be installed) or use the already installed
+php code to migrate.
+
+The type will abort if a valid nextcloud directory already exists in the
+explorer execution, but no `php` exists to explore the setup. Therefor, the
+manifest could not install `php` yet. This is not the case for a new
+installation, as there does not exist a nextcloud directory with a valid
+structure. While some code could be skipped and the other replaced with `awk`
+with something like
+``awk '$1 == "$OC_VersionString" {gsub(/['\'';]/, "", $3); print $3}' version.php``,
+it is not handled for the following cases:
+
+1.  This case should not happen very often.
+2.  Maybe because of ``libapache2-mod-php`` or ``php-fpm``, `php` already
+    exists for the cli.
+3.  While the `awk` replacement for the version is just a bit worser, it would
+    bring stable results, while it would be more difficult to dump out the
+    configuration without custom `php` or the help from ``php occ``. Therefor,
+    it would make false assumptions like it want to install nextcloud again,
+    do not delete configuration options and set all available nextcloud options
+    that are available through this type.
 
 
 AUTHORS
