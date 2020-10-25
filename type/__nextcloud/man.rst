@@ -113,13 +113,22 @@ database-type
     **This parameter defaults to the SQLite database backend, as it is the
     simplest one to setup and do not require extra parameters.**
 
+    If this parameter change, the type will migrate to the new database type.
+    It will not work for SQLite because the upstream migration script does not
+    support it. **Be aware that migrations take there time, plan at minimum
+    40 seconds of migration for a stock installation.**
+
 database-host
     The database host to connect to. Possible are hostnames, ip addresses or
     UNIX sockets. UNIX sockets must set in the format of
     ``localhost:/path/to/socket``. If an non-standard port is used, set it
-    after the hostname or ip address seperated by an colon (``:``).
+    after the hostname or ip address seperated by an colon (``:``). If this
+    value is not set, nextcloud defaults to the value ``localhost``.
 
-    If this value is not set, nextcloud defaults to the value ``localhost``.
+    This type will not migrate data if the type does not change. You must do
+    this manually by setting the maintainer mode (to avoid data changes) and
+    then cloning the database to the new destination. After that, run cdist to
+    apply the config changes. It should automaticly remove the maintainer mode.
 
 database-name
     The name of the database to connect to. Required if MariaDB or PostgreSQL
@@ -172,6 +181,9 @@ It may abort if the data directory can not be moved correctly. Then, the
 nextcloud configuration is broken and must be resolved manually: Move the data
 directory to the correct location or change the configuration to point to the
 old destination and retry.
+
+It aborts if it should migrate to a SQLite database. This will be done before
+the upstream migration script is executed, as it would throw the same error.
 
 
 EXAMPLES
