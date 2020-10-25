@@ -100,8 +100,7 @@ redis-password
 
 redis-dbid-offset
     Offset to set the redis database id's. The `tasks` database id is
-    `offset + 0`     and `caching` is `offset + 1`. The offset defaults
-    to ``0``.
+    `offset + 0` and `caching` is `offset + 1`. The offset defaults to ``0``.
 
 smtp-host
     Host of the SMTP email server. Defaults to ``localhost``.
@@ -172,12 +171,12 @@ redis-ssl
 
 smtp-use-tls
     Uses TLS to connect to the SMTP email server. `See documentation
-    <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-tls`_
+    <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-tls>`_
     for more information.
 
 smtp-use-ssl
     Uses implicit TLS with the SMTP email server. `See documentation
-    <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-ssl`_
+    <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-ssl>`_
     for more information.
 
 login-required
@@ -229,16 +228,16 @@ is a more good way to inject python code for dynamic configuration variables,
 you are welcome to contribute!
 
 - `Possible optional settings
-  <https://netbox.readthedocs.io/en/stable/configuration/optional-settings/>`
+  <https://netbox.readthedocs.io/en/stable/configuration/optional-settings/>`_
 
 If you not setup ldap authentification, you may be interested into how to
 `setting up a super user
-<https://netbox.readthedocs.io/en/stable/installation/3-netbox/#create-a-super-user>`
+<https://netbox.readthedocs.io/en/stable/installation/3-netbox/#create-a-super-user>`_
 directly on the machine to be able to access and use NetBox.
 
 You may also be interested of writing a own type which handles the creation of
 the super user. To do this non-interactivly, see the ansible role as `reference
-<https://github.com/lae/ansible-role-netbox/blob/18f46a3345f100936c5116abe716c480e1886676/vars/main.yml#L15>`.
+<https://github.com/lae/ansible-role-netbox/blob/18f46a3345f100936c5116abe716c480e1886676/vars/main.yml#L15>`_.
 
 If you change the secret key while the netbox instance is running, there is a
 time frame where the access to the application corrupts the whole database.
