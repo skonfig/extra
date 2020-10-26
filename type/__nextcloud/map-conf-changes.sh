@@ -35,7 +35,7 @@ testparam() {
     # short-circuit after installation; the explorer may not be valid
     if [ "$install" ]; then return 1; fi
 
-    if grep -q -F "$1 = $2" "$__object/explorer/config"; then
+    if grep -q -Fx "$1 = $2" "$__object/explorer/config"; then
         return 0
     else
         return 1
@@ -113,7 +113,6 @@ conf_decimal() {
 # Arguments:
 #  1: cdist type parameter name
 #  2: nextcloud config name
-# FIXME default value required for booleans?
 conf_boolean() {
     # map parameter to a php boolean (are outputted as 0 or 1)
     if [ -f "$__object/parameter/$1" ]; then
@@ -239,6 +238,10 @@ migrate_db() {
                 database_port=5432
                 ;;
         esac
+
+        # Correct this value to the value set by the parameter
+        # this will prevent codegen in the run after the migration
+        correct_standard_port="yes"
     fi
 
     # print out the correct command
@@ -246,6 +249,11 @@ migrate_db() {
         '%s' '%s' --password '%s' '%s' --port '%u' '%s'\n" \
         "$database_type" "$database_user" "$database_pass" "$database_host" "$database_port" "$database_name"
     printf "php occ maintenance:mode --on\n"  # was disabled by database convertion
+
+    # Correct the database host value if it was not correctly set by the migration script
+    if [ "$correct_standard_port" = "yes" ]; then
+        printf "php occ config:system:set '%s' --type=string --value '%s'\n" "dbhost" "$database_host"
+    fi
 }
 
 
