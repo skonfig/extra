@@ -206,34 +206,14 @@ SHELL
     # Remove all groups not exist anymore
     if [ -s "$__object/files/group.del" ]; then
         while read -r GROUP; do
-            cat <<SHELL
-su -s /bin/sh -l "$www_user" -- -e <<'SU'
-cd '$cloud'
-php -r 'define("OC_CONSOLE",1); require_once(__DIR__."/lib/base.php");
-        \$group = \\OC::\$server->getGroupManager()->get("$GROUP");
-        \$user = \\OC::\$server->getUserSession()->getManager()->get("$user");
-        if (\$group === NULL || \$user === NULL)
-            die("Can'\''t delete $user from group $GROUP! User or group doesn'\''t exist in nextcloud!".PHP_EOL);
-        \$group->removeUser(\$user);'
-SU
-SHELL
+            occ group:removeuser "'$GROUP'" "'$user'"
         done < "$__object/files/group.del"
     fi
 
     # Add all existing groups
     if [ -s "$__object/files/group.add" ]; then
         while read -r GROUP; do
-            cat <<SHELL
-su -s /bin/sh -l "$www_user" -- -e <<'SU'
-cd '$cloud'
-php -r 'define("OC_CONSOLE",1); require_once(__DIR__."/lib/base.php");
-        \$group = \\OC::\$server->getGroupManager()->get("$GROUP");
-        \$user = \\OC::\$server->getUserSession()->getManager()->get("$user");
-        if (\$group === NULL || \$user === NULL)
-            die("Can'\''t delete $user from group $GROUP! User or group doesn'\''t exist in nextcloud!".PHP_EOL);
-        \$group->addUser(\$user);'
-SU
-SHELL
+            occ group:adduser "'$GROUP'" "'$user'"
         done < "$__object/files/group.add"
     fi
 fi
