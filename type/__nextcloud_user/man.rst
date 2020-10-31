@@ -142,11 +142,11 @@ EXAMPLES
 
 .. code-block:: sh
 
-   # nextcloud base installation
-   __nextcloud cloud
+    # nextcloud base installation
+    __nextcloud cloud $args
 
-   # setups an user, but do not touch it after it was created
-   require="__nextcloud/cloud" __nextcloud_user foo \
+    # setups an user, but do not touch it after it was created
+    require="__nextcloud/cloud" __nextcloud_user foo \
         --cloud /var/www/html/cloud/ \
         --displayname "Big Fooo" \
         --email "foo@bar.tld" \

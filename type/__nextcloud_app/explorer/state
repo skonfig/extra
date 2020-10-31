@@ -1,0 +1,38 @@
+#!/bin/sh -e
+# __nextcloud_app/explorer/state
+
+# Outputs the current state of the app. There are:
+#  - `enabled` if the app is enabled
+#  - `disabled` if the app is disabled
+#  - `absent` if the app does not exist
+#  - nothing if nextcloud is not installed
+
+
+# Get the app id
+appid="$__object/parameter/appid"
+if [ -f "$appid" ]; then
+    appid="$(cat "$appid")"
+else
+    appid="$__object_id"
+fi
+
+# Get the installation directory
+cloud="$(cat "$__object/parameter/cloud")"
+www_user="$(cat "$__object/parameter/www-user")"
+
+
+# Check if the installation directory exists
+if [ -d "$cloud" ]; then
+    # if those files exist, everything should be fine
+    if [ -f "$cloud/occ" ] && [ -f "$cloud/config/config.php" ]; then
+        # Check if the app exists in the correct user context
+        su -s /bin/sh -l "$www_user" -- -e <<SU
+cd '$cloud'
+
+# Output all apps and search in which category it is
+php occ --no-warnings --no-interaction --no-ansi --output=plain app:list \
+    | awk '\$0 == "Enabled:"{state="enabled"} \$0 == "Disabled:"{state="disabled"}
+           /^  - ${appid}:?/{found=1; print state; exit} END{if(!found) print "absent"}'
+SU
+    fi
+fi
