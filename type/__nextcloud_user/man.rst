@@ -9,6 +9,10 @@ cdist-type__nextcloud_user - Setup a Nextcloud user
 DESCRIPTION
 -----------
 It manages a single Nextcloud user given by the object id or parameter `--user`.
+This type can create and manage most properties of the Nextcloud user. If you
+only want to setup the user, but want that the user will take full control over
+all settings (so cdist will not touch the user anymore), use the parameter
+`--only-setup` or `--keep-*` for special parameters.
 
 
 REQUIRED PARAMETERS
@@ -44,13 +48,21 @@ www-user
     webserver and cli execution. As default, `www-data` will be used.
 
 displayname
-    The display name the user should have.
+    The display name the user should have. As the display name can not be unset
+    or set to empty, this type will ignore the display name if this parameter
+    is not set. Setting the parameter to an empty string leads to an error from
+    the Nextcloud side.
 
 email
-    The email address of the Nextcloud user.
+    The email address of the Nextcloud user. Will be unset if no parameter
+    given.
 
 password
-    The password of the Nextcloud user.
+    The password of the Nextcloud user. If the password not match, the new
+    password will be set to the user. If no password is given, it will not
+    touch the current password. **A password is required for the user setup!**
+    If you do not want to modify the user password, set a password via this
+    parameter and set the parameter `--keep-password`.
 
 quota
     TBA.
@@ -58,6 +70,40 @@ quota
 group
     Multiple group names which the Nextcloud user belongs to. If not set, the
     user will be removed from every group he is in.
+
+
+BOOLEAN PARAMETERS
+------------------
+only-setup
+    Only provisioning the user if he does not exist. Do not touch the user if
+    he already exists (except to enforce the given state).
+
+keep-displayname
+    Do not touch the display name of the user if he is already set up. This
+    will avoid to delete the user-set value because it does not match with the
+    predefined state. If the parameter `--displayname` is set despite of this
+    parameter, it will be used in the user setup if he does not already exist.
+
+keep-email
+    Do not touch the email attributes of the user if he is already set up. This
+    will avoid to delete the user-set value because it does not match with the
+    predefined state. If the parameter `--email` is set despite of this
+    parameter, it will be used in the user setup if he does not already exist.
+
+keep-password
+    Do not touch the password if the user is already set up. This will avoid to
+    delete user-set passwords because they do not match with the predefined
+    state. If the parameter `--password` is set despite of this parameter, it
+    will be used in the user setup if he does not already exists.
+
+keep-quota
+    TBA.
+
+keep-groups
+    Do not touch the user groups if the user is already set up. This will avoid
+    to delete group assosiactions not defined via cdist. If the parameter
+    `--group` is set despite of this parameter, it will be used in the user
+    setup if he does not already exists.
 
 
 MESSAGES

@@ -52,7 +52,7 @@ SHELL
     fi
 
     # save that use user will be created and no further steps are required
-    occ_created="yes"
+    ignore_config="yes"
 }
 
 # Checks if the key-value exists on the remote side. Only matches first-level
@@ -136,84 +136,99 @@ if [ "$state_is" != "$state_should" ]; then
     esac
 fi
 
+# Check if the user should not be modified further from the initial setup.
+if [ -f "$__object/parameter/only-setup" ]; then
+    ignore_config="yes"
+fi
+
 
 # Check if some user configuration should be changed
 # do not run this code if the user will be created in the previous code
-if [ "$state_should" != "absent" ] && [ "$occ_created" != "yes" ]; then
-    # Check if the display name is correct if someone is set
-    if [ -f "$__object/parameter/displayname" ]; then
-        displayname="$(cat "$__object/parameter/displayname")"
-        if ! match_param display_name "$displayname"; then
-            cat <<SHELL
+if [ "$state_should" != "absent" ] && [ "$ignore_config" != "yes" ]; then
+    if ! [ -f "$__object/parameter/keep-displayname" ]; then
+        # Check if the display name is correct if someone is set
+        if [ -f "$__object/parameter/displayname" ]; then
+            displayname="$(cat "$__object/parameter/displayname")"
+            if ! match_param display_name "$displayname"; then
+                cat <<SHELL
 su -s /bin/sh -l "$www_user" -- -e <<'SU'
 cd '$cloud'
 php -r 'define("OC_CONSOLE",1); require_once(__DIR__."/lib/base.php");
         \\OC::\$server->getUserSession()->getManager()->get("$user")->setDisplayName("$displayname")
-          or die("Couldn'\''t modify $user display name! Maybe unsupported or already set ..".PHP_EOL);'
+          or print("Couldn'\''t modify $user display name! Maybe unsupported or already set ..".PHP_EOL)
+            and die(1);'
 SU
 SHELL
+            fi
+        fi
+        # the display name can not be unset
+    fi
+
+    if ! [ -f "$__object/paramter/keep-email" ]; then
+        # Check if the email address is correct
+        if [ -f "$__object/parameter/email" ]; then
+            email="$(cat "$__object/parameter/email")"
+            if ! match_param email "$email"; then
+                occ user:setting -- "'$user'" settings email "'$email'"
+            fi
+        else
+            # remove if it doesn't exist
+            if ! match_param email ""; then
+                occ user:setting --delete -- "'$user'" settings email
+            fi
         fi
     fi
 
-    # Check if the email address is correct
-    if [ -f "$__object/parameter/email" ]; then
-        email="$(cat "$__object/parameter/email")"
-        if ! match_param email "$email"; then
-            occ user:setting -- "'$user'" settings email "'$email'"
-        fi
-    else
-        # remove if it doesn't exist
-        if ! match_param email ""; then
-            occ user:setting --delete -- "'$user'" settings email
-        fi
-    fi
-
-    # Check state of the password
-    # explorer handles missing passwords already
-    if [ "$(cat "$__object/explorer/password")" = "mismatched" ]; then
-        cat <<SHELL
+    if ! [ -f "$__object/parameter/keep-password" ]; then
+        # Check state of the password
+        # explorer handles missing passwords already
+        if [ "$(cat "$__object/explorer/password")" = "mismatched" ]; then
+            cat <<SHELL
 su -s /bin/sh -l "$www_user" -- -e <<'SU'
 cd '$cloud'
 export OC_PASS='$(cat "$__object/parameter/password")'
 php occ --no-interaction --no-ansi user:resetpassword --password-from-env -- '$user'
 SU
 SHELL
+        fi
     fi
 
 
-    # Handle the user groups
-    # extract all groups set by remote
-    mkdir -p "$__object/files"
-    # check the spaces before the value to match all sub-categories
-    awk '/^  -/{start=0} start{print $2} $0 == "  - groups:"{start=1}' \
-        "$__object/explorer/user" > "$__object/files/explorer_groups"
+    if ! [ -f "$__object/parameter/keep-groups" ]; then
+        # Handle the user groups
+        # extract all groups set by remote
+        mkdir -p "$__object/files"
+        # check the spaces before the value to match all sub-categories
+        awk '/^  -/{start=0} start{print $2} $0 == "  - groups:"{start=1}' \
+            "$__object/explorer/user" > "$__object/files/explorer_groups"
 
-    # Add/Remove groups not set via the parameter
-    if [ -s "$__object/parameter/group" ]; then
-        # Get all groups to remove
-        grep -Fxv -f "$__object/parameter/group" \
-            "$__object/files/explorer_groups" > "$__object/files/group.del" || true
-        # Get all groups to add
-        grep -Fxv -f "$__object/files/explorer_groups" \
-            "$__object/parameter/group" > "$__object/files/group.add" || true
+        # Add/Remove groups not set via the parameter
+        if [ -s "$__object/parameter/group" ]; then
+            # Get all groups to remove
+            grep -Fxv -f "$__object/parameter/group" \
+                "$__object/files/explorer_groups" > "$__object/files/group.del" || true
+            # Get all groups to add
+            grep -Fxv -f "$__object/files/explorer_groups" \
+                "$__object/parameter/group" > "$__object/files/group.add" || true
 
-    # No user groups at all if nothing wanted by the user
-    else
-        # remove all groups to stay inline with the user parameter
-        cp "$__object/files/explorer_groups" "$__object/files/group.del"
-    fi
+        # No user groups at all if nothing wanted by the user
+        else
+            # remove all groups to stay inline with the user parameter
+            cp "$__object/files/explorer_groups" "$__object/files/group.del"
+        fi
 
-    # Remove all groups not exist anymore
-    if [ -s "$__object/files/group.del" ]; then
-        while read -r GROUP; do
-            occ group:removeuser "'$GROUP'" "'$user'"
-        done < "$__object/files/group.del"
-    fi
+        # Remove all groups not exist anymore
+        if [ -s "$__object/files/group.del" ]; then
+            while read -r GROUP; do
+                occ group:removeuser "'$GROUP'" "'$user'"
+            done < "$__object/files/group.del"
+        fi
 
-    # Add all existing groups
-    if [ -s "$__object/files/group.add" ]; then
-        while read -r GROUP; do
-            occ group:adduser "'$GROUP'" "'$user'"
-        done < "$__object/files/group.add"
+        # Add all existing groups
+        if [ -s "$__object/files/group.add" ]; then
+            while read -r GROUP; do
+                occ group:adduser "'$GROUP'" "'$user'"
+            done < "$__object/files/group.add"
+        fi
     fi
 fi
