@@ -234,8 +234,19 @@ this type and contribute it upstream!
 - `Nextcloud configuration reference
   <https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/config_sample_php_parameters.html>`_
 
+Currently, the state of this object is always `present`. So it will always be
+installed without the option to uninstall it again (`absent`). This was done
+because it will not be a common demand to uninstall nextcloud again. If you
+need to toggle the state, you are welcome to contirbute!
+
+Parameters given for the admin user which will be set up at installation time
+(`--admin-*` ones) are not applied if nextcloud will not be installed.
+Therefor, parameter changes are not applied to the installation. Currently not
+implemented - but possible - is to use the type
+:strong:`cdist-type__nextcloud_user`\ (7) to do all the later work.
+
 Database migration is only partly supported if the database will be changed to
-``mysql` or ``pgsql``, because it is supported by an upstream script. You are
+``mysql`` or ``pgsql``, because it is supported by an upstream script. You are
 welcome to extend this type for database migrations between the same database
 type. For an implementation, you may use shell utilites like ``mysqldump(1)``
 (be aware that this may not already be installed) or use the already installed
@@ -265,6 +276,13 @@ screen, try to restart your Apache WWW server first! This type will install all
 php dependencies, but there are not recognised by the server-internal php
 environment. This can happen after a database migration between different
 database types, as it installs the database module only when it is required.
+
+
+SEE ALSO
+--------
+`Nextcloud documentation <https://docs.nextcloud.com/server/latest/admin_manual/index.html>`_
+
+:strong:`cdist-type__nextcloud_user`\ (7)
 
 
 AUTHORS
