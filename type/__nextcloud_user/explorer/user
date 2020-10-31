@@ -37,7 +37,7 @@ if php -r 'define("OC_CONSOLE",1); require_once(__DIR__."/lib/base.php");
 then
     php occ --no-warnings --no-interaction --no-ansi --output=plain user:info '$user'
     # also output the quota parameter
-    printf "  - quota_parm: %s\n" \
+    printf "  - quota_param: %s\n" \
         "\$(php occ --no-warnings --no-interaction --no-ansi user:setting '$user' files quota)"
 fi
 SU
