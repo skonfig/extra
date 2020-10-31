@@ -66,6 +66,17 @@ password
 
 quota
     The quota the Nextcloud user have to store it data. Defaults to `default`.
+    Following values are accepted by Nextcloud:
+
+    default
+        Uses the quota set as default in Nextcloud.
+
+    none
+        No quota limit set; unlimited.
+
+    $size
+        The quota that should be used. Same values as set over the user
+        interface. First the number, then a space and then the unit like `GB`.
 
 group
     Multiple group names which the Nextcloud user belongs to. If not set, the
@@ -128,13 +139,57 @@ removed
 
 EXAMPLES
 --------
-TBA.
+
+.. code-block:: sh
+
+   # nextcloud base installation
+   __nextcloud cloud
+
+   # setups an user, but do not touch it after it was created
+   require="__nextcloud/cloud" __nextcloud_user foo \
+        --cloud /var/www/html/cloud/ \
+        --displayname "Big Fooo" \
+        --email "foo@bar.tld" \
+        --password "do-not-use-this-password" \
+        --group "team_a" --group "xxxx" \
+        --quota "2 GB"
+        --only-setup
+
+    # manages an admin user fully controlled by cdist
+    require="__nextcloud/cloud" __nextcloud_user bar \
+        --cloud /var/www/html/cloud/ \
+        --displayname "Bar" \
+        --email "bar@bar.tld" \
+        --password "nope_insecure" \
+        --group "admin"
+
+    # disables an user
+    require="__nextcloud/cloud" __nextcloud_user bb \
+        --state disabled \
+        --cloud /var/www/html/cloud/ \
+        --displayname "byebye" \
+        --password "do_not_copy" \
+        --keep-email --keep-password --keep-quota --keep-groups
+
+    # removes an user
+    require="__nextcloud/cloud" __nextcloud_user foobar \
+        --state absent \
+        --cloud /var/www/html/cloud/
+
+
+NOTES
+-----
+This type may be extended by more user settings. If you think some
+configuration is missing, you are welcome to contribute!
+
+Sometimes, this type uses custom php code to hack into Nextcloud to gather some
+information not possible to get via the `occ` command or even set a value.
 
 
 SEE ALSO
 --------
 :strong:`cdist-type__nextcloud`\ (7)
-:string:`cdist-type__nextcloud_app`\ (7)
+:strong:`cdist-type__nextcloud_app`\ (7)
 
 
 AUTHORS

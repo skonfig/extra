@@ -242,4 +242,8 @@ SHELL
             done < "$__object/files/group.add"
         fi
     fi
+
+
+    # These parameters are only set if they exist
+    # ...
 fi
