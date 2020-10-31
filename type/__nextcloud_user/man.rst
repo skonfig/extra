@@ -65,7 +65,7 @@ password
     parameter and set the parameter `--keep-password`.
 
 quota
-    TBA.
+    The quota the Nextcloud user have to store it data. Defaults to `default`.
 
 group
     Multiple group names which the Nextcloud user belongs to. If not set, the
@@ -82,27 +82,32 @@ keep-displayname
     Do not touch the display name of the user if he is already set up. This
     will avoid to delete the user-set value because it does not match with the
     predefined state. If the parameter `--displayname` is set despite of this
-    parameter, it will be used in the user setup if he does not already exist.
+    parameter, it will only be used in the user setup if he does not already
+    exist.
 
 keep-email
     Do not touch the email attributes of the user if he is already set up. This
     will avoid to delete the user-set value because it does not match with the
     predefined state. If the parameter `--email` is set despite of this
-    parameter, it will be used in the user setup if he does not already exist.
+    parameter, it will only be used in the user setup if he does not already
+    exist.
 
 keep-password
     Do not touch the password if the user is already set up. This will avoid to
     delete user-set passwords because they do not match with the predefined
     state. If the parameter `--password` is set despite of this parameter, it
-    will be used in the user setup if he does not already exists.
+    will only be used in the user setup if he does not already exists.
 
 keep-quota
-    TBA.
+    Do not touch the user quota if he is already set up. This will avoid to
+    delete the configuration set by an administrator. If the parameter `--quota`
+    is set despite of this parameter, it will only be used in the user setup if
+    he does not already exist.
 
 keep-groups
     Do not touch the user groups if the user is already set up. This will avoid
     to delete group assosiactions not defined via cdist. If the parameter
-    `--group` is set despite of this parameter, it will be used in the user
+    `--group` is set despite of this parameter, it will only be used in the user
     setup if he does not already exists.
 
 

@@ -12,7 +12,7 @@ occ() {
     #  will not use -q as it supresses errors, too
     cat << SHELL
 su -s /bin/sh -l "$www_user" -- -e <<'SU'
-cd '$cloud' && php occ --no-interaction --no-ansi $@
+cd '$cloud' && php occ --no-warnings --no-interaction --no-ansi $@
 SU
 SHELL
 }
@@ -50,6 +50,9 @@ SHELL
     if [ -f "$__object/parameter/email" ]; then
         occ user:setting -- "'$user'" settings email "'$(cat "$__object/parameter/email")'"
     fi
+
+    # add the set quota - the default value don't hurt if it's explicitly set
+    occ user:setting -- "'$user'" files quota "'$(cat "$__object/parameter/quota")'"
 
     # save that use user will be created and no further steps are required
     ignore_config="yes"
@@ -193,6 +196,14 @@ SHELL
         fi
     fi
 
+    if ! [ -f "$__object/parameter/keep-quota" ]; then
+        # Handle the qouta
+        # the parameter is always set cause of the default value
+        quota="$(cat "$__object/parameter/quota")"
+        if ! match_param quota_param "$quota"; then
+            occ user:setting -- "'$user'" files quota "'$quota'"
+        fi
+    fi
 
     if ! [ -f "$__object/parameter/keep-groups" ]; then
         # Handle the user groups
