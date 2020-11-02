@@ -1,0 +1,83 @@
+#!/bin/sh -e
+#
+# 2020 Dennis Camera (dennis.camera@ssrq-sds-fds.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+os=$(cat "${__global:?}/explorer/os")
+
+state_should=present
+
+case $os
+in
+	(debian|devuan)
+		__package_apt smartmontools --state "${state_should}"
+
+		if test "${state_should}" = present
+		then
+			export require=__package_apt/smartmontools
+
+			# Enable smartd
+			__key_value /etc/default/smartmontools:start_smartd \
+				--delimiter = --exact_delimiter \
+				--file /etc/default/smartmontools --key start_smartd \
+				--value 'yes'
+
+			__start_on_boot smartmontools
+		fi
+
+		__file /etc/smartmontools/run.d/10sendmail --state "${state_should}" \
+			--owner 0 --group 0 --mode 0755 --source - <<-'CODE'
+		#!/bin/sh -e
+		# Send mails using sendmail. Based on smartmontools Example7 script
+
+		if test -x /usr/bin/mail
+		then
+		  # already sent mail in 10mail
+		  exit 0
+		fi
+
+		if test $# -lt 3 -o "$1" != "-s"
+		then
+		  echo "Usage: $0 -s SUBJECT ADDRESS... < MESSAGE"
+		  exit 1
+		fi
+
+		shift
+		SUBJECT=$1
+		shift
+
+		command -v sendmail || {
+		  echo 'Your system does not have sendmail installed.' >&2
+		  exit 1
+		}
+
+		exec sendmail "$@" <<EOF
+		To: $(echo "$*" | sed 's/ /, /g')
+		Subject: ${SUBJECT}
+
+		$(cat)
+		EOF
+		CODE
+		;;
+	(*)
+		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+		;;
+esac
