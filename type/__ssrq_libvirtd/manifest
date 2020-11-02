@@ -1,0 +1,76 @@
+#!/bin/sh -e
+#
+# 2020 Dennis Camera (dennis.camera@ssrq-sds-fds.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+os=$(cat "${__global:?}/explorer/os")
+
+case ${os}
+in
+	(debian|devuan)
+		__package libvirt-daemon-system
+		__package libvirt-daemon-driver-storage-zfs
+		__package qemu-system-ppc
+		__package qemu-utils
+		__package libvirt-clients
+
+		# NOTE: dnsmasq is required for virtual networks (as DHCP, DNS server)
+		__package dnsmasq
+
+		# NOTE: We have to install netcat-openbsd because libvirt's developers
+		# are are complete idiots ignoring the fact that there are different
+		# implementations of netcat (like, ones that don't support -U). Moreover
+		# they are incapable of printing connection errors on Mac OS X.
+		export CDIST_ORDER_DEPENDENCY=true
+		__package netcat-openbsd
+		__package netcat-traditional --state absent
+		__update_alternatives nc --path /bin/nc.openbsd
+		unset CDIST_ORDER_DEPENDENCY
+
+		# NOTE: Required to fix this error when creating a new VM in virt-manager:
+		# > qemu-system-ppc64le: -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:b8:50:f0,bus=pci.0,addr=0x1: failed to find romfile "efi-virtio.rom"
+		#
+		# Other than that iPXE doesn’t make any sense on PowerPC, because SLOF
+		# can netboot just fine.
+		__package ipxe-qemu
+		;;
+	(*)
+		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+		;;
+esac
+
+__key_value /etc/libvirt/libvirtd.conf:unix_sock_group --delimiter ' = ' \
+	--key 'unix_sock_group' --value '"libvirt"' \
+	--file /etc/libvirt/libvirtd.conf --state present \
+	--onchange 'service libvirtd restart'
+__key_value /etc/libvirt/libvirtd.conf:unix_sock_rw_perms --delimiter ' = ' \
+	--key 'unix_sock_rw_perms' --value '"0770"' \
+	--file /etc/libvirt/libvirtd.conf --state present \
+	--onchange 'service libvirtd restart'
+__key_value /etc/libvirt/libvirtd.conf:auth_unix_rw --delimiter ' = ' \
+	--key 'auth_unix_rw' --value '"none"' \
+	--file /etc/libvirt/libvirtd.conf --state present \
+	--onchange 'service libvirtd restart'
+
+__key_value /etc/libvirt/libvirtd.conf:audit_logging --delimiter ' = ' \
+	--key 'audit_logging' --value '1' \
+	--file /etc/libvirt/libvirtd.conf --state present \
+	--onchange 'service libvirtd restart'
