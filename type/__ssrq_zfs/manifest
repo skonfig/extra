@@ -1,0 +1,72 @@
+#!/bin/sh -e
+#
+# 2020 Dennis Camera (dennis.camera@ssrq-sds-fds.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+os=$(cat "${__global:?}/explorer/os")
+
+case ${os}
+in
+	(debian|devuan)
+		case $(cat "${__object:?}/explorer/mailer")
+		in
+			(mail)
+				;;
+			(sendmail|*)
+				__package bsd-mailx
+				export require=__package/bsd-mailx
+				;;
+		esac
+
+		# ZFS
+		export CDIST_ORDER_DEPENDENCY=true
+		__package_apt linux-headers-powerpc64le
+		__package_apt zfs-modules
+		__package_apt zfsutils-linux
+
+		# FIXME: For some reason De*an does not build/install DKMS modules after
+		# installing the package under some circumstances.
+		#  1) dkms status
+		# If it does not:
+		#  2) dkms install all the not-installed modules, e.g.
+		#     for beowulf stable:
+		#      - dkms build spl/0.7.12
+		#      - dkms build zfs/0.7.12
+		#      - dkms install spl/0.7.12
+		#      - dkms install zfs/0.7.12
+		#     for beowulf backports:
+		#      - dkms build zfs/0.8.4
+		#      - dkms install zfs/0.8.4
+
+		__package_apt zfs-zed
+		__start_on_boot zfs-zed
+		unset CDIST_ORDER_DEPENDENCY
+		export require=__package_apt/zfs-zed
+		;;
+	(*)
+		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+		;;
+esac
+
+__key_value /etc/zfs/zed.d/zed.rc:ZED_NOTIFY_INTERVAL_SECS \
+	--delimiter = --exact_delimiter \
+	--file /etc/zfs/zed.d/zed.rc --key ZED_NOTIFY_INTERVAL_SECS \
+	--value 900
