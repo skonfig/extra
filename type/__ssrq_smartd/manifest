@@ -23,57 +23,46 @@ os=$(cat "${__global:?}/explorer/os")
 
 state_should=present
 
-case $os
+case ${os}
 in
 	(debian|devuan)
+		mailer=$(cat "${__object:?}/explorer/mailer")
+		case ${mailer}
+		in
+			(mail)
+				sendmail_patch_state=absent
+				;;
+			(sendmail)
+				sendmail_patch_state=present
+				;;
+			(*)
+				sendmail_patch_state=absent
+				__package_apt bsd-mailx
+				export require=__package_apt/bsd-mailx
+				;;
+		esac
+
+		require=$(test "${state_should}" = absent || echo __package_apt/smartmontools) \
+		__file /etc/smartmontools/run.d/10sendmail \
+			--state "${sendmail_patch_state}" \
+			--owner 0 --group 0 --mode 0755 \
+			--source "${__type:?}/files/10sendmail"
+
+		require=$(test "${state_should}" != absent || echo __file/etc/smartmontools/run.d/10sendmail) \
 		__package_apt smartmontools --state "${state_should}"
+		export require=__package_apt/smartmontools
 
 		if test "${state_should}" = present
 		then
-			export require=__package_apt/smartmontools
-
 			# Enable smartd
 			__key_value /etc/default/smartmontools:start_smartd \
 				--delimiter = --exact_delimiter \
 				--file /etc/default/smartmontools --key start_smartd \
 				--value 'yes'
 
+			require=__key_value/etc/default/smartmontools:start_smartd \
 			__start_on_boot smartmontools
 		fi
-
-		__file /etc/smartmontools/run.d/10sendmail --state "${state_should}" \
-			--owner 0 --group 0 --mode 0755 --source - <<-'CODE'
-		#!/bin/sh -e
-		# Send mails using sendmail. Based on smartmontools Example7 script
-
-		if test -x /usr/bin/mail
-		then
-		  # already sent mail in 10mail
-		  exit 0
-		fi
-
-		if test $# -lt 3 -o "$1" != "-s"
-		then
-		  echo "Usage: $0 -s SUBJECT ADDRESS... < MESSAGE"
-		  exit 1
-		fi
-
-		shift
-		SUBJECT=$1
-		shift
-
-		command -v sendmail || {
-		  echo 'Your system does not have sendmail installed.' >&2
-		  exit 1
-		}
-
-		exec sendmail "$@" <<EOF
-		To: $(echo "$*" | sed 's/ /, /g')
-		Subject: ${SUBJECT}
-
-		$(cat)
-		EOF
-		CODE
 		;;
 	(*)
 		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
