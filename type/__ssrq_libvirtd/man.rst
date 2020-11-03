@@ -23,7 +23,8 @@ None.
 
 BOOLEAN PARAMETERS
 ------------------
-None.
+with-zfs-storage
+    Install libvirt-driver-storage-zfs.
 
 
 EXAMPLES

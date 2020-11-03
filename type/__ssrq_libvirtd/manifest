@@ -26,7 +26,6 @@ case ${os}
 in
 	(debian|devuan)
 		__package libvirt-daemon-system
-		__package libvirt-daemon-driver-storage-zfs
 		__package qemu-utils
 		__package libvirt-clients
 
@@ -69,6 +68,9 @@ in
 				__package qemu-kvm
 				;;
 		esac
+
+		__package_apt libvirt-daemon-driver-storage-zfs \
+			--state "$(test -f "${__object:?}/parameter/with-zfs-storage" && echo present || echo absent)"
 		;;
 	(*)
 		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
