@@ -1,0 +1,52 @@
+#!/bin/sh -e
+#
+# 2020 Dennis Camera (dennis.camera@ssrq-sds-fds.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+# Determines the name of the kernel headers package on the target.
+#
+
+linux_version() (
+	# cf. include/linux/uts.h
+	UTS_SYSNAME=$(uname -s)
+
+	test "${UTS_SYSNAME}" = 'Linux' || {
+		echo 'Only Linux kernels are supported.' >&2
+		exit 1
+	}
+
+	test -f /proc/version || {
+		echo '/proc/version missing. Cannot determine kernel version.' >&2
+		exit 1
+	}
+
+	# /proc/version contains a fixed string; cf. fs/proc/version.c
+	expr "$(head -n 1 /proc/version)" : "${UTS_SYSNAME} version \(.*\) (.*@.*)"
+)
+
+case $("${__explorer:?}/os")
+in
+	(debian|devuan)
+		KSUFFIX=$(expr "$(linux_version)" : '.*-\(.*\)$')
+
+		# XXX: Decide if it’s better to install the "meta-package" or the
+		#      version specific to the kernel version.
+		#      Maybe the source of the package (e.g. backports) should be
+		#      checked, too.
+		printf 'linux-headers-%s\n' "${KSUFFIX}"
+		;;
+esac

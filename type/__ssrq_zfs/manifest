@@ -24,21 +24,19 @@ os=$(cat "${__global:?}/explorer/os")
 case ${os}
 in
 	(debian|devuan)
-		case $(cat "${__object:?}/explorer/mailer")
-		in
-			(mail)
-				;;
-			(sendmail|*)
-				__package bsd-mailx
-				export require=__package/bsd-mailx
-				;;
-		esac
+		kernel_headers_pkg=$(cat "${__object:?}/explorer/kernel_headers_pkg")
+
+		test -n "${kernel_headers_pkg}" || {
+			echo 'Could not determine the name of the kernel headers package.' >&2
+			exit 1
+		}
 
 		# ZFS
 		export CDIST_ORDER_DEPENDENCY=true
-		__package_apt linux-headers-powerpc64le
+		__package_apt "${kernel_headers_pkg}"
 		__package_apt zfs-modules
 		__package_apt zfsutils-linux
+		unset CDIST_ORDER_DEPENDENCY
 
 		# FIXME: For some reason De*an does not build/install DKMS modules after
 		# installing the package under some circumstances.
@@ -54,10 +52,23 @@ in
 		#      - dkms build zfs/0.8.4
 		#      - dkms install zfs/0.8.4
 
+		case $(cat "${__object:?}/explorer/mailer")
+		in
+			(mail)
+				;;
+			(sendmail|*)
+				__package bsd-mailx
+				export require=__package/bsd-mailx
+				;;
+		esac
+
+		export CDIST_ORDER_DEPENDENCY=true
+		require=__package_apt/zfsutils-linux \
 		__package_apt zfs-zed
 		__start_on_boot zfs-zed
 		unset CDIST_ORDER_DEPENDENCY
-		export require=__package_apt/zfs-zed
+
+		unset require
 		;;
 	(*)
 		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
