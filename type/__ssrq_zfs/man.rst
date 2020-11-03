@@ -18,12 +18,14 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
-None.
+mailto
+    The user or email address to which alert mails should be sent to.
 
 
 BOOLEAN PARAMETERS
 ------------------
-None.
+notify-verbose
+    Send notification even if the pool is healthy.
 
 
 EXAMPLES

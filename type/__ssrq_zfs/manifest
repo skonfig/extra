@@ -66,7 +66,32 @@ in
 		;;
 esac
 
-__key_value /etc/zfs/zed.d/zed.rc:ZED_NOTIFY_INTERVAL_SECS \
-	--delimiter = --exact_delimiter \
-	--file /etc/zfs/zed.d/zed.rc --key ZED_NOTIFY_INTERVAL_SECS \
-	--value 900
+set_zed_rc() {
+	require=__package_apt/zfs-zed \
+	__key_value /etc/zfs/zed.d/zed.rc:"$1" \
+		--delimiter '=' --exact_delimiter \
+		--file /etc/zfs/zed.d/zed.rc \
+		--key "$1" \
+		--value "$(
+			case ${2:?}
+			in
+				(true|false|yes|no)
+					printf '%s' "$2"
+					;;
+				(*)
+					if expr "$2" : '[0-9]*$' >/dev/null
+					then
+						# plain numbers
+						printf '%s' "$2"
+					else
+						# quote strings
+						printf '"%s"' "$2"
+					fi
+					;;
+			esac)"
+}
+
+set_zed_rc ZED_NOTIFY_INTERVAL_SECS 900
+set_zed_rc ZED_EMAIL_ADDR "$(head -n 1 "${__object:?}/parameter/mailto")"
+set_zed_rc ZED_NOTIFY_VERBOSE $(test -f "${__object:?}/parameter/notify-verbose" && echo 1 || echo 0)
+set_zed_rc ZED_USE_ENCLOSURE_LEDS 1
