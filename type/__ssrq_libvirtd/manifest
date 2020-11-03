@@ -20,13 +20,13 @@
 
 
 os=$(cat "${__global:?}/explorer/os")
+mach_name=$(cat "${__global:?}/explorer/machine")
 
 case ${os}
 in
 	(debian|devuan)
 		__package libvirt-daemon-system
 		__package libvirt-daemon-driver-storage-zfs
-		__package qemu-system-ppc
 		__package qemu-utils
 		__package libvirt-clients
 
@@ -43,12 +43,32 @@ in
 		__update_alternatives nc --path /bin/nc.openbsd
 		unset CDIST_ORDER_DEPENDENCY
 
-		# NOTE: Required to fix this error when creating a new VM in virt-manager:
-		# > qemu-system-ppc64le: -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:b8:50:f0,bus=pci.0,addr=0x1: failed to find romfile "efi-virtio.rom"
-		#
-		# Other than that iPXE doesn’t make any sense on PowerPC, because SLOF
-		# can netboot just fine.
-		__package ipxe-qemu
+		# cf. https://stackoverflow.com/questions/45125516/possible-values-for-uname-m
+		case ${mach_name}
+		in
+			(aarch64|aarch64_be|armv?l|armv?b)
+				__package qemu-system-arm
+				;;
+			(ppc64|ppc|ppc64le|ppcle)
+				__package qemu-system-ppc
+
+				# NOTE: Required to fix this error when creating a new VM in virt-manager:
+				# > qemu-system-ppc64le: -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:b8:50:f0,bus=pci.0,addr=0x1: failed to find romfile "efi-virtio.rom"
+				#
+				# Other than that iPXE doesn’t make any sense on PowerPC,
+				# because SLOF can netboot just fine.
+				__package ipxe-qemu
+				;;
+			(mips64|mips)
+				__package qemu-system-mips
+				;;
+			(sparc64|sparc)
+				__package qemu-system-sparc
+				;;
+			(x86_64|i?86)
+				__package qemu-kvm
+				;;
+		esac
 		;;
 	(*)
 		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
