@@ -1,0 +1,29 @@
+[Unit]
+Description=NetBox Gunicorn WSGI Service
+Documentation=https://netbox.readthedocs.io/en/stable/
+PartOf=netbox.service
+Requires=netbox-rq.service
+Requires=gunicorn-netbox.socket
+Wants=network.target
+After=netbox.service
+After=network.target
+After=redis-server.service postgresql.service
+
+[Service]
+Type=notify
+
+User=netbox
+Group=netbox
+WorkingDirectory=/opt/netbox
+
+ExecStart=/opt/netbox/venv/bin/gunicorn --pythonpath /opt/netbox/netbox --config /opt/netbox/gunicorn.py netbox.wsgi
+# signals: https://docs.gunicorn.org/en/stable/signals.html
+ExecReload=kill -HUP $MAINPID
+ExecStop=kill -TERM $MAINPID
+KillSignal=SIGQUIT
+
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=netbox.service
