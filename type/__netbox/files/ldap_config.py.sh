@@ -1,5 +1,19 @@
 #!/bin/sh
 
+# no configuration if there are no ldap parameters
+if [ -z "$USE_LDAP" ]; then
+    # skip
+    cat << EOF
+##############################
+# LDAP-backed authentication #
+##############################
+
+# no options set
+EOF
+    exit 0
+fi
+
+
 cat << EOF
 ##############################
 # LDAP-backed authentication #
@@ -29,7 +43,7 @@ AUTH_LDAP_USER_ATTR_MAP = {
 EOF
 
 if [ "$LDAP_GROUP_BASE" != "" ]; then
-	cat << EOF
+    cat << EOF
 
 # This search ought to return all groups to which the user belongs. django_auth_ldap uses this to determine group
 # hierarchy.
@@ -39,23 +53,30 @@ AUTH_LDAP_GROUP_TYPE = PosixGroupType()
 
 # Mirror LDAP group assignments.
 AUTH_LDAP_MIRROR_GROUPS = True
+# For more granular permissions, map LDAP groups to Django groups.
+AUTH_LDAP_FIND_GROUP_PERMS = True
 EOF
 
-	if [ "$LDAP_REQUIRE_GROUP" != "" ]; then
-		cat << EOF
+    if [ "$LDAP_REQUIRE_GROUP" != "" ]; then
+        cat << EOF
 
 # Define a group required to login.
 AUTH_LDAP_REQUIRE_GROUP = "$LDAP_REQUIRE_GROUP"
 EOF
-	fi
+    fi
 
-	if [ "$LDAP_SUPERUSER_GROUP" != "" ]; then
-		cat << EOF
+    cat << EOF
 
 # Define special user types using groups. Exercise great caution when assigning superuser status.
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-    "is_superuser": "$LDAP_SUPERUSER_GROUP",
-}
 EOF
-	fi
+    # superuser
+    if [ "$LDAP_SUPERUSER_GROUP" != "" ]; then
+        echo "    \"is_superuser\": \"$LDAP_SUPERUSER_GROUP\","
+    fi
+    # staff user
+    if [ "$LDAP_STAFF_GROUP" != "" ]; then
+        echo "    \"is_staff\": \"$LDAP_STAFF_GROUP\","
+    fi
+    echo "}"
 fi

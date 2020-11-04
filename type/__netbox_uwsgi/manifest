@@ -1,0 +1,86 @@
+#!/bin/sh -e
+# __netbox_uwsgi/manifest
+
+# Check states
+state=""
+unit_state=""
+param_state="$(cat "$__object/parameter/state")"
+
+case "$param_state" in
+    enabled|disabled)
+        state="present"
+        unit_state="$param_state"
+        ;;
+
+    absent)
+        state="absent"
+        unit_state="disabled"
+        ;;
+
+    *)
+        # does not exist
+        printf "The state '%s' does not exist, can't continue!\n" "$param_state" >&2
+        exit 2
+        ;;
+esac
+
+
+mkdir "$__object/files"
+
+# check if systemd sockets will be used
+if [ -f "$__object/parameter/bind-to" ]; then
+    SYSTEMD_SOCKET="yes"
+fi
+if find "$__object/parameter/" -maxdepth 1 -name "*-bind" -print -quit | grep -q .; then
+    SYSTEMD_SOCKET="no"
+fi
+echo "$SYSTEMD_SOCKET" > "$__object/files/systemd_socket"
+
+if [ "$state" = "present" ]; then
+    # already checked outside this if-clause
+    export SYSTEMD_SOCKET
+
+    PROTOCOL="$(cat "$__object/parameter/protocol")"
+    export PROTOCOL
+
+    if [ -f "$__object/parameter/serve-static" ]; then
+        STATIC_MAP="yes"
+        export STATIC_MAP
+    fi
+
+    # process template
+    "$__type/files/uwsgi.ini.sh" > "$__object/files/uwsgi.ini"
+
+    # uwsgi config file
+    # TODO maybe patching with __key_value cause of .ini ?
+    __file /opt/netbox/uwsgi.ini \
+        --mode 644 --owner netbox \
+        --source "$__object/files/uwsgi.ini"
+
+else
+    # absent config file
+    __file /opt/netbox/uwsgi.ini --state absent
+fi
+
+
+# handle the systemd socket
+if [ "$SYSTEMD_SOCKET" = "yes" ]; then
+    TYPE="uWSGI"
+    export TYPE
+
+    # generate and set the socket unit
+    "$__type/files/netbox.socket.sh" "$__object/parameter/bind-to" \
+        > "$__object/files/netbox.socket"
+    __systemd_unit uwsgi-netbox.socket \
+        --state "$state" --enablement-state "$unit_state" \
+        --source "$__object/files/netbox.socket" --restart
+else
+    # remove the systemd socket unit
+    __systemd_unit uwsgi-netbox.socket --state absent
+fi
+
+# install service file
+"$__type/files/netbox.service.sh" > "$__object/files/netbox.service"
+__systemd_unit uwsgi-netbox.service \
+    --state "$state" --enablement-state "$unit_state" \
+    --source "$__object/files/netbox.service" --restart
