@@ -101,6 +101,9 @@ REMOTE
 
 # Apply some misc to the installation folder.
 elif [ "$install" ]; then
+    # Maintainer mode is not available before installation
+
+    # Correct all file permissions of the new installation
     cat << REMOTE
 chown '$user':'$group' -R '$installdir'
 REMOTE

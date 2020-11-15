@@ -262,6 +262,16 @@ download it into the temp directory because it does not find a better location.
 In legacy, it was downloaded to the parent directory, but this may not the best
 location as the installation dir can be everywhere.
 
+This type does not garantee to always show the maintenance mode screen because
+nextcloud does not show it in every case:
+
+1.  For fresh installations, the maintenance mode can not be set.
+2.  While upgrades starting at version 20, the user is promted to execute the
+    update manually via the webinterface instead of the maintenance screen.
+
+It is recommended to show an own maintanance screen via the webserver if this
+is critical for you.
+
 
 SEE ALSO
 --------
