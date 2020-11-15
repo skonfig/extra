@@ -76,8 +76,7 @@ user="$(cat "$__object/parameter/user")"
 group="$(cat "$__object/parameter/group")"
 
 # Get the installation directory
-webroot="$(cat "$__object/explorer/webroot")"
-installdir="$(cat "$__object/explorer/installdir")"
+installdir="/$__object_id"
 
 # Set permissions after the nextcloud installation/upgrade is done
 # FIXME maybe less strict if some parameter is not given by the user?
@@ -111,28 +110,25 @@ if [ "$version_is" ]; then
         fi
 
         # Set destination to a temporary directory
-        destination="$webroot/.$__object_id"
+        destination="$(dirname "$installdir")/.$(basename "$installdir")"
     fi
 else
     # Set destination to the real destination
-    destination="$webroot/$__object_id"
+    destination="$installdir"
 fi
 
 # Install/Upgrade the nextcloud version if there is a destination set.
 #  it checks if it is necessary and intended to upgrade
 if [ "$destination" ] && [ "$version_is" != "$version_should" ]; then
-    updatedir="$( dirname "$installdir" )"
+    # download it to the tmp directory
+    # FIXME --sum is currently rather a hack, see cdist#844
+    __download "/tmp/nextcloud-${version_should}.tar.bz2" \
+       --url "$nextcloud_uri" \
+       --sum "sha256:$(curl -sS -L "$nextcloud_sum" | awk '{print $1}')"
 
-    # Be sure the parent directory exists for installation
-    __directory "$updatedir" --parents
-
-    require="__directory$updatedir" \
-        __download "$updatedir/nextcloud.tar.bz2" \
-           --url "$nextcloud_uri" \
-           --sum "sha256:$(curl -sS -L "$nextcloud_sum" | awk '{print $1}')"  # must be a required parameter??
-
-    require="__download$updatedir/nextcloud.tar.bz2" \
-        __unpack "$updatedir/nextcloud.tar.bz2" \
+    # after this, unpack it from /tmp to $destination
+    require="__download/tmp/nextcloud-${version_should}.tar.bz2" \
+        __unpack "/tmp/nextcloud-${version_should}.tar.bz2" \
             --tar-strip 1 \
             --destination "$destination"
 fi

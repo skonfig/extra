@@ -1,7 +1,6 @@
 mode
 user
 group
-webroot
 database-type
 database-host
 database-name

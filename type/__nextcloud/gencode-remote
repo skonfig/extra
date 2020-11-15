@@ -49,9 +49,8 @@ version_is="$( cat "$__object/explorer/version" )"
 version_should="$( cat "$__object/parameter/version" )"
 
 # the install directory
-installdir="$( cat "$__object/explorer/installdir" )"
-updatedir="$( dirname "$installdir" )"
-tarballdir="$updatedir/.$__object_id"
+installdir="/$__object_id"
+tarballdir="$(dirname "$installdir")/.$(basename "$installdir")"
 
 # get used user and group
 user="$( cat "$__object/parameter/user" )"
@@ -77,11 +76,10 @@ fi
 # Remove the old folder and replace it with the new one.
 if [ "$upgrade" ]; then
     cat << REMOTE
-cd '$updatedir'
-
 chown '$user':'$group' -R '$tarballdir'
 REMOTE
 
+    # no more changes from the user
     occ_maintainer_mode_on
     cat << REMOTE
 
@@ -90,8 +88,6 @@ mv '$installdir/data' '$tarballdir'
 
 rm -rf '$installdir'
 mv '$tarballdir' '$installdir'
-
-cd '$installdir'
 
 REMOTE
 
@@ -227,9 +223,11 @@ if [ "$data_old" ] && [ "$data_old" != "$data_new" ]; then
     # not be moved.
     occ config:system:set datadirectory --type=string --value "'$data_new'"
     cat << REMOTE
+cd '$installdir'  # only for the users safety
+
 rm -rf '$data_new'
 mkdir -p '$(dirname "$data_new")'  # if the parent not exists
-mv '$data_old' '$data_new'
+mv -T '$data_old' '$data_new'
 
 REMOTE
 fi

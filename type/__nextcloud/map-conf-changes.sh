@@ -270,7 +270,7 @@ fi
 # misc
 conf_array host trusted_domains
 
-# Already set via the installer
+# If already set via the installer, we don't need to do this
 # set default values from the nextcloud installer to do not override them
 if [ -z "$install" ]; then
     # Database to check if the type changed
@@ -312,5 +312,5 @@ if [ -z "$install" ]; then
     esac
 
     # data-dir is handled in the gencode-remote
-    #conf_string data-directory datadirectory installdef "$(cat "$__object/explorer/installdir")/$__object_id/data"
+    #conf_string data-directory datadirectory installdef "/$__object_id/data"
 fi

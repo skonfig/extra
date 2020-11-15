@@ -5,7 +5,7 @@
 
 
 # Get the install directory
-installdir="$( "$__type_explorer/installdir" )"
+installdir="/$__object_id"
 
 # Check if the installation directory exists
 if [ -d "$installdir" ]; then

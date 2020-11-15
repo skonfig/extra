@@ -8,11 +8,9 @@ cdist-type__nextcloud - Installs and manages a nextcloud instance
 
 DESCRIPTION
 -----------
-This type installs, upgrades and configure a nextcloud instance.
-
-It installs the application in the webspace based on the object id as relative
-path from the webroot. If you want to install it directly in the webroot, you
-must trick out this type by setting the webroot as parent directory.
+This type installs, upgrades and configure a nextcloud instance. The object
+id is the absolute path for the installation directory. Nextcloud will be
+installed unter that directory.
 
 
 REQUIRED PARAMETERS
@@ -40,11 +38,6 @@ admin-password
 
 OPTIONAL PARAMETERS
 -------------------
-webroot
-    The webroot which will be used as basis for the installation. This may be
-    already detected by an explorer. Must be an absolute path (starting with a
-    slash).
-
 mode
     Sets the unix file mode of the nextcloud directory. This is not inherited
     to child files or folders. Defaults to `755`.
@@ -152,18 +145,6 @@ database-prefix
     ``oc_``.
 
 
-WEBROOT DETECTION
------------------
-As the `object id` is the install path relatively from the webroot, it must be
-known somehow. Therefor, it will try to detect a good location for it. You can
-set a custom webroot via the `--webroot` parameter. As default, following
-directories will be checked if they exist to be the webroot:
-
-1.  ``/srv/www/``
-2.  ``/var/www/html/``
-3.  ``/var/www/``
-
-
 MESSAGES
 --------
 installed
@@ -184,10 +165,6 @@ The current installed version is greather than the version that should be
 installed. See the parameter description of `--version` for detailed
 information. The problem can be fixed by bumping the version value to at least
 the version that is currently installed or use the parameter `--install-only`.
-
-The type aborts if there is no webroot given as parameter and no could be
-detected by the type itself. Please set the webroot via `--webroot` or extend
-this type.
 
 It may abort if the data directory can not be moved correctly. Then, the
 nextcloud configuration is broken and must be resolved manually: Move the data
@@ -210,19 +187,20 @@ EXAMPLES
 
   # minimal nextcloud installation with sqlite and other defaults
   # please only use sqlite for minimal or test installations as recommend :)
-  __nextcloud nextcloud --version 20.0.0 --admin-password "iaminsecure" \
+  __nextcloud /var/www/html/nextcloud --version 20.0.0 \
+        --admin-password "iaminsecure" \
         --host localhost --host nextcloud
 
+  # installation under the webroot
+  __nextcloud /var/www/html/ --version 20.0.0
+        --admin-password "notthatsecure" --host mycloud.example.com
+
   # more extensive configuration
-  __nextcloud cloud --version 20.0.0 --admin-password "iaminsecure" \
+  __nextcloud /var/www/cloud --version 20.0.0 --admin-password "iaminsecure" \
         --host localhost --host nextcloud --host 192.168.1.67 \
         --data-directory /var/lib/nextcloud/what \
         --database-type mysql --database-host "localhost" --database-name "nextcloud" \
         --database-user "test" --database-password "not-a-good-password"
-
-  # install it in the webroot /var/www/html
-  __nextcloud html --version 20.0.0 --admin-password "notthatsecure" \
-        --webroot "/var/www" --host localhost
 
 
 NOTES
@@ -276,6 +254,13 @@ screen, try to restart your Apache WWW server first! This type will install all
 php dependencies, but there are not recognised by the server-internal php
 environment. This can happen after a database migration between different
 database types, as it installs the database module only when it is required.
+
+If the tarball needs to be downloaded, it will be directly downloaded into the
+directory ``/tmp`` and will be unpacked to the destination for an installation
+or to the same directory but prefixed with a dot for an update. It will
+download it into the temp directory because it does not find a better location.
+In legacy, it was downloaded to the parent directory, but this may not the best
+location as the installation dir can be everywhere.
 
 
 SEE ALSO
