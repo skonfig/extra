@@ -122,17 +122,9 @@ if ! grep -q -F "installed = 1" "$__object/explorer/config"; then
     }
     # Database setup for mysql and pgsql
     db_setup() {
-        if ! [ -f "$__object/parameter/db-host" ]; then
-            echo "no hostname given! can't proceed." >&2
-            exit 3
-        fi
+        # add type and other database values
         occ_install_args="$occ_install_args --database '$1'"
-
-        db_host="$__object/parameter/database-host"
-        if [ -f "$db_host" ]; then
-            occ_install_args="$occ_install_args --database-host '$(cat "$db_host")'"
-        fi
-
+        occ_install_args="$occ_install_args --database-host '$(cat "$__object/parameter/database-host" || die_err)'"
         occ_install_args="$occ_install_args --database-name '$(cat "$__object/parameter/database-name" || die_err)'"
         occ_install_args="$occ_install_args --database-user '$(cat "$__object/parameter/database-user" || die_err)'"
         occ_install_args="$occ_install_args --database-pass '$(cat "$__object/parameter/database-password" || die_err)'"
