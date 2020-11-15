@@ -75,20 +75,27 @@ EXAMPLES
 
 .. code-block:: sh
 
-    # nextcloud base installation
-    __nextcloud cloud $args
+    # Nextcloud base installation
+    __nextcloud /var/www/html/cloud $args
 
     # install the music app
-    require="__nextcloud/cloud" __nextcloud_app music \
+    require="__nextcloud/var/www/html/cloud" __nextcloud_app music \
         --cloud /var/www/html/cloud/ --state enabled
 
     # enable a shipped app (already installed)
-    require="__nextcloud/cloud" __nextcloud_app files_external \
+    require="__nextcloud/var/www/html/cloud" __nextcloud_app files_external \
         --cloud /var/www/html/cloud/ --state enabled
 
     # remove some app
-    require="__nextcloud/cloud" __nextcloud_app drawio \
+    require="__nextcloud/var/www/html/cloud" __nextcloud_app drawio \
         --cloud /var/www/html/cloud/ --state absent
+
+
+    # Different cloud
+    __nextcloud /var/www/html/nextcloud $args
+    # but same app name
+    require="__nextcloud/var/www/html/nextcloud" __nextcloud_user next_music \
+        --cloud /var/www/html/nextcloud/ --appid music
 
 
 NOTES

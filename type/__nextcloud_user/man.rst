@@ -142,11 +142,11 @@ EXAMPLES
 
 .. code-block:: sh
 
-    # nextcloud base installation
-    __nextcloud cloud $args
+    # Nextcloud base installation
+    __nextcloud /var/www/html/cloud $args
 
     # setups an user, but do not touch it after it was created
-    require="__nextcloud/cloud" __nextcloud_user foo \
+    require="__nextcloud/var/www/html/cloud" __nextcloud_user foo \
         --cloud /var/www/html/cloud/ \
         --displayname "Big Fooo" \
         --email "foo@bar.tld" \
@@ -156,7 +156,7 @@ EXAMPLES
         --only-setup
 
     # manages an admin user fully controlled by cdist
-    require="__nextcloud/cloud" __nextcloud_user bar \
+    require="__nextcloud/var/www/html/cloud" __nextcloud_user bar \
         --cloud /var/www/html/cloud/ \
         --displayname "Bar" \
         --email "bar@bar.tld" \
@@ -164,7 +164,7 @@ EXAMPLES
         --group "admin"
 
     # disables an user
-    require="__nextcloud/cloud" __nextcloud_user bb \
+    require="__nextcloud/var/www/html/cloud" __nextcloud_user bb \
         --state disabled \
         --cloud /var/www/html/cloud/ \
         --displayname "byebye" \
@@ -172,9 +172,16 @@ EXAMPLES
         --keep-email --keep-password --keep-quota --keep-groups
 
     # removes an user
-    require="__nextcloud/cloud" __nextcloud_user foobar \
+    require="__nextcloud/var/www/html/cloud" __nextcloud_user foobar \
         --state absent \
         --cloud /var/www/html/cloud/
+
+
+    # Different cloud
+    __nextcloud /var/www/html/nextcloud $args
+    # but same user name
+    require="__nextcloud/var/www/html/nextcloud" __nextcloud_user next_foobar \
+        --cloud /var/www/html/nextcloud/ --user foobar
 
 
 NOTES
