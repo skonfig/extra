@@ -18,7 +18,8 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
-drop_awk_comments() { sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@"; }
+quote() { printf "'%s'" "$(printf '%s' "$*" | sed -e "s/'/'\\\\''/g")"; }
+drop_awk_comments() { quote "$(sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@")"; }
 
 state_is=$(cat "${__object:?}/explorer/state")
 state_should=$(cat "${__object:?}/parameter/state")
@@ -63,9 +64,9 @@ esac
 
 
 cat <<EOF
-test -f "${auth_conf}" || touch "${auth_conf}"
+test -f $(quote "${auth_conf}") || touch $(quote "${auth_conf}")
 
-awk '$(drop_awk_comments "${__type:?}/files/update_dma_auth.awk")' <'${auth_conf}' >'${auth_conf}.tmp' \
-&& cat '${auth_conf}.tmp' >'${auth_conf}'
-rm -f '${auth_conf}.tmp'
+awk $(drop_awk_comments "${__type:?}/files/update_dma_auth.awk") <$(quote "${auth_conf}") >$(quote "${auth_conf}.tmp") \
+&& cat $(quote "${auth_conf}.tmp") >$(quote "${auth_conf}")
+rm -f $(quote "${auth_conf}.tmp")
 EOF

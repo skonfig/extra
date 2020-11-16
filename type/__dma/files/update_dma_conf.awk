@@ -18,7 +18,7 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 
 function comment_line(line) {
-	# returns the position in line at which the comment'\''s text starts
+	# returns the position in line at which the comment's text starts
 	# (0 if the line is not a comment)
 	match(line, /^[ \t]*\#+[ \t]*/)
 	return RSTART ? (RLENGTH + 1) : 0

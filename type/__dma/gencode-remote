@@ -18,7 +18,8 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
-drop_awk_comments() { sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@"; }
+quote() { printf "'%s'" "$(printf '%s' "$*" | sed -e "s/'/'\\\\''/g")"; }
+drop_awk_comments() { quote "$(sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@")"; }
 
 CONF_PATH=/etc/dma  # set in Makefile
 
@@ -139,13 +140,13 @@ then
 	#    options are grouped by word (the first word in the line) and appended
 	#    at the end of the file.
 
-	cat <<CODE
-awk '$(drop_awk_comments "${__type:?}/files/update_dma_conf.awk")' '${dma_conf}' '${dma_conf}' <<'EOF' >'${dma_conf}.tmp' \
-&& cat '${dma_conf}.tmp' >'${dma_conf}'
-${conf_should}
-EOF
-rm '${dma_conf}.tmp'
-CODE
+	cat <<-CODE
+	awk $(drop_awk_comments "${__type:?}/files/update_dma_conf.awk") $(quote "${dma_conf}") $(quote "${dma_conf}") <<'EOF' >$(quote "${dma_conf}.tmp") \
+	&& cat $(quote "${dma_conf}.tmp") >$(quote "${dma_conf}")
+	${conf_should}
+	EOF
+	rm $(quote "${dma_conf}.tmp")
+	CODE
 
 	config_updated=true
 	echo 'config updated' >>"${__messages_out:?}"
