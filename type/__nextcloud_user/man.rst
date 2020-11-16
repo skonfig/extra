@@ -64,6 +64,9 @@ password
     If you do not want to modify the user password, set a password via this
     parameter and set the parameter `--keep-password`.
 
+    Note that Nextcloud will check for the security of passwords. The type
+    will abort if Nextcloud refuses that password!
+
 quota
     The quota the Nextcloud user have to store it data. Defaults to `default`.
     Following values are accepted by Nextcloud:

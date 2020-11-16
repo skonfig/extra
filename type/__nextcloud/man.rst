@@ -33,7 +33,8 @@ version
 
 admin-password
     The administrator password to access the nextcloud instance. Must be given
-    in plain text.
+    in plain text. This parameter has no effect if nextcloud will not be
+    installed.
 
 
 OPTIONAL PARAMETERS
