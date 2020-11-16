@@ -18,11 +18,11 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
-function getvalue(path) {
+function getvalue(path,    line) {
 	# Reads the first line of the file located at path and returns it.
-	getline < path
+	getline line < path
 	close(path)
-	return $0
+	return line
 }
 
 function sepafter(f, def,    _) {
@@ -31,14 +31,14 @@ function sepafter(f, def,    _) {
 	return _ ? _ : def
 }
 
-function write_aliases() {
+function write_aliases(    line) {
 	if (aliases_written) return
 
 	# print aliases line
 	printf "%s%s", ENVIRON["__object_id"], sepafter(1, ": ")
-	while ((getline < aliases_should_file) > 0) {
+	while ((getline line < aliases_should_file) > 0) {
 		if (aliases_written) printf ", "
-		printf "%s", $0
+		printf "%s", line
 		aliases_written = 1
 	}
 	printf "\n"
