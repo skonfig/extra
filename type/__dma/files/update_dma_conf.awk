@@ -88,6 +88,12 @@ BEGIN {
 	FS = "\n"
 	EQS = "[ \t]"  # copied from dma/conf.c
 
+	if (ARGV[2]) exit (e=1)
+
+	# Loop over file twice!
+	ARGV[2] = ARGV[1]
+	ARGC++
+
 	# read the "should" state into the `conf` array.
 	while (getline < "/dev/stdin") {
 		word = first($0, EQS)
@@ -165,6 +171,8 @@ NR > FNR {
 }
 
 END {
+	if (e) exit
+
 	# print rest of config options (
 	for (word in conf) print_confs(word)
 }

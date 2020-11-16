@@ -141,7 +141,7 @@ then
 	#    at the end of the file.
 
 	cat <<-CODE
-	awk $(drop_awk_comments "${__type:?}/files/update_dma_conf.awk") $(quote "${dma_conf}") $(quote "${dma_conf}") <<'EOF' >$(quote "${dma_conf}.tmp") \
+	awk $(drop_awk_comments "${__type:?}/files/update_dma_conf.awk") $(quote "${dma_conf}") <<'EOF' >$(quote "${dma_conf}.tmp") \
 	&& cat $(quote "${dma_conf}.tmp") >$(quote "${dma_conf}")
 	${conf_should}
 	EOF
