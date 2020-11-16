@@ -48,11 +48,15 @@ EXAMPLES
 
 BUGS
 ----
-- Quoted strings are not parsed by this type. As a result, email addresses
-  containing ``,`` (commas) are treated incorrectly (they are treated as two
-  addresses/aliases.)
-  Make sure that email addresses do not contain commas.
-- ``:include:`` directives in the aliases file are ignored by this type.
+- Quoted strings are not parsed by this type. As a result, aliases
+  containing ``,`` (commas) are treated incorrectly (they are treated as
+  separate aliases.)
+  Make sure that email addresses, file names, and pipe commands do not contain
+  commas.
+- ``:include:`` directives in the aliases file are not evaluated by this type.
+  They are treated like a regular alias, the values of the included file are
+  not expanded.
+
 
 SEE ALSO
 --------
