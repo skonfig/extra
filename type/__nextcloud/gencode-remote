@@ -93,6 +93,8 @@ REMOTE
 
     # do some maintainer stuff
     occ upgrade
+    # gamble a bit with database maintainer commands
+    occ db:add-missing-primary-keys
     occ db:add-missing-columns
     occ db:add-missing-indices
 
