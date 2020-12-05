@@ -21,6 +21,9 @@ OPTIONAL PARAMETERS
 state
    Whether getssl should be installed (``present``) on the target or not
    (``absent``).
+version
+   The version of getssl to install on the target.
+   Or ``latest`` to use the latest version.
 
 
 BOOLEAN PARAMETERS
@@ -33,8 +36,8 @@ EXAMPLES
 
 .. code-block:: sh
 
-   # Install getssl using default settings
-   __dtnrch_getssl
+   # Ensure the latest version of getssl is installed
+   __dtnrch_getssl --version latest
 
 
 SEE ALSO

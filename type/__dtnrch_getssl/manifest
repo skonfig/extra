@@ -18,31 +18,68 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
+os=$(cat "${__global:?}/explorer/os")
+
 DEST=/usr/local/bin
 
 state_should=$(cat "${__object:?}/parameter/state")
 
-case $state_should
+case ${state_should}
 in
 	(present)
-		__package bash --state present  # getssl is written in bash
+		case ${os}
+		in
+			(alpine)
+				pkg_list='bash curl drill openssl' ;;
+			(debian|devuan|ubuntu)
+				pkg_list='bash curl dnsutils openssl' ;;
+			(freebsd)
+				pkg_list='bash curl' ;;
+			(openwrt)
+				pkg_list='bash curl openssl-util' ;;
+			(*)
+				pkg_list='bash curl openssl' ;;
+		esac
+
+		for pkg in ${pkg_list}
+		do
+			__package "${pkg}" --state present
+			require=${require:-}${require:+ }__package/${pkg}
+		done
+		export require
+
 		__directory "${DEST}" --state present --parents
-		export require="__package/bash __directory/${DEST}"
+		require=${require:-}${require:+ }__directory/${DEST}
 		;;
 	(absent)
 		:
 		;;
 	(*)
-		printf 'Invalid state "%s" given. Valid states are: present, absent.\n'\
-			"${state_should}" >&2
+		printf 'Invalid --state: %s\n' "${state_should}" >&2
 		exit 1
 		;;
 esac
 
+# shellcheck disable=SC2034
+IFS='	' read -r tag_name sha256_should cksum_should <<EOF
+$(
+	version_should=$(cat "${__object:?}/parameter/version")
+	case ${version_should}
+	in
+		(latest)
+			tail -n 1 "${__type:?}/files/cksums.txt"
+			;;
+		(*)
+			awk -F '\t' -v vers="${version_should}" 'index($1, vers) == ($1 ~ /^v/) + 1' "${__type:?}/files/cksums.txt"
+			;;
+	esac
+)
+EOF
+
 __staged_file "${DEST}/getssl" --state "${state_should}" \
 	--owner 0 --mode 0755 \
-	--source 'https://raw.githubusercontent.com/srvrco/getssl/v2.30/getssl' \
-	--cksum '673895873 112739'
+	--source "https://raw.githubusercontent.com/srvrco/getssl/${tag_name}/getssl" \
+	--cksum "${cksum_should}"
 
 __directory '/etc/getssl' --state "${state_should}" --owner 0 --mode 0750
 
