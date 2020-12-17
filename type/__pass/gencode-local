@@ -1,0 +1,71 @@
+#!/bin/sh -e
+#
+# 2020 Joachim Desroches (joachim.desroches@epfl.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+# Length of generated password.
+LENGTH=
+
+# Keep password strictly alphanumeric.
+NOSYMB=
+
+# Check pass is installed.
+command -v pass >/dev/null 2>&1 ||
+	{
+		cat <<- EOF >&2
+		__pass: this type requires pass installed.
+		See https://www.passwordstore.org/.
+		EOF
+		exit 1;
+	}
+
+# Check for optional length parameter.
+if [ -f "${__object:?}/parameter/length" ];
+then
+	LENGTH="$(cat "${__object:?}/parameter/length")"
+fi
+
+# Check for optional no symbols parameter.
+if [ -f "${__object:?}/parameter/no-symbols" ];
+then
+	NOSYMB="-n"
+fi
+
+# Load required GPG ID parameters.
+set --
+while read -r id;
+do
+	set -- "$@" "$id"
+done < "${__object:?}/parameter/gpgid"
+
+# Load required password store location parameter.
+PASSWORD_STORE_DIR="$(cat "${__object:?}/parameter/storedir")"
+export PASSWORD_STORE_DIR
+
+# Run every time in case GPG IDs are updated.
+pass init "$@" >/dev/null
+
+# Generate a password if it does not already exist.
+if [ ! -f "${PASSWORD_STORE_DIR}/${__object_id:?}.gpg" ];
+then
+	# shellcheck disable=SC2086
+	pass generate $NOSYMB "${__object_id:?}" $LENGTH
+fi
+
+# Send it out to the messages.
+pass "${__object_id:?}" >> "${__messages_out:?}"
