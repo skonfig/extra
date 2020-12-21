@@ -17,7 +17,7 @@ occ() {
     #  will not use -q as it supresses errors, too
     cat << SHELL
 su -s /bin/sh -l "$user" -- -e <<SU
-cd '$installdir' && php occ --no-interaction --no-ansi $@
+cd '$installdir' && php occ --no-warnings --no-interaction --no-ansi $@
 SU
 SHELL
 }
