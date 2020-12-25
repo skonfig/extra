@@ -16,7 +16,7 @@ occ() {
     # su creates a new shell, so it does not affect the current session
     #  will not use -q as it supresses errors, too
     cat << SHELL
-su -s /bin/sh -l "$user" -- -e <<SU
+su -s /bin/sh -l "$user" -- -e <<'SU'
 cd '$installdir' && php occ --no-warnings --no-interaction --no-ansi $@
 SU
 SHELL
