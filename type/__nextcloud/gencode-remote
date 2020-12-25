@@ -97,6 +97,7 @@ REMOTE
     occ db:add-missing-primary-keys
     occ db:add-missing-columns
     occ db:add-missing-indices
+    occ db:convert-filecache-bigint
 
     # send upgrade message
     printf "upgraded %s to %s\n" "$version_is" "$version_should" >> "$__messages_out"
