@@ -33,9 +33,9 @@ EXAMPLES
 
 .. code-block:: sh
 
-    __matterbridge --version 1.16.3 --config - << EOF
+    __matterbridge --version 1.16.3 --config - <<- EOF
     [...]
-EOF
+    EOF
 
 
 SEE ALSO

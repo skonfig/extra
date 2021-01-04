@@ -65,10 +65,7 @@ protocol
     parameter. Possible values are ``uwsgi``, ``http``, ``fastcgi`` and
     ``scgi``. If nothing given, it defaults to ``uwsgi``.
 
-uwsgi-bind
-http-bind
-fastcgi-bind
-scgi-bind
+scgi-bind, uwsgi-bind, http-bind, fastcgi-bind
     Bind the application to a specific protocol instead of implicit uwsgi via
     ``--bind-to``. If such parameter given, ``--bind-to`` will be ignored. Must
     be a UNIX/TCP socket. Can be set multiple times.

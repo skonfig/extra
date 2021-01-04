@@ -122,7 +122,6 @@ basepath
     webroot ``/``. For example, if installed at https://example.com/netbox/, set
     the value ``netbox/``.
 
-http-proxy
 https-proxy
     Proxy which will be used with any HTTP request like webhooks.
 
@@ -171,12 +170,12 @@ redis-ssl
 
 smtp-use-tls
     Uses TLS to connect to the SMTP email server. `See documentation
-    <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-tls>`_
+    <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-tls>`__
     for more information.
 
 smtp-use-ssl
     Uses implicit TLS with the SMTP email server. `See documentation
-    <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-ssl>`_
+    <https://docs.djangoproject.com/en/3.1/ref/settings/#email-use-ssl>`__
     for more information.
 
 login-required
