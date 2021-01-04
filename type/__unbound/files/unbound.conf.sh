@@ -1,5 +1,10 @@
 #!/bin/sh
 
+module_config="validator iterator"
+if [ -n "$DNS64_PREFIX" ]; then
+	module_config="dns64 $module_config"
+fi
+
 generate_interface() {
   for i in $INTERFACES; do
     echo "	interface: $i"
@@ -24,6 +29,12 @@ generate_local_data() {
 	for entry in $LOCAL_DATA; do
 		echo "	local-data: \"$entry\""
 	done
+}
+
+generate_dns64_prefix() {
+	if [ -n "$DNS64_PREFIX" ]; then
+		echo "	dns64-prefix: $DNS64_PREFIX"
+	fi
 }
 
 cat << EOF
@@ -506,7 +517,7 @@ $(generate_access_control)
 	# most modules have to be listed at the beginning of the line,
 	# except cachedb(just before iterator), and python (at the beginning,
 	# or, just before the iterator).
-	module-config: "dns64 validator iterator"
+	module-config: "$module_config"
 
 	# File with trusted keys, kept uptodate using RFC5011 probes,
 	# initial file like trust-anchor-file, then it stores metadata.
@@ -776,7 +787,8 @@ $(generate_local_data)
 
 	# DNS64 prefix. Must be specified when DNS64 is use.
 	# Enable dns64 in module-config.  Used to synthesize IPv6 from IPv4.
-	dns64-prefix: $DNS64_PREFIX
+	# dns64-prefix: $DNS64_PREFIX"
+	$(generate_dns64_prefix)
 
 	# DNS64 ignore AAAA records for these domains and use A instead.
 	# dns64-ignore-aaaa: "example.com"

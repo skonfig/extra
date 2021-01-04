@@ -13,9 +13,6 @@ answers from specified upstrean DNS server. This is a singleton type.
 
 REQUIRED PARAMETERS
 -------------------
-dns64_prefix
-  IPv6 prefix used for DNS64.
-
 forward_addr
   DNS servers used to lookup names, can be provided multiple times. It can be
   either an IPv4 or IPv6 address but no domain name.
@@ -37,6 +34,9 @@ rc_interface
 local_data
   Configure local data, which is served in reply to queries for it. Can be
   specified multiple times.
+
+dns64_prefix
+  Enable DNS64 with specified prefix.
 
 BOOLEAN PARAMETERS
 ------------------

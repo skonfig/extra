@@ -33,12 +33,15 @@ case "$os" in
 esac
 
 # Required parameters:
-DNS64_PREFIX=$(cat "$__object/parameter/dns64_prefix")
-export DNS64_PREFIX
 FORWARD_ADDRS=$(cat "$__object/parameter/forward_addr")
 export FORWARD_ADDRS
 
 # Optional parameters:
+if [ -f "$__object/parameter/dns64_prefix" ]; then
+	DNS64_PREFIX=$(cat "$__object/parameter/dns64_prefix")
+	export DNS64_PREFIX
+fi
+
 if [ -f "$__object/parameter/interface" ]; then
    INTERFACES=$(cat "$__object/parameter/interface")
    export INTERFACES
