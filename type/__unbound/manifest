@@ -33,12 +33,12 @@ case "$os" in
 esac
 
 # Required parameters:
-FORWARD_ADDRS=$(cat "$__object/parameter/forward_addr")
+FORWARD_ADDRS=$(cat "$__object/parameter/forward-addr")
 export FORWARD_ADDRS
 
 # Optional parameters:
-if [ -f "$__object/parameter/dns64_prefix" ]; then
-	DNS64_PREFIX=$(cat "$__object/parameter/dns64_prefix")
+if [ -f "$__object/parameter/dns64-prefix" ]; then
+	DNS64_PREFIX=$(cat "$__object/parameter/dns64-prefix")
 	export DNS64_PREFIX
 fi
 
@@ -47,41 +47,41 @@ if [ -f "$__object/parameter/interface" ]; then
    export INTERFACES
 fi
 
-if [ -f "$__object/parameter/access_control" ]; then
-   ACCESS_CONTROLS=$(cat "$__object/parameter/access_control")
+if [ -f "$__object/parameter/access-control" ]; then
+   ACCESS_CONTROLS=$(cat "$__object/parameter/access-control")
    export ACCESS_CONTROLS
 fi
 
-if [ -f "$__object/parameter/rc_interface" ]; then
-   RC_INTERFACE=$(cat "$__object/parameter/rc_interface")
+if [ -f "$__object/parameter/rc-interface" ]; then
+   RC_INTERFACE=$(cat "$__object/parameter/rc-interface")
    export RC_INTERFACE
 fi
 
-if [ -f "$__object/parameter/local_data" ]; then
-   LOCAL_DATA=$(cat "$__object/parameter/local_data")
+if [ -f "$__object/parameter/local-data" ]; then
+   LOCAL_DATA=$(cat "$__object/parameter/local-data")
    export LOCAL_DATA
 fi
 
 # Boolean parameters:
-if [ -f "$__object/parameter/disable_ip4" ] && \
-   [ -f "$__object/parameter/disable_ip6" ]; then
+if [ -f "$__object/parameter/disable-ip4" ] && \
+   [ -f "$__object/parameter/disable-ip6" ]; then
     echo "--disable-ip4 and --disable-ip6 cannot be used at the same time." >&2
     exit 1
 fi
 
-if [ -f "$__object/parameter/disable_ip4" ]; then
+if [ -f "$__object/parameter/disable-ip4" ]; then
     export DO_IP4='no'
 else
     export DO_IP4='yes'
 fi
 
-if [ -f "$__object/parameter/disable_ip6" ]; then
+if [ -f "$__object/parameter/disable-ip6" ]; then
     export DO_IP6='no'
 else
     export DO_IP6='yes'
 fi
 
-if [ -f "$__object/parameter/enable_rc" ]; then
+if [ -f "$__object/parameter/enable-rc" ]; then
     export RC_ENABLE='yes'
 else
     export RC_ENABLE='no'

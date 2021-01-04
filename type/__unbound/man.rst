@@ -23,19 +23,19 @@ interface
   Interface to listen on, can be provided multiple times. Defaults to
   '127.0.0.1' and '::1'.
 
-access_control
+access-control
   Controls which clients are allowed queries to the unbound service (everything
   but localhost is refused by default), can be provided multiple times. The
   format is described in unbound.conf(5).
 
-rc_interface
+rc-interface
   Address or path to socket used for remote control (see `--enable_control`. Defaults to `127.0.0.1`).
 
-local_data
+local-data
   Configure local data, which is served in reply to queries for it. Can be
   specified multiple times.
 
-dns64_prefix
+dns64-prefix
   Enable DNS64 with specified prefix.
 
 BOOLEAN PARAMETERS
@@ -48,7 +48,7 @@ disable-ip6
   Do not answer or issue queries over IPv6. Cannot be used alongside the
   `--disable-ip4` flag.
 
-enable_rc
+enable-rc
   Enable remote control (see `unbound-control(8)`).
 
 EXAMPLES
@@ -58,12 +58,12 @@ EXAMPLES
 
     __ungleich_unbound \
       --interface '::0' \
-      --dns64_prefix '2a0a:e5c0:2:10::/96' \
-      --forward_addr '2a0a:e5c0:2:1::5' \
-      --forward_addr '2a0a:e5c0:2:1::6' \
-      --access_control '::0/0 deny' \
-      --access_control '2a0a:e5c0::/29 allow' \
-      --access_control '2a09:2940::/29 allow' \
+      --dns64-prefix '2a0a:e5c0:2:10::/96' \
+      --forward-addr '2a0a:e5c0:2:1::5' \
+      --forward-addr '2a0a:e5c0:2:1::6' \
+      --access-control '::0/0 deny' \
+      --access-control '2a0a:e5c0::/29 allow' \
+      --access-control '2a09:2940::/29 allow' \
       --ip6
 
 SEE ALSO
