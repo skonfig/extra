@@ -26,6 +26,4 @@ docs:
       - chmod 644 ~/.ssh/known_hosts
     script:
       - make docs
-      - sftp fnux@staticwebhosting.ungleich.ch:public_html/cdist-contrib <<- EOF
-          put -r docs/dist/html/*
-        EOF
+      - sftp fnux@staticwebhosting.ungleich.ch:public_html/cdist-contrib <<< "put -r docs/dist/html/*"
