@@ -25,7 +25,7 @@
 #   different_password: a line exists but with a different password
 #   multiple:           multiple lines matching host exist (should not happen)
 
-auth_conf=$("${__type_explorer}/auth_conf")
+auth_conf=$("${__type_explorer:?}/auth_conf")
 test -r "${auth_conf}" || exit 0
 
 awk -F'\n' '

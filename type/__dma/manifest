@@ -21,7 +21,7 @@
 os=$(cat "${__global:?}/explorer/os")
 
 # Install DMA
-case $os
+case ${os}
 in
 	(alpine)
 		__package dma --state present

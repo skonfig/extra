@@ -40,7 +40,7 @@ then
 	exit 0
 fi
 
-case $state_should
+case ${state_should}
 in
 	(present)
 		test -n "${login}" || { echo '--login must be non-empty' >&2; exit 1; }

@@ -158,7 +158,7 @@ if test -f "${__object:?}/parameter/send-test-mail"
 then
 	if grep -q '^__mail_alias/root:' "${__messages_in:?}" \
 	|| grep -q '^__dma_auth/' "${__messages_in:?}" \
-	|| $config_updated
+	|| ${config_updated}
 	then
 		cat <<-CODE
 		sendmail root <<'EOF'
