@@ -71,6 +71,7 @@ in
 		unset require
 		;;
 	(*)
+		: "${__type:?}"  # make shellcheck happy
 		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
 		printf "Please contribute an implementation for it if you can.\n" >&2
 		exit 1
@@ -104,5 +105,5 @@ set_zed_rc() {
 
 set_zed_rc ZED_NOTIFY_INTERVAL_SECS 900
 set_zed_rc ZED_EMAIL_ADDR "$(head -n 1 "${__object:?}/parameter/mailto")"
-set_zed_rc ZED_NOTIFY_VERBOSE $(test -f "${__object:?}/parameter/notify-verbose" && echo 1 || echo 0)
+set_zed_rc ZED_NOTIFY_VERBOSE "$(test -f "${__object:?}/parameter/notify-verbose" && echo 1 || echo 0)"
 set_zed_rc ZED_USE_ENCLOSURE_LEDS 1
