@@ -1,0 +1,10 @@
+#!/bin/sh -e
+
+# Setup firewall
+__ufw
+# Allow jitsi ports
+require="__ufw" __ufw_rule http --rule 'allow 80/tcp'
+require="__ufw" __ufw_rule https --rule 'allow 443/tcp'
+require="__ufw" __ufw_rule jitsi_prom --rule 'allow 9888/tcp'
+require="__ufw" __ufw_rule avfallback --rule 'allow 4443/tcp'
+require="__ufw" __ufw_rule avdefault --rule 'allow 10000/udp'
