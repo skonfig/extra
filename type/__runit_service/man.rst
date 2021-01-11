@@ -1,9 +1,9 @@
-cdist-type__evilham_runit_service(7)
+cdist-type__runit_service(7)
 ====================================
 
 NAME
 ----
-cdist-type__evilham_runit_service - Create a runit-compatible service dir.
+cdist-type__runit_service - Create a runit-compatible service dir.
 
 
 DESCRIPTION
@@ -33,7 +33,7 @@ EXAMPLES
 
 .. code-block:: sh
 
-    require="__evilham_runit" __evilham_runit_service tasksched \
+    require="__runit" __runit_service tasksched \
         --source - << EOF
     #!/bin/sh -e
     cd "${HOME}/.local/share/tasksched"
@@ -43,7 +43,7 @@ EXAMPLES
 
 SEE ALSO
 --------
-:strong:`cdist-type__evilham_runit`\ (7)
+:strong:`cdist-type__runit`\ (7)
 
 
 AUTHORS

@@ -1,9 +1,9 @@
-cdist-type__evilham_runit(7)
+cdist-type__runit(7)
 ============================
 
 NAME
 ----
-cdist-type__evilham_runit - Install and configure runit
+cdist-type__runit - Install and configure runit
 
 
 DESCRIPTION
@@ -28,11 +28,11 @@ EXAMPLES
 
 .. code-block:: sh
 
-    __evilham_runit
+    __runit
 
 SEE ALSO
 --------
-:strong:`cdist-type__evilham_runit_service`\ (7)
+:strong:`cdist-type__runit_service`\ (7)
 
 AUTHORS
 -------

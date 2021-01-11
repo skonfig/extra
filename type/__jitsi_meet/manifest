@@ -145,8 +145,8 @@ PROMETHEUS_JITSI_EXPORTER_VERSION_FILE="/usr/local/bin/.prometheus-jitsi-meet-ex
 if [ ! -f "${__object}/parameter/disable-prometheus-exporter" ]; then
 	case "${init}" in
 		init|sysvinit)
-			__evilham_runit
-			require="__evilham_runit" __evilham_runit_service \
+			__runit
+			require="__runit" __runit_service \
 				prometheus-jitsi-meet-exporter --log --source - <<EOF
 			#!/bin/sh -e
 			cd /tmp
@@ -156,7 +156,7 @@ if [ ! -f "${__object}/parameter/disable-prometheus-exporter" ]; then
 				-web.listen-address ':9888' 2>&1
 EOF
 
-			export require="__evilham_runit_service/prometheus-jitsi-meet-exporter"
+			export require="__runit_service/prometheus-jitsi-meet-exporter"
 			JITSI_MEET_EXPORTER_SERVICE="sv %s prometheus-jitsi-meet-exporter"
 		;;
 		systemd)
