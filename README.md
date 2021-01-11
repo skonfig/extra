@@ -54,3 +54,11 @@ Every type in cdist-contrib must:
 
   * Have a `man.rst` documentation page.
   * Pass [shellcheck](http://shellcheck.net/) without errors.
+
+## Other resources
+
+Some people/organizations are known to keep some cdist types that might be of
+interest to others:
+
+* [cdist-evilham](https://git.sr.ht/~evilham/cdist-evilham): Evilham's cdist-types
+* [cdist-recycledcloud](https://code.recycled.cloud/e-Durable/cdist-recycledcloud): e-Durable SA / Recycled Cloud public types
