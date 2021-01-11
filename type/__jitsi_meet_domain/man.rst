@@ -1,10 +1,10 @@
-cdist-type__evilham_jitsi_meet_domain(7)
+cdist-type__jitsi_meet_domain(7)
 ========================================
 
 
 NAME
 ----
-cdist-type__evilham_jitsi_meet_domain - Setup a frontend for Jitsi-Meet.
+cdist-type__jitsi_meet_domain - Setup a frontend for Jitsi-Meet.
 
 
 DESCRIPTION
@@ -20,9 +20,8 @@ This is due to the underlying XMPP and signaling rooms being common.
 There might be a way to perform tricks on the Nginx-side to avoid this, but
 time is lacking :-).
 
-This assumes `__evilham_jitsi_meet` has already been ran on the target host,
-and, amongst others, that Jitsi was set up with `__target_host` as the Jitsi
-domain.
+This assumes `__jitsi_meet` has already been ran on the target host, and,
+amongst others, that Jitsi was set up with `__target_host` as the Jitsi domain.
 
 This type will take care of TLS settings, branding and client-side
 configuration for Jitsi.
@@ -73,13 +72,13 @@ video-constraints
     this config's resolution value. Defaults to requesting an ideal
     resolution of 720p.
     It must not have a trailing comma, see `constraints` in
-    `__evilham_jitsi_meet_domain/files/config.js.sh`.
+    `__jitsi_meet_domain/files/config.js.sh`.
 
 
 branding-json
     Path to a JSON file that will be served as the `brandingDataUrl`.
     For information on the format see `brandingDataUrl` in
-    `__evilham_jitsi_meet_domain/files/config.js.sh`.
+    `__jitsi_meet_domain/files/config.js.sh`.
     If not set, no branding will be set up.
 
 
@@ -114,7 +113,7 @@ EXAMPLES
 .. code-block:: sh
 
     # Setup a Jitsi frontend for jitsi.exo.cat
-    __evilham_jitsi_meet_domain "jitsi.exo.cat" \
+    __jitsi_meet_domain "jitsi.exo.cat" \
       --admin-email "info@exo.cat" \
       --turn-server "turn.exo.cat" \
       --notice-message "Hola!" \
@@ -137,7 +136,7 @@ EXAMPLES
 
 SEE ALSO
 --------
-- `__evilham_jitsi_meet`
+- `__jitsi_meet`
 
 
 

@@ -1,10 +1,10 @@
-cdist-type__evilham_jitsi_meet(7)
+cdist-type__jitsi_meet(7)
 =================================
 
 
 NAME
 ----
-cdist-type__evilham_jitsi_meet - Setup the server-side of Jitsi-Meet.
+cdist-type__jitsi_meet - Setup the server-side of Jitsi-Meet.
 
 
 DESCRIPTION
@@ -17,8 +17,8 @@ eXO's notes for installing and managing Jitsi Meet instances.
 This type also sets up nginx in a way that is compatible with
 `__letsencrypt_cert` and assumes that it will only serve Jitsi instances.
 
-You will also need the `__evilham_jitsi_meet_domain` type in order to finish
-setting up the web frontend (including TLS certificates) and its settings.
+You will also need the `__jitsi_meet_domain` type in order to finish setting up
+the web frontend (including TLS certificates) and its settings.
 
 You may want to use the `files/ufw` example manifest for a `__ufw`-based
 firewall compatible with this type.
@@ -60,17 +60,17 @@ EXAMPLES
 .. code-block:: sh
 
     # Setup the firewall 
-    . "${__global}/type/__evilham_jitsi_meet/files/ufw"
+    . "${__global}/type/__jitsi_meet/files/ufw"
     export require="__ufw"
     # Setup Jitsi on this host
-    __evilham_jitsi_meet \
+    __jitsi_meet \
       --turn-server "turn.exo.cat" \
       --turn-secret "WeNeedGoodSecurity"
 
 
 SEE ALSO
 --------
-- `__evilham_jitsi_meet_domain`
+- `__jitsi_meet_domain`
 
 
 
