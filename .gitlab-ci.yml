@@ -16,5 +16,16 @@ manpages:
 
 docs:
     stage: doc
+    only:
+      - master
+    before_script:
+      - eval $(ssh-agent -s)
+      - echo "$CD_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+      - mkdir -p ~/.ssh
+      - echo "$CD_SSH_SERVER_HOSTKEYS" > ~/.ssh/known_hosts
+      - chmod 644 ~/.ssh/known_hosts
     script:
       - make docs
+      - sftp fnux@staticwebhosting.ungleich.ch:public_html/cdist-contrib <<- EOF
+          put -r docs/dist/html/*
+        EOF

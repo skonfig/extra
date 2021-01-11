@@ -4,4 +4,4 @@ FROM fedora:latest
 MAINTAINER Timothée Floure <fnux@ungleich.ch>
 
 RUN dnf install -y git findutils make python3-sphinx python3-sphinx_rtd_theme \
-			ShellCheck
+			ShellCheck openssh-clients
