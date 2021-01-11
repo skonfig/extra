@@ -33,14 +33,11 @@ And you would run [cdist][cdist] from the same directory as follows:
 
 ## Participating in the [cdist][cdist] community
 
-Join us on [#cdist:ungleich.ch][cdistmatrix] on matrix or on
-[#cdist over mattermost][cdistmattermost].
-
+Join us on [#cdist:ungleich.ch][cdistmatrix] on matrix!
 
 [cdist]: https://www.cdi.st/
 [cdistconfig]: https://www.cdi.st/manual/latest/cdist-configuration.html
 [cdistmatrix]: https://matrix.to/#/#cdist:ungleich.ch
-[cdistmattermost]: https://chat.ungleich.ch/ungleich/channels/cdist
 
 ## Contributing
 
