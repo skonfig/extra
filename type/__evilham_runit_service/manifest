@@ -1,0 +1,33 @@
+#!/bin/sh -e
+
+svdir="/var/service"
+sv="${__object_id}"
+state="present"
+run_file="${svdir}/${sv}/run"
+
+source="$(cat "$__object/parameter/source")"
+if [ "$source" = "-" ]; then
+	source="$__object/stdin"
+fi
+
+# Create this service's directory
+__directory --state "${state}" "${svdir}/${sv}"
+
+export require="__directory${svdir}/${sv}"
+
+
+if [ -f "${__object}/parameter/log" ]; then
+	# Setup logger if requested
+	__directory --parents "${svdir}/${sv}/log/main"
+	export require="${require} __directory${svdir}/${sv}/log/main"
+	__file "${svdir}/${sv}/log/run" \
+		--state "${state}" \
+		--mode 0755 \
+		--source "-" <<EOF
+#!/bin/sh
+exec svlogd -tt ./main
+EOF
+fi
+
+# Setup run file
+__file --state "${state}" --mode 0755 --source "${source}" "${run_file}"

@@ -1,0 +1,7 @@
+#!/bin/sh -e
+
+runit_etc_dir="/etc/runit"
+
+if [ -d "${runit_etc_dir}" ]; then
+	echo "YES"
+fi

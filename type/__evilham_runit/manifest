@@ -1,0 +1,10 @@
+#!/bin/sh -e
+
+__package "runit"
+
+__key_value \
+	--file "/etc/rc.conf" \
+	--key "runsvdir_enable" \
+	--delimiter "=" \
+	--value "yes" \
+	"runsvdir_enable"
