@@ -9,23 +9,18 @@ __cdist_abs_myname="$__cdist_abs_mydir/$__cdist_myname"
 filename="${__cdist_myname%.sh}"
 dest="$__cdist_abs_mydir/$filename"
 
+if ! command -v pandoc > /dev/null; then
+	echo "Pandoc is required to generate HTML index from README." >&2
+	exit 1
+fi
+
 cd "$__cdist_abs_mydir"
 
 exec > "$dest"
+
+pandoc -f markdown -t rst ../../README.md
+
 cat << EOF
-cdist-contrib - Community maintained cdist types
-================================================
-
-This project extends the \`cdist <https://cdi.st/>\`_ configuration management
-tool with community-maitained types which are either too specific to fit/be
-maintained in cdist itself or were not accepted in code cdist but could still
-be useful.
-
-Please note this project is a **rolling release**! The documentation you're
-reading has been generated from the |version| state (commit |release|).
-Sources are available on \`code.ungleich.ch
-<https://code.ungleich.ch/ungleich-public/cdist-contrib>\`_.
-
 
 .. toctree::
    :hidden:

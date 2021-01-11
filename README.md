@@ -6,7 +6,8 @@ maintained in cdist itself or were not accepted in code cdist but could still
 be useful.
 
 This project does not have releases and is continously updated: see git history
-for change log.
+for change log. You will find HTML documentation at
+[contrib.cdi.st](https://contrib.cdi.st).
 
 ## Using cdist-contrib
 

@@ -25,5 +25,5 @@ docs:
       - echo "$CD_SSH_SERVER_HOSTKEYS" > ~/.ssh/known_hosts
       - chmod 644 ~/.ssh/known_hosts
     script:
-      - make docs
+      - make html
       - sftp fnux@staticwebhosting.ungleich.ch:public_html/cdist-contrib <<< "put -r docs/dist/html/*"
