@@ -1,0 +1,177 @@
+#!/bin/sh -e
+#
+# 2020 Dennis Camera (dennis.camera@ssrq-sds-fds.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+quote() { printf "'%s'" "$(printf '%s' "$*" | sed -e "s/'/'\\\\''/g")"; }
+drop_awk_comments() { quote "$(sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@")"; }
+
+CONF_PATH=/etc/dma  # set in Makefile
+
+# Determine mailname
+if test -f "${__object:?}/parameter/mailname"
+then
+	mailname=$(cat "${__object:?}/parameter/mailname")
+else
+	case $(cat "${__global:?}/explorer/os")
+	in
+		(debian|devuan|ubuntu)
+			# On Debian-like systems use /etc/mailname unless --mailname is used
+			mailname='/etc/mailname'
+			;;
+		(*)
+			mailname=${__target_fqdn:?}
+			;;
+	esac
+fi
+
+
+# Generate "should" values for config
+conf_should=$(
+	if test -s "${__object:?}/parameter/smarthost"
+	then
+		printf 'SMARTHOST %s\n' "$(cat "${__object:?}/parameter/smarthost")"
+	fi
+
+	printf 'MAILNAME %s\n' "${mailname}"
+
+	if test -s "${__object:?}/explorer/auth_conf"
+	then
+		printf "AUTHPATH %s\n" "$(cat "${__object:?}/explorer/auth_conf")"
+	fi
+
+	case $(cat "${__object:?}/parameter/security")
+	in
+		(ssl|tls)
+			default_smtp_port=465
+			echo 'SECURETRANSFER'
+			;;
+		(starttls)
+			default_smtp_port=587
+			echo 'SECURETRANSFER'
+			echo 'STARTTLS'
+			;;
+		(opportunistic)
+			default_smtp_port=25
+			echo 'SECURETRANSFER'
+			echo 'STARTTLS'
+			echo 'OPPORTUNISTIC_TLS'
+			;;
+		(insecure)
+			default_smtp_port=25
+			echo 'INSECURE'
+			;;
+	esac
+
+	if test -s "${__object:?}/parameter/port"
+	then
+		printf 'PORT %u\n' "$(cat "${__object:?}/parameter/port")"
+	elif test "${default_smtp_port}" -ne 25  # DMA uses port 25 by default
+	then
+		printf 'PORT %u\n' "${default_smtp_port}"
+	fi
+
+	if test -f "${__object:?}/parameter/masquerade"
+	then
+		while read -r line
+		do
+			printf 'MASQUERADE %s\n' "${line}"
+		done <"${__object:?}/parameter/masquerade"
+	fi
+
+	if test -f "${__object:?}/parameter/defer"
+	then
+		echo 'DEFER'
+	fi
+
+	if test -f "${__object:?}/parameter/fullbounce"
+	then
+		echo 'FULLBOUNCE'
+	fi
+
+	if test -f "${__object:?}/parameter/nullclient"
+	then
+		test -s "${__object:?}/parameter/smarthost" || {
+			echo '--nullclient requires a --smarthost to be defined' >&2
+			exit 1
+		}
+
+		echo 'NULLCLIENT'
+	fi
+)
+# Sort conf_should to compare against "conf_is"
+conf_should=$(echo "${conf_should}" | sort -s -k 1,1)
+
+config_updated=false
+if ! echo "${conf_should}" | cmp -s "${__object:?}/explorer/conf" -
+then
+	# config needs to be updated
+	dma_conf="${CONF_PATH:?}/dma.conf"
+
+	# The following AWK script will output the new config file to be stored on
+	# disk. To do so it reads the current dma.conf file and the config options
+	# that should be set (from stdin).
+	# Note that the path to the current dma.conf is passed to AWK twice, because
+	# the new file cannot be generated in one pass.
+
+	# The logic tries to place options at a sensible location, that is:
+	# a) if the option is already used in the config file:
+	#    group all similar options (e.g. MASQUERADE) at one place in the order
+	#    they are listed in stdin.
+	# b) if it is a new option and a "default comment" (e.g. "#PORT 25") exists:
+	#    place options grouped directly after the comment (the comment is left
+	#    alone)
+	# c) otherwise:
+	#    options are grouped by word (the first word in the line) and appended
+	#    at the end of the file.
+
+	cat <<-CODE
+	awk $(drop_awk_comments "${__type:?}/files/update_dma_conf.awk") $(quote "${dma_conf}") <<'EOF' >$(quote "${dma_conf}.tmp") \
+	&& cat $(quote "${dma_conf}.tmp") >$(quote "${dma_conf}")
+	${conf_should}
+	EOF
+	rm $(quote "${dma_conf}.tmp")
+	CODE
+
+	config_updated=true
+	echo 'config updated' >>"${__messages_out:?}"
+fi
+
+
+# Send a test email if enabled and necessary (=configuration changed)
+if test -f "${__object:?}/parameter/send-test-mail"
+then
+	if grep -q '^__mail_alias/root:' "${__messages_in:?}" \
+	|| grep -q '^__dma_auth/' "${__messages_in:?}" \
+	|| ${config_updated}
+	then
+		cat <<-CODE
+		sendmail root <<'EOF'
+		Subject: [cdist] Test mail from '${__target_fqdn:?}'
+
+		Hi,
+
+		you can ignore this message.
+		Its sole purpose is to notify you that root mail on ${__target_fqdn:?}
+		will be redirected to you.
+
+		Enjoy!
+		EOF
+		CODE
+	fi
+fi

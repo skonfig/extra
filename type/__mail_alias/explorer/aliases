@@ -1,0 +1,73 @@
+#!/bin/sh -e
+#
+# 2020 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+# Find aliases for a given user name and print the aliases (each one on a
+# separate line)
+
+aliases_file=$("${__type_explorer:?}/aliases_file")
+test -r "${aliases_file}" || exit 0
+
+: "${__object_id:?}"  # assert __object_id is set, because it is used in AWK
+
+awk -F ':[ \t]*' '
+function print_aliases(aliases,    matches) {
+	# prints comma-separated aliases (one per line)
+	split(aliases, matches, /,[ \t]*/)
+	for (i in matches) {
+		gsub(/^[ \t]*|[ \t]*$/, "", matches[i])
+		if (matches[i]) print matches[i]
+	}
+}
+
+/^#/ {
+	# comment line (ignore)
+	select = 0; cont = 0  # comments terminate alias lists and continuations
+	next
+}
+
+{
+	# is this line a continuation line?
+	# (the prev. line ended in a backslash or the line starts with whitespace)
+	is_cont = /^[ \t]/ || cont
+
+	# detect if the line is a line to be continued (ends with a backslash)
+	cont = /\\$/
+
+	# if it is, we drop the backslash from the line
+	if (cont) sub(/[ \t]*\\$/, "", $0)
+}
+
+is_cont {
+	# if in the alias list of the "target" user, we also print these aliases.
+	if (select) print_aliases($0)
+	next
+}
+
+$1 == ENVIRON["__object_id"] {
+	# "target" user -> print alias list
+	select = 1
+	print_aliases($2)
+	next
+}
+
+{
+	# other user
+	select = 0
+}
+' "${aliases_file}"

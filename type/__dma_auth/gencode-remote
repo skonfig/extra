@@ -1,0 +1,72 @@
+#!/bin/sh -e
+#
+# 2020 Dennis Camera (dennis.camera@ssrq-sds-fds.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+quote() { printf "'%s'" "$(printf '%s' "$*" | sed -e "s/'/'\\\\''/g")"; }
+drop_awk_comments() { quote "$(sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@")"; }
+
+state_is=$(cat "${__object:?}/explorer/state")
+state_should=$(cat "${__object:?}/parameter/state")
+
+server=${__object_id:?}
+login=$(cat "${__object:?}/parameter/login")
+
+
+auth_conf=$(cat "${__object:?}/explorer/auth_conf")
+test -n "${auth_conf}" || {
+	echo 'Cannot determine path of dma auth.conf' >&2
+	exit 1
+}
+
+if test "${state_is}" = "${state_should}"
+then
+	# state is as it should
+	exit 0
+fi
+
+case ${state_should}
+in
+	(present)
+		test -n "${login}" || { echo '--login must be non-empty' >&2; exit 1; }
+
+		if test "${state_is}" = 'absent'
+		then
+			printf 'add authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out:?}"
+		else
+			printf 'set authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out:?}"
+		fi
+		;;
+	(absent)
+		printf 'delete authuser %s on %s\n' "${login}" "${server}" >>"${__messages_out:?}"
+		;;
+	(*)
+		printf 'Invalid --state: %s.\n' "${state_should}" >&2
+		printf 'Acceptable values are: present, absent.\n' >&2
+		exit 1
+		;;
+esac
+
+
+cat <<EOF
+test -f $(quote "${auth_conf}") || touch $(quote "${auth_conf}")
+
+awk $(drop_awk_comments "${__type:?}/files/update_dma_auth.awk") <$(quote "${auth_conf}") >$(quote "${auth_conf}.tmp") \
+&& cat $(quote "${auth_conf}.tmp") >$(quote "${auth_conf}")
+rm -f $(quote "${auth_conf}.tmp")
+EOF

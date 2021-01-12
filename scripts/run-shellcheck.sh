@@ -1,21 +1,29 @@
-#!/bin/sh
+#!/bin/sh -eu
 
-SHELLCHECKCMD="shellcheck -s sh -f gcc -x"
+SHELLCHECKCMD='shellcheck -s sh -f gcc -x'
 # Skip SC2154 for variables starting with __ since such variables are cdist
 # environment variables.
 SHELLCHECK_SKIP=': __.*is referenced but not assigned.*\[SC2154\]'
-SHELLCHECKTMP=".shellcheck.tmp"
+SHELLCHECKTMP='.shellcheck.tmp'
 
 # Move to top-level cdist-contrib directory.
-cd $(dirname $0)/..
+cd "$(dirname $0)"/..
 
-check () {
-	find type/ -type f $1 $2 -exec ${SHELLCHECKCMD} {} + | grep -v "${SHELLCHECK_SKIP}"  > "${SHELLCHECKTMP}"
-	test ! -s "${SHELLCHECKTMP}" || { cat "${SHELLCHECKTMP}"; exit 1; }
+check() {
+	find type/ -type f "$@" -exec ${SHELLCHECKCMD} {} + \
+	| grep -v "${SHELLCHECK_SKIP}" >>"${SHELLCHECKTMP}" || true
 }
 
-check -path "*/explorer/*"
-check -path "*/files/*.sh"
+rm -f "${SHELLCHECKTMP}"
+
+check -path '*/explorer/*'
+check -path '*/files/*' -name '*.sh'
 check -name manifest
 check -name gencode-local
 check -name gencode-remote
+
+if test -s "${SHELLCHECKTMP}"
+then
+	cat "${SHELLCHECKTMP}" >&2
+	exit 1
+fi

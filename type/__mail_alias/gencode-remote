@@ -1,0 +1,87 @@
+#!/bin/sh -e
+#
+# 2020 Dennis Camera (dennis.camera@ssrq-sds-fds.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+quote() { printf "'%s'" "$(printf '%s' "$*" | sed -e "s/'/'\\\\''/g")"; }
+drop_awk_comments() { quote "$(sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@")"; }
+
+aliases_file=$(cat "${__object:?}/explorer/aliases_file")
+
+test -n "${aliases_file}" || {
+	echo 'Could not determine aliases file path.' >&2
+	exit 1
+}
+
+
+state_should=$(cat "${__object:?}/parameter/state")
+
+case ${state_should}
+in
+	(present)
+		if cmp -s "${__object:?}/explorer/aliases" "${__object:?}/parameter/alias"
+		then
+			# all good!
+			exit 0
+		fi
+
+		test -s "${__object:?}/parameter/alias" || {
+			printf 'The --alias parameter is required if --state present.\n' >&2
+			printf 'Use --state absent to remove all aliases.\n' >&2
+			exit 1
+		}
+
+		if test -s "${__object:?}/explorer/aliases"
+		then
+			echo "update aliases" >>"${__messages_out:?}"
+		else
+			echo "add aliases" >>"${__messages_out:?}"
+		fi
+		;;
+	(absent)
+		# nothing to do if no aliases found.
+		test -s "${__object:?}/explorer/aliases" || exit 0
+
+		echo "delete aliases" >>"${__messages_out:?}"
+		;;
+	(*)
+		printf 'Invalid --state: %s.\n' "${state_should}" >&2
+		printf 'Acceptable values are: present, absent.\n' >&2
+		exit 1
+esac
+
+cat <<EOF
+test -f $(quote "${aliases_file}") || touch $(quote "${aliases_file}")
+
+awk $(drop_awk_comments "${__type:?}/files/update_aliases.awk") <$(quote "${aliases_file}") >$(quote "${aliases_file}.tmp") \
+|| {
+	rm -f $(quote "${aliases_file}.tmp")
+	echo 'Generating new aliases file failed!' >&2
+	exit 1
+}
+
+if ! cmp -s $(quote "${aliases_file}") $(quote "${aliases_file}.tmp")
+then
+	# aliases file was modified, replace:
+	cat $(quote "${aliases_file}.tmp") >$(quote "${aliases_file}")
+
+	# then, run newaliases if present ("missing" on Alpine Linux because of typo)
+	command -v newaliases >/dev/null 2>&1 && newaliases || true
+fi
+rm -f $(quote "${aliases_file}.tmp")
+EOF

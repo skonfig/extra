@@ -1,0 +1,91 @@
+#!/bin/sh -e
+#
+# 2020 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+# This explorer looks for a line matching the server parameter
+# in dma's auth.conf and reports:
+#   present:            a line matching login + host + password exists
+#   absent:             no line matching login + host exists
+#   different_login:    a line exists but with a different login user
+#   different_password: a line exists but with a different password
+#   multiple:           multiple lines matching host exist (should not happen)
+
+auth_conf=$("${__type_explorer:?}/auth_conf")
+test -r "${auth_conf}" || exit 0
+
+awk -F'\n' '
+function getvalue(path) {
+	# Reads the first line of the file located at path and returns it.
+	getline < path
+	close(path)
+	return $0
+}
+
+BEGIN {
+	DP = "[: \t]"  # copied from dma/conf.c
+
+	parameter_dir = ENVIRON["__object"] "/parameter/"
+
+	# Read the parameters of this object
+	host_param = ENVIRON["__object_id"]
+	login_param = getvalue(parameter_dir "login")
+	passwd_param = getvalue(parameter_dir "password")
+
+	state = "absent"
+}
+
+/^#/ || /^$/ {
+	# skip comments and empty lines
+	next
+}
+
+{
+	# parse line
+
+	login = substr($0, 1, index($0, "|") - 1)
+	if (!login) { login = $0 }  # if no "|" found
+
+	host = substr($0, length(login) + 2)
+
+	if (match(host, DP)) {
+		passwd = substr(host, RSTART + 1)
+		host = substr(host, 1, RSTART - 1)
+	} else {
+		passwd = ""
+	}
+}
+
+host == host_param {
+	# a match…
+	if (state == "absent") {
+		if (login != login_param)
+			state = "different_login"
+		else if (passwd != passwd_param)
+			state = "different_password"
+		else
+			state = "present"
+	} else {
+		# report "multiple" to that the type can remove the duplicates.
+		state = "multiple"
+	}
+}
+
+END {
+	print state
+}
+' "${auth_conf}"

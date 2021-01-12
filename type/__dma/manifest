@@ -1,0 +1,66 @@
+#!/bin/sh -e
+#
+# 2020 Dennis Camera (dennis.camera@ssrq-sds-fds.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+os=$(cat "${__global:?}/explorer/os")
+
+# Install DMA
+case ${os}
+in
+	(alpine)
+		__package dma --state present
+		export require='__package/dma'
+		;;
+	(debian|devuan|ubuntu)
+		__package dma --state present
+		export require='__package/dma'
+		;;
+	(freebsd)
+		# Stop sendmail if necessary
+		__process 'sendmail' --name 'sendmail.*' --state absent \
+			--stop '/etc/rc.d/sendmail onestop'
+
+		# ... and disable it
+		__key_value 'rcconf-sendmail-enable' --file '/etc/rc.conf' \
+			--key 'sendmail_enable' --delimiter '=' --value '"NONE"' \
+			--exact_delimiter
+
+		# Setup mailwrapper accordingly
+		__file '/etc/mail/mailer.conf' --mode 0644 --source - <<-'EOF'
+			#
+			# Execute the "real" sendmail program, named /usr/libexec/sendmail/sendmail
+			#
+			sendmail	/usr/libexec/dma
+			send-mail	/usr/libexec/dma
+			mailq		/usr/libexec/dma
+			newaliases	/usr/libexec/dma
+			rmail		/usr/libexec/dma
+		EOF
+		;;
+	(*)
+		cat <<EOF >&2
+Your OS (${os}) is not supported yet.
+
+Maybe adding support is as simple as adapting the packages or allowing it,
+we highly encourage you to open a PR with the necessary changes.
+See: https://code.ungleich.ch/ungleich-public/cdist-contrib/
+EOF
+		exit 1
+		;;
+esac
