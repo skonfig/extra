@@ -17,7 +17,7 @@ check() {
 rm -f "${SHELLCHECKTMP}"
 
 check -path '*/explorer/*'
-check -path '*/files/*' ! -name '*.awk' ! -name '*.py'
+check -path '*/files/*' -name '*.sh'
 check -name manifest
 check -name gencode-local
 check -name gencode-remote
