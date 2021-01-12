@@ -33,7 +33,7 @@ require="__package/gnupg2" __apt_key_uri jitsi_meet \
 	--uri https://download.jitsi.org/jitsi-key.gpg.key \
 	--state present
 ## Now the repositories (they are a tad weird, so distribution is 'stable/')
-require="__ufw __apt_key_uri/jitsi_meet" __apt_source jitsi_meet \
+require="__apt_key_uri/jitsi_meet" __apt_source jitsi_meet \
 	--uri 'https://download.jitsi.org' \
 	--distribution 'stable/' \
 	--state present
