@@ -22,10 +22,5 @@ EOF
 # Install deps and launch
 cat << EOF
 cd /var/wiki || exit 1
-npm install
-EOF
-
-# Restart service.
-cat << EOF
 service wikijs restart
 EOF

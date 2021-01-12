@@ -52,7 +52,6 @@ export HTTP_PORT HTTPS_PORT
 db_pass="$(cat "${__object:?}/parameter/database-password")"
 
 __package nodejs
-__package npm
 __directory /var/wiki/
 
 # These things are Alpine-dependant.
