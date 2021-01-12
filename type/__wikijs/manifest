@@ -32,7 +32,7 @@ then
 fi
 export SSL
 
-if ! [ "$SSL" = "false" ];
+if [ "$SSL" = "true" ];
 then
 	if [ -f "${__object:?}/parameter/letsencrypt-mail" ];
 	then
@@ -45,6 +45,10 @@ then
 	fi
 fi
 
+HTTP_PORT=$(cat "${__object:?}/parameter/http-port")
+HTTPS_PORT=$(cat "${__object:?}/parameter/https-port")
+export HTTP_PORT HTTPS_PORT
+
 db_pass="$(cat "${__object:?}/parameter/database-password")"
 
 __package nodejs
@@ -52,7 +56,7 @@ __package npm
 __directory /var/wiki/
 
 # These things are Alpine-dependant.
-__file /etc/init.d/wikijs --source "${__files:?}/files/wikijs-openrc"
+__file /etc/init.d/wikijs --source "${__type:?}/files/wikijs-openrc"
 __package nghttp2-dev  # Required for some reason, else a symbol is missing
 
 mkdir -p "${__object:?}/files"

@@ -22,6 +22,9 @@ REQUIRED PARAMETERS
 database-password
   The password to the PSQL database.
 
+version
+  'wikijs' version to be deployed.
+
 OPTIONAL PARAMETERS
 -------------------
 
@@ -36,6 +39,12 @@ database-user
 letsencrypt-mail
   If the SSL parameter is passed, then we setup wikijs to automatically obtain
   certificates: this is the email used to sign up to a LE account.
+
+http-port
+  Specify HTTP port, defaults to 80.
+
+http-port
+  Specify HTTPS port, defaults to 443. Only relevant if the SSL flag is enabled.
 
 BOOLEAN PARAMETERS
 ------------------

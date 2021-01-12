@@ -7,8 +7,25 @@ then
 	exit 1;
 fi
 
+generate_ssl_section () {
+
+	cat << EOF
+ssl:
+  enabled: ${SSL}
+EOF
+
+if [ "$SSL" = "true" ]; then
+	cat << EOF
+  port: $HTTPS_PORT
+  provider: letsencrypt
+  domain: ${__target_host:?}
+  subscriberEmail: ${LE_EMAIL:?}
+EOF
+	fi
+}
+
 cat << EOF
-port: 80
+port: $HTTP_PORT
 db:
   type: postgres
   host: localhost
@@ -17,12 +34,7 @@ db:
   pass: $1
   db: ${DB_NAME:?}
   ssl: false
-ssl:
-  enabled: ${SSL}
-  port: 443
-  provider: letsencrypt
-  domain: ${__target_host:?}
-  subscriberEmail: ${LE_EMAIL:?}
+$(generate_ssl_section)
 pool:
   min: 2
   max: 10
