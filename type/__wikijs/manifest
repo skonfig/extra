@@ -1,0 +1,64 @@
+#!/bin/sh
+
+os="$(cat "${__global:?}"/explorer/os)"
+
+case "$os" in
+	alpine)
+		:
+		;;
+	*)
+		echo "This type has no implementation for $os. Aborting." >&2;
+		exit 1;
+esac
+
+DB_USER=wikijs
+if [ -f "${__object:?}/parameter/database-user" ];
+then
+	DB_USER="$(cat "${__object:?}/parameter/database-user")"
+fi
+export DB_USER
+
+DB_NAME=wikijs
+if [ -f "${__object:?}/parameter/database" ];
+then
+	DB_NAME="$(cat "${__object:?}/parameter/database")"
+fi
+export DB_NAME
+
+SSL=false
+if [ -f "${__object:?}/parameter/ssl" ];
+then
+	SSL=true
+fi
+export SSL
+
+if [ "$SSL" = "true" ];
+then
+	if [ -f "${__object:?}/parameter/letsencrypt-mail" ];
+	then
+		LE_EMAIL="$(cat "${__object:?}/parameter/letsencrypt-mail")"
+		export LE_EMAIL
+	else
+		echo "You must specify an email account if you request SSL."
+		echo "Hit me."
+		exit 1
+	fi
+fi
+
+HTTP_PORT=$(cat "${__object:?}/parameter/http-port")
+HTTPS_PORT=$(cat "${__object:?}/parameter/https-port")
+export HTTP_PORT HTTPS_PORT
+
+db_pass="$(cat "${__object:?}/parameter/database-password")"
+
+__package nodejs
+__directory /var/wiki/
+
+# These things are Alpine-dependant.
+__file /etc/init.d/wikijs --source "${__type:?}/files/wikijs-openrc"
+__package nghttp2-dev  # Required for some reason, else a symbol is missing
+
+mkdir -p "${__object:?}/files"
+"${__type:?}/files/config.yml.sh" "$db_pass" > "${__object:?}/files/config.yml"
+require='__directory/var/wiki' \
+	__file /var/wiki/config.yml --source "${__object:?}/files/config.yml"
