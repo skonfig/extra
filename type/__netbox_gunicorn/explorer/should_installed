@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+awk -v FS="==" '$1 ~ /gunicorn/{print $2}' /opt/netbox/requirements.txt

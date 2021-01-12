@@ -1,0 +1,57 @@
+#!/bin/sh -e
+# __netbox_gunicorn/manifest
+
+# Check states
+state=""
+unit_state=""
+param_state="$(cat "$__object/parameter/state")"
+
+case "$param_state" in
+    enabled|disabled)
+        state="present"
+        unit_state="$param_state"
+        ;;
+
+    absent)
+        state="absent"
+        unit_state="disabled"
+        ;;
+
+    *)
+        # does not exist
+        printf "The state '%s' does not exist, can't continue!\n" "$param_state" >&2
+        exit 2
+        ;;
+esac
+
+
+mkdir "$__object/files"
+
+if [ "$state" = "present" ]; then
+    # process template
+    "$__type/files/gunicorn.py.sh" > "$__object/files/gunicorn.py"
+
+    # gunicorn config file
+    __file /opt/netbox/gunicorn.py \
+        --mode 644 --owner netbox \
+        --source "$__object/files/gunicorn.py"
+
+else
+    # absent config file
+    __file /opt/netbox/gunicorn.py --state absent
+fi
+
+
+TYPE="Gunicorn"
+export TYPE
+
+"$__type/files/netbox.socket.sh" "$__object/parameter/bind-to" \
+    > "$__object/files/netbox.socket"
+
+# install systemd files
+__systemd_unit gunicorn-netbox.socket \
+    --state "$state" --enablement-state "$unit_state" \
+    --source "$__object/files/netbox.socket" --restart
+__systemd_unit gunicorn-netbox.service \
+    --state "$state" --enablement-state "$unit_state" \
+    --source "$__type/files/netbox.service" --restart

@@ -1,0 +1,4 @@
+#!/bin/sh -e
+
+# print latest version if availble
+/opt/netbox/venv/bin/pip3 list --outdated | awk '$1 == "uwsgi" {print $3}'

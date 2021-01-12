@@ -1,0 +1,4 @@
+#!/bin/sh -e
+
+# print version if available
+/opt/netbox/venv/bin/pip3 show uwsgi | awk '/Version:/{print $2}'

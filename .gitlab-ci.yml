@@ -1,14 +1,29 @@
 stages:
     - test
+    - doc
 
-image: code.ungleich.ch:5050/ungleich-public/cdist/cdist-ci:latest
+image: code.ungleich.ch:5050/ungleich-public/cdist-contrib/ci-container:latest
 
 shellcheck:
     stage: test
     script:
-        - ./scripts/run-shellcheck.sh
+        - make lint
 
 manpages:
     stage: test
     script:
-      - ./scripts/run-manpage-checks.sh
+      - make check-manpages
+
+docs:
+    stage: doc
+    only:
+      - master
+    before_script:
+      - eval $(ssh-agent -s)
+      - echo "$CD_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+      - mkdir -p ~/.ssh
+      - echo "$CD_SSH_SERVER_HOSTKEYS" > ~/.ssh/known_hosts
+      - chmod 644 ~/.ssh/known_hosts
+    script:
+      - make html
+      - sftp fnux@staticwebhosting.ungleich.ch:public_html/cdist-contrib <<< "put -r docs/dist/html/*"

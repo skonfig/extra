@@ -1,0 +1,46 @@
+#!/bin/sh -e
+#
+# 2020 Timothée Floure (timothee.floure@ungleich.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+
+upstream=https://github.com/wish/unbound_exporter/archive
+version=$(cat "$__object/parameter/version")
+release="unbound_exporter-$version"
+
+cat << EOF
+if command -v unbound_exporter
+then
+    # already installed - ignoring.
+    echo "Nothing to do -"
+else
+    # Initialize working directory
+    workdir=\$(mktemp -d)
+    cd \$workdir
+
+    # Download and extract sources for requested release.
+    curl -L $upstream/v$version.tar.gz --output $release.tar.gz
+    tar xf $release.tar.gz
+
+    # Build and install binary.
+    cd $release
+    go build
+    install -m755 unbound_exporter /usr/local/bin/
+
+    # Clean up!
+    rm -r \$workdir
+fi
+EOF

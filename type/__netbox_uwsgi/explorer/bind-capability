@@ -1,0 +1,12 @@
+#!/bin/sh -e
+# explorer/bind-capablility
+
+# Checks if the uWSGI binary have the capability to bind to privileaged ports
+# as a non-root user. It's required if no systemd sockets are used (cause of
+# the use of multiple protocols etc.)
+
+binary="/opt/netbox/venv/bin/uwsgi"
+# -v verifies if capability is set
+if setcap -q -v CAP_NET_BIND_SERVICE+ep "$binary"; then
+    echo set
+fi
