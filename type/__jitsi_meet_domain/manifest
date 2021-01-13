@@ -47,6 +47,7 @@ __letsencrypt_cert "${DOMAIN}" \
 	--webroot /usr/share/jitsi-meet
 
 # Create virtualhost for nginx
+# shellcheck source=type/__jitsi_meet_domain/files/nginx.sh
 . "${__type}/files/nginx.sh"  # This defines JITSI_NGINX_CONFIG
 require="__letsencrypt_cert/${DOMAIN}" __file \
 	"/etc/nginx/sites-enabled/${DOMAIN}.conf" \
@@ -55,6 +56,7 @@ ${JITSI_NGINX_CONFIG}
 EOF
 
 # Setup jitsi config
+# shellcheck source=type/__jitsi_meet_domain/files/config.js.sh
 . "${__type}/files/config.js.sh"  # This defines JITSI_CONFIG_JS
 __file "/etc/jitsi/meet/${DOMAIN}-config.js" \
 	--mode 0644 --source "-" <<EOF

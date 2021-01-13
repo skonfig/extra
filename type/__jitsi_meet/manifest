@@ -43,6 +43,7 @@ require="__apt_source/jitsi_meet" __apt_update_index
 export require="${require} __apt_source/jitsi_meet __apt_update_index"
 
 # Pre-feed debconf settings, so Jitsi's installation has a good config
+# shellcheck source=type/__jitsi_meet/files/debconf_settings.sh
 . "${__type}/files/debconf_settings.sh"  # This defines DEBCONF_SETTINGS
 __debconf_set_selections jitsi_meet --file - <<EOF
 ${DEBCONF_SETTINGS}
@@ -50,9 +51,7 @@ EOF
 export require="${require} __debconf_set_selections/jitsi_meet"
 
 # Install and upgrade packages as needed
-for pkg in jitsi-meet; do
-	__package "${pkg}"
-done
+__package jitsi-meet
 
 # Proceed only after installation/upgrade has finished
 export require="__package/jitsi-meet"
@@ -182,6 +181,7 @@ EOF
 	esac
 	if [ "${PROMETHEUS_JITSI_EXPORTER_SHOULD_VERSION}" != \
 		"${PROMETHEUS_JITSI_EXPORTER_IS_VERSION}" ]; then
+		# shellcheck disable=SC2059
 		__download \
 			/tmp/prometheus-jitsi-meet-exporter \
 			--url "${PROMETHEUS_JITSI_EXPORTER_URL}" \
