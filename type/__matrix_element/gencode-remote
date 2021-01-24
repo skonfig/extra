@@ -18,11 +18,37 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
+# Function to compare version strings. Returns success (0) if the version
+# given by stdin is higher than the version provided by the argument.
+#
+# Taken from the cdist core type __sensible_editor.
+version_ge() {
+	awk -F '[^0-9.]' -v target="${1:?}" '
+	function max(x, y) { return x > y ? x : y; }
+	BEGIN {
+		getline;
+		nx = split($1, x, ".");
+		ny = split(target, y, ".");
+		for (i = 1; i <= max(nx, ny); ++i) {
+			diff = int(x[i]) - int(y[i]);
+			if (diff < 0) exit 1;
+			else if (diff > 0) exit 0;
+			else continue;
+		}
+	}'
+}
+
+
 VERSION=$(cat "$__object/parameter/version")
 INSTALL_DIR=$(cat "$__object/parameter/install_dir")
 OWNER=$(cat "$__object/parameter/owner")
 
-src="riot-v$VERSION"
+# tarball name changed due to application renaming
+if echo "$VERSION" | version_ge 1.7.14; then
+    src="element-v$VERSION"
+else
+    src="riot-v$VERSION"
+fi
 archive="$src.tar.gz"
 url="https://github.com/vector-im/riot-web/releases/download/v$VERSION/$archive"
 
