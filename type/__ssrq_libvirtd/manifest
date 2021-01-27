@@ -25,6 +25,30 @@ mach_name=$(cat "${__global:?}/explorer/machine")
 case ${os}
 in
 	(debian|devuan)
+		case $(cat "${__global:?}/explorer/init")
+		in
+			(systemd|*openrc*)
+				# takes care of mounting cgroups by itself
+				__package cgroupfs-mount --state absent
+				;;
+			(sysvinit|upstart)
+				# We need to mount the cgroup filesystem
+				export CDIST_ORDER_DEPENDENCY=true
+				__package cgroupfs-mount
+				__start_on_boot cgroupfs-mount
+				# Start service after installation
+				__check_messages start-cgroupfs-mount \
+					--pattern '^__package[_a-z]*/cgroupfs-mount:installed' \
+					--execute 'test -x /sbin/initctl && service cgroupfs-mount start || /etc/init.d/cgroupfs-mount start'
+				unset CDIST_ORDER_DEPENDENCY
+				;;
+			(*)
+				: "${__type:?}"  # make shellcheck happy
+				echo 'Unsupported init system. cgroups may not be mounted automatically.' >&2
+				echo "Update ${__type##*/} if you can" >&2
+				;;
+		esac
+
 		__package libvirt-daemon-system
 		__package qemu-utils
 		__package libvirt-clients
