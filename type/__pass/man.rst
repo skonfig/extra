@@ -14,9 +14,6 @@ types depending on this one should require it. This enables an administrator to
 ensure a password exists using this type and then, from another type, use it as
 need be.
 
-This type also sets the GPG IDs used to encrypt the password store: beware that
-the IDs passed in the last ran invocation of the type will be the ones set for
-the store.
 
 REQUIRED PARAMETERS
 -------------------
@@ -25,17 +22,13 @@ storedir
     created if it does not exist).
 
 
-REQUIRED MULTIPLE PARAMETERS
-----------------------------
-gpgid
-    The GPG IDs of the public keys used to encrypt the password store.
-
 OPTIONAL PARAMETERS
 -------------------
 length
     The length of the password to be created if it does not exist. Note that if
     it exists, this has no effect (and hence will not update the password, even
     if the length is different from the one specified).
+
 
 BOOLEAN PARAMETERS
 ------------------
@@ -52,18 +45,19 @@ looks up in the cdist messages to find it:
 
 .. code-block:: sh
 
-    __pass database/services/arandomservice
+    require=__pass_init \
+    __pass database/services/arandomservice \
         --storedir password/store/location
-        --gpgpid 92296965EAA1DD86A93284EF7B21E5AA32FB9810
 
    require='__pass/database/services/arandomservice' \
      __othertype --password database/service/arandomservice
+
 
 --
 
 SEE ALSO
 --------
-`pass`\ (7)
+`pass`\ (7), `cdist-type__pass_init`\ (7)
 
 
 AUTHORS
