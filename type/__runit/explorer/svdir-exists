@@ -1,0 +1,7 @@
+#!/bin/sh -e
+
+svdir="/var/service"
+
+if [ -d "${svdir}" ]; then
+	echo "YES"
+fi

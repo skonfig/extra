@@ -1,0 +1,197 @@
+#!/bin/sh -e
+
+os="$(cat "${__global}/explorer/os")"
+init="$(cat "${__global}/explorer/init")"
+case "${os}" in
+	devuan|debian)
+	;;
+	*)
+		echo "Your OS '${os}' is currently not supported." > /dev/stderr
+		exit 1
+	;;
+esac
+
+
+JITSI_HOST="${__target_host}"
+TURN_SERVER="$(cat "${__object}/parameter/turn-server")"
+TURN_SECRET="$(cat "${__object}/parameter/turn-secret")"
+
+if [ -z "${TURN_SERVER}" ]; then
+	TURN_SERVER="${JITSI_HOST}"
+fi
+
+PROMETHEUS_JITSI_EXPORTER_IS_VERSION="$(cat "${__object}/explorer/prometheus-jitsi-meet-explorer-version")"
+
+# The rest is loosely based on Jitsi's documentation
+# https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-quickstart
+
+# Setup repositories
+## First the signing keys
+__package gnupg2
+require="__package/gnupg2" __apt_key_uri jitsi_meet \
+	--name 'Jitsi <dev@jitsi.org>' \
+	--uri https://download.jitsi.org/jitsi-key.gpg.key \
+	--state present
+## Now the repositories (they are a tad weird, so distribution is 'stable/')
+require="__apt_key_uri/jitsi_meet" __apt_source jitsi_meet \
+	--uri 'https://download.jitsi.org' \
+	--distribution 'stable/' \
+	--state present
+## Ensure apt cache is up-to-date
+require="__apt_source/jitsi_meet" __apt_update_index
+
+export require="${require} __apt_source/jitsi_meet __apt_update_index"
+
+# Pre-feed debconf settings, so Jitsi's installation has a good config
+# shellcheck source=type/__jitsi_meet/files/debconf_settings.sh
+. "${__type}/files/debconf_settings.sh"  # This defines DEBCONF_SETTINGS
+__debconf_set_selections jitsi_meet --file - <<EOF
+${DEBCONF_SETTINGS}
+EOF
+export require="${require} __debconf_set_selections/jitsi_meet"
+
+# Install and upgrade packages as needed
+__package jitsi-meet
+
+# Proceed only after installation/upgrade has finished
+export require="__package/jitsi-meet"
+
+# TODO: generalise and move out
+# Prep nginx for acme settings
+
+NGINX_ETC="/etc/nginx"
+
+#
+# Setup the acme-challenge snippet
+#
+__directory "${NGINX_ETC}/snippets" --state present
+require="__directory${NGINX_ETC}/snippets" __file "${NGINX_ETC}/snippets/acme-challenge.conf" \
+  --mode 644 \
+  --source - << EOF
+# This file is managed remotely, all changes will be lost
+
+# This was heavily inspired by debops.org.
+
+# Automatic Certificate Management Environment (ACME) support.
+# https://tools.ietf.org/html/draft-ietf-acme-acme-01
+# https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment
+
+
+# Return the ACME challenge present in the server public root.
+# If not found, switch to global web server root.
+location ^~ /.well-known/acme-challenge/ {
+        default_type "text/plain";
+        try_files \$uri @well-known-acme-challenge;
+}
+
+# Return the ACME challenge present in the global server public root.
+# If not present, redirect request to a specified domain.
+location @well-known-acme-challenge {
+        root /usr/share/jitsi-meet;
+        default_type "text/plain";
+        try_files \$uri @redirect-acme-challenge;
+}
+
+# Redirect the ACME challenge to a different host. If a redirect loop is
+# detected, return 404.
+location @redirect-acme-challenge {
+        if (\$arg_redirect) {
+                return 404;
+        }
+        return 307 \$scheme://${ACME_DOMAIN}\$request_uri?redirect=yes;
+}
+
+# Return 404 if ACME challenge well known path is accessed directly.
+location = /.well-known/acme-challenge/ {
+    return 404;
+}
+EOF
+
+__directory "${NGINX_ETC}/sites-available" --state present
+require="__directory${NGINX_ETC}/sites-available" __file "${NGINX_ETC}/sites-available/default" \
+  --mode 644 \
+  --source - << EOF
+# This file is managed remotely, all changes will be lost
+
+# nginx server configuration for:
+
+server {
+
+        # Listen on IPv4
+        listen 80;
+        # Note: there is an ipv6only=off flag, but it is Linux-only
+        #       incidentally, that defaults to "on", which is what causes
+        #       not having the double listen to listen on IPv6-only
+        listen [::]:80;
+
+        server_name welcome;
+
+        root /srv/www/sites/welcome/public;
+
+        include snippets/acme-challenge.conf;
+
+        location / {
+                return 301 https://\$host\$request_uri;
+        }
+}
+EOF
+
+# These two should be changed on new release
+PROMETHEUS_JITSI_EXPORTER_SHOULD_VERSION="1.1.2"
+PROMETHEUS_JITSI_EXPORTER_CHECKSUM="sha256:c64852b1cf63efd1632ec07ac9fcead09baccc1bd8c7b21ca830a0d82d00fb3d"
+PROMETHEUS_JITSI_EXPORTER_URL="https://github.com/systemli/prometheus-jitsi-meet-exporter/releases/download/${PROMETHEUS_JITSI_EXPORTER_VERSION}/prometheus-jitsi-meet-exporter-linux-amd64"
+PROMETHEUS_JITSI_EXPORTER_VERSION_FILE="/usr/local/bin/.prometheus-jitsi-meet-exporter.cdist.version"
+if [ ! -f "${__object}/parameter/disable-prometheus-exporter" ]; then
+	case "${init}" in
+		init|sysvinit)
+			__runit
+			require="__runit" __runit_service \
+				prometheus-jitsi-meet-exporter --log --source - <<EOF
+			#!/bin/sh -e
+			cd /tmp
+			exec chpst -u "nobody:nogroup" env HOME="/tmp" \\
+			     prometheus-jitsi-meet-exporter \\
+				-videobridge-url 'http://localhost:8888/stats' \\
+				-web.listen-address ':9888' 2>&1
+EOF
+
+			export require="__runit_service/prometheus-jitsi-meet-exporter"
+			JITSI_MEET_EXPORTER_SERVICE="sv %s prometheus-jitsi-meet-exporter"
+		;;
+		systemd)
+			__systemd_unit prometheus-jitsi-meet-exporter.service \
+				--source "-" \
+				--enablement-state "enabled" <<EOF
+[Unit]
+Description=Metrics Exporter for Jitsi Meet
+After=network.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+ExecStart=/usr/local/bin/prometheus-jitsi-meet-exporter -videobridge-url 'http://localhost:8888/stats' -web.listen-address ':9888'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+			export require="__systemd_unit/prometheus-jitsi-meet-exporter.service"
+			JITSI_MEET_EXPORTER_SERVICE="service prometheus-jitsi-meet-exporter %s"
+		;;
+	esac
+	if [ "${PROMETHEUS_JITSI_EXPORTER_SHOULD_VERSION}" != \
+		"${PROMETHEUS_JITSI_EXPORTER_IS_VERSION}" ]; then
+		# shellcheck disable=SC2059
+		__download \
+			/tmp/prometheus-jitsi-meet-exporter \
+			--url "${PROMETHEUS_JITSI_EXPORTER_URL}" \
+			--download remote \
+			--sum "${PROMETHEUS_JITSI_EXPORTER_CHECKSUM}" \
+			--onchange "$(printf "${JITSI_MEET_EXPORTER_SERVICE}" "stop") || true; chmod 555 /tmp/prometheus-jitsi-meet-exporter && mv /tmp/prometheus-jitsi-meet-exporter /usr/local/bin/prometheus-jitsi-meet-exporter && $(printf "${JITSI_MEET_EXPORTER_SERVICE}" "restart")"
+		printf "%s" "${PROMETHEUS_JITSI_EXPORTER_SHOULD_VERSION}" | \
+			require="${require} __download/tmp/prometheus-jitsi-meet-exporter" __file \
+			"${PROMETHEUS_JITSI_EXPORTER_VERSION_FILE}" \
+			--source "-"
+	fi
+fi
+# TODO: disable the exporter if it is deployed and then admin changes their mind

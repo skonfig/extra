@@ -1,0 +1,90 @@
+#!/bin/sh -e
+
+os="$(cat "${__global}/explorer/os")"
+case "${os}" in
+	devuan|debian)
+	;;
+	*)
+		echo "Your OS '${os}' is currently not supported." > /dev/stderr
+		exit 1
+	;;
+esac
+
+DOMAIN="${__object_id}"
+ADMIN_EMAIL="$(cat "${__object}/parameter/admin-email")"
+CHANNEL_LAST_N="$(cat "${__object}/parameter/channel-last-n")"
+DEFAULT_LANGUAGE="$(cat "${__object}/parameter/default-language")"
+NOTICE_MESSAGE="$(cat "${__object}/parameter/notice-message")"
+START_VIDEO_MUTED="$(cat "${__object}/parameter/start-video-muted")"
+TURN_SERVER="$(cat "${__object}/parameter/turn-server")"
+VIDEO_CONSTRAINTS="$(cat "${__object}/parameter/video-constraints")"
+BRANDING_INDEX="$(cat "${__object}/parameter/branding-index")"
+BRANDING_JSON="$(cat "${__object}/parameter/branding-json")"
+BRANDING_WATERMARK="$(cat "${__object}/parameter/branding-watermark")"
+
+if [ -f "${__object}/parameter/enable-third-party-requests" ]; then
+	ENABLE_THIRD_PARTY_REQUESTS="YES"
+fi
+if [ -f "${__object}/parameter/disable-audio-levels" ]; then
+	DISABLE_AUDIO_LEVELS="YES"
+fi
+
+if [ -z "${TURN_SERVER}" ]; then
+	TURN_SERVER="${__target_host}"
+fi
+if [ -z "${JITSI_HOST}" ]; then
+	JITSI_HOST="${__target_host}"
+fi
+
+#
+# Deal with certbot
+#
+# use object id as domain
+__letsencrypt_cert "${DOMAIN}" \
+	--admin-email "${ADMIN_EMAIL}" \
+	--automatic-renewal \
+	--renew-hook "service nginx reload" \
+	--webroot /usr/share/jitsi-meet
+
+# Create virtualhost for nginx
+# shellcheck source=type/__jitsi_meet_domain/files/nginx.sh
+. "${__type}/files/nginx.sh"  # This defines JITSI_NGINX_CONFIG
+require="__letsencrypt_cert/${DOMAIN}" __file \
+	"/etc/nginx/sites-enabled/${DOMAIN}.conf" \
+	--mode 0644 --source "-" <<EOF
+${JITSI_NGINX_CONFIG}
+EOF
+
+# Setup jitsi config
+# shellcheck source=type/__jitsi_meet_domain/files/config.js.sh
+. "${__type}/files/config.js.sh"  # This defines JITSI_CONFIG_JS
+__file "/etc/jitsi/meet/${DOMAIN}-config.js" \
+	--mode 0644 --source "-" <<EOF
+${JITSI_CONFIG_JS}
+EOF
+
+
+#
+# Deal with branding as requested
+#
+# Helper function to manage the state of the target branding file
+_var_state() {
+	if [ -n "${1}" ]; then
+		echo "present"
+	else
+		echo "absent"
+	fi
+}
+
+__file "/usr/share/jitsi-meet/index-${DOMAIN}.html" \
+	--mode 0644 \
+	--state "$(_var_state "${BRANDING_INDEX}")" \
+	--source "${BRANDING_INDEX}"
+__file "/etc/jitsi/meet/${DOMAIN}-branding.json" \
+	--mode 0644 \
+	--state "$(_var_state "${BRANDING_JSON}")" \
+	--source "${BRANDING_JSON}"
+__file "/usr/share/jitsi-meet/images/watermark-${DOMAIN}.png" \
+	--mode 0644 \
+	--state "$(_var_state "${BRANDING_WATERMARK}")" \
+	--source "${BRANDING_WATERMARK}"

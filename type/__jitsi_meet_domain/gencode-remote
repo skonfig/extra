@@ -1,0 +1,5 @@
+#!/bin/sh -e
+
+if grep -qE "^__file/etc/nginx" "${__messages_in}"; then
+	echo "service nginx reload"
+fi
