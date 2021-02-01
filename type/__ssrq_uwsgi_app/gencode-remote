@@ -1,0 +1,56 @@
+#!/bin/sh -e
+#
+# 2021 Dennis Camera (dennis.camera@ssrq-sds-fds.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+quote() { printf "'%s'" "$(printf '%s' "$*" | sed -e "s/'/'\\\\''/g")"; }
+
+os=$(cat "${__global:?}/explorer/os")
+
+state_should=$(cat "${__object:?}/parameter/state")
+
+case ${os}
+in
+	(debian|devuan|ubuntu)
+		if grep -q "^__file/etc/uwsgi/apps-available/${__object_id:?}.ini:" "${__messages_in:?}"
+		then
+			# config file was modified
+			case ${state_should}
+			in
+				(present)
+					cat <<-EOF
+					if /etc/init.d/uwsgi status $(quote "${__object_id:?}")
+					then
+					    /etc/init.d/uwsgi reload $(quote "${__object_id:?}")
+					else
+					    /etc/init.d/uwsgi start $(quote "${__object_id:?}")
+					fi
+					EOF
+					;;
+				(disabled|absent)
+					printf '/etc/init.d/uwsgi stop %s\n' "$(quote "${__object_id:?}")"
+					;;
+			esac
+		fi
+		;;
+	(*)
+		: "${__type:?}"  # make shellcheck happy
+		printf '%s: do not know how to restart uWSGI app on %s\n' "${__type##*/}" "${os}" >&2
+		exit 1
+		;;
+esac

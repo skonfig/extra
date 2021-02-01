@@ -1,0 +1,11 @@
+chdir
+gid
+home
+http-socket
+processes
+pythonpath
+state
+threads
+uid
+uwsgi-socket
+wsgi-file
