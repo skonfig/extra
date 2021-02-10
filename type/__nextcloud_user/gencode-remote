@@ -1,0 +1,249 @@
+#!/bin/sh -e
+# __nextcloud_user/gencode-remote
+
+
+# Call the nextcloud occ script as the designed user. Maybe this can be a bit
+# more effictive with user switching, but currently the easiest way of doing
+# it.
+#
+# All arguments are directly passed to occ (injection alarm ;-) )
+occ() {
+    # su creates a new shell, so it does not affect the current session
+    #  will not use -q as it supresses errors, too
+    cat << SHELL
+su -s /bin/sh -l "$www_user" -- -e <<'SU'
+cd '$cloud' && php occ --no-warnings --no-interaction --no-ansi $@
+SU
+SHELL
+}
+
+# Creates the output for the nextcloud command to create a user. Takes all
+# required parameters from existing variables.
+occ_create() {
+    cat <<SHELL
+su -s /bin/sh -l "$www_user" -- -e <<SU
+cd '$cloud'
+SHELL
+    create_args=""
+
+    if [ -f "$__object/parameter/password" ]; then
+        printf "export OC_PASS='%s'\n" "$(cat "$__object/parameter/password")"
+        create_args="$create_args --password-from-env"
+    fi
+    if [ -f "$__object/parameter/displayname" ]; then
+        create_args="$create_args --display-name '$(cat "$__object/parameter/displayname")'"
+    fi
+
+    # groups
+    if [ -f "$__object/parameter/group" ]; then
+        while read -r GROUP; do
+            create_args="$create_args --group '$GROUP'"
+        done < "$__object/parameter/group"
+    fi
+
+    cat <<SHELL
+php occ --no-interaction --no-ansi user:add $create_args -- '$user'
+SU
+SHELL
+
+    # add email if set - not doable via the create command
+    if [ -f "$__object/parameter/email" ]; then
+        occ user:setting -- "'$user'" settings email "'$(cat "$__object/parameter/email")'"
+    fi
+
+    # add the set quota - the default value don't hurt if it's explicitly set
+    occ user:setting -- "'$user'" files quota "'$(cat "$__object/parameter/quota")'"
+
+    # save that use user will be created and no further steps are required
+    ignore_config="yes"
+}
+
+# Checks if the key-value exists on the remote side. Only matches first-level
+# parameters; not checking deeper levers.
+#
+# Arguments:
+#  1: the key
+#  2: the value
+#
+# Return-Code:
+#  0: matched the key-value
+#  1: not matched
+match_param() {
+    # first level intend two spaces
+    if grep -q -Fx "  - $1: $2" "$__object/explorer/user"; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+
+# Get parameters
+user="$__object/parameter/user"
+if [ -f "$user" ]; then
+    user="$(cat "$user")"
+else
+    user="$__object_id"
+fi
+if [ -s "$__object/explorer/user" ]; then
+    if match_param enabled true; then
+        state_is="enabled"
+    else
+        state_is="disabled"
+    fi
+else
+    state_is="absent"
+fi
+
+state_should="$(cat "$__object/parameter/state")"
+cloud="$(cat "$__object/parameter/cloud")"
+www_user="$(cat "$__object/parameter/www-user")"
+
+
+# Check if the state changes
+if [ "$state_is" != "$state_should" ]; then
+    # check what to do
+    case "$state_should" in
+        enabled)
+            if [ "$state_is" = "disabled" ]; then
+                occ user:enable "'$user'"
+                echo enabled >> "$__messages_out"
+            else
+                occ_create
+                echo created >> "$__messages_out"
+            fi
+            ;;
+
+        disabled)
+            if [ "$state_is" = "absent" ]; then
+                occ_create
+                echo created >> "$__messages_out"
+            fi
+
+            occ user:disable "'$user'"
+            echo disabled >> "$__messages_out"
+            ;;
+
+        present)
+            if [ "$state_is" = "absent" ]; then
+                occ_create
+                echo created >> "$__messages_out"
+            fi
+            # else, everything is ok
+            ;;
+
+        absent)
+            occ user:delete "'$user'"
+            echo removed >> "$__messages_out"
+            ;;
+    esac
+fi
+
+# Check if the user should not be modified further from the initial setup.
+if [ -f "$__object/parameter/only-setup" ]; then
+    ignore_config="yes"
+fi
+
+
+# Check if some user configuration should be changed
+# do not run this code if the user will be created in the previous code
+if [ "$state_should" != "absent" ] && [ "$ignore_config" != "yes" ]; then
+    if ! [ -f "$__object/parameter/keep-displayname" ]; then
+        # Check if the display name is correct if someone is set
+        if [ -f "$__object/parameter/displayname" ]; then
+            displayname="$(cat "$__object/parameter/displayname")"
+            if ! match_param display_name "$displayname"; then
+                cat <<SHELL
+su -s /bin/sh -l "$www_user" -- -e <<'SU'
+cd '$cloud'
+php -r 'define("OC_CONSOLE",1); require_once(__DIR__."/lib/base.php");
+        \\OC::\$server->getUserSession()->getManager()->get("$user")->setDisplayName("$displayname")
+          or print("Couldn'\''t modify $user display name! Maybe unsupported or already set ..".PHP_EOL)
+            and die(1);'
+SU
+SHELL
+            fi
+        fi
+        # the display name can not be unset
+    fi
+
+    if ! [ -f "$__object/paramter/keep-email" ]; then
+        # Check if the email address is correct
+        if [ -f "$__object/parameter/email" ]; then
+            email="$(cat "$__object/parameter/email")"
+            if ! match_param email "$email"; then
+                occ user:setting -- "'$user'" settings email "'$email'"
+            fi
+        else
+            # remove if it doesn't exist
+            if ! match_param email ""; then
+                occ user:setting --delete -- "'$user'" settings email
+            fi
+        fi
+    fi
+
+    if ! [ -f "$__object/parameter/keep-password" ]; then
+        # Check state of the password
+        # explorer handles missing passwords already
+        if [ "$(cat "$__object/explorer/password")" = "mismatched" ]; then
+            cat <<SHELL
+su -s /bin/sh -l "$www_user" -- -e <<'SU'
+cd '$cloud'
+export OC_PASS='$(cat "$__object/parameter/password")'
+php occ --no-interaction --no-ansi user:resetpassword --password-from-env -- '$user'
+SU
+SHELL
+        fi
+    fi
+
+    if ! [ -f "$__object/parameter/keep-quota" ]; then
+        # Handle the qouta
+        # the parameter is always set cause of the default value
+        quota="$(cat "$__object/parameter/quota")"
+        if ! match_param quota_param "$quota"; then
+            occ user:setting -- "'$user'" files quota "'$quota'"
+        fi
+    fi
+
+    if ! [ -f "$__object/parameter/keep-groups" ]; then
+        # Handle the user groups
+        # extract all groups set by remote
+        mkdir -p "$__object/files"
+        # check the spaces before the value to match all sub-categories
+        awk '/^  -/{start=0} start{print $2} $0 == "  - groups:"{start=1}' \
+            "$__object/explorer/user" > "$__object/files/explorer_groups"
+
+        # Add/Remove groups not set via the parameter
+        if [ -s "$__object/parameter/group" ]; then
+            # Get all groups to remove
+            grep -Fxv -f "$__object/parameter/group" \
+                "$__object/files/explorer_groups" > "$__object/files/group.del" || true
+            # Get all groups to add
+            grep -Fxv -f "$__object/files/explorer_groups" \
+                "$__object/parameter/group" > "$__object/files/group.add" || true
+
+        # No user groups at all if nothing wanted by the user
+        else
+            # remove all groups to stay inline with the user parameter
+            cp "$__object/files/explorer_groups" "$__object/files/group.del"
+        fi
+
+        # Remove all groups not exist anymore
+        if [ -s "$__object/files/group.del" ]; then
+            while read -r GROUP; do
+                occ group:removeuser "'$GROUP'" "'$user'"
+            done < "$__object/files/group.del"
+        fi
+
+        # Add all existing groups
+        if [ -s "$__object/files/group.add" ]; then
+            while read -r GROUP; do
+                occ group:adduser "'$GROUP'" "'$user'"
+            done < "$__object/files/group.add"
+        fi
+    fi
+
+
+    # These parameters are only set if they exist
+    # ...
+fi

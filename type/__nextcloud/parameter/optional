@@ -1,0 +1,12 @@
+mode
+user
+group
+database-type
+database-host
+database-name
+database-user
+database-password
+database-prefix
+admin-user
+admin-email
+data-directory
