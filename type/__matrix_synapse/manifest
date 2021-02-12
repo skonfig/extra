@@ -66,9 +66,9 @@ case "$os" in
 esac
 
 # Required parameters:
-SERVER_NAME=$(cat "$__object/parameter/server_name")
+SERVER_NAME=$(cat "$__object/parameter/server-name")
 export SERVER_NAME
-BASE_URL=$(cat "$__object/parameter/base_url")
+BASE_URL=$(cat "$__object/parameter/base-url")
 export BASE_URL
 
 export DATA_DIR=$synapse_data_dir
@@ -77,158 +77,158 @@ export PIDFILE='/var/run/matrix/homeserver.pid'
 export LOG_CONFIG_PATH="$synapse_conf_dir/log.yaml"
 export SIGNING_KEY_PATH="$synapse_conf_dir/signin.key"
 
-DATABASE_ENGINE=$(cat "$__object/parameter/database_engine")
+DATABASE_ENGINE=$(cat "$__object/parameter/database-engine")
 export DATABASE_ENGINE
-DATABASE_NAME=$(cat "$__object/parameter/database_name")
+DATABASE_NAME=$(cat "$__object/parameter/database-name")
 export DATABASE_NAME
 
 # Optional parameters:
-DATABASE_HOST=$(cat "$__object/parameter/database_host")
+DATABASE_HOST=$(cat "$__object/parameter/database-host")
 export DATABASE_HOST
-DATABASE_USER=$(cat "$__object/parameter/database_user")
+DATABASE_USER=$(cat "$__object/parameter/database-user")
 export DATABASE_USER
-DATABASE_PASSWORD=$(cat "$__object/parameter/database_password")
+DATABASE_PASSWORD=$(cat "$__object/parameter/database-password")
 export DATABASE_PASSWORD
 
-GLOBAL_CACHE_FACTOR=$(cat "$__object/parameter/global_cache_factor")
+GLOBAL_CACHE_FACTOR=$(cat "$__object/parameter/global-cache-factor")
 export GLOBAL_CACHE_FACTOR
-EVENT_CACHE_SIZE=$(cat "$__object/parameter/event_cache_size")
+EVENT_CACHE_SIZE=$(cat "$__object/parameter/event-cache-size")
 export EVENT_CACHE_SIZE
 
-LDAP_FILTER=$(cat "$__object/parameter/ldap_filter")
+LDAP_FILTER=$(cat "$__object/parameter/ldap-filter")
 export LDAP_FILTER
-LDAP_UID_ATTRIBUTE=$(cat "$__object/parameter/ldap_uid_attribute")
+LDAP_UID_ATTRIBUTE=$(cat "$__object/parameter/ldap-uid-attribute")
 export LDAP_UID_ATTRIBUTE
-LDAP_MAIL_ATTRIBUTE=$(cat "$__object/parameter/ldap_mail_attribute")
+LDAP_MAIL_ATTRIBUTE=$(cat "$__object/parameter/ldap-mail-attribute")
 export LDAP_MAIL_ATTRIBUTE
-LDAP_NAME_ATTRIBUTE=$(cat "$__object/parameter/ldap_name_attribute")
+LDAP_NAME_ATTRIBUTE=$(cat "$__object/parameter/ldap-name-attribute")
 export LDAP_NAME_ATTRIBUTE
-LDAP_URI=$(cat "$__object/parameter/ldap_uri")
+LDAP_URI=$(cat "$__object/parameter/ldap-uri")
 export LDAP_URI
-LDAP_BASE_DN=$(cat "$__object/parameter/ldap_base_dn")
+LDAP_BASE_DN=$(cat "$__object/parameter/ldap-base-dn")
 export LDAP_BASE_DN
-LDAP_BIND_DN=$(cat "$__object/parameter/ldap_bind_dn")
+LDAP_BIND_DN=$(cat "$__object/parameter/ldap-bind-dn")
 export LDAP_BIND_DN
-LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap_bind_password")
+LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap-bind-password")
 export LDAP_BIND_PASSWORD
 
-TURN_USER_LIFETIME=$(cat "$__object/parameter/turn_user_lifetime")
+TURN_USER_LIFETIME=$(cat "$__object/parameter/turn-user-lifetime")
 export TURN_USER_LIFETIME
-if [ -f "$__object/parameter/turn_shared_secret" ]; then
-    TURN_SHARED_SECRET=$(cat "$__object/parameter/turn_shared_secret")
+if [ -f "$__object/parameter/turn-shared-secret" ]; then
+    TURN_SHARED_SECRET=$(cat "$__object/parameter/turn-shared-secret")
     export TURN_SHARED_SECRET
 fi
-if [ -f "$__object/parameter/turn_uri" ]; then
-    uris=$(tr "\n" "," < "$__object/parameter/turn_uri" | sed 's/,$//')
+if [ -f "$__object/parameter/turn-uri" ]; then
+    uris=$(tr "\n" "," < "$__object/parameter/turn-uri" | sed 's/,$//')
     export TURN_URIS="[$uris]"
 fi
 
-if [ -f "$__object/parameter/registration_allows_email_pattern" ]; then
-    RESGISTRATION_ALLOWS_EMAIL_PATTERN=$(cat "$__object/parameter/registration_allows_email_pattern")
+if [ -f "$__object/parameter/registration-allows-email-pattern" ]; then
+    RESGISTRATION_ALLOWS_EMAIL_PATTERN=$(cat "$__object/parameter/registration-allows-email-pattern")
     export RESGISTRATION_ALLOWS_EMAIL_PATTERN
 fi
 
-if [ -f "$__object/parameter/auto_join_room" ]; then
-    AUTO_JOIN_ROOMS="$(cat "$__object/parameter/auto_join_room")"
+if [ -f "$__object/parameter/auto-join-room" ]; then
+    AUTO_JOIN_ROOMS="$(cat "$__object/parameter/auto-join-room")"
     export AUTO_JOIN_ROOMS
 fi
 
-if [ -f "$__object/parameter/app_service_config_file" ]; then
-    APP_SERVICE_CONFIG_FILES=$(cat "$__object/parameter/app_service_config_file")
+if [ -f "$__object/parameter/app-service-config-file" ]; then
+    APP_SERVICE_CONFIG_FILES=$(cat "$__object/parameter/app-service-config-file")
     export APP_SERVICE_CONFIG_FILES
 fi
 
-MAX_UPLOAD_SIZE=$(cat "$__object/parameter/max_upload_size")
+MAX_UPLOAD_SIZE=$(cat "$__object/parameter/max-upload-size")
 export MAX_UPLOAD_SIZE
-RIOT_BASE_URL=$(cat "$__object/parameter/riot_base_url")
+RIOT_BASE_URL=$(cat "$__object/parameter/riot-base-url")
 export RIOT_BASE_URL
 
-SMTP_HOST=$(cat "$__object/parameter/smtp_host")
+SMTP_HOST=$(cat "$__object/parameter/smtp-host")
 export SMTP_HOST
-SMTP_PORT=$(cat "$__object/parameter/smtp_port")
+SMTP_PORT=$(cat "$__object/parameter/smtp-port")
 export SMTP_PORT
-SMTP_USER=$(cat "$__object/parameter/smtp_user")
+SMTP_USER=$(cat "$__object/parameter/smtp-user")
 export SMTP_USER
-SMTP_PASS=$(cat "$__object/parameter/smtp_pass")
+SMTP_PASS=$(cat "$__object/parameter/smtp-pass")
 export SMTP_PASS
 
-RC_MESSAGE_PER_SECOND=$(cat "$__object/parameter/rc_message_per_second")
+RC_MESSAGE_PER_SECOND=$(cat "$__object/parameter/rc-message-per-second")
 export RC_MESSAGE_PER_SECOND
 RC_MESSAGE_BURST=$(cat "$__object/parameter/rc_message_burst")
 export RC_MESSAGE_BURST
-RC_LOGIN_PER_SECOND=$(cat "$__object/parameter/rc_login_per_second")
+RC_LOGIN_PER_SECOND=$(cat "$__object/parameter/rc-login-per-second")
 export RC_LOGIN_PER_SECOND
-RC_LOGIN_BURST=$(cat "$__object/parameter/rc_login_burst")
+RC_LOGIN_BURST=$(cat "$__object/parameter/rc-login-burst")
 export RC_LOGIN_BURST
 
-if [ -f "$__object/parameter/extra_setting" ]; then
-    EXTRA_SETTINGS=$(cat "$__object/parameter/extra_setting")
+if [ -f "$__object/parameter/extra-setting" ]; then
+    EXTRA_SETTINGS=$(cat "$__object/parameter/extra-setting")
     export EXTRA_SETTINGS
 fi
 
 # Boolean parameters:
-if [ -f "$__object/parameter/report_stats" ]; then
+if [ -f "$__object/parameter/report-stats" ]; then
     export REPORT_STATS='true'
 else
     export REPORT_STATS='false'
 fi
-if [ -f "$__object/parameter/allow_registration" ]; then
+if [ -f "$__object/parameter/allow-registration" ]; then
     export ALLOW_REGISTRATION='true'
 else
     export ALLOW_REGISTRATION='false'
 fi
-if [ -f "$__object/parameter/enable_ldap_auth" ]; then
+if [ -f "$__object/parameter/enable-ldap-auth" ]; then
     export ENABLE_LDAP_AUTH='true'
 else
     export ENABLE_LDAP_AUTH='false'
 fi
-if [ -f "$__object/parameter/ldap_search_mode" ]; then
+if [ -f "$__object/parameter/ldap-search-mode" ]; then
     export LDAP_SEARCH_MODE=1
 fi
-if [ -f "$__object/parameter/expose_metrics" ]; then
+if [ -f "$__object/parameter/expose-metrics" ]; then
     export EXPOSE_METRICS='true'
 else
     export EXPOSE_METRICS='false'
 fi
-if [ -f "$__object/parameter/enable_notifications" ]; then
+if [ -f "$__object/parameter/enable-notifications" ]; then
     export ENABLE_NOTIFICATIONS='true'
 else
     export ENABLE_NOTIFICATIONS='false'
 fi
-if [ -f "$__object/parameter/enable_notifications_by_default" ]; then
+if [ -f "$__object/parameter/enable_notifications-by-default" ]; then
     export ENABLE_NOTIFICATIONS_BY_DEFAULT='true'
 else
     export ENABLE_NOTIFICATIONS_BY_DEFAULT='false'
 fi
-if [ -f "$__object/parameter/smtp_requires_tls" ]; then
+if [ -f "$__object/parameter/smtp-requires-tls" ]; then
     export SMTP_TLS='true'
 else
     export SMTP_TLS='false'
 fi
-if [ -f "$__object/parameter/disable_federation" ]; then
+if [ -f "$__object/parameter/disable-federation" ]; then
     export DISABLE_FEDERATION='true'
 else
     export DISABLE_FEDERATION='false'
 fi
-if [ -f "$__object/parameter/allow_guest_access" ]; then
+if [ -f "$__object/parameter/allow-guest-access" ]; then
     export ALLOW_GUEST_ACCESS='true'
 else
     export ALLOW_GUEST_ACCESS='false'
 fi
-if [ -f "$__object/parameter/registration_requires_email" ]; then
+if [ -f "$__object/parameter/registration-requires-email" ]; then
     export REGISTRATION_REQUIRES_EMAIL=1
 fi
-if [ -f "$__object/parameter/allow_public_rooms_over_federation" ]; then
+if [ -f "$__object/parameter/allow-public-rooms-over-federation" ]; then
     export ALLOW_PUBLIC_ROOMS_OVER_FEDERATION='true'
 else
     export ALLOW_PUBLIC_ROOMS_OVER_FEDERATION='false'
 fi
-if [ -f "$__object/parameter/allow_public_rooms_without_auth" ]; then
+if [ -f "$__object/parameter/allow-public-rooms-without-auth" ]; then
     export ALLOW_PUBLIC_ROOMS_WITHOUT_AUTH='true'
 else
     export ALLOW_PUBLIC_ROOMS_WITHOUT_AUTH='false'
 fi
-if [ -f "$__object/parameter/enable_server_notices" ]; then
+if [ -f "$__object/parameter/enable-server-notices" ]; then
     export ENABLE_SERVER_NOTICES=1
 fi
 
