@@ -15,11 +15,15 @@ max-upload-size
 smtp-host
 smtp-port
 smtp-user
-smtp-pass
-riot-base-url
+smtp-password
+web-client-url
 rc-message-per-second
 rc-message-burst
 rc-login-per-second
 rc-login-burst
 global-cache-factor
 event-cache-size
+remote-room-complexity-treshold
+room-encryption-policy
+notification-from
+message-max-lifetime
