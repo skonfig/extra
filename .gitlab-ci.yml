@@ -17,7 +17,7 @@ manpages:
 docs:
     stage: doc
     only:
-      - master
+      - master@ungleich-public/cdist-contrib
     before_script:
       - eval $(ssh-agent -s)
       - echo "$CD_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
