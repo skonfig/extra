@@ -1,9 +1,8 @@
-allow-registration
+enable-registrations
 enable-ldap-auth
 report-stats
 expose-metrics
 enable-notifications
-enable-notifications-by-default
 smtp-use-starttls
 disable-federation
 registration-requires-email

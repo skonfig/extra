@@ -16,17 +16,16 @@ REQUIRED PARAMETERS
 -------------------
 server-name
   Name of your homeserver (e.g. ungleich.ch) used as part of your MXIDs. This
-  value cannot be changed without meddling with the database once the server is
-  being used.
+  value cannot be changed later on.
 
 base-url
-  Public URL of your homeserver (e.g. http://matrix.ungleich.ch).
+  Public URL of your homeserver (e.g. `<http://matrix.ungleich.ch>`_).
 
 database-engine
-  'sqlite3' or 'postgresql'
+  'sqlite3' or 'psycopg2' (= Postgresql).
 
 database-name
-  Path to the database if SQLite3 is used or database name if PostgresSQL is
+  Path to database file if SQLite3 is used or database name if PostgresSQL is
   used.
 
 OPTIONAL PARAMETERS
@@ -64,6 +63,55 @@ ldap-bind-password
 ldap-filter
   LDAP user filter, defaulting to `(objectClass=posixAccount)`.
 
+smtp-host
+  The hostname of the outgoing SMTP server to use. Defaults to 'localhost'.
+
+smtp-port
+  # The port on the mail server for outgoing SMTP. Defaults to 25.
+
+smtp-user
+  Username for authentication to the SMTP server. By
+  default, no authentication is attempted.
+
+smtp-password
+  Password for authentication to the SMTP server. By
+  default, no authentication is attempted.
+
+notification-from
+  From address to use when sending emails. Defaults
+  to "%(app)s <no-reply@$SERVER_NAME>".
+
+message-max-lifetime
+  Default retention policy. If set, Synapse will apply it to rooms that lack
+  the 'm.room.retention' state event. Ignored if
+  enable-message-retention-policy is not set. Defaults to 1y.
+
+web-client-url
+  Custom URL for client links within the email
+  notifications. By default links will be based on
+  "https://matrix.to".
+
+global-cache-factor
+  Controls the global cache factor, which is the default cache factor for all
+  caches if a specific factor for that cache is not otherwise set. Defaults to
+  0.5, which will half the size of all caches.
+
+event-cache-size
+  The number of events to cache in memory. Not affected by
+  caches.global_factor. Defaults to 10K.
+
+remote-room-complexity-threshold
+  The limit above which rooms cannot be joined when
+  limit-remote-room-complexity is set. Room complexity is an arbitrary measure
+  based on factors such as the number of users in the room. The default is 1.0.
+
+room-encrypt-policy
+  Controls whether locally-created rooms should be end-to-end encrypted by
+  default. Possible options are "all" (any locally-created room), "invite"
+  (any room created with the private_chat or trusted_private_chat room
+  creation presets , and "off" (this option will take no effect). Defaults to
+  "off".
+
 turn-uri
   URI to TURN server, can be provided multiple times if there is more than one
   server.
@@ -89,12 +137,6 @@ rc-login-per-second
 rc-login-burst
   Login rate-limiting (burst). Defaults to 3.
 
-branding-auth-header-logo-url
-  A logo that is shown in the header during authentication flows.
-
-branding-auth-footer-links
-  A list of links to show in the authentication page footer: `[{"text": "Link text", "url": "https://link.target"}, {"text": "Other link", ...}]`
-
 registration-allows-email-pattern
     Only allow email addresses matching specified filter. Can be specified multiple times. A pattern must look like `.*@vector\.im`.
 
@@ -109,20 +151,26 @@ extra-setting
 
 BOOLEAN PARAMETERS
 ------------------
-allow-registration
+enable-registrations
   Enables user registration on the homeserver.
 
 enable-ldap-auth
   Enables ldap-backed authentication.
 
-ldap-search-mode
-  Enables 'search' mode for LDAP auth backend.
+ldap-use-starttls
+  Use STARTTLS when connection to the LDAP server.
 
 report-stats
   Whether or not to report anonymized homeserver usage statistics.
 
 expose-metrics
   Expose metrics endpoint for Prometheus.
+
+enable-notifications
+  Enable mail notifications (see smtp-* optinal parameters).
+
+smtp-use-starttls
+  Use STARTTLS when connection to the SMTP server.
 
 disable-federation
   Disable federation to the broader matrix network.
@@ -139,18 +187,50 @@ allow-public-rooms-without-auth
 enable-server-notices
   Enable the server notices room.
 
-global-cache-factor
-  Controls the global cache factor, which is the default cache factor
-  for all caches if a specific factor for that cache is not otherwise
-  set. Defaults to 0.5.
-
-event-cache-size
-  Number of events to cache in memory. Defaults to 10K.
-
 allow-guest-access
   Allows users to register as guests without a password/email/etc, and
-  participate in rooms hosted on this server which have been made accessible to
-  anonymous users.
+  participate in rooms hosted on this server which have been made accessible
+  to anonymous users.
+
+limit-remote-room-complexity
+  When this is enabled, the room "complexity" will be checked before a user joins
+  a new remote room. If it is above the complexity limit (see
+  remote-room-complexity-threshold parameter), the server will disallow
+  joining, or will instantly leave.
+
+disable-presence
+  Disable presence tracking on this homeserver.
+
+user-directory-search-all-users
+  Defines whether to search all users visible to your HS when searching the
+  user directory, rather than limiting to users visible in public rooms.
+  If you set it True, you'll have to rebuild the user_directory search indexes,
+  see
+  `<https://github.com/matrix-org/synapse/blob/master/docs/user_directory.md>`_.
+
+enable-message-retention-policy
+  If this feature is enabled, Synapse will regularly look for and purge events
+  which are older than the room's maximum retention period. Synapse will also
+  filter events received over federation so that events that should have been
+  purged are ignored and not stored again. See message-max-lifetime flag.
+
+PERFORMANCE
+-----------
+
+The Synapse server is not very performant (initial implementation, pretty
+resource hungry, etc.) and will eventually be replaced by Dendrite. The
+following parameters (see above descriptions) will help you with performance
+tuning:
+
+  * global-cache-factor
+  * event-cache-size
+  * disable-presence
+  * limit-remote-room-complexity and remote-room-complexity-threshold
+
+WORKER MODE
+-----------
+
+Not implemented yet.
 
 EXAMPLES
 --------
@@ -162,9 +242,15 @@ EXAMPLES
       --database-engine sqlite3 \
       --database-name /var/lib/matrix-syanpse/homeserver.db
 
+You might also be interested in ungleich's `__ungleich_matrix
+<https://code.ungleich.ch/ungleich-public/cdist-ungleich/-/tree/master/type/__ungleich_matrix>`_
+meta-type.
+
 SEE ALSO
 --------
 - `cdist-type__matrix_element(7) <cdist-type__matrix_element.html>`_
+- `cdist-type__matrix_synapse_admin(7) <cdist-type__matrix_synapse_admin.html>`_
+- `cdist-type__matrix_synapse_worker(7) <cdist-type__matrix_synapse_worker.html>`_
 
 
 AUTHORS
@@ -174,7 +260,7 @@ Timothée Floure <timothee.floure@ungleich.ch>
 
 COPYING
 -------
-Copyright \(C) 2019 Timothée Floure. You can redistribute it
+Copyright \(C) 2019-2021 Timothée Floure. You can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation, either version 3 of the
 License, or (at your option) any later version.

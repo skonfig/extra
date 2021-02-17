@@ -2289,9 +2289,13 @@ email:
   #
   # (This setting used to be called riot_base_url; the old name is still
   # supported for backwards-compatibility but is now deprecated.)
-  #
-  client_base_url: "${WEB_CLIENT_URL:?}"
+EOF
 
+if [ -n "$WEB_CLIENT_URL" ]; then
+	echo "  client_base_url: \"$WEB_CLIENT_URL\""
+fi
+
+cat << EOF
   # Configure the time that a validation email will expire after sending.
   # Defaults to 1h.
   #
