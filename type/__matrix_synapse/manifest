@@ -167,7 +167,7 @@ if [ -f "$__object/parameter/notification-from" ]; then
 	NOTIFICATION_FROM=$(cat "$__object/parameter/notification-from")
 	export NOTIFICATION_FROM
 else
-	export NOTIFICATION_FROM="Matrix <no-reply@$SERVER_NAME>"
+	export NOTIFICATION_FROM="%(app)s <no-reply@$SERVER_NAME>"
 fi
 
 # Registrations and users.
@@ -243,14 +243,22 @@ fi
 export MAIN_LISTENER_PORT=8008
 export ENABLE_MEDIA_REPO='true'
 export SEND_FEDERATION_FROM_MAIN_PROCESS='true'
-export RUN_BACKGROUND_TASKS_ON=
-export ENABLE_REPLICATION=
-export ENABLE_REDIS_SUPPORT='false'
 MAIN_LISTENER_RESOURCES="[federation,client]"
 if [ "$EXPOSE_METRICS" = "true" ]; then
 	MAIN_LISTENER_RESOURCES="$(echo "$MAIN_LISTENER_RESOURCES" | tr -d ']'),metrics]"
 fi
 export MAIN_LISTENER_RESOURCES
+
+ENABLE_REPLICATION=
+ENABLE_REDIS_SUPPORT='false'
+WORKER_REPLICATION_SECRET=$(cat "$__object/parameter/worker-replication-secret")
+BACKGROUND_TASKS_WORKER=$(cat "$__object/parameter/background-tasks-worker")
+if [ -f "$__object/parameter/worker-mode" ]; then
+	ENABLE_REPLICATION=1
+	ENABLE_REDIS_SUPPORT='true'
+fi
+export ENABLE_REPLICATION ENABLE_REDIS_SUPPORT WORKER_REPLICATION_SECRET \
+	BACKGROUND_TASKS_WORKER
 
 # Error out on invalid parameter combination.
 case "$DATABASE_ENGINE" in

@@ -15,3 +15,4 @@ disable-presence
 ldap-use-starttls
 user-directory-search-all-users
 enable-message-retention-policy
+worker-mode

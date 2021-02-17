@@ -146,6 +146,15 @@ auto-join-room
 app-service-config-file
   Path (on remote) of an application service configuration file to load. Can be specified multiple times.
 
+worker-replication-secret
+  A shared secret used by the replication APIs to authenticate HTTP requests
+  from workers. Ignored if worker-mode is not set. By default this is unused and
+  traffic is not authenticated.
+
+background-task-worker
+  The worker that is used to run background tasks (e.g. cleaning up expired
+  data). If not provided this defaults to the main process.
+
 extra-setting
   Arbitrary string to be added to the configuration file. Can be specified multiple times.
 
@@ -214,6 +223,13 @@ enable-message-retention-policy
   filter events received over federation so that events that should have been
   purged are ignored and not stored again. See message-max-lifetime flag.
 
+worker-mode
+  For small instances it recommended to run Synapse in the default monolith
+  mode. For larger instances where performance is a concern it can be helpful
+  to split out functionality into multiple separate python processes. These
+  processes are called 'workers'. Please read the  WORKER MODE section of this
+  manpage before enabling, as extra work and considerations are required.
+
 PERFORMANCE
 -----------
 
@@ -230,7 +246,29 @@ tuning:
 WORKER MODE
 -----------
 
-Not implemented yet.
+Worker mode allows to move some processing out of the main synapse process for
+horizontal scaling. You are expected to use the
+`cdist-type__matrix_synapse_worker(7)
+<cdist-type__matrix_synapse_worker.html>`_ type to set up workers when the
+worker-mode flag is set.
+
+Worker mode depend on the following components:
+
+  * A working `redis <https://redis.io/>`_ server
+  * The hiredis python package (`python3-hiredis
+    <https://packages.debian.org/buster/python3-hiredis>`_ on debian, not
+    packaged in alpine as of 2021-02-17).
+  * The txredisapi python package, which is not packaged on debian nor alpine
+    as of 2021-02-17.
+
+The current way to install the above two python packages (if not packaged in
+your distribution) is sadly to use pip (see `cdist-type__python_pip(7)
+<cdist-type__python_pip.html>`_ core cdist type).
+
+It is also recommended to first take a look at:
+
+  - `upstream's high-level overview on workers (matrix.org blog post) <https://matrix.org/blog/2020/11/03/how-we-fixed-synapses-scalability>`_
+  - `upstream's documentation on workers <https://github.com/matrix-org/synapse/blob/develop/docs/workers.md>`_
 
 EXAMPLES
 --------

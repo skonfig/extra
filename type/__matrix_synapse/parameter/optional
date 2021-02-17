@@ -27,3 +27,5 @@ remote-room-complexity-treshold
 room-encryption-policy
 notification-from
 message-max-lifetime
+worker-replication-secret
+background-tasks-worker

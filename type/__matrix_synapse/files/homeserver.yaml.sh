@@ -2825,8 +2825,8 @@ cat << EOF
 #
 EOF
 
-if [ -n "$RUN_BACKGROUND_TASKS_ON" ]; then
-	echo "run_background_tasks_on: ${RUN_BACKGROUND_TASKS_ON:?}"
+if [ -n "$BACKGROUND_TASKS_WORKER" ]; then
+	echo "run_background_tasks_on: ${BACKGROUND_TASKS_WORKER:?}"
 fi
 
 cat << EOF
