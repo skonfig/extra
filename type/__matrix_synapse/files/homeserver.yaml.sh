@@ -1,6 +1,7 @@
 #!/bin/sh
-
 # Note: template originally generated from synapse's 1.26.0 sample config.
+
+set -e
 
 cat << EOF
 ###############################################################
@@ -49,8 +50,13 @@ pid_file: "${PIDFILE:?}"
 # under the 'listeners' configuration, however this is a security risk:
 # https://github.com/matrix-org/synapse#security-note
 #
-web_client_location: "${WEB_CLIENT_URL:?}"
+EOF
 
+if [ -n "$WEB_CLIENT_URL" ]; then
+	echo "web_client_location: \"$WEB_CLIENT_URL\""
+fi
+
+cat << EOF
 # The public-facing base URL that clients use to access this Homeserver (not
 # including _matrix/...). This is the same URL a user might enter into the
 # 'Custom Homeserver URL' field on their client. If you use Synapse with a
@@ -690,6 +696,7 @@ if [ -n "$DISABLE_FEDERATION" ]; then
 fi
 
 cat << EOF
+
 # Report prometheus metrics on the age of PDUs being sent to and received from
 # the following domains. This can be used to give an idea of "delay" on inbound
 # and outbound federation, though be aware that any delay can be due to problems

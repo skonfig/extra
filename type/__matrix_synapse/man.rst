@@ -28,6 +28,12 @@ database-name
   Path to database file if SQLite3 is used or database name if PostgresSQL is
   used.
 
+tls-cert
+  Path to PEM-encoded X509 TLS certificate.
+
+tls-private-key
+  Path to PEM-encoded TLS private key.
+
 OPTIONAL PARAMETERS
 -------------------
 database-host

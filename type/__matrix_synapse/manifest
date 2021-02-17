@@ -118,6 +118,11 @@ if [ -f "$__object/parameter/enable-server-notices" ]; then
     export ENABLE_SERVER_NOTICES=1
 fi
 
+# TLS.
+TLS_CERTIFICATE_PATH=$(cat "$__object/parameter/tls-cert")
+TLS_PRIVATE_KEY_PATH=$(cat "$__object/parameter/tls-private-key")
+export TLS_PRIVATE_KEY_PATH TLS_CERTIFICATE_PATH
+
 # Performance flags.
 GLOBAL_CACHE_FACTOR=$(cat "$__object/parameter/global-cache-factor")
 EVENT_CACHE_SIZE=$(cat "$__object/parameter/event-cache-size")
@@ -204,6 +209,10 @@ export DISABLE_FEDERATION ALLOW_PUBLIC_ROOMS_OVER_FEDERATION \
 ENABLE_MESSAGE_RETENTION_POLICY=$(get_boolean_for 'enable-message-retention-policy')
 MESSAGE_RETENTION_POLICY_MAX_LIFETIME=$(cat "$__object/parameter/message-max-lifetime")
 export ENABLE_MESSAGE_RETENTION_POLICY MESSAGE_RETENTION_POLICY_MAX_LIFETIME
+
+# Previews.
+ENABLE_URL_PREVIEW=$(get_boolean_for 'enable-url-preview')
+export ENABLE_URL_PREVIEW
 
 # Rate-limiting
 RC_MESSAGE_PER_SECOND=$(cat "$__object/parameter/rc-message-per-second")

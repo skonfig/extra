@@ -2,3 +2,5 @@ server-name
 base-url
 database-engine
 database-name
+tls-cert
+tls-private-key
