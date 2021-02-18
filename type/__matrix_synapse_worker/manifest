@@ -8,7 +8,7 @@ os=$(cat "$__global/explorer/os")
 
 case "$os" in
 	debian)
-		synapse_conf_dir='/etc/synapse'
+		synapse_conf_dir='/etc/matrix-synapse'
 		synapse_workers_conf_dir="$synapse_conf_dir/workers"
 
 		# Synapse log configuration on debian - default value of config-log
@@ -53,14 +53,15 @@ require="__directory/$synapse_workers_conf_dir" \
 	--source "$__object/files/worker.yaml" \
 	--mode 0644
 
-__file "/etc/systemd/systemd/matrix-synapse-worker@.service" \
+__file "/etc/systemd/system/matrix-synapse-worker@.service" \
 	--source "$__type/files/matrix-synapse-worker@.service" \
 	--mode 0644 \
 	--state $systemd_worker_service_override
 
 # Start service, enable at boot.
-require="__file/$synapse_workers_conf_dir/$name.yaml \
-	__file/etc/systemd/systemd/matrix-synapse-worker@.service"  \
-	__service "$systemd_worker_service" --action start
-require="__service/$systemd_worker_service" \
+service_req=
+if [ "$systemd_worker_service_override" ]; then
+	service_req="__file/etc/systemd/system/matrix-synapse-worker@.service"
+fi
+require="__file/$synapse_workers_conf_dir/$name.yaml $service_req" \
 	__start_on_boot "$systemd_worker_service"

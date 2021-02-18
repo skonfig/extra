@@ -6,11 +6,11 @@ worker_name: "${WORKER_NAME:?}"
 
 # The replication listener on the main synapse process.
 worker_replication_host: "${WORKER_REPLICATION_HOST:?}"
-worker_replication_http_port: "${WORKER_REPLICATION_PORT:?}"
+worker_replication_http_port: ${WORKER_REPLICATION_PORT:?}
 
 worker_listeners:
  - type: http
-   port: "${WORKER_PORT:?}"
+   port: ${WORKER_PORT:?}
    resources:
      - names:
 EOF
