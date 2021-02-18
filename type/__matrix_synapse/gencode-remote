@@ -6,11 +6,11 @@ init=$(cat "$__global/explorer/init")
 case "$os" in
 	alpine)
 		synapse_conf_dir=/etc/synapse
-		synapse_service=matrix-synapse
+		synapse_service=synapse
 		;;
 	debian)
 		synapse_conf_dir=/etc/matrix-synapse
-		synapse_service=synapse
+		synapse_service=matrix-synapse
 		;;
 	*)
 		echo "Unknown OS $os." >&2
@@ -18,10 +18,10 @@ case "$os" in
 	;;
 esac
 
-if grep -qE "^__file/$synapse_conf_dir" "${__messages_in}"; then
+if grep -qE "^__file$synapse_conf_dir" "${__messages_in}"; then
 	case "$init" in
 		systemd)
-			echo "systemctl try-reload-or-restart $synapse_service"
+			echo "systemctl restart $synapse_service"
 			;;
 		initd)
 			echo "service --ifstopped $synapse_service start"

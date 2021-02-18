@@ -525,13 +525,19 @@ retention:
 # full certificate chain including any intermediate certificates (for
 # instance, if using certbot, use \`fullchain.pem\` as your certificate,
 # not \`cert.pem\`).
-#
-tls_certificate_path: "${TLS_CERTIFICATE_PATH:?}"
+EOF
+
+if [ -n "$TLS_CERTIFICATE_PATH" ] && [ -n "$TLS_PRIVATE_KEY_PATH" ]; then
+	cat << EOF
+tls_certificate_path: "$TLS_CERTIFICATE_PATH}"
 
 # PEM-encoded private key for TLS
 #
-tls_private_key_path: "${TLS_PRIVATE_KEY_PATH:?}"
+tls_private_key_path: "$TLS_PRIVATE_KEY_PATH"
+EOF
+fi
 
+cat << EOF
 # Whether to verify TLS server certificates for outbound federation requests.
 #
 # Defaults to \`true\`. To disable certificate verification, uncomment the
@@ -2495,7 +2501,7 @@ push:
   # The default value is "true" to include message details. Uncomment to only
   # include the event ID and room ID in push notification payloads.
   #
-  #include_content: false
+  include_content: true
 
   # When a push notification is received, an unread count is also sent.
   # This number can either be calculated as the number of unread messages
@@ -2538,7 +2544,7 @@ spam_checker:
 # Note that this option will only affect rooms created after it is set. It
 # will also not affect rooms created by other servers.
 #
-encryption_enabled_by_default_for_room_type: "${ROOM_ENCRYPTION_POLICY:?}"j
+encryption_enabled_by_default_for_room_type: "${ROOM_ENCRYPTION_POLICY:?}"
 
 
 # Uncomment to allow non-server-admin users to create groups on this server

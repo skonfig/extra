@@ -29,3 +29,6 @@ notification-from
 message-max-lifetime
 worker-replication-secret
 background-tasks-worker
+tls-cert
+tls-private-key
+registration-shared-secret

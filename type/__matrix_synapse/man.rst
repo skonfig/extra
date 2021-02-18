@@ -28,12 +28,6 @@ database-name
   Path to database file if SQLite3 is used or database name if PostgresSQL is
   used.
 
-tls-cert
-  Path to PEM-encoded X509 TLS certificate.
-
-tls-private-key
-  Path to PEM-encoded TLS private key.
-
 OPTIONAL PARAMETERS
 -------------------
 database-host
@@ -68,6 +62,14 @@ ldap-bind-password
 
 ldap-filter
   LDAP user filter, defaulting to `(objectClass=posixAccount)`.
+
+tls-cert
+  Path to PEM-encoded X509 TLS certificate. Not needed if TLS termination is
+  handled by a reverse Proxy such as NGINX.
+
+tls-private-key
+  Path to PEM-encoded TLS private key. Not needed if TLS termination is
+  handled by a reverse Proxy such as NGINX.
 
 smtp-host
   The hostname of the outgoing SMTP server to use. Defaults to 'localhost'.

@@ -119,9 +119,14 @@ if [ -f "$__object/parameter/enable-server-notices" ]; then
 fi
 
 # TLS.
-TLS_CERTIFICATE_PATH=$(cat "$__object/parameter/tls-cert")
-TLS_PRIVATE_KEY_PATH=$(cat "$__object/parameter/tls-private-key")
-export TLS_PRIVATE_KEY_PATH TLS_CERTIFICATE_PATH
+if [ -f "$__object/parameter/tls-cert" ]; then
+	TLS_CERTIFICATE_PATH=$(cat "$__object/parameter/tls-cert")
+	export TLS_CERTIFICATE_PATH
+fi
+if [ -f "$__object/parameter/tls-private-key" ]; then
+	TLS_PRIVATE_KEY_PATH=$(cat "$__object/parameter/tls-private-key")
+	export TLS_PRIVATE_KEY_PATH
+fi
 
 # Performance flags.
 GLOBAL_CACHE_FACTOR=$(cat "$__object/parameter/global-cache-factor")
@@ -144,7 +149,11 @@ export DATABASE_ENGINE DATABASE_NAME DATABASE_HOST DATABASE_USER \
 	DATABASE_PASSWORD
 
 # LDAP-based authentication.
-ENABLE_LDAP_AUTH=$(get_boolean_for 'enable-ldap-auth')
+if [ -f "$__object/enable-ldap-auth" ]; then
+	ENABLE_LDAP_AUTH=$(get_boolean_for 'enable-ldap-auth')
+	export ENABLE_LDAP_AUTH
+fi
+
 LDAP_FILTER=$(cat "$__object/parameter/ldap-filter")
 LDAP_UID_ATTRIBUTE=$(cat "$__object/parameter/ldap-uid-attribute")
 LDAP_MAIL_ATTRIBUTE=$(cat "$__object/parameter/ldap-mail-attribute")
@@ -154,9 +163,8 @@ LDAP_BASE_DN=$(cat "$__object/parameter/ldap-base-dn")
 LDAP_BIND_DN=$(cat "$__object/parameter/ldap-bind-dn")
 LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap-bind-password")
 LDAP_USE_STARTTLS=$(get_boolean_for 'ldap-use-starttls')
-export ENABLE_LDAP_AUTH LDAP_FILTER LDAP_UID_ATTRIBUTE LDAP_MAIL_ATTRIBUTE \
-	LDAP_NAME_ATTRIBUTE LDAP_URI LDAP_BASE_DN LDAP_BIND_DN LDAP_BIND_PASSWORD \
-	LDAP_USE_STARTTLS
+export LDAP_FILTER LDAP_UID_ATTRIBUTE LDAP_MAIL_ATTRIBUTE LDAP_NAME_ATTRIBUTE \
+	LDAP_URI LDAP_BASE_DN LDAP_BIND_DN LDAP_BIND_PASSWORD LDAP_USE_STARTTLS
 
 # Outgoing emails (= notifications).
 ENABLE_NOTIFICATIONS=$(get_boolean_for 'enable-notifications')
@@ -181,6 +189,11 @@ ENABLE_REGISTRATIONS=$(get_boolean_for 'enable-registrations')
 USER_DIRECTORY_SEARCH_ALL_USERS=$(get_boolean_for 'user-directory-search-all-users')
 export ALLOW_GUEST_ACCESS ENABLE_REGISTRATIONS USER_DIRECTORY_SEARCH_ALL_USERS
 
+if [ -f "$__object/parameter/registration-shared-token" ]; then
+	REGISTRATION_SHARED_SECRET=$(cat "$__object/parameter/registration-shared-secret")
+	export REGISTRATION_SHARED_SECRET
+fi
+
 if [ -f "$__object/parameter/registration-requires-email" ]; then
     export REGISTRATION_REQUIRES_EMAIL=1
 fi
@@ -196,14 +209,16 @@ if [ -f "$__object/parameter/registration-allows-email-pattern" ]; then
 fi
 
 # Federation.
-DISABLE_FEDERATION=$(get_boolean_for 'disable-federation')
 ALLOW_PUBLIC_ROOMS_OVER_FEDERATION=$(get_boolean_for 'allow-public-room-over-federation')
 ALLOW_PUBLIC_ROOMS_WITHOUT_AUTH=$(get_boolean_for 'allow-public-rooms-without-auth')
 LIMIT_REMOTE_ROOM_COMPLEXITY=$(get_boolean_for 'limit-remote-room-complexity')
 REMOTE_ROOM_COMPLEXITY_TRESHOLD=$(cat "$__object/parameter/remote-room-complexity-treshold")
-export DISABLE_FEDERATION ALLOW_PUBLIC_ROOMS_OVER_FEDERATION \
-	ALLOW_PUBLIC_ROOMS_WITHOUT_AUTH LIMIT_REMOTE_ROOM_COMPLEXITY \
-	REMOTE_ROOM_COMPLEXITY_TRESHOLD
+export ALLOW_PUBLIC_ROOMS_OVER_FEDERATION ALLOW_PUBLIC_ROOMS_WITHOUT_AUTH \
+	LIMIT_REMOTE_ROOM_COMPLEXITY REMOTE_ROOM_COMPLEXITY_TRESHOLD
+
+if [ -f "$__object/parameter/disable-federation" ]; then
+	export DISABLE_FEDERATION=1
+fi
 
 # Message retention.
 ENABLE_MESSAGE_RETENTION_POLICY=$(get_boolean_for 'enable-message-retention-policy')
@@ -290,7 +305,7 @@ esac
 # backports situation.
 synapse_req=
 if [ -n "$apt_target_release" ]; then
-	__package_apt "$synapse_pkg" \
+	require="__apt_source/debian-backports" __package_apt "$synapse_pkg" \
 		--target-release "$apt_target_release"
 	synapse_req="__package_apt/$synapse_pkg"
 else
@@ -298,7 +313,7 @@ else
 	synapse_req="__package/$synapse_pkg"
 fi
 
-if [ "$ENABLE_LDAP_AUTH" = "true" ]; then
+if [ -n "$ENABLE_LDAP_AUTH" ]; then
 	if [ -n "$apt_target_release" ]; then
 		require="__package_apt/$synapse_pkg" __package_apt "$ldap_auth_provider_pkg" \
 			--target-release "$apt_target_release"
