@@ -15,7 +15,7 @@ NotifyAccess=main
 User=matrix-synapse
 WorkingDirectory=/var/lib/matrix-synapse
 EnvironmentFile=/etc/default/matrix-synapse
-ExecStart=/usr/bin/python3 -m synapse.app.generic_worker --config-path=/etc/matrix-synapse/homeserver.yaml --config-path=/etc/matrix-synapse/conf.d/ --config-path=/etc/matrix-synapse/workers/
+ExecStart=/usr/bin/python3 -m synapse.app.generic_worker --config-path=/etc/matrix-synapse/homeserver.yaml --config-path=/etc/matrix-synapse/conf.d/ --config-path=/etc/matrix-synapse/workers/%i.yaml
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 RestartSec=3
