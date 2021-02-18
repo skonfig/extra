@@ -49,12 +49,13 @@ in
 				;;
 		esac
 
-		__package libvirt-daemon-system
-		__package qemu-utils
-		__package libvirt-clients
-
 		# NOTE: dnsmasq is required for virtual networks (as DHCP, DNS server)
 		__package dnsmasq
+
+		# NOTE: ebtables is required for some network filtering options
+		__package ebtables
+
+		__package qemu-utils
 
 		# NOTE: We have to install netcat-openbsd because libvirt's developers
 		# are are complete idiots ignoring the fact that there are different
@@ -66,14 +67,23 @@ in
 		__update_alternatives nc --path /bin/nc.openbsd
 		unset CDIST_ORDER_DEPENDENCY
 
+		require='__package/dnsmasq __package/ebtables __package/qemu-utils __update_alternatives/nc' \
+		__package libvirt-daemon-system
+		export require=__package/libvirt-daemon-system
+		require=__package/libvirt-daemon-system \
+		__package libvirt-clients
+
+
 		# cf. https://stackoverflow.com/questions/45125516/possible-values-for-uname-m
 		case ${mach_name}
 		in
 			(aarch64|aarch64_be|armv?l|armv?b)
 				__package qemu-system-arm
+				export require=__package/qemu-system-arm
 				;;
 			(ppc64|ppc|ppc64le|ppcle)
 				__package qemu-system-ppc
+				export require=__package/qemu-system-ppc
 
 				# NOTE: Required to fix this error when creating a new VM in virt-manager:
 				# > qemu-system-ppc64le: -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:b8:50:f0,bus=pci.0,addr=0x1: failed to find romfile "efi-virtio.rom"
@@ -84,12 +94,15 @@ in
 				;;
 			(mips64|mips)
 				__package qemu-system-mips
+				export require=__package/qemu-system-mips
 				;;
 			(sparc64|sparc)
 				__package qemu-system-sparc
+				export require=__package/qemu-system-sparc
 				;;
 			(x86_64|i?86)
 				__package qemu-kvm
+				export require=__package/qemu-kvm
 				;;
 		esac
 
