@@ -11,12 +11,14 @@ worker_replication_http_port: ${WORKER_REPLICATION_PORT:?}
 worker_listeners:
  - type: http
    port: ${WORKER_PORT:?}
+   x_forwarded: true
+   bind_addresses: ['::1', '127.0.0.1']
    resources:
      - names:
 EOF
 
 for resource in ${WORKER_RESOURCES:?}; do
-echo "       - \"$resource\""
+echo "       - $resource"
 done
 
 cat << EOF
