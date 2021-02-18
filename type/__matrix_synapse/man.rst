@@ -163,6 +163,10 @@ background-task-worker
   The worker that is used to run background tasks (e.g. cleaning up expired
   data). If not provided this defaults to the main process.
 
+registration-shared-secret
+  If set, allows registration of standard or admin accounts by anyone who
+  has the shared secret, even if registration is otherwise disabled.
+
 extra-setting
   Arbitrary string to be added to the configuration file. Can be specified multiple times.
 
