@@ -42,7 +42,7 @@ case "$os" in
 				# Enable debian-backports for debian Buster, as the 'stable'
 				# matrix-synapse package is ways too old (< 1.0).
 				apt_target_release=buster-backports
-				__apt_backport
+				__apt_backports
 				;;
 				bullseye|sid)
 					# As of writting (2021-02), the default matrix-synapse of those
@@ -302,7 +302,7 @@ esac
 # backports situation.
 synapse_req=
 if [ -n "$apt_target_release" ]; then
-	require="__apt_backport" __package_apt "$synapse_pkg" \
+	require="__apt_backports" __package_apt "$synapse_pkg" \
 		--target-release "$apt_target_release"
 	synapse_req="__package_apt/$synapse_pkg"
 else
