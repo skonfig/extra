@@ -55,7 +55,9 @@ __package nodejs
 __directory /var/wiki/
 
 # These things are Alpine-dependant.
-__file /etc/init.d/wikijs --source "${__type:?}/files/wikijs-openrc"
+__file /etc/init.d/wikijs \
+	--source "${__type:?}/files/wikijs-openrc" \
+	--mode 0755
 __package nghttp2-dev  # Required for some reason, else a symbol is missing
 
 mkdir -p "${__object:?}/files"
