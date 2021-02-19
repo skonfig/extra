@@ -167,6 +167,10 @@ registration-shared-secret
   If set, allows registration of standard or admin accounts by anyone who
   has the shared secret, even if registration is otherwise disabled.
 
+bind-address
+  Address used to bind the synapse listeners. Can be specified multiple times.
+  Defaults to '::1' and '127.0.0.1'.
+
 extra-setting
   Arbitrary string to be added to the configuration file. Can be specified multiple times.
 

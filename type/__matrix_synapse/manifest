@@ -108,8 +108,9 @@ MAX_UPLOAD_SIZE=$(cat "$__object/parameter/max-upload-size")
 EXPOSE_METRICS=$(get_boolean_for 'expose-metrics')
 WEB_CLIENT_URL=$(cat "$__object/parameter/web-client-url")
 ROOM_ENCRYPTION_POLICY=$(cat "$__object/parameter/room-encryption-policy")
+BIND_ADDRESSES=$(cat "$__object/parameter/bind-address")
 export SERVER_NAME BASE_URL REPORT_STATS MAX_UPLOAD_SIZE EXPOSE_METRICS \
-	WEB_CLIENT_URL ROOM_ENCRYPTION_POLICY
+	WEB_CLIENT_URL ROOM_ENCRYPTION_POLICY BIND_ADDRESSES
 
 if [ -f "$__object/parameter/enable-server-notices" ]; then
     export ENABLE_SERVER_NOTICES=1

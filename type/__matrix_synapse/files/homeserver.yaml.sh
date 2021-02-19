@@ -1,7 +1,18 @@
 #!/bin/sh
-# Note: template originally generated from synapse's 1.26.0 sample config.
+# Note: template originally generated from synapse's 1.26.0 sample config
 
 set -e
+
+generate_bind_addresses () {
+	if [ -n "$BIND_ADDRESSES" ]; then
+		echo "bind_addresses:"
+		for addr in $BIND_ADDRESSES; do
+			echo "    - '$addr'"
+		done
+	else
+		echo "bind_addresses: []"
+	fi
+}
 
 cat << EOF
 ###############################################################
@@ -263,7 +274,7 @@ listeners:
     tls: false
     type: http
     x_forwarded: true
-    bind_addresses: ['::1', '127.0.0.1']
+    $(generate_bind_addresses)
 
     resources:
       - names: ${MAIN_LISTENER_RESOURCES:?}
@@ -273,7 +284,8 @@ EOF
 if [ -n "$ENABLE_REPLICATION" ]; then
 	cat << EOF
   - port: 9093
-    bind_addresses: ['::1', '127.0.0.1']
+    $(generate_bind_addresses)
+
     type: http
     resources:
       - names: [replication]

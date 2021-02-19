@@ -3,3 +3,4 @@ registration-allows-email-pattern
 auto-join-room
 app-service-config-file
 extra-setting
+bind-address

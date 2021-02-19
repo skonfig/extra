@@ -32,7 +32,8 @@ WORKER_NAME=$__object_id
 WORKER_APP=$(cat "$__object/parameter/app")
 WORKER_PORT=$(cat "$__object/parameter/port")
 WORKER_RESOURCES=$(cat "$__object/parameter/resource")
-export WORKER_APP WORKER_NAME WORKER_PORT WORKER_RESOURCES
+WORKER_BIND_ADDRESSES=$(cat "$__object/parameter/bind-address")
+export WORKER_APP WORKER_NAME WORKER_PORT WORKER_RESOURCES WORKER_BIND_ADDRESSES
 
 if [ -f "$__object/parameter/log-config" ]; then
 	WORKER_LOG_CONFIG=$(cat "$__object/parameter/log-config")

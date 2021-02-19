@@ -27,9 +27,6 @@ app
 port
   Port on which this worker will listen.
 
-resource
-  Resources to be served by this worker. Can be specified multiple times.
-
 OPTIONAL PARAMETERS
 -------------------
 replication-host
@@ -42,6 +39,15 @@ replication-port
 log-config
   Path to log configuration. Defaults to synapse's main process log
   configuration.
+
+resource
+  Resources to be served by this worker. Can be specified multiple times.
+  Defaults to 'client' and 'federation'.
+
+bind-address
+  Address used to bind the synapse listeners. Can be specified multiple times.
+  Defaults to '::1' and '127.0.0.1'.
+
 
 EXAMPLES
 --------
