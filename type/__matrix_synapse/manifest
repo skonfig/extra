@@ -147,7 +147,7 @@ export DATABASE_ENGINE DATABASE_NAME DATABASE_HOST DATABASE_USER \
 	DATABASE_PASSWORD
 
 # LDAP-based authentication.
-if [ -f "$__object/enable-ldap-auth" ]; then
+if [ -f "$__object/parameter/enable-ldap-auth" ]; then
 	ENABLE_LDAP_AUTH=$(get_boolean_for 'enable-ldap-auth')
 	export ENABLE_LDAP_AUTH
 fi
