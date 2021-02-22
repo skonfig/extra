@@ -2273,7 +2273,7 @@ email:
   # authentication is attempted.
   #
   smtp_user: "$SMTP_USER"
-  smtp_pass: "$SMTP_PASS"
+  smtp_pass: "$SMTP_PASSWORD"
 
   # Uncomment the following to require TLS transport security for SMTP.
   # By default, Synapse will connect over plain text, and will then switch to
