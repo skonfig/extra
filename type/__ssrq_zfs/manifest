@@ -58,17 +58,15 @@ in
 				;;
 			(sendmail|*)
 				__package bsd-mailx
-				export require=__package/bsd-mailx
+				mail_require=__package/bsd-mailx
 				;;
 		esac
 
 		export CDIST_ORDER_DEPENDENCY=true
-		require=__package_apt/zfsutils-linux \
+		require="__package_apt/zfsutils-linux ${mail_require-}" \
 		__package_apt zfs-zed
 		__start_on_boot zfs-zed
 		unset CDIST_ORDER_DEPENDENCY
-
-		unset require
 		;;
 	(*)
 		: "${__type:?}"  # make shellcheck happy
