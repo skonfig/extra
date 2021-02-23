@@ -76,6 +76,16 @@ in
 		;;
 esac
 
+require='__package_apt/zfs-modules' \
+__block /etc/modprobe.d/zfs.conf:cdist-zfs-tunables \
+	--state "$(test -s "${__object:?}/parameter/tunable" && echo present || echo absent)" \
+	--file /etc/modprobe.d/zfs.conf \
+	--prefix '# cdist:zfs-tunables' \
+	--suffix '#/cdist:zfs-tunables' \
+	--text - <<EOF
+$(sed -e 's/^/options zfs /' "${__object:?}/parameter/tunable")
+EOF
+
 set_zed_rc() {
 	require=__package_apt/zfs-zed \
 	__key_value /etc/zfs/zed.d/zed.rc:"$1" \

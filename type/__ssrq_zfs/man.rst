@@ -20,6 +20,14 @@ OPTIONAL PARAMETERS
 -------------------
 mailto
     The user or email address to which alert mails should be sent to.
+tunable
+    Set a ZFS tunable parameter to the given value.
+    Use this option multiple times to set more than one tunable.
+
+    The value should be a key-value pair separated by a ``=`` (equals sign).
+
+    For a reference of available tunables, cf.
+    `zfs-module-parameters(5) <https://openzfs.github.io/openzfs-docs/man/5/zfs-module-parameters.5.html>`_.
 
 
 BOOLEAN PARAMETERS
