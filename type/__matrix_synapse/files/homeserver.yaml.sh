@@ -392,11 +392,11 @@ limit_remote_rooms:
 
   # the limit above which rooms cannot be joined. The default is 1.0.
   #
-  complexity: ${REMOTE_ROOM_COMPLEXITY_TRESHOLD:?}
+  complexity: ${REMOTE_ROOM_COMPLEXITY_THRESHOLD:?}
 
   # override the error which is returned when the room is too complex.
   #
-  complexity_error: "This room is too complex."
+  complexity_error: "This room is too complex - local complexity policy prevents you from joing."
 
   # allow server admins to join complex rooms. Default is false.
   #

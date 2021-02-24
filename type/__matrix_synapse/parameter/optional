@@ -23,7 +23,7 @@ rc-login-per-second
 rc-login-burst
 global-cache-factor
 event-cache-size
-remote-room-complexity-treshold
+remote-room-complexity-threshold
 room-encryption-policy
 notification-from
 message-max-lifetime

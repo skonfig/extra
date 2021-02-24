@@ -210,9 +210,9 @@ fi
 ALLOW_PUBLIC_ROOMS_OVER_FEDERATION=$(get_boolean_for 'allow-public-room-over-federation')
 ALLOW_PUBLIC_ROOMS_WITHOUT_AUTH=$(get_boolean_for 'allow-public-rooms-without-auth')
 LIMIT_REMOTE_ROOM_COMPLEXITY=$(get_boolean_for 'limit-remote-room-complexity')
-REMOTE_ROOM_COMPLEXITY_TRESHOLD=$(cat "$__object/parameter/remote-room-complexity-treshold")
+REMOTE_ROOM_COMPLEXITY_THRESHOLD=$(cat "$__object/parameter/remote-room-complexity-threshold")
 export ALLOW_PUBLIC_ROOMS_OVER_FEDERATION ALLOW_PUBLIC_ROOMS_WITHOUT_AUTH \
-	LIMIT_REMOTE_ROOM_COMPLEXITY REMOTE_ROOM_COMPLEXITY_TRESHOLD
+	LIMIT_REMOTE_ROOM_COMPLEXITY REMOTE_ROOM_COMPLEXITY_THRESHOLD
 
 if [ -f "$__object/parameter/disable-federation" ]; then
 	export DISABLE_FEDERATION=1
