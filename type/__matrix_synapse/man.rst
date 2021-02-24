@@ -169,6 +169,10 @@ background-tasks-worker
   The worker that is used to run background tasks (e.g. cleaning up expired
   data). If not provided this defaults to the main process.
 
+outbound-federation-worker
+  Worker to be used for sending federation requests. Can be specified multiple
+  times. Disables sending outbound federation requests from the master process.
+
 registration-shared-secret
   If set, allows registration of standard or admin accounts by anyone who
   has the shared secret, even if registration is otherwise disabled.

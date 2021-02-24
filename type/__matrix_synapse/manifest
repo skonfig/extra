@@ -266,10 +266,18 @@ fi
 # Worker-mode configuration.
 export MAIN_LISTENER_PORT=8008
 export ENABLE_MEDIA_REPO='true'
-export SEND_FEDERATION_FROM_MAIN_PROCESS='true'
+if [ -f "$__object/parameter/outbound-federation-worker" ]; then
+	FEDERATION_SENDER_INSTANCES=$(cat "$__object/parameter/outbound-federation-worker")
+	export FEDERATION_SENDER_INSTANCES
+fi
 MAIN_LISTENER_RESOURCES="[federation,client]"
 if [ "$EXPOSE_METRICS" = "true" ]; then
 	MAIN_LISTENER_RESOURCES="$(echo "$MAIN_LISTENER_RESOURCES" | tr -d ']'),metrics]"
+fi
+if [ -n "$FEDERATION_SENDER_INSTANCES" ]; then
+	export SEND_FEDERATION_FROM_MAIN_PROCESS='false'
+else
+	export SEND_FEDERATION_FROM_MAIN_PROCESS='true'
 fi
 export MAIN_LISTENER_RESOURCES
 
