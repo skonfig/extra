@@ -159,7 +159,7 @@ worker-replication-secret
   from workers. Ignored if worker-mode is not set. By default this is unused and
   traffic is not authenticated.
 
-background-task-worker
+background-tasks-worker
   The worker that is used to run background tasks (e.g. cleaning up expired
   data). If not provided this defaults to the main process.
 
