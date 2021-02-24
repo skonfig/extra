@@ -835,6 +835,8 @@ database:
     host: "${DATABASE_HOST:?}"
     user: "${DATABASE_USER:?}"
     password: "$DATABASE_PASSWORD"
+    cp_min: ${DATABASE_CP_MIN:?}
+    cp_min: ${DATABASE_CP_MAX:?}
 EOF
 	;;
 	*)

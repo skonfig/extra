@@ -39,6 +39,12 @@ database-user
 database-password
   Database password, only used with PostgresSQL.
 
+database-connection-pool-min
+  The minimum number of connections in pool, defaults to 3.
+
+database-connection-pool-max
+  The maximum number of connections in pool, defaults to 5.
+
 ldap-uri
   Address of your LDAP server.
 
