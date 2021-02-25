@@ -13,8 +13,11 @@ add_param chdir str
 add_param enable-threads bool
 add_param env str_multiple
 add_param gid str
+add_param harakiri uint
 add_param home str
 add_param http-socket str
+add_param max-requests uint
+add_param module str
 add_param processes uint
 add_param plugin str comma_join
 add_param pythonpath str

@@ -1,7 +1,10 @@
 chdir
 gid
+harakiri
 home
 http-socket
+max-requests
+module
 processes
 pythonpath
 state
