@@ -10,6 +10,7 @@ comma_join() { sed -e :a -e '$!N' -e 's/\n/,/' -e ta; }
 
 add_param cap str comma_join
 add_param chdir str
+add_param check-static str_multiple
 add_param enable-threads bool
 add_param env str_multiple
 add_param gid str
@@ -21,6 +22,7 @@ add_param module str
 add_param processes uint
 add_param plugin str comma_join
 add_param pythonpath str
+add_param static-map str_multiple
 add_param threads uint
 add_param uid str
 add_param uwsgi-socket str

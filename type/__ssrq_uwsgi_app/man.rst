@@ -21,6 +21,9 @@ OPTIONAL PARAMETERS
 cap
    Can be used multiple times.
 chdir
+check-static
+   For each request, check if a corresponding file is in the given directory
+   before passing the request to the dynamic app.
 env
    An environment variable to be passed to the application.
    Takes an argument of the form `VARIABLE=value`.
@@ -53,6 +56,12 @@ state
       Completely remove the app configuration.
 
    Defaults to ``present``.
+static-map
+   Takes a value of the form: ``mountpoint=path``
+
+   Serve requests in ``mountpoint`` with static files from ``path``.
+
+   Can be used multiple times to specify more than one mapping.
 threads
 uid
 uwsgi-socket
