@@ -1,0 +1,369 @@
+#!/bin/sh -e
+#
+# 2019 Timothée Floure (timothee.floure@ungleich.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+# OS-specific configuration.
+os=$(cat "$__global/explorer/os")
+distribution=$(cat "$__global/explorer/lsb_codename")
+
+case "$os" in
+	debian)
+		synapse_user=matrix-synapse
+		synapse_pkg=matrix-synapse
+		synapse_service=matrix-synapse
+		ldap_auth_provider_pkg=matrix-synapse-ldap3
+		synapse_conf_dir='/etc/matrix-synapse'
+		synapse_data_dir='/var/lib/matrix-synapse'
+
+		# See https://packages.debian.org/bullseye/matrix-synapse for state of
+		# synapse packaging in debian.
+		case "$distribution" in
+			stretch)
+				echo "The matrix-synapse package in debian stretch is outdated and unusable." >&2
+				exit 1
+				;;
+			buster)
+				# Enable debian-backports for debian Buster, as the 'stable'
+				# matrix-synapse package is ways too old (< 1.0).
+				apt_target_release=buster-backports
+				__apt_backports
+				;;
+				bullseye|sid)
+					# As of writting (2021-02), the default matrix-synapse of those
+					# release is perfectly usable.
+					:
+				;;
+				*)
+					echo "Unknown debian release '$distribution'. Exiting" >&2
+					exit 1
+				;;
+		esac
+		;;
+	alpine)
+		synapse_user=synapse
+		synapse_pkg=synapse
+		synapse_service=synapse
+		# Note available as of writing (2021-02-15)
+		ldap_auth_provider_pkg=
+		synapse_conf_dir='/etc/synapse'
+		synapse_data_dir='/var/lib/synapse'
+		;;
+	*)
+		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+		;;
+esac
+
+# Small helper used to get boolean values which can be used as-is in the
+# configuration template.
+get_boolean_for () {
+	if [ -f "$__object/parameter/${1:?}" ]; then
+		echo 'true'
+	else
+		echo 'false'
+	fi
+}
+
+# Small helper for erroring out on invalid combinations.
+is_required_when () {
+	value=$1
+	flag=$2
+	when=$3
+
+	if [ -z "$value" ]; then
+		echo "$flag is required when $when." >&2
+		exit 1
+	fi
+}
+
+# Generic configuration.
+export DATA_DIR=$synapse_data_dir
+export LOG_DIR='/var/log/matrix-synapse'
+export PIDFILE='/var/run/matrix/homeserver.pid'
+export LOG_CONFIG_PATH="$synapse_conf_dir/log.yaml"
+export SIGNING_KEY_PATH="$synapse_conf_dir/signin.key"
+
+# Base parameters.
+SERVER_NAME=$(cat "$__object/parameter/server-name")
+BASE_URL=$(cat "$__object/parameter/base-url")
+REPORT_STATS=$(get_boolean_for 'report-stats')
+MAX_UPLOAD_SIZE=$(cat "$__object/parameter/max-upload-size")
+EXPOSE_METRICS=$(get_boolean_for 'expose-metrics')
+WEB_CLIENT_URL=$(cat "$__object/parameter/web-client-url")
+ROOM_ENCRYPTION_POLICY=$(cat "$__object/parameter/room-encryption-policy")
+BIND_ADDRESSES=$(cat "$__object/parameter/bind-address")
+export SERVER_NAME BASE_URL REPORT_STATS MAX_UPLOAD_SIZE EXPOSE_METRICS \
+	WEB_CLIENT_URL ROOM_ENCRYPTION_POLICY BIND_ADDRESSES
+
+if [ -f "$__object/parameter/enable-server-notices" ]; then
+    export ENABLE_SERVER_NOTICES=1
+fi
+
+# TLS.
+if [ -f "$__object/parameter/tls-cert" ]; then
+	TLS_CERTIFICATE_PATH=$(cat "$__object/parameter/tls-cert")
+	export TLS_CERTIFICATE_PATH
+fi
+if [ -f "$__object/parameter/tls-private-key" ]; then
+	TLS_PRIVATE_KEY_PATH=$(cat "$__object/parameter/tls-private-key")
+	export TLS_PRIVATE_KEY_PATH
+fi
+
+# Performance flags.
+GLOBAL_CACHE_FACTOR=$(cat "$__object/parameter/global-cache-factor")
+EVENT_CACHE_SIZE=$(cat "$__object/parameter/event-cache-size")
+export GLOBAL_CACHE_FACTOR EVENT_CACHE_SIZE
+
+if [ -f "$__object/parameter/disable-presence" ]; then
+	export USE_PRESENCE='false'
+else
+	export USE_PRESENCE='true'
+fi
+
+# Database configuration.
+DATABASE_ENGINE=$(cat "$__object/parameter/database-engine")
+DATABASE_NAME=$(cat "$__object/parameter/database-name")
+DATABASE_HOST=$(cat "$__object/parameter/database-host")
+DATABASE_USER=$(cat "$__object/parameter/database-user")
+DATABASE_PASSWORD=$(cat "$__object/parameter/database-password")
+DATABASE_CP_MIN=$(cat "$__object/parameter/database-connection-pool-min")
+DATABASE_CP_MAX=$(cat "$__object/parameter/database-connection-pool-max")
+export DATABASE_ENGINE DATABASE_NAME DATABASE_HOST DATABASE_USER \
+	DATABASE_PASSWORD DATABASE_CP_MIN DATABASE_CP_MAX
+
+# LDAP-based authentication.
+if [ -f "$__object/parameter/enable-ldap-auth" ]; then
+	ENABLE_LDAP_AUTH=$(get_boolean_for 'enable-ldap-auth')
+	export ENABLE_LDAP_AUTH
+fi
+
+LDAP_FILTER=$(cat "$__object/parameter/ldap-filter")
+LDAP_UID_ATTRIBUTE=$(cat "$__object/parameter/ldap-uid-attribute")
+LDAP_MAIL_ATTRIBUTE=$(cat "$__object/parameter/ldap-mail-attribute")
+LDAP_NAME_ATTRIBUTE=$(cat "$__object/parameter/ldap-name-attribute")
+LDAP_URI=$(cat "$__object/parameter/ldap-uri")
+LDAP_BASE_DN=$(cat "$__object/parameter/ldap-base-dn")
+LDAP_BIND_DN=$(cat "$__object/parameter/ldap-bind-dn")
+LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap-bind-password")
+LDAP_USE_STARTTLS=$(get_boolean_for 'ldap-use-starttls')
+export LDAP_FILTER LDAP_UID_ATTRIBUTE LDAP_MAIL_ATTRIBUTE LDAP_NAME_ATTRIBUTE \
+	LDAP_URI LDAP_BASE_DN LDAP_BIND_DN LDAP_BIND_PASSWORD LDAP_USE_STARTTLS
+
+# Outgoing emails (= notifications).
+ENABLE_NOTIFICATIONS=$(get_boolean_for 'enable-notifications')
+SMTP_HOST=$(cat "$__object/parameter/smtp-host")
+SMTP_PORT=$(cat "$__object/parameter/smtp-port")
+SMTP_USE_STARTTLS=$(get_boolean_for 'smtp-use-starttls')
+SMTP_USER=$(cat "$__object/parameter/smtp-user")
+SMTP_PASSWORD=$(cat "$__object/parameter/smtp-password")
+export SMTP_HOST SMTP_PORT SMTP_USER SMTP_PASSWORD SMTP_USE_STARTTLS \
+	ENABLE_NOTIFICATIONS
+
+if [ -f "$__object/parameter/notification-from" ]; then
+	NOTIFICATION_FROM=$(cat "$__object/parameter/notification-from")
+	export NOTIFICATION_FROM
+else
+	export NOTIFICATION_FROM="%(app)s <no-reply@$SERVER_NAME>"
+fi
+
+# Registrations and users.
+ALLOW_GUEST_ACCESS=$(get_boolean_for 'allow-guest-access')
+ENABLE_REGISTRATIONS=$(get_boolean_for 'enable-registrations')
+USER_DIRECTORY_SEARCH_ALL_USERS=$(get_boolean_for 'user-directory-search-all-users')
+export ALLOW_GUEST_ACCESS ENABLE_REGISTRATIONS USER_DIRECTORY_SEARCH_ALL_USERS
+
+if [ -f "$__object/parameter/registration-shared-token" ]; then
+	REGISTRATION_SHARED_SECRET=$(cat "$__object/parameter/registration-shared-secret")
+	export REGISTRATION_SHARED_SECRET
+fi
+
+if [ -f "$__object/parameter/registration-requires-email" ]; then
+    export REGISTRATION_REQUIRES_EMAIL=1
+fi
+
+if [ -f "$__object/parameter/auto-join-room" ]; then
+    AUTO_JOIN_ROOMS="$(cat "$__object/parameter/auto-join-room")"
+    export AUTO_JOIN_ROOMS
+fi
+
+if [ -f "$__object/parameter/registration-allows-email-pattern" ]; then
+    RESGISTRATION_ALLOWS_EMAIL_PATTERN=$(cat "$__object/parameter/registration-allows-email-pattern")
+    export RESGISTRATION_ALLOWS_EMAIL_PATTERN
+fi
+
+# Federation.
+ALLOW_PUBLIC_ROOMS_OVER_FEDERATION=$(get_boolean_for 'allow-public-room-over-federation')
+ALLOW_PUBLIC_ROOMS_WITHOUT_AUTH=$(get_boolean_for 'allow-public-rooms-without-auth')
+LIMIT_REMOTE_ROOM_COMPLEXITY=$(get_boolean_for 'limit-remote-room-complexity')
+REMOTE_ROOM_COMPLEXITY_THRESHOLD=$(cat "$__object/parameter/remote-room-complexity-threshold")
+export ALLOW_PUBLIC_ROOMS_OVER_FEDERATION ALLOW_PUBLIC_ROOMS_WITHOUT_AUTH \
+	LIMIT_REMOTE_ROOM_COMPLEXITY REMOTE_ROOM_COMPLEXITY_THRESHOLD
+
+if [ -f "$__object/parameter/disable-federation" ]; then
+	export DISABLE_FEDERATION=1
+fi
+
+# Message retention.
+ENABLE_MESSAGE_RETENTION_POLICY=$(get_boolean_for 'enable-message-retention-policy')
+MESSAGE_RETENTION_POLICY_MAX_LIFETIME=$(cat "$__object/parameter/message-max-lifetime")
+export ENABLE_MESSAGE_RETENTION_POLICY MESSAGE_RETENTION_POLICY_MAX_LIFETIME
+
+# Previews.
+ENABLE_URL_PREVIEW=$(get_boolean_for 'enable-url-preview')
+export ENABLE_URL_PREVIEW
+
+# Rate-limiting
+RC_MESSAGE_PER_SECOND=$(cat "$__object/parameter/rc-message-per-second")
+RC_MESSAGE_BURST=$(cat "$__object/parameter/rc-message-burst")
+RC_LOGIN_PER_SECOND=$(cat "$__object/parameter/rc-login-per-second")
+RC_LOGIN_BURST=$(cat "$__object/parameter/rc-login-burst")
+export RC_MESSAGE_PER_SECOND RC_MESSAGE_BURST RC_LOGIN_PER_SECOND \
+	RC_LOGIN_BURST
+
+# Application services.
+if [ -f "$__object/parameter/app-service-config-file" ]; then
+	APP_SERVICE_CONFIG_FILES=$(cat "$__object/parameter/app-service-config-file")
+	export APP_SERVICE_CONFIG_FILES
+fi
+
+# Anything that did not fit in this type's template.
+if [ -f "$__object/parameter/extra-setting" ]; then
+	EXTRA_SETTINGS=$(cat "$__object/parameter/extra-setting")
+	export EXTRA_SETTINGS
+fi
+
+# TURN server (NAT traversal for P2P calls).
+TURN_USER_LIFETIME=$(cat "$__object/parameter/turn-user-lifetime")
+export TURN_USER_LIFETIME
+
+if [ -f "$__object/parameter/turn-shared-secret" ]; then
+	TURN_SHARED_SECRET=$(cat "$__object/parameter/turn-shared-secret")
+	export TURN_SHARED_SECRET
+fi
+
+if [ -f "$__object/parameter/turn-uri" ]; then
+	TURN_URIS=$(cat "$__object/parameter/turn-uri")
+	export TURN_URIS
+fi
+
+# Worker-mode configuration.
+export MAIN_LISTENER_PORT=8008
+export ENABLE_MEDIA_REPO='true'
+if [ -f "$__object/parameter/outbound-federation-worker" ]; then
+	FEDERATION_SENDER_INSTANCES=$(cat "$__object/parameter/outbound-federation-worker")
+	export FEDERATION_SENDER_INSTANCES
+fi
+MAIN_LISTENER_RESOURCES="[federation,client]"
+if [ "$EXPOSE_METRICS" = "true" ]; then
+	MAIN_LISTENER_RESOURCES="$(echo "$MAIN_LISTENER_RESOURCES" | tr -d ']'),metrics]"
+fi
+if [ -n "$FEDERATION_SENDER_INSTANCES" ]; then
+	export SEND_FEDERATION_FROM_MAIN_PROCESS='false'
+else
+	export SEND_FEDERATION_FROM_MAIN_PROCESS='true'
+fi
+export MAIN_LISTENER_RESOURCES
+
+ENABLE_REPLICATION=
+ENABLE_REDIS_SUPPORT='false'
+WORKER_REPLICATION_SECRET=$(cat "$__object/parameter/worker-replication-secret")
+BACKGROUND_TASKS_WORKER=$(cat "$__object/parameter/background-tasks-worker")
+if [ -f "$__object/parameter/worker-mode" ]; then
+	ENABLE_REPLICATION=1
+	ENABLE_REDIS_SUPPORT='true'
+fi
+export ENABLE_REPLICATION ENABLE_REDIS_SUPPORT WORKER_REPLICATION_SECRET \
+	BACKGROUND_TASKS_WORKER
+
+# Error out on invalid parameter combination.
+case "$DATABASE_ENGINE" in
+	sqlite3)
+		:
+	;;
+	psycopg2)
+		when='database engine is psycopg2'
+		is_required_when "$DATABASE_HOST" '--database-host' "$when"
+		is_required_when "$DATABASE_USER" '--database-user' "$when"
+	;;
+	*)
+		echo "Invalid database engine: $DATABASE_ENGINE." >&2
+		exit 1
+	;;
+esac
+
+
+# Install OS packages. We have a bit of boilerplate to handle the debian
+# backports situation.
+synapse_req=
+if [ -n "$apt_target_release" ]; then
+	require="__apt_backports" __package_apt "$synapse_pkg" \
+		--target-release "$apt_target_release"
+	synapse_req="__package_apt/$synapse_pkg"
+else
+	__package "$synapse_pkg"
+	synapse_req="__package/$synapse_pkg"
+fi
+
+if [ -n "$ENABLE_LDAP_AUTH" ]; then
+	if [ -n "$apt_target_release" ]; then
+		require="__package_apt/$synapse_pkg" __package_apt "$ldap_auth_provider_pkg" \
+			--target-release "$apt_target_release"
+		else
+			__package "$ldap_auth_provider_pkg"
+	fi
+fi
+
+# Generate and deploy configuration files.
+mkdir -p "$__object/files"
+"$__type/files/homeserver.yaml.sh" > "$__object/files/homeserver.yaml"
+"$__type/files/log.config.sh" > "$__object/files/log.config"
+
+require="$synapse_req" __file "$synapse_conf_dir/homeserver.yaml" \
+  --owner $synapse_user \
+  --mode 600 \
+  --source "$__object/files/homeserver.yaml"
+require="$synapse_req" __file "$LOG_CONFIG_PATH" \
+  --owner $synapse_user \
+  --mode 600 \
+  --source "$__object/files/log.config"
+
+for directory in $DATA_DIR $LOG_DIR; do
+	require="$synapse_req" __directory $directory \
+		--state present \
+		--owner $synapse_user
+done
+
+# Make dpkg-reconfigure happy on debian systems.
+if [ "$os" = "debian" ]; then
+	require="$synapse_req" __file "$synapse_conf_dir/conf.d/server_name.yaml" \
+		--owner $synapse_user \
+		--source - <<- EOF
+		server_name: "$SERVER_NAME"
+		EOF
+
+	require="$synapse_req" __file "$synapse_conf_dir/conf.d/report_stats.yaml" \
+		--owner $synapse_user \
+		--source - <<- EOF
+		report_stats: $REPORT_STATS
+		EOF
+fi
+
+# Start service at boot - started/reload in gencode-remote.
+require="$synapse_req" __start_on_boot $synapse_service
