@@ -3,6 +3,7 @@
 command='/usr/bin/node'
 command_args='server'
 command_background=true
+command_user='wikijs'
 description="Run wiki.js"
 directory='/var/wiki'
 error_log=/var/log/"$RC_SVCNAME".err
