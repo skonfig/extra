@@ -17,6 +17,7 @@ EOF
 # Download and copy source
 cat << EOF
 wget -O - https://github.com/Requarks/wiki/releases/download/$version/wiki-js.tar.gz | tar xz -C /var/wiki
+chown -R wikijs:wikijs /var/wiki
 EOF
 
 # Install deps and launch

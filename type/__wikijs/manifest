@@ -52,15 +52,20 @@ export HTTP_PORT HTTPS_PORT
 db_pass="$(cat "${__object:?}/parameter/database-password")"
 
 __package nodejs
-__directory /var/wiki/
+__user wikijs --home /var/wiki --create-home
 
 # These things are Alpine-dependant.
 __file /etc/init.d/wikijs \
 	--source "${__type:?}/files/wikijs-openrc" \
 	--mode 0755
 __package nghttp2-dev  # Required for some reason, else a symbol is missing
+for logfile in wikijs.log wikijs.err; do
+	require="__user/wikijs" __file /var/log/$logfile --owner wikijs
+done
 
 mkdir -p "${__object:?}/files"
 "${__type:?}/files/config.yml.sh" "$db_pass" > "${__object:?}/files/config.yml"
-require='__directory/var/wiki' \
-	__file /var/wiki/config.yml --source "${__object:?}/files/config.yml"
+require='__user/wikijs' \
+	__file /var/wiki/config.yml \
+	--source "${__object:?}/files/config.yml" \
+	--owner wikijs
