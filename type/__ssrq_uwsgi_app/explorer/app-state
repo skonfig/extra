@@ -17,29 +17,28 @@
 # You should have received a copy of the GNU General Public License
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
-# Print the packages that need to be installed for this uWSGI app to be
-# functional (uWSGI core + required plugins)
-
-test -s "${__object:?}/parameter/plugin" || exit 0
+# Prints "started" if the uWSGI app is started, or "stopped" if it is not
+# running. If the app is not present it prints nothing.
 
 os=$("${__explorer:?}/os")
 
 case ${os}
 in
 	(debian|devuan|ubuntu)
-		test "$(cat "${__object:?}/parameter/state")" != absent || exit 0
+		test -x /etc/init.d/uwsgi || {
+			echo 'uwsgi init script missing.' >&2
+			exit 1
+		}
 
-		while read -r pkgname
-		do
-			if apt-cache showpkg "${pkgname}" >/dev/null 2>&1
-			then
-				printf '%s\n' "${pkgname}"
-			fi
-		done <<-EOF
-		uwsgi
-		$(sed 's/^/uwsgi-plugin-/' <"${__object:?}/parameter/plugin")
-		EOF
+		# No app found
+		test -e "/etc/uwsgi/apps-enabled/${__object_id:?}.ini" || exit 0
+
+		/etc/init.d/uwsgi status "${__object_id:?}" >/dev/null \
+			&& echo started \
+			|| echo stopped
 		;;
 	(*)
+		printf 'Do not know how to check uWSGI service state on %s.\n' "${os}" >&2
+		exit 1
 		;;
 esac

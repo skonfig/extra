@@ -30,11 +30,14 @@ in
 		while read -r pkgname
 		do
 			__package "${pkgname}" </dev/null
-			require=${require-}${require:+ }__package/${pkgname}
+			pkg_require=${pkg_require-}${pkg_require:+ }__package/${pkgname}
 		done <"${__object:?}/explorer/packages-required"
-		export require  # important!
 
 		__start_on_boot uwsgi
+
+		conf_name=${__object_id:?}.ini
+		conf_available_path=/etc/uwsgi/apps-available/${conf_name:?}
+		conf_enabled_path=/etc/uwsgi/apps-enabled/${conf_name:?}
 
 		case ${state_should}
 		in
@@ -42,16 +45,28 @@ in
 				need_config_file=true
 				uwsgi_app_available_state=present
 				uwsgi_app_enabled_state=present
+
+				conf_require=${pkg_require-}
+				conf_available_require=${conf_require?}
+				conf_enabled_require=${conf_require?}${conf_require:+ }__file${conf_available_path:?}
 				;;
 			(disabled)
 				need_config_file=true
 				uwsgi_app_available_state=present
 				uwsgi_app_enabled_state=absent
+
+				conf_require=${pkg_require-}
+				conf_available_require=${conf_require?}
+				conf_enabled_require=${conf_require?}
 				;;
 			(absent)
 				need_config_file=false
 				uwsgi_app_available_state=absent
 				uwsgi_app_enabled_state=absent
+
+				conf_require=${__object_name:?}/
+				conf_available_require=${conf_require?}${conf_require:+ }__link${conf_enabled_path:?}
+				conf_enabled_require=${conf_require?}
 				;;
 		esac
 
@@ -59,20 +74,20 @@ in
 		then
 			# generate config file
 			mkdir "${__object:?}/files"
-			"${__type:?}/files/gen-config-ini.sh" >"${__object:?}/files/${__object_id:?}.ini"
+			"${__type:?}/files/gen-config-ini.sh" >"${__object:?}/files/${conf_name:?}"
 		fi
 
-		test "${uwsgi_app_available_state}" != 'absent' || require="${require-}${require:+ }__link/etc/uwsgi/apps-enabled/${__object_id:?}.ini"
-		__file "/etc/uwsgi/apps-available/${__object_id}.ini" \
+		require=${conf_available_require-} \
+		__file "${conf_available_path:?}" \
 			--state "${uwsgi_app_available_state}" \
 			--owner 0 --group 0 --mode 0644 \
-			--source "${__object:?}/files/${__object_id}.ini"
+			--source "${__object:?}/files/${conf_name:?}"
 
-		test "${uwsgi_app_enabled_state}" = 'absent' || require="${require-}${require:+ }__file/etc/uwsgi/apps-available/${__object_id:?}.ini"
-		__link "/etc/uwsgi/apps-enabled/${__object_id}.ini" \
+		require=${conf_enabled_require-} \
+		__link "${conf_enabled_path:?}" \
 			--state "${uwsgi_app_enabled_state}" \
 			--type symbolic \
-			--source "../apps-available/${__object_id}.ini"
+			--source "../apps-available/${conf_name:?}"
 		;;
 	(*)
 		: "${__type:?}"  # make shellcheck happy
