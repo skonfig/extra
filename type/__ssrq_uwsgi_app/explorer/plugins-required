@@ -18,7 +18,7 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 # Print the packages that need to be installed for this uWSGI app to be
-# functional (uWSGI core + required plugins)
+# functional (plugins only)
 
 test -s "${__object:?}/parameter/plugin" || exit 0
 
@@ -36,7 +36,6 @@ in
 				printf '%s\n' "${pkgname}"
 			fi
 		done <<-EOF
-		uwsgi
 		$(sed 's/^/uwsgi-plugin-/' <"${__object:?}/parameter/plugin")
 		EOF
 		;;

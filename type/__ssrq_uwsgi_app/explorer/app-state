@@ -25,13 +25,15 @@ os=$("${__explorer:?}/os")
 case ${os}
 in
 	(debian|devuan|ubuntu)
-		test -x /etc/init.d/uwsgi || {
-			echo 'uwsgi init script missing.' >&2
-			exit 1
-		}
-
 		# No app found
 		test -e "/etc/uwsgi/apps-enabled/${__object_id:?}.ini" || exit 0
+
+		test -x /etc/init.d/uwsgi || {
+			# NOTE: this assumes that a sysvinit script will always be installed
+			# and working, independent of the init system in use.
+			echo stopped
+			exit 0
+		}
 
 		/etc/init.d/uwsgi status "${__object_id:?}" >/dev/null \
 			&& echo started \
