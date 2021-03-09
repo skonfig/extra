@@ -53,6 +53,8 @@ do
 		unset value
 	fi
 
+	test -n "${value}" || continue
+
 	case ${type}
 	in
 		(int)
