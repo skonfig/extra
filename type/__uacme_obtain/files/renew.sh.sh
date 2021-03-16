@@ -3,8 +3,6 @@
 cat << EOF
 #!/bin/sh
 
-set -x
-
 CERT_SOURCE=$CONFDIR/$MAIN_DOMAIN/cert.pem
 KEY_SOURCE=$CONFDIR/private/$MAIN_DOMAIN/key.pem
 
