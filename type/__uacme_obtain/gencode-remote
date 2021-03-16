@@ -19,5 +19,6 @@ then
 	confdir="$(cat "${__object:?}/parameter/confdir")"
 fi
 
-# Run renew script 'by hand' - renews will be handled by the cronjob.
+# Run renew script 'by hand' for intial issue - renews will be handled by the
+# cronjob.
 echo "$confdir/${__object_id:?}/renew.sh"

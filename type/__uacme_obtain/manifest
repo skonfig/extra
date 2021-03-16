@@ -15,7 +15,7 @@ case "$os" in
 	;;
 esac
 
-CHALLENGEDIR=$default_challengedir
+CHALLENGEDIR=${default_challengedir:?}
 if [ -f "${__object:?}/parameter/challengedir" ];
 then
 	CHALLENGEDIR="$(cat "${__object:?}/parameter/challengedir")"

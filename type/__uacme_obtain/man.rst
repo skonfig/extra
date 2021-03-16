@@ -1,5 +1,5 @@
 cdist-type__uacme_obtain(7)
-========================
+===========================
 
 NAME
 ----
@@ -8,7 +8,7 @@ cdist-type__uacme_obtain - obtain, renew and deploy Let's Encrypt certificates
 DESCRIPTION
 -----------
 
-This type leverage uacme to issue abd renew Let's Encrypt certificates and
+This type leverage uacme to issue and renew Let's Encrypt certificates and
 provides a simple deployment mechanism. It is expected to be called after
 `__uacme_account`.
 
@@ -26,10 +26,10 @@ confdir
   uacme configuration directory.
 
 hookscript
-  Path to challenge hook program.
+  Path to the challenge hook program.
 
 owner
-  Owner of installed certificate (e.g. `www-data`), pass as argument to `chown`.
+  Owner of installed certificate (e.g. `www-data`), passed to `chown`.
 
 install-cert-to
   Installation path of the issued certificate.
@@ -44,7 +44,7 @@ force-cert-ownership-to
   Override default ownership for TLS certificate, passed as argument to chown.
 
 OPTIONAL MULTIPLE PARAMETERS
--------------------
+----------------------------
 altdomains
   Alternative domain names for this certificate.
 
