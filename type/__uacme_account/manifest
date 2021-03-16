@@ -1,3 +1,14 @@
 #!/bin/sh
 
-__package uacme
+os="$(cat "${__global:?}"/explorer/os)"
+
+case "$os" in
+	"alpine"|"debian"|"ubuntu")
+		uacme_package=uacme
+		;;
+	*)
+		echo "__uacme_account is not yet implemented for os $os. Aborting." >&2;
+		exit 1;
+esac
+
+__package $uacme_package

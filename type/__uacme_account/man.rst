@@ -8,8 +8,10 @@ cdist-type__uacme_account - Install uacme and register Let's Encrypt account.
 
 DESCRIPTION
 -----------
+
 This type is used to bootstrap acquiring certificates from the Let's Encrypt
-C.A. This type is expected to be used internally, by the `__uacme_obtain`.
+C.A by creating an account and accepting terms of use. The
+`cdist-type__uacme_obtain(7)` type instances expect to depend on this type.
 
 
 OPTIONAL PARAMETERS
