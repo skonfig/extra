@@ -17,3 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
+
+CONF_DIR=/etc/getssl
+
+domain=${__object_id:?}
+state_should=$(cat "${__object:?}/parameter/state")
+
+test "${state_should}" = absent || export require=__dtnrch_getssl/
+
+__directory "${CONF_DIR}/${domain}" --state "${state_should}"

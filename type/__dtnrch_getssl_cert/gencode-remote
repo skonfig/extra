@@ -18,3 +18,120 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
+quote() { printf "'%s'" "$(printf '%s' "$*" | sed -e "s/'/'\\\\''/g")"; }
+drop_awk_comments() { quote "$(sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@")"; }
+
+CONF_DIR=/etc/getssl
+
+domain=${__object_id:?}
+getssl_cfg=${CONF_DIR}/${domain}/getssl.cfg
+
+state_should=$(cat "${__object:?}/parameter/state")
+test "${state_should}" != 'absent' || exit 0  # removed in manifest
+
+################################################################################
+# Create getssl.cfg
+
+test -s "${__object:?}/explorer/cfg-values" || {
+	printf 'getssl -w %s -c %s\n' "$(quote "${CONF_DIR}")" "${domain}"
+}
+
+
+################################################################################
+# Update getssl.cfg
+
+cfg_values_should=$(
+	# CA
+	if test -s "${__object:?}/parameter/ca"
+	then
+		printf 'CA="%s"\n' "$(head -n1 "${__object:?}/parameter/ca")"
+	fi
+
+	# ACLs
+	if test -s "${__object:?}/parameter/acl"
+	then
+		if test "$(wc -l "${__object:?}/parameter/acl" | cut -d' ' -f1)" -eq 1
+		then
+			# only one ACL
+			printf "ACL=('%s')\nUSE_SINGLE_ACL=true\n" \
+				"$(cat "${__object:?}/parameter/acl")"
+		else
+			sed -e :a -e "\$!N;s/\n/','/" -e ta -e "s/.*/ACL=('&')/" \
+				"${__object:?}/parameter/acl"
+		fi
+	fi
+
+	# SANs
+	if test -s "${__object:?}/parameter/san"
+	then
+		sed -e :a -e '$!N;s/\n/,/' -e ta -e 's/.*/SANS="&"/' \
+			"${__object:?}/parameter/san"
+	fi
+
+	# File locations
+	if test -s "${__object:?}/parameter/cert-loc"
+	then
+		printf 'DOMAIN_CERT_LOCATION="%s"\n' "$(head -n1 "${__object:?}/parameter/cert-loc")"
+	fi
+	if test -s "${__object:?}/parameter/key-loc"
+	then
+		printf 'DOMAIN_KEY_LOCATION="%s"\n' "$(head -n1 "${__object:?}/parameter/key-loc")"
+	fi
+	if test -s "${__object:?}/parameter/ca-loc"
+	then
+		printf 'CA_CERT_LOCATION="%s"\n' "$(head -n1 "${__object:?}/parameter/ca-loc")"
+	fi
+	if test -s "${__object:?}/parameter/chain-loc"
+	then
+		printf 'DOMAIN_CHAIN_LOCATION="%s"\n' "$(head -n1 "${__object:?}/parameter/chain-loc")"
+	fi
+	if test -s "${__object:?}/parameter/pem-loc"
+	then
+		printf 'DOMAIN_PEM_LOCATION="%s"\n' "$(head -n1 "${__object:?}/parameter/pem-loc")"
+	fi
+
+	# Reload command
+	if test -s "${__object:?}/parameter/reload-cmd"
+	then
+		printf 'RELOAD_CMD="%s"\n' "$(head -n1 "${__object:?}/parameter/reload-cmd")"
+	fi
+
+	# Certificate check
+	if ! test -f "${__object:?}/parameter/no-check-remote"
+	then
+		printf 'CHECK_REMOTE=true\n'
+	else
+		printf 'CHECK_REMOTE=false\n'
+	fi
+	if test -s "${__object:?}/parameter/server-type"
+	then
+	   printf 'SERVER_TYPE="%s"\n' "$(head -n1 "${__object:?}/parameter/server-type")"
+	fi
+
+	if test -s "${__object:?}/parameter/extra-config"
+	then
+		sort "${__object:?}/parameter/extra-config"
+	fi
+)
+
+if ! printf '%s\n' "${cfg_values_should}" | cmp -s "${__object:?}/explorer/cfg-values" -
+then
+	cat <<CODE
+post_update() {
+	if ! cmp -s $(quote "${getssl_cfg}") $(quote "${getssl_cfg}.tmp")
+	then
+		# config has changed
+		cat $(quote "${getssl_cfg}.tmp") >$(quote "${getssl_cfg}")
+		rm -f $(quote "${getssl_cfg}.tmp")
+
+		getssl ${__object_id:?}
+	else
+		rm -f $(quote "${getssl_cfg}.tmp")
+	fi
+}
+awk $(drop_awk_comments "${__type:?}/files/update_getssl_cfg.awk") <<'EOF' $(quote "${getssl_cfg}") >$(quote "${getssl_cfg}.tmp") \\
+ && post_update || exit
+${cfg_values_should}
+EOF
+CODE
+fi

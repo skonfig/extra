@@ -3,7 +3,7 @@ cdist-type__dtnrch_getssl(7)
 
 NAME
 ----
-cdist-type__dtnrch_getssl - Set up getssl.
+cdist-type__dtnrch_getssl - Set up GetSSL.
 
 
 DESCRIPTION

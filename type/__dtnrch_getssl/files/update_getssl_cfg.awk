@@ -1,5 +1,7 @@
 #!/usr/bin/awk -f
 
+# FIXME: This script does not handle multi-line options, e.g. bash arrays.
+
 BEGIN {
 	FS = RS
 
