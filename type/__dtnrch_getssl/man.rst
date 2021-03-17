@@ -42,7 +42,7 @@ EXAMPLES
 
 SEE ALSO
 --------
-None.
+- https://github.com/srvrco/getssl.git
 
 
 AUTHORS

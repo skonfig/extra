@@ -76,12 +76,18 @@ $(
 )
 EOF
 
+require="${require-}${require:+ }$(test "${state_should}" != 'absent' || echo __cron/getssl)" \
 __staged_file "${DEST}/getssl" --state "${state_should}" \
 	--owner 0 --mode 0755 \
 	--source "https://raw.githubusercontent.com/srvrco/getssl/${tag_name}/getssl" \
 	--cksum "${cksum_should}"
 
+if test "${state_should}" != 'absent'
+then
+	require="__staged_file${DEST}/getssl"
+fi
+
 __directory '/etc/getssl' --state "${state_should}" --owner 0 --mode 0750
 
-__cron 'getssl' --state "${state_should}" --user 0 --hour 1 --minute 0 \
+__cron 'getssl' --state "${state_should}" --user root --hour 1 --minute 0 \
 	--command 'getssl -a -q -U'
