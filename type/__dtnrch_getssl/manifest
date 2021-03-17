@@ -21,6 +21,7 @@
 os=$(cat "${__global:?}/explorer/os")
 
 DEST=/usr/local/bin
+CONF_DIR=/etc/getssl
 
 state_should=$(cat "${__object:?}/parameter/state")
 
@@ -87,7 +88,7 @@ then
 	require="__staged_file${DEST}/getssl"
 fi
 
-__directory '/etc/getssl' --state "${state_should}" --owner 0 --mode 0750
+__directory "${CONF_DIR}" --state "${state_should}" --owner 0 --mode 0750
 
 __cron 'getssl' --state "${state_should}" --user root --hour 1 --minute 0 \
 	--command 'getssl -a -q -U'
