@@ -18,10 +18,68 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
+quote() { printf "'%s'" "$(printf '%s' "$*" | sed -e "s/'/'\\\\''/g")"; }
+drop_awk_comments() { quote "$(sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@")"; }
+
 DEST=/usr/local/bin
 CONF_DIR=/etc/getssl
 
+getssl_cfg=${CONF_DIR}/getssl.cfg
+
+
+################################################################################
+# Create getssl.cfg
+
 test -s "${__object:?}/explorer/cfg-values" || {
 	# Using . as the domain is a HUGE HACK
-	printf '%s/getssl -w %s -c %s\n' "${DEST}" "${CONF_DIR}" '.'
+	printf '%s/getssl -w %s -c %s\n' "${DEST}" "$(quote "${CONF_DIR}")" '.'
+
+	# Comment out all CA lines, to preserve their values (as comments).
+	# Otherwise, the AWK update script would overwrite all values.
+	printf "sed -i -e 's/^CA=/#&/' %s\n" "$(quote "${getssl_cfg}")"
+
+	# Server type and check_remote should be configured in the domain config,
+	# instead of globally.
+	printf "sed -i -e 's/^\(SERVER_TYPE\|CHECK_REMOTE\)=/#&/' %s\n" "$(quote "${getssl_cfg}")"
 }
+
+################################################################################
+# Update getssl.cfg
+
+cfg_values_should=$(
+	# Account
+	if test -s "${__object:?}/parameter/email"
+	then
+		printf 'ACCOUNT_EMAIL="%s"\n' "$(head -n 1 "${__object:?}/parameter/email")"
+	fi
+	printf 'ACCOUNT_KEY="%s"\n' "${CONF_DIR}/account.key"
+	printf 'ACCOUNT_KEY_LENGTH=%u\n' "$(head -n 1 "${__object:?}/parameter/keysize")"
+	printf 'PRIVATE_KEY_ALG="%s"\n' 'rsa'
+
+	# CA (v2)
+	if test -f "${__object:?}/parameter/staging"
+	then
+		printf 'CA="https://acme-staging-v02.api.letsencrypt.org"\n'
+	else
+		printf 'CA="https://acme-v02.api.letsencrypt.org"\n'
+	fi
+
+	# Renew allow
+	printf 'RENEW_ALLOW=%u\n' "$(head -n 1 "${__object:?}/parameter/renew-allow")"
+
+	if test -s "${__object:?}/parameter/extra-config"
+	then
+		sort "${__object:?}/parameter/extra-config"
+	fi
+)
+
+if ! printf '%s\n' "${cfg_values_should}" | cmp -s "${__object:?}/explorer/cfg-values" -
+then
+	cat <<CODE
+awk $(drop_awk_comments "${__type:?}/files/update_getssl_cfg.awk") <<'EOF' $(quote "${getssl_cfg}") >$(quote "${getssl_cfg}.tmp") \\
+ && cat $(quote "${getssl_cfg}.tmp") >$(quote "${getssl_cfg}") || exit
+${cfg_values_should}
+EOF
+rm -f $(quote "${getssl_cfg}.tmp")
+CODE
+fi

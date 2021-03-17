@@ -18,6 +18,21 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
+email
+   Add an e-mail address to the Let's Encrypt account.
+
+   See also: https://letsencrypt.org/docs/expiration-emails/
+extra-config
+   Other configuration options that should be added to the ``getssl.cfg``.
+keysize
+   The size of the account private key.
+
+   Defaults to 4096 bits.
+renew-allow
+   Maximum number of days that a certificate will be renewed prior to its expiry
+   date.
+
+   Defaults to 30.
 state
    Whether getssl should be installed (``present``) on the target or not
    (``absent``).
@@ -28,7 +43,8 @@ version
 
 BOOLEAN PARAMETERS
 ------------------
-None.
+staging
+   If set, getssl uses Let's Encrypt's staging CA by default.
 
 
 EXAMPLES

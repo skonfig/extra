@@ -23,4 +23,6 @@ CONF_DIR=/etc/getssl
 
 test -e "${CONF_DIR:?}/getssl.cfg" || exit 0
 
-sed -e 's/^[ \t]*\(.*\)[ \t]*$/\1/' -e '/^#/d' -e '/^$/d' "${CONF_DIR}/getssl.cfg"
+sed -e 's/^[ \t]*\(.*\)[ \t]*$/\1/' -e '/^#/d' -e '/^$/d' \
+	"${CONF_DIR}/getssl.cfg" \
+| sort
