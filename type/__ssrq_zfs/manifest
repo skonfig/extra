@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2020 Dennis Camera (dennis.camera@ssrq-sds-fds.ch)
+# 2020-2021 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
 #
 # This file is part of cdist.
 #
@@ -84,6 +84,27 @@ __block /etc/modprobe.d/zfs.conf:cdist-zfs-tunables \
 	--suffix '#/cdist:zfs-tunables' \
 	--text - <<EOF
 $(sed -e 's/^/options zfs /' "${__object:?}/parameter/tunable")
+EOF
+
+
+
+# HACK: Workaround spl bug that exhausts all memory on `zfs scrub' on non-4k
+#       page sizes
+#       https://github.com/openzfs/zfs/issues/11756
+#       https://github.com/openzfs/zfs/issues/11574
+pagesize=$(cat "${__object:?}/explorer/pagesize")
+if test $((pagesize)) -eq $((64 * 1024))
+then
+	spl_kmem_cache_slab_limit=16384
+fi
+require='__package_apt/zfs-modules' \
+__block /etc/modprobe.d/zfs.conf:cdist-spl-workaround-11574 \
+	--state "$(test "${spl_kmem_cache_slab_limit-}" && echo present || echo absent)" \
+	--file /etc/modprobe.d/zfs.conf \
+	--prefix '# cdist:spl-workaround-11574' \
+	--suffix '#/cdist:spl-workaround-11574' \
+	--text - <<EOF
+options spl spl_kmem_cache_slab_limit=$((spl_kmem_cache_slab_limit))
 EOF
 
 set_zed_rc() {
