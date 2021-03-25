@@ -6,3 +6,4 @@ pem-loc
 reload-cmd
 server-type
 state
+validation

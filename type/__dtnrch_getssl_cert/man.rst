@@ -18,14 +18,6 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
-acl
-   "ACME Challenge Location"
-
-   The ACME Challenge Location for the domain and each SAN.
-   Can be used multiple times, to specify different ACLs for each of the SANs.
-   If used only once, the same ACL will be used for all domains.
-
-   cf. https://github.com/srvrco/getssl/wiki/Config-variables#acl
 ca
    The URL of the ACME CA to use.
 
@@ -77,7 +69,32 @@ state
    absent
       | the certificate configuration should be removed from GetSSL.
       | NB: certificates copied to ``--*-loc`` will not be removed.
+validation
+   Specifies the method GetSSL should use to validate the domains.
 
+   Currently, these methods are supported:
+
+   http-01
+      Stores a file in the webroot of the web server.
+
+      **Parameters:**
+
+      webroot
+         The location of the domain's web server's document root.
+   dns-01
+      Adds a TXT record to the domain's DNS.
+
+      **Parameters:**
+
+      add-script
+         Executable script that adds a TXT record.
+      del-script
+         Executable script that deletes a TXT record.
+
+   Methods and parameters are specified as a single cdist parameter, e.g.:
+
+   - ``--validation http-01:webroot=/var/www``
+   - ``--validation dns-01:add-script=/usr/local/bin/dns-add,del-script=/usr/local/bin/dns-del``
 
 BOOLEAN PARAMETERS
 ------------------
@@ -91,8 +108,8 @@ EXAMPLES
 
 .. code-block:: sh
 
-    # Get an SSL certficate for example.com
-    __dtnrch_getssl_cert example.com
+   # Get an SSL certficate for example.com
+   __dtnrch_getssl_cert example.com
 
 
 SEE ALSO

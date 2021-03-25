@@ -47,19 +47,6 @@ cfg_values_should=$(
 		printf 'CA="%s"\n' "$(head -n1 "${__object:?}/parameter/ca")"
 	fi
 
-	# ACLs
-	if test -s "${__object:?}/parameter/acl"
-	then
-		if test "$(wc -l "${__object:?}/parameter/acl" | cut -d' ' -f1)" -eq 1
-		then
-			# only one ACL
-			printf "ACL=('%s')\nUSE_SINGLE_ACL=true\n" \
-				"$(cat "${__object:?}/parameter/acl")"
-		else
-			sed -e :a -e "\$!N;s/\n/','/" -e ta -e "s/.*/ACL=('&')/" \
-				"${__object:?}/parameter/acl"
-		fi
-	fi
 
 	# SANs
 	if test -s "${__object:?}/parameter/san"
@@ -106,6 +93,89 @@ cfg_values_should=$(
 	if test -s "${__object:?}/parameter/server-type"
 	then
 	   printf 'SERVER_TYPE="%s"\n' "$(head -n1 "${__object:?}/parameter/server-type")"
+	fi
+
+	# Domain validation
+	if test -s "${__object:?}/parameter/validation"
+	then
+		next_validation_param() {
+			test -n "${_input}" || return 1
+
+			_param=${_input%%,*}
+
+			_input=${_input#${_param}}
+			_input=${_input#,}
+
+			v_key=${_param%%=*}
+			v_value=${_param#*=}
+
+			test "${v_key}" != "${v_value}" || return 1  # invalid format
+		}
+
+		_input=$(cat "${__object:?}/parameter/validation")
+
+		# Extract method
+		validation_method=${_input%%:*}
+		_input=${_input#${validation_method}:}
+
+		case ${validation_method}
+		in
+			(http-01)
+				while next_validation_param
+				do
+					case ${v_key}
+					in
+						(webroot)
+							v_webroot=${v_value}
+							;;
+						(*)
+							printf 'Invalid --validation option: %s\n' "${v_key}" >&2
+							exit 1
+							;;
+					esac
+				done
+
+				test -n "${v_webroot}" || {
+					echo 'Option webroot is required for http-01.' >&2
+					exit 1
+				}
+
+				# only one ACL
+				printf "ACL=('%s')\nUSE_SINGLE_ACL=true\n" "${v_webroot}"
+				;;
+			(dns-01)
+				while next_validation_param
+				do
+					case ${v_key}
+					in
+						(add-script)
+							v_addscr=${v_value}
+							;;
+						(del-script)
+							v_delscr=${v_value}
+							;;
+						(*)
+							printf 'Invalid --validation option: %s\n' "${v_key}" >&2
+							exit 1
+							;;
+					esac
+				done
+
+				test -n "${v_addscr}" || {
+					echo 'Option add-script is required for dns-01.' >&2
+					exit 1
+				}
+
+				printf 'VALIDATE_VIA_DNS=true\n'
+				printf 'DNS_ADD_COMMAND="%s"\n' "${v_addscr}"
+				printf 'DNS_DEL_COMMAND="%s"\n' "${v_delscr:-true}"
+				;;
+			(*)
+				printf 'Invalid --validation method: %s\n' "${validation_method}" >&2
+				exit 1
+				;;
+		esac
+		unset _input
 	fi
 
 	if test -s "${__object:?}/parameter/extra-config"
