@@ -50,7 +50,7 @@ in
 		export require
 
 		__directory "${DEST}" --state present --parents
-		require=${require:-}${require:+ }__directory/${DEST}
+		require=${require:-}${require:+ }__directory${DEST}
 		;;
 	(absent)
 		:
@@ -88,7 +88,12 @@ then
 	require="__staged_file${DEST}/getssl"
 fi
 
-__directory "${CONF_DIR}" --state "${state_should}" --owner 0 --mode 0750
+__directory "${CONF_DIR}" \
+	--state "${state_should}" \
+	--owner 0 --mode 0750
 
-__cron 'getssl' --state "${state_should}" --user root --hour 1 --minute 0 \
-	--command 'getssl -a -q -U'
+__cron getssl \
+	--state "${state_should}" \
+	--user root \
+	--hour 1 --minute 0 \
+	--command "${DEST}/getssl -a -q -U"
