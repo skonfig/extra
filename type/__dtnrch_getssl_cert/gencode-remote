@@ -33,7 +33,8 @@ test "${state_should}" != 'absent' || exit 0  # removed in manifest
 # Create getssl.cfg
 
 test -s "${__object:?}/explorer/cfg-values" || {
-	printf 'getssl -w %s -c %s\n' "$(quote "${CONF_DIR}")" "${domain}"
+	# NOTE: ${domain} needs to be quoted, because of wildcard certificates.
+	printf 'getssl -w %s -c %s\n' "$(quote "${CONF_DIR}")" "$(quote "${domain}")"
 }
 
 
@@ -186,6 +187,7 @@ cfg_values_should=$(
 
 if ! printf '%s\n' "${cfg_values_should}" | cmp -s "${__object:?}/explorer/cfg-values" -
 then
+	# NOTE: ${domain} needs to be quoted, because of wildcard certificates.
 	cat <<CODE
 post_update() {
 	if ! cmp -s $(quote "${getssl_cfg}") $(quote "${getssl_cfg}.tmp")
@@ -194,7 +196,7 @@ post_update() {
 		cat $(quote "${getssl_cfg}.tmp") >$(quote "${getssl_cfg}")
 		rm -f $(quote "${getssl_cfg}.tmp")
 
-		getssl ${__object_id:?}
+		getssl $(quote "${domain}")
 	else
 		rm -f $(quote "${getssl_cfg}.tmp")
 	fi
