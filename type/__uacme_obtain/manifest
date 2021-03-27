@@ -1,0 +1,121 @@
+#!/bin/sh
+
+os="$(cat "${__global:?}"/explorer/os)"
+case "$os" in
+	alpine|ubuntu|debian)
+		__package uacme
+
+		default_challengedir=/var/www/.well-known/acme-challenge
+		default_hookscript=/usr/share/uacme/uacme.sh
+		default_confdir=/etc/ssl/uacme
+	;;
+	*)
+		echo "__uacme_obtain currently has no implementation for $os. Aborting." >&2;
+		exit 1;
+	;;
+esac
+
+CHALLENGEDIR=${default_challengedir:?}
+if [ -f "${__object:?}/parameter/challengedir" ];
+then
+	CHALLENGEDIR="$(cat "${__object:?}/parameter/challengedir")"
+fi
+export CHALLENGEDIR
+
+CONFDIR="${default_confdir:?}"
+if [ -f "${__object:?}/parameter/confdir" ];
+then
+	CONFDIR="$(cat "${__object:?}/parameter/confdir")"
+fi
+export CONFDIR
+
+DISABLE_OCSP=
+if [ -f "${__object:?}/parameter/no-ocsp" ];
+then
+	DISABLE_OCSP="--no-ocsp"
+fi
+export DISABLE_OCSP
+
+MAIN_DOMAIN=${__object_id:?}
+DOMAIN=$MAIN_DOMAIN
+if [ -f "${__object:?}/parameter/altdomains" ];
+then
+	# shellcheck disable=SC2013
+	for altdomain in $(cat "${__object:?}/parameter/altdomains");
+	do
+		DOMAIN="$DOMAIN $altdomain"
+	done
+fi
+export MAIN_DOMAIN DOMAIN
+
+HOOKSCRIPT=${default_hookscript}
+if [ -f "${__object:?}/parameter/hookscript" ];
+then
+	HOOKSCRIPT="$(cat "${__object:?}/parameter/hookscript")"
+fi
+export HOOKSCRIPT
+
+KEYTYPE="-t EC"
+if [ -f "${__object:?}/parameter/use-rsa" ];
+then
+	KEYTYPE="-t RSA"
+fi
+export KEYTYPE
+
+MUST_STAPLE=
+if [ -f "${__object:?}/parameter/must-staple" ];
+then
+	MUST_STAPLE="--must-staple"
+fi
+export MUST_STAPLE
+
+OWNER=root
+if [ -f "${__object:?}/parameter/owner" ];
+then
+	OWNER="$(cat "${__object:?}/parameter/owner")"
+fi
+export OWNER
+
+KEY_TARGET=
+if [ -f "${__object:?}/parameter/install-key-to" ];
+then
+	KEY_TARGET="$(cat "${__object:?}/parameter/install-key-to")"
+fi
+export KEY_TARGET
+
+CERT_TARGET=
+if [ -f "${__object:?}/parameter/install-cert-to" ];
+then
+	CERT_TARGET="$(cat "${__object:?}/parameter/install-cert-to")"
+fi
+export CERT_TARGET
+
+RENEW_HOOK=
+if [ -f "${__object:?}/parameter/renew-hook" ];
+then
+	RENEW_HOOK="$(cat "${__object:?}/parameter/renew-hook")"
+fi
+export RENEW_HOOK
+
+if [ -n "$KEY_TARGET" ] && [ -z "$CERT_TARGET" ]; then
+	echo "You cannot specify --install-key-to without --install-cert-to." >&2
+	exit 1
+elif [ -z "$KEY_TARGET" ] && [ -n "$CERT_TARGET" ]; then
+	echo "You cannot specify --install-cert-to without --install-key-to." >&2
+	exit 1
+fi
+
+# Make sure challengedir exist.
+__directory "$CHALLENGEDIR" --parents
+
+# Generate and deploy renew script.
+mkdir -p "${__object:?}/files"
+"${__type:?}/files/renew.sh.sh" > "${__object:?}/files/uacme-renew.sh"
+
+__directory "$CONFDIR/$MAIN_DOMAIN"
+require="__directory/$CONFDIR/$MAIN_DOMAIN" __file "$CONFDIR/$MAIN_DOMAIN/renew.sh" \
+	--mode 0755 --source "${__object:?}/files/uacme-renew.sh"
+
+# Set up renew cronjob - initial issue done in gencode-remote.
+__cron "uacme-$MAIN_DOMAIN" --user root --hour 2 --minute 0 \
+	--command "$CONFDIR/$MAIN_DOMAIN/renew.sh"
