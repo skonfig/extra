@@ -73,7 +73,7 @@ cfg_values_should=$(
 	fi
 )
 
-if ! printf '%s\n' "${cfg_values_should}" | cmp -s "${__object:?}/explorer/cfg-values" -
+if ! printf '%s\n' "${cfg_values_should}" | sort | cmp -s "${__object:?}/explorer/cfg-values" -
 then
 	cat <<CODE
 awk $(drop_awk_comments "${__type:?}/files/update_getssl_cfg.awk") <<'EOF' $(quote "${getssl_cfg}") >$(quote "${getssl_cfg}.tmp") \\
