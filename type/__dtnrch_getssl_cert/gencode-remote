@@ -93,7 +93,7 @@ cfg_values_should=$(
 	fi
 	if test -s "${__object:?}/parameter/server-type"
 	then
-	   printf 'SERVER_TYPE="%s"\n' "$(head -n1 "${__object:?}/parameter/server-type")"
+		printf 'SERVER_TYPE="%s"\n' "$(head -n1 "${__object:?}/parameter/server-type")"
 	fi
 
 	# Domain validation
@@ -185,7 +185,7 @@ cfg_values_should=$(
 	fi
 )
 
-if ! printf '%s\n' "${cfg_values_should}" | cmp -s "${__object:?}/explorer/cfg-values" -
+if ! printf '%s\n' "${cfg_values_should}" | sort | cmp -s "${__object:?}/explorer/cfg-values" -
 then
 	# NOTE: ${domain} needs to be quoted, because of wildcard certificates.
 	cat <<CODE
