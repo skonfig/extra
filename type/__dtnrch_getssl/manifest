@@ -62,7 +62,7 @@ in
 esac
 
 # shellcheck disable=SC2034
-IFS='	' read -r tag_name sha256_should cksum_should <<EOF
+IFS='	' read -r gitref sha256_should cksum_should <<EOF
 $(
 	version_should=$(cat "${__object:?}/parameter/version")
 	case ${version_should}
@@ -71,7 +71,7 @@ $(
 			tail -n 1 "${__type:?}/files/cksums.txt"
 			;;
 		(*)
-			awk -F '\t' -v vers="${version_should}" 'index($1, vers) == ($1 ~ /^v/) + 1' "${__type:?}/files/cksums.txt"
+			awk -F '\t' -v vers="${version_should}" 'BEGIN { if (vers !~ /^v/) vers = "v" vers } $1 == vers' "${__type:?}/files/cksums.txt"
 			;;
 	esac
 )
@@ -80,7 +80,7 @@ EOF
 require="${require-}${require:+ }$(test "${state_should}" != 'absent' || echo __cron/getssl)" \
 __staged_file "${DEST}/getssl" --state "${state_should}" \
 	--owner 0 --mode 0755 \
-	--source "https://raw.githubusercontent.com/srvrco/getssl/${tag_name}/getssl" \
+	--source "https://raw.githubusercontent.com/srvrco/getssl/${gitref#*@}/getssl" \
 	--cksum "${cksum_should}"
 
 if test "${state_should}" != 'absent'
