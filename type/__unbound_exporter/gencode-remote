@@ -42,5 +42,8 @@ else
 
     # Clean up!
     rm -r \$workdir
+
+    # Start service.
+    service unbound_exporter start
 fi
 EOF
