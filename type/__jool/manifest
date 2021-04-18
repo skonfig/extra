@@ -1,0 +1,76 @@
+#!/bin/sh -e
+#
+# 2021 Joachim Desroches (joachim.desroches@epfl.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+os=$(cat "${__global:?}/explorer/os")
+
+case "$os" in
+'alpine')
+	:
+	;;
+*)
+	printf "This type has no implementation for %s. Please contribute one if you can.\n" "$os"
+	exit 1
+	;;
+esac
+
+
+if [ -f "${__object:?}/parameter/vm" ];
+then
+	kernel_modules="jool-modules-virt"
+else
+	kernel_modules="jool-modules-lts"
+fi
+
+for pkg in jool-tools jool-tools-openrc "$kernel_modules";
+do
+	__package "$pkg"
+done
+
+instance="default"
+if [ -f "${__object:?}/parameter/instance" ];
+then
+	instance="$(cat "${__object:?}/parameter/instance")"
+fi
+
+framework="netfilter"
+if [ -f "${__object:?}/parameter/framework" ];
+then
+	framework="$(cat "${__object:?}/parameter/framework")"
+fi
+
+pool6="64:ff9b::/96"
+if [ -f "${__object:?}/parameter/pool6" ];
+then
+	pool6="$(cat "${__object:?}/parameter/pool6")"
+fi
+
+require='__package/jool-tools' __file /etc/jool/jool.conf \
+	--source - <<- EOF
+	{
+	  "instance": "$instance",
+	  "framework": "$framework",
+	  "global": {
+	    "pool6": "$pool6"
+	  }
+	}
+	EOF
+
+__start_on_boot 'jool'
