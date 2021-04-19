@@ -1,0 +1,44 @@
+#!/bin/sh -e
+#
+# 2021 Joachim Desroches (joachim.desroches@epfl.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+os=$(cat "${__global:?}/explorer/os")
+
+case "$os" in
+'alpine'|'debian'|'ubuntu')
+	confdir=/etc/bird.d
+	;;
+*)
+	printf "Your operating system (%s) is currently not supported by __bird_filter\n" "$os" >&2
+	printf "Please contribute an implementation for it if you can.\n" >&2
+	exit 1
+	;;
+esac
+
+# Filters start with 1 because bird loads the config in alphanumerical order
+# and we need them to be defined to be used in the rest of the stuff, but after
+# functions.
+__file "$confdir/1-filter-${__object_id:?}.conf" \
+	--owner root --group bird --mode 0640 \
+	--source - << EOF
+filter ${__object_id:?} {
+$(cat "${__object:?}"/stdin)
+}
+EOF

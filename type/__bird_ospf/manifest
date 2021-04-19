@@ -1,0 +1,63 @@
+#!/bin/sh -e
+#
+# 2021 Joachim Desroches (joachim.desroches@epfl.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+os=$(cat "${__global:?}/explorer/os")
+
+case "$os" in
+'alpine'|'debian'|'ubuntu')
+	confdir='/etc/bird.d'
+;;
+*)
+	printf "Your operating system (%s) is currently not supported by this __bird_ospf\n" "$os" >&2
+	printf "Please contribute an implementation for it if you can.\n" >&2
+	exit 1
+;;
+esac
+
+description=
+if [ -f "${__object:?}/parameter/description" ];
+then
+	description="$(cat "${__object:?}/parameter/description")"
+fi
+
+instance_id=
+if [ -f "${__object:?}/parameter/instance-id" ];
+then
+	instance_id="$(cat "${__object:?}/parameter/instance-id")"
+fi
+
+__file "${confdir:?}/ospf-${__object_id:?}.conf" \
+	--mode 0640 --owner root --group bird \
+	--source - << EOF
+protocol ospf v3 ${__object_id:?} {
+$([ -n "${description?}" ] && printf "\tdescription \"%s\";\n" "${description?}")
+$([ -n "${instance_id?}" ] && printf "\tinstance id %s;\n" "${instance_id?}")
+
+	$(cat "${__object:?}/parameter/channel") {
+		import $(cat "${__object:?}/parameter/import");
+		export $(cat "${__object:?}/parameter/export");
+	};
+
+	area 0 {
+$(sed -e 's/^/\t\tinterface "/' -e 's/$/";/' "${__object:?}/parameter/interface")
+	};
+}
+EOF

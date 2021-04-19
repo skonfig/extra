@@ -1,0 +1,83 @@
+#!/bin/sh -e
+#
+# 2021 Joachim Desroches (joachim.desroches@epfl.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+os=$(cat "${__global:?}/explorer/os")
+
+case "$os" in
+	"alpine"|"debian"|"ubuntu")
+		confdir="/etc/bird.d"
+	;;
+	*)
+		printf "Your operating system (%s) is currently not supported by __bird_kernel\n" "$os" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+	;;
+esac
+
+# Required parameters
+channel="$(cat "${__object:?}/parameter/channel")"
+
+# Boolean switches
+persist=
+if [ -f "${__object:?}"/parameter/persist ];
+then
+	persist=true
+fi
+
+learn=
+if [ -f "${__object:?}"/parameter/learn ];
+then
+	learn=true
+fi
+
+# Optional parameters
+description=
+if [ -f "${__object:?}"/parameter/description ];
+then
+	description="$(cat "${__object:?}/parameter/description")"
+fi
+
+import=
+if [ -f "${__object:?}"/parameter/import ];
+then
+	import="$(cat "${__object:?}/parameter/import")"
+fi
+
+_export=
+if [ -f "${__object:?}"/parameter/export ];
+then
+	_export="$(cat "${__object:?}/parameter/export")"
+fi
+
+# Install resulting configuration
+__file "${confdir:?}"/kernel-"${__object_id:?}".conf \
+	--mode 0640 --owner root --group bird \
+	--source - << EOF
+protocol kernel ${__object_id:?} {
+$([ -n "${description?}" ] && printf "\tdescription \"%s\";\n" "${description?}")
+$([ -n "${persist?}" ] && printf "\tpersist;\n")
+$([ -n "${learn?}" ] && printf "\tlearn;\n")
+	${channel:?} {
+		import ${import:?};
+		export ${_export:?};
+	};
+}
+EOF
