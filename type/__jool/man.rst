@@ -36,13 +36,6 @@ pool6
     The IPv6 prefix used to map IPv4 addresses, `64:ff9b::/96` if unspecified.
 
 
-BOOLEAN PARAMETERS
-------------------
-vm
-    Wether this instance is running in a VM or not: configures the kernel
-    modules that will be installed.
-
-
 EXAMPLES
 --------
 

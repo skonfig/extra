@@ -1,0 +1,13 @@
+#!/bin/sh
+# Explorer for the __jool type to determine if we need the -virt or the -lts modules.
+
+[ "$(sh -e "${__explorer:?}"/os)" = 'alpine' ] || exit 0
+
+case $(uname -r) in
+*-virt)
+	printf "jool-modules-virt"
+	;;
+*-lts)
+	printf "jool-modules-lts"
+	;;
+esac

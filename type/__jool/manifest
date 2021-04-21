@@ -23,7 +23,7 @@ os=$(cat "${__global:?}/explorer/os")
 
 case "$os" in
 'alpine')
-	:
+	packages="jool-tools jool-tools-openrc $(cat "${__object:?}"/explorer/alpine-kernel-modules)"
 	;;
 *)
 	printf "This type has no implementation for %s. Please contribute one if you can.\n" "$os"
@@ -31,15 +31,7 @@ case "$os" in
 	;;
 esac
 
-
-if [ -f "${__object:?}/parameter/vm" ];
-then
-	kernel_modules="jool-modules-virt"
-else
-	kernel_modules="jool-modules-lts"
-fi
-
-for pkg in jool-tools jool-tools-openrc "$kernel_modules";
+for pkg in $packages;
 do
 	__package "$pkg"
 done
