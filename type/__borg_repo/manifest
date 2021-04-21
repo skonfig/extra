@@ -12,3 +12,8 @@ case "$os" in
 esac
 
 __package "$borg_package"
+
+if [ -f "${__object:?}/parameter/owner" ];
+then
+	__package sudo
+fi

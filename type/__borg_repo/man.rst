@@ -26,6 +26,9 @@ OPTIONAL PARAMETERS
 passphrase
   The passphrase to encrypt the keyfile with.
 
+owner
+  Remote user owning the repository.
+
 BOOLEAN PARAMETERS
 ------------------
 append-only

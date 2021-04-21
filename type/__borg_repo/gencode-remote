@@ -27,10 +27,15 @@ then
 	appendonly='--append-only'
 fi
 
+if [ -f "${__object:?}/parameter/owner" ];
+then
+	doas="sudo -u '$(cat "${__object:?}/parameter/owner")'"
+fi
+
 cat <<- EOF
-	if ! borg check --repository-only 1>&2 2>/dev/null "/${__object_id:?}";
-	then
-		BORG_NEW_PASSPHRASE=$passphrase borg init -e ${enc:?} $appendonly /${__object_id:?}
+	set -x
+	if [ ! -d "/${__object_id:?}" ]; then
+		$doas BORG_NEW_PASSPHRASE=$passphrase borg init -e ${enc:?} $appendonly /${__object_id:?}
 	fi
 EOF
 
