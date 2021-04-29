@@ -76,8 +76,8 @@ video-constraints
 
 
 branding-json
-    Path to a JSON file that will be served as the `brandingDataUrl`.
-    For information on the format see `brandingDataUrl` in
+    Path to a JSON file that will be served as the `dynamicBrandingUrl`.
+    For information on the format see `dynamicBrandingUrl` in
     `__jitsi_meet_domain/files/config.js.sh`.
     If not set, no branding will be set up.
 
