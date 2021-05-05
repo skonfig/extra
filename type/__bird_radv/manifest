@@ -1,0 +1,81 @@
+#!/bin/sh -e
+#
+# 2021 Joachim Desroches (joachim.desroches@epfl.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+os=$(cat "${__global:?}/explorer/os")
+
+case "$os" in
+'alpine'|'debian'|'ubuntu')
+	confdir='/etc/bird.d'
+;;
+*)
+	printf "Your operating system (%s) is currently not supported by __bird_radv\n" "$os" >&2
+	printf "Please contribute an implementation for it if you can.\n" >&2
+	exit 1
+;;
+esac
+
+have_routes=no
+if [ -f "${__object:?}/parameter/route" ];
+then
+	have_routes=yes
+fi
+
+RDNS=
+if [ -f "${__object:?}/parameter/ns" ];
+then
+	RDNS=$(cat << EOF
+	rdnss {
+$(sed -e 's/^/\t\tns /' -e 's/$/;/' "${__object:?}/parameter/ns")
+	};
+
+EOF
+)
+fi
+
+DNSSL=
+if [ -f "${__object:?}/parameter/dnssl" ];
+then
+	DNSSL=$(sed -e 's/^/\tdnssl "/' -e 's/$/";/' "${__object:?}/parameter/dnssl")
+fi
+
+__file "${confdir:?}/radv-${__object_id:?}.conf" \
+	--mode 0640 --owner root --group bird \
+	--source - << EOF
+ipv6 table radv_routes;
+
+protocol static {
+	description "Routes advertised via RAs";
+	ipv6 { table radv_routes; };
+
+$(sed -e 's/^/\troute /' -e 's/$/ unreachable;/' "${__object:?}/parameter/route")
+}
+
+protocol radv ${__object_id:?} {
+	propagate routes ${have_routes:?};
+	ipv6 { table radv_routes; export all; };
+
+$(sed -e 's/^/\tinterface "/' -e 's/$/";/' "${__object:?}/parameter/interface")
+
+$RDNS
+
+$DNSSL
+
+}
+EOF
