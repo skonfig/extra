@@ -46,8 +46,7 @@ fi
 # use object id as domain
 __letsencrypt_cert "${DOMAIN}" \
 	--admin-email "${ADMIN_EMAIL}" \
-	--automatic-renewal \
-	--renew-hook "service nginx reload" \
+	--deploy-hook "service nginx reload" \
 	--webroot /usr/share/jitsi-meet
 
 # Create virtualhost for nginx
