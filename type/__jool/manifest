@@ -65,4 +65,4 @@ require='__package/jool-tools' __file /etc/jool/jool.conf \
 	}
 	EOF
 
-__start_on_boot 'jool'
+require='__package/jool-tools' __start_on_boot 'jool'
