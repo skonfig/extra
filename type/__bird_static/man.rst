@@ -16,6 +16,11 @@ used unless the `ipv4` flag is passed. This type **expects** to depend on the
 `cdist-type__bird_core(7)` type.
 
 
+REQUIRED PARAMETERS
+-------------------
+channel
+   The channel to use between the protocol and the table.
+
 REQUIRED MULTIPLE PARAMETERS
 ----------------------------
 route
@@ -27,11 +32,6 @@ OPTIONAL PARAMETERS
 -------------------
 description
     An instance desciption to be printed when `birdc show protocols` is called.
-
-BOOLEAN PARAMETERS
-------------------
-ipv4
-   Use the ipv4 channel instead of the default ipv6 one.
 
 
 EXAMPLES

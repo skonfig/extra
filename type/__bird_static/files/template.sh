@@ -13,12 +13,7 @@ printf "protocol static %s {\n" "${__object_id:?}"
 [ -n "${description?}" ] && printf "\tdescription \"%s\";\n" "${description:?}"
 
 # Channel choice
-if [ -f "${__object:?}/parameter/ipv4" ];
-then
-	printf "\tipv4;\n"
-else
-	printf "\tipv6;\n"
-fi
+printf "%s;\n" "$(cat "${__object:?}/parameter/channel")"
 
 # Routes
 while read -r route
