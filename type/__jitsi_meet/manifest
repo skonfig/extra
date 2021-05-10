@@ -141,6 +141,32 @@ server {
 }
 EOF
 
+if [ -f "${__object}/parameter/secured-domains" ]; then
+  SECURED_DOMAINS_STATE='present'
+  SECURED_DOMAINS_STATE_JICOFO='replace'
+else
+  SECURED_DOMAINS_STATE='absent'
+  SECURED_DOMAINS_STATE_JICOFO='absent'
+fi
+
+__file "/etc/prosody/conf.d/${JITSI_HOST}.zauth.cfg.lua" \
+  --owner prosody --group prosody --mode 0440 \
+  --state ${SECURED_DOMAINS_STATE} \
+  --source - <<EOF
+VirtualHost "${JITSI_HOST}"
+    authentication = "internal_plain"
+
+VirtualHost "guest.${JITSI_HOST}"
+    authentication = "anonymous"
+    c2s_require_encryption = false
+EOF
+
+__line jitsi_jicofo_secured_domains \
+  --file /etc/jitsi/jicofo/sip-communicator.properties \
+  --line "org.jitsi.jicofo.auth.URL=XMPP:${JITSI_HOST}" \
+  --regex "org.jitsi.jicofo.auth.URL=" \
+  --state ${SECURED_DOMAINS_STATE_JICOFO}
+
 # These two should be changed on new release
 PROMETHEUS_JITSI_EXPORTER_SHOULD_VERSION="1.1.5"
 PROMETHEUS_JITSI_EXPORTER_CHECKSUM="sha256:3ddf43a48d9a2f62be1bc6db9e7ba75d61994f9423e5c5b28be019f41f06f745"

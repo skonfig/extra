@@ -13,7 +13,14 @@ var config = {
         domain: '${JITSI_HOST}',
 
         // When using authentication, domain for guest users.
+$( if [ -n "${SECURED_DOMAINS}" ]; then cat<<EOF2
+        anonymousdomain: 'guest.${JITSI_HOST}',
+EOF2
+else cat <<EOF2
         // anonymousdomain: 'guest.example.com',
+EOF2
+fi
+)
 
         // Domain for authenticated users. Defaults to <domain>.
         // authdomain: '${JITSI_HOST}',
