@@ -39,10 +39,14 @@ OPTIONAL PARAMETERS
 turn-secret
     The shared secret for the TURN server.
 
-
 turn-server
     The hostname of the TURN server.
     This will assume that it is listening with TLS on port 443.
+
+jitsi-version
+    The jitsi-meet version of the Debian package to be installed.
+    While this can be specified, only the default value is known to work
+    properly with this type.
 
 
 BOOLEAN PARAMETERS
