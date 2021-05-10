@@ -1,0 +1,15 @@
+#!/bin/sh -e
+
+PASSWD="$(cat "${__object}/parameter/password")"
+STATE="$(cat "${__object}/parameter/state")"
+
+USER="${__object_id}"
+FQDN="$(echo "${__target_host}" | sed 's/\./%2e/g' | sed 's/-/%2d/g')"
+FILENAME="/var/lib/prosody/${FQDN}/accounts/${USER}.dat"
+
+__file "${FILENAME}" --owner prosody --group prosody --mode 0440 \
+  --state "${STATE}" --source - <<EOF
+return {
+	["password"] = "${PASSWD}";
+};
+EOF

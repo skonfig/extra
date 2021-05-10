@@ -32,6 +32,9 @@ fi
 if [ -f "${__object}/parameter/disable-audio-levels" ]; then
 	DISABLE_AUDIO_LEVELS="YES"
 fi
+if [ -f "${__object}/parameter/secured-domains" ]; then
+	SECURED_DOMAINS="YES"
+fi
 
 if [ -z "${TURN_SERVER}" ]; then
 	TURN_SERVER="${__target_host}"
