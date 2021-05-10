@@ -1,5 +1,5 @@
 cdist-type__jitsi_meet(7)
-=================================
+=========================
 
 
 NAME
@@ -57,6 +57,13 @@ disable-prometheus-exporter
     The explorer is based on:
     https://github.com/systemli/prometheus-jitsi-meet-exporter
 
+secured-domains
+    If this flag is present, all domains that use this Jitsi instance will
+    require that an authenticated user starts a meeting.
+    For information on how this is achieved, see
+    https://jitsi.github.io/handbook/docs/devops-guide/secure-domain .
+    You will need to create the users with `__jitsi_meet_user(7)`.
+
 
 EXAMPLES
 --------
@@ -74,8 +81,8 @@ EXAMPLES
 
 SEE ALSO
 --------
-- `__jitsi_meet_domain`
-
+- `__jitsi_meet_domain(7)`
+- `__jitsi_meet_user(7)`
 
 
 AUTHORS
@@ -85,4 +92,4 @@ Evilham <contact@evilham.com>
 
 COPYING
 -------
-Copyright \(C) 2020 Evilham.
+Copyright \(C) 2021 Evilham.

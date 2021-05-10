@@ -1,7 +1,13 @@
 #!/bin/sh -e
 
-PASSWD="$(cat "${__object}/parameter/password")"
+PASSWD="$(cat "${__object}/parameter/password" 2>/dev/null || true)"
 STATE="$(cat "${__object}/parameter/state")"
+
+if [ -z "${PASSWD}" ] && [ "${STATE}" != "absent" ]; then
+	cat >> dev/stderr <<-EOF
+	A password is required unless you are removing the user '$__object_id'.
+	EOF
+fi
 
 USER="${__object_id}"
 FQDN="$(echo "${__target_host}" | sed 's/\./%2e/g' | sed 's/-/%2d/g')"

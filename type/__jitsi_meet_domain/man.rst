@@ -1,5 +1,5 @@
 cdist-type__jitsi_meet_domain(7)
-========================================
+================================
 
 
 NAME
@@ -107,6 +107,10 @@ enable-third-party-requests
     them, restoring Jitsi-Meet's defaults.
     This affects things like avatars, callstats, ...
 
+secured-domains
+    Whether or not an authetnicated user will be required to start a meeting.
+    You will need to create the users with `__jitsi_meet_user(7)`.
+
 
 EXAMPLES
 --------
@@ -120,7 +124,7 @@ EXAMPLES
       --notice-message "Hola!" \
       --disable-audio-levels \
       --turn-secret "WeNeedGoodSecurity" \
-      --video-constraints "$(cat <<EOF
+      --video-constraints "$(cat <<-EOF
         constraints: {
              video: {
                  height: {
@@ -137,8 +141,8 @@ EXAMPLES
 
 SEE ALSO
 --------
-- `__jitsi_meet`
-
+- `__jitsi_meet(7)`
+- `__jitsi_meet_user(7)`
 
 
 AUTHORS
@@ -148,4 +152,4 @@ Evilham <contact@evilham.com>
 
 COPYING
 -------
-Copyright \(C) 2020 Evilham.
+Copyright \(C) 2021 Evilham.
