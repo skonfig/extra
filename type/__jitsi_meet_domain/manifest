@@ -22,6 +22,10 @@ BRANDING_INDEX="$(cat "${__object}/parameter/branding-index")"
 BRANDING_JSON="$(cat "${__object}/parameter/branding-json")"
 BRANDING_WATERMARK="$(cat "${__object}/parameter/branding-watermark")"
 
+if [ "${BRANDING_INDEX}" = "-" ]; then
+	BRANDING_INDEX="${__object}/stdin"
+fi
+
 if [ -f "${__object}/parameter/enable-third-party-requests" ]; then
 	ENABLE_THIRD_PARTY_REQUESTS="YES"
 fi

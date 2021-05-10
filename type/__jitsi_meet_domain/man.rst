@@ -86,6 +86,7 @@ branding-index
     Path to an HTML file that will be served instead of Jitsi-Meet's default
     one.
     If not set, the default index file will be used.
+    If set to `-`, the type's standard input will be used.
 
 
 branding-watermark
