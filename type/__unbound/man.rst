@@ -80,20 +80,20 @@ EXAMPLES
 
 .. code-block:: sh
 
-    # Setup bird and open a BGP session.
-    __bird_core --router-id 198.51.100.4
+        # Setup two resolvers, one with dns64, the other without.
+        __unbound unbound \
+                --dns64 \
+                --ip-transparent \
+                --interface "$address" \
+                --access-control "$address/64 allow" \
+                --enable-rc \
+                --control-interface "/var/run/unbound_control.sock"
 
-    require='__bird_core' __bird_bgp bgp4 \
-        --description "a test IPv4 BGP instance" \
-        --ipv4-export all \
-        --ipv4-import all \
-        --ipv6-export none \
-        --ipv6-import none \
-        --local-as 1234 \
-        --local-ip 198.51.100.4 \
-        --neighbor-as 4321 \
-        --neighbor-ip 198.51.100.3 \
-        --password hunter01
+        __unbound unbound6only \
+                --ip-transparent \
+                --interface "$addresstwo" \
+                --access-control "$addresstwo/64 allow" \
+                --forward-zone "example.com,1.1.1.1,2.2.2.2"
 
 
 SEE ALSO
