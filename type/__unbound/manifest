@@ -34,47 +34,66 @@ alpine)
 esac
 
 # Optional parameters:
-[ -f "${__object:?}/parameter/verbosity" ] && {
+if [ -f "${__object:?}/parameter/verbosity" ];
+then
 	VERBOSITY=$(cat "${__object:?}/parameter/verbosity")
 	export VERBOSITY
-}
+fi
 
-[ -f "${__object:?}/parameter/port" ] && {
+if [ -f "${__object:?}/parameter/port" ];
+then
 	PORT=$(cat "${__object:?}/parameter/port")
 	export PORT
-}
+fi
 
-[ -f "${__object:?}/parameter/control-port" ] && {
+if [ -f "${__object:?}/parameter/control-port" ];
+then
 	CONTROL_PORT=$(cat "${__object:?}/parameter/control-port")
 	export CONTROL_PORT
-}
+fi
 
-[ -f "${__object:?}/parameter/dns64-prefix" ] && {
+if [ -f "${__object:?}/parameter/dns64-prefix" ];
+then
 	PREFIX64=$(cat "${__object:?}/parameter/dns64-prefix")
 	export PREFIX64
-}
+fi
 
 # Boolean parameters:
-[ -f "${__object:?}/parameter/ip-transparent" ] && {
+if [ -f "${__object:?}/parameter/ip-transparent" ];
+then
 	IP_TRANSPARENT=yes
 	export IP_TRANSPARENT
-}
+fi
 
-[ -f "${__object:?}/parameter/dns64" ] && {
+if [ -f "${__object:?}/parameter/dns64" ];
+then
 	DNS64=yes
 	export DNS64
-}
+fi
 
-[ -f "${__object:?}/parameter/enable-rc" ] && {
+if [ -f "${__object:?}/parameter/enable-rc" ];
+then
 	ENABLE_RC=yes
 	export ENABLE_RC
-}
+fi
 
-[ -f "${__object:?}/parameter/control-use-certs" ] && {
+if [ -f "${__object:?}/parameter/disable-ip4" ];
+then
+	DISABLE_IPV4=yes
+	export DISABLE_IPV4
+fi
+
+if [ -f "${__object:?}/parameter/disable-ip6" ];
+then
+	DISABLE_IPV6=yes
+	export DISABLE_IPV6
+fi
+
+if [ -f "${__object:?}/parameter/control-use-certs" ];
+then
 	__package "$openssl_package"
-	CONTROL_USE_CERTS=yes
-	export CONTROL_USE_CERTS
-}
+	export CONTROL_USE_CERTS=yes
+fi
 
 # Certs for remote control, generated if --generate-certs is given.
 export RC_SERVER_KEY_FILE='/etc/unbound/unbound_server.key'
@@ -82,6 +101,7 @@ export RC_SERVER_CERT_FILE='/etc/unbound/unbound_server.pem'
 export RC_CONTROL_KEY_FILE='/etc/unbound/unbound_control.key'
 export RC_CONTROL_CERT_FILE='/etc/unbound/unbound_control.pem'
 
+export require='__package/unbound'
 # If object_id is different from 'unbound', we consider that we are launching a
 # different instance of unbound and create the appropriate init service.
 if [ "${__object_id:?}" != "unbound" ];
@@ -102,7 +122,7 @@ then
 else
 		__start_on_boot unbound
 fi
-
+unset require
 
 # Generate and deploy configuration files.
 source_file="${__object:?}/files/unbound.conf"
@@ -112,5 +132,4 @@ mkdir -p "$__object/files"
 "${__type:?}/files/unbound.conf.sh" > "$source_file"
 require="__package/unbound" __file "$target_file" \
     --source "$source_file" \
-    --owner root \
-    --mode 644
+    --owner root --mode 644

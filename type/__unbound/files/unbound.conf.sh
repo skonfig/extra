@@ -10,6 +10,10 @@ EOF
 # Server logging
 [ "$VERBOSITY" ] && printf "verbosity: %u\n" "$VERBOSITY"
 
+# IP version
+[ "$DISABLE_IPV4" ] && echo "do-ip4: no"
+[ "$DISABLE_IPV6" ] && echo "do-ip6: no"
+
 # Interfaces to bind to
 [ "$PORT" ] && printf "port: %u\n" "$PORT"
 if [ -f "${__object:?}/parameter/interface" ];
@@ -29,6 +33,15 @@ then
 	do
 		printf "access-control: %s\n" "$acl"
 	done < "${__object:?}/parameter/access-control"
+fi
+
+# Local data
+if [ -f "${__object:?}/parameter/local-data" ];
+then
+	while read -r data;
+	do
+		printf "local-data: \"%s\"\n" "$data"
+	done < "${__object:?}/parameter/local-data"
 fi
 
 # DNS64

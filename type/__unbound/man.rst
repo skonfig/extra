@@ -58,6 +58,11 @@ forward-zone
   where the first element is the name of the zone, and the following elements
   are the IP addresses of the DNS servers; e.g. `example.com,1.2.3.4,4.3.2.1`
 
+local-data
+  Control the `unbound.conf(5)` local-data parameter. Note that no local-zone
+  is defined, so the unbound default is to treat this data as a transparent
+  local zone.
+
 BOOLEAN PARAMETERS
 ------------------
 ip-transparent
@@ -74,6 +79,11 @@ control-use-certs
   for the interaction between `unbound(8)` and `unbound-control(8)`, as well as
   their inclusion in the configuration file.
 
+disable-ip4
+  Disable answering queries over IPv4.
+
+disable-ip6
+  Disable answering queries over IPv6.
 
 EXAMPLES
 --------

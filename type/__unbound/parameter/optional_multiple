@@ -2,3 +2,4 @@ interface
 access-control
 control-interface
 forward-zone
+local-data
