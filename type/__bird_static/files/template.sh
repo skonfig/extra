@@ -13,7 +13,7 @@ printf "protocol static %s {\n" "${__object_id:?}"
 [ -n "${description?}" ] && printf "\tdescription \"%s\";\n" "${description:?}"
 
 # Channel choice
-printf "%s;\n" "$(cat "${__object:?}/parameter/channel")"
+printf "\t%s;\n" "$(cat "${__object:?}/parameter/channel")"
 
 # Routes
 while read -r route
