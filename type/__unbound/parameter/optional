@@ -1,2 +1,4 @@
-rc-interface
+verbosity
+port
+control-port
 dns64-prefix
