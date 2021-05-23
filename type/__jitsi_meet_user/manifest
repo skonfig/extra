@@ -1,5 +1,9 @@
 #!/bin/sh -e
 
+basic_urlencode() {
+  echo "${1}" | sed 's/\./%2e/g' | sed 's/-/%2d/g' | sed 's/_/%5f/g'
+}
+
 PASSWD="$(cat "${__object}/parameter/password" 2>/dev/null || true)"
 STATE="$(cat "${__object}/parameter/state")"
 
@@ -9,11 +13,23 @@ if [ -z "${PASSWD}" ] && [ "${STATE}" != "absent" ]; then
 	EOF
 fi
 
-USER="${__object_id}"
-FQDN="$(echo "${__target_host}" | sed 's/\./%2e/g' | sed 's/-/%2d/g')"
-FILENAME="/var/lib/prosody/${FQDN}/accounts/${USER}.dat"
+JITSI_USER_RAW="${__object_id}"
+if echo "${JITSI_USER_RAW}" | grep -q ".*[A-Z\"&'/:<>@]"; then
+  cat > /dev/stderr <<EOF
+Username (XMPP's localpart) ${JITSI_USER_RAW} has uppercase characters or
+contains invalid symbols ("&'/:<>@) according to RFC6122.
+EOF
+  exit 1
+fi
 
-__file "${FILENAME}" --owner prosody --group prosody --mode 0440 \
+JITSI_USER="$(basic_urlencode "${JITSI_USER_RAW}")"
+FQDN="$(basic_urlencode "${__target_host}")"
+FQDN_PATH="/var/lib/prosody/${FQDN}/accounts"
+FILENAME="${FQDN_PATH}/${JITSI_USER}.dat"
+
+__directory "${FQDN_PATH}" --parents --owner prosody --group prosody --state "present"
+
+require="__directory${FQDN_PATH}" __file "${FILENAME}" --owner prosody --group prosody --mode 0440 \
   --state "${STATE}" --source - <<EOF
 return {
 	["password"] = "${PASSWD}";
