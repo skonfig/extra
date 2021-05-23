@@ -56,6 +56,10 @@ server {
     location = /config.js {
         alias /etc/jitsi/meet/${DOMAIN}-config.js;
     }
+    # We expect this domain to be properly configured, the file should exist
+    location = /interface_config.js {
+        alias /etc/jitsi/meet/${DOMAIN}-interface_config.js;
+    }
     # This may or may not exist; it will be set up in config.js if needed
     location = /branding.json {
         alias /etc/jitsi/meet/${DOMAIN}-branding.json;
