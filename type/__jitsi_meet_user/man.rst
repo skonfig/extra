@@ -12,8 +12,17 @@ This type manages a user identified by `$__object_id` that is allowed to start
 meetings in a Jitsi Meet instance managed by `__jitsi_meet(7)` and
 `__jitsi_meet_domain(7)`.
 
-It does so by taking advantage of Prosody's plaintext authentication and
-managing a file per user with the credentials.
+These users are mapped to XMPP users which means that they must be a valid
+localpart as defined in `RFC6122`_. This implies that users are case
+insensitive and cannot contain the following symbols: `"&'/:<>@`.
+
+.. _RFC6122: https://xmpp.org/rfcs/rfc6122.html#nodeprep-prohibited
+
+To preserve idempotency we only allow lowercase for the users which correspond
+to the `$__object_id` of this type.
+
+This type takes advantage of Prosody's plaintext authentication and managing a
+file per user with the credentials.
 If a different authentication mechanism is needed, `__jitsi_meet(7)` should be
 patched accordingly.
 
