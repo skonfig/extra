@@ -73,6 +73,14 @@ __file "/etc/jitsi/meet/${DOMAIN}-config.js" \
 ${JITSI_CONFIG_JS}
 EOF
 
+# Setup jitsi interface config
+# shellcheck source=type/__jitsi_meet_domain/files/interface_config.js.sh
+. "${__type}/files/interface_config.js.sh"  # This defines JITSI_CONFIG_JS
+__file "/etc/jitsi/meet/${DOMAIN}-interface_config.js" \
+	--mode 0644 --source "-" <<EOF
+${JITSI_INTERFACE_CONFIG_JS}
+EOF
+
 
 #
 # Deal with branding as requested
