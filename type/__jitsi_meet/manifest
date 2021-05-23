@@ -118,6 +118,8 @@ require="__directory${NGINX_ETC}/sites-available" __file "${NGINX_ETC}/sites-ava
   --source - << EOF
 # This file is managed remotely, all changes will be lost
 
+server_names_hash_bucket_size 64;
+
 # nginx server configuration for:
 
 server {

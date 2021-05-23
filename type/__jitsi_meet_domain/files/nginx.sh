@@ -2,8 +2,6 @@
 
 # shellcheck disable=SC2034  # This is intended to be included
 JITSI_NGINX_CONFIG="$(cat <<EOF
-server_names_hash_bucket_size 64;
-
 server {
     listen 80;
     listen [::]:80;
