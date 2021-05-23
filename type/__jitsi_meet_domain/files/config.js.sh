@@ -33,7 +33,8 @@ fi
     },
 
     // BOSH URL. FIXME: use XEP-0156 to discover it.
-    bosh: '//${JITSI_HOST}/http-bind',
+    // useful for multidomain scenario -> src https://community.jitsi.org/t/same-jitsi-meet-instance-with-multiple-domain-names/17391/2
+    bosh: '//<!--# echo var="http_host" -->/<!--# echo var="subdir" default="" -->http-bind',
 
     // Websocket URL
     // websocket: 'wss://${JITSI_HOST}/xmpp-websocket',
