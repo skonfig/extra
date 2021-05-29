@@ -71,7 +71,7 @@ $(
 			tail -n 1 "${__type:?}/files/cksums.txt"
 			;;
 		(*)
-			awk -F '\t' -v vers="${version_should}" 'BEGIN { if (vers !~ /^v/) vers = "v" vers } $1 == vers' "${__type:?}/files/cksums.txt"
+			awk -F '\t' -v vers="v${version_should#v}" '{ v = $1; sub(/@.*$/, "", v) } v == vers' "${__type:?}/files/cksums.txt"
 			;;
 	esac
 )
