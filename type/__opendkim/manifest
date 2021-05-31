@@ -1,0 +1,91 @@
+#!/bin/sh -e
+#
+# 2021 Joachim Desroches (joachim.desroches@epfl.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+os=$(cat "${__global:?}/explorer/os")
+
+case "$os" in
+'alpine')
+	:
+	;;
+*)
+	printf "__opendkim does not yet support %s.\n" "$os" >&2
+	printf "Please contribute an implementation if you can.\n" >&2
+	exit 1
+	;;
+esac
+
+__package opendkim
+
+# Required parameters
+SOCKET="$(cat "${__object:?}/parameter/socket")"
+export SOCKET
+
+# Optional parameters
+if [ -f "${__object:?}/parameter/basedir" ]; then
+	BASEDIR="$(cat "${__object:?}/parameter/basedir")"
+	export BASEDIR
+fi
+
+if [ -f "${__object:?}/parameter/canonicalization" ]; then
+	CANON="$(cat "${__object:?}/parameter/canonicalization")"
+	export CANON
+fi
+
+if [ -f "${__object:?}/parameter/subdomains" ]; then
+	SUBDOMAINS="$(cat "${__object:?}/parameter/subdomains")"
+	export SUBDOMAINS
+fi
+
+if [ -f "${__object:?}/parameter/umask" ]; then
+	UMASK="$(cat "${__object:?}/parameter/umask")"
+	export UMASK
+fi
+
+if [ -f "${__object:?}/parameter/userid" ]; then
+	USERID="$(cat "${__object:?}/parameter/userid")"
+	export USERID
+fi
+
+# Boolean parameters
+[ -f "${__object:?}/parameter/syslog" ] && export SYSLOG=yes
+
+# Generate and deploy configuration file.
+source_file="${__object:?}/files/opendkim.conf"
+target_file="/etc/opendkim/opendkim.conf"
+
+mkdir -p "${__object:?}/files"
+
+"${__type:?}/files/opendkim.conf.sh" >"$source_file"
+
+# Add user custom config
+if [ -f "${__object:?}/parameter/custom-config" ]; then
+	echo "# Custom user config" >>"$source_file"
+	cat "${__object:?}/parameter/custom-config" >>"$source_file"
+fi
+
+require="__package/opendkim" __file "$target_file" \
+	--source "$source_file" --mode 0644
+
+require="__package/opendkim" __start_on_boot opendkim
+
+require="__file${target_file}" \
+	__check_messages opendkim \
+		--pattern "^__file${target_file}" \
+		--execute "service opendkim restart"

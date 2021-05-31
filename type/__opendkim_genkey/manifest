@@ -1,0 +1,66 @@
+#!/bin/sh -e
+#
+# 2021 Joachim Desroches (joachim.desroches@epfl.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+os=$(cat "${__global:?}/explorer/os")
+
+case "$os" in
+'alpine')
+	:
+;;
+*)
+	cat <<- EOF >&2
+	__opendkim_genkey currently only supports Alpine Linux. Please
+	contribute an implementation for $os if you can.
+	EOF
+;;
+esac
+
+SELECTOR="$(cat "${__object:?}/parameter/selector")"
+DOMAIN="$(cat "${__object:?}/parameter/domain")"
+
+DIRECTORY="/var/db/dkim/"
+if [ -f "${__object:?}/parameter/directory" ];
+then
+	DIRECTORY="$(cat "${__object:?}/parameter/directory")"
+fi
+
+SIGKEY="${DOMAIN:?}"
+if [ -f "${__object:?}/parameter/sigkey" ];
+then
+	SIGKEY="$(cat "${__object:?}/parameter/sigkey")"
+fi
+
+__package opendkim-utils
+
+require='__package/opendkim-utils' \
+	__file /etc/opendkim/KeyTable
+require='__package/opendkim-utils' \
+	__file /etc/opendkim/SigningTable
+
+require='__file/etc/opendkim/KeyTable' \
+	__line "line-key-${__object_id:?}" \
+		--file /etc/opendkim/KeyTable \
+		--line "${SELECTOR:?}._domainkey.${DOMAIN:?} ${DOMAIN:?}:${SELECTOR:?}:${DIRECTORY:?}${SELECTOR:?}.private"
+
+require='__file/etc/opendkim/SigningTable' \
+	__line "line-sig-${__object_id:?}" \
+		--file /etc/opendkim/SigningTable \
+		--line "${SIGKEY:?} ${SELECTOR:?}._domainkey.${DOMAIN:?}"
