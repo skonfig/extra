@@ -37,7 +37,7 @@ then
 fi
 
 # Deploy simple HTTP vhost, allowing to serve ACME challenges.
-__recycledcloud_nginx_vhost "301-to-https-$domain" \
+__nginx_vhost "301-to-https-$domain" \
 	--domain "$domain" --altdomains "$altdomains" --to-https
 
 # Obtaining TLS cert.
@@ -48,7 +48,7 @@ fi
 
 __uacme_account
 # shellcheck disable=SC2086
-require="__recycledcloud_nginx_vhost/301-to-https-$domain __uacme_account" \
+require="__nginx_vhost/301-to-https-$domain __uacme_account" \
 	__uacme_obtain "$domain" \
 		--altdomains "$altdomains" \
 		$set_custom_uacme_hookscript \
@@ -68,9 +68,9 @@ if [ -f "${__object:?}/parameter/config" ]; then
 	mkdir -p "${__object:?}/files"
 	cat "$nginx_logic" > "${__object:?}/files/config"
 
-	require="__uacme_obtain/$domain" __recycledcloud_nginx_vhost "$domain" \
+	require="__uacme_obtain/$domain" __nginx_vhost "$domain" \
 		--altdomains "$altdomains" --config "${__object:?}/files/config"
 else
-	require="__uacme_obtain/$domain" __recycledcloud_nginx_vhost "$domain" \
+	require="__uacme_obtain/$domain" __nginx_vhost "$domain" \
 		--altdomains "$altdomains"
 fi

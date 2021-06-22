@@ -1,14 +1,14 @@
-cdist-type__recycledcloud_nginx(7)
+cdist-type__nginx(7)
 ===================================
 
 NAME
 ----
-cdist-type__recycledcloud_nginx - Serve web content with NGINX
+cdist-type__nginx - Serve web content with NGINX
 
 
 DESCRIPTION
 -----------
-Leverages `__recycledcloud_nginx_vhost` to serve web content.
+Leverages `__nginx_vhost` to serve web content.
 
 REQUIRED PARAMETERS
 -------------------
@@ -31,6 +31,7 @@ uacme-hookscript
 AUTHORS
 -------
 Timothée Floure <timothee.floure@posteo.net>
+Joachim Desroches <joachim.desroches@epfl.ch>
 
 COPYING
 -------
