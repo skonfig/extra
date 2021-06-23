@@ -1,26 +1,35 @@
 #!/bin/sh
 
 os="$(cat "${__global:?}"/explorer/os)"
+init=$(cat "$__global/explorer/init")
+nginx_confdir="/etc/nginx"
 
-case "$os" in
-	alpine)
-		reload_hook="service nginx --ifstopped start;\
-			service nginx --ifstarted reload"
-		;;
-	debian|ubuntu|*)
-		reload_hook="systemctl reload-or-restart nginx"
-	;;
-esac
-
-# Check configuration and reload if valid.
-# TODO: only check if configuration was changed (= listen for __file's
-# messages).
-cat << EOF
-if nginx -t; then
-	$reload_hook
-else
-	echo "NGINX configuration is invalid. Exiting." >2&
-	nginx -t >2&
-	exit 1
+# The nginx service is not automatically started on alpine.
+if [ "$os" = "alpine" ]; then
+	echo "service nginx --ifstopped start"
 fi
-EOF
+
+if grep -qE "^__file$nginx_confdir" "${__messages_in:?}"; then
+	case "$init" in
+		systemd)
+			reload_hook="systemctl reload-or-restart nginx"
+			;;
+		busybox-init+openrc)
+			reload_hook="service nginx reload"
+			;;
+		*)
+			echo "Unknown init $init." >&2
+			exit 1
+			;;
+	esac
+
+	cat <<- EOF
+	if nginx -t; then
+	  $reload_hook
+	else
+	  echo "NGINX configuration is invalid. Exiting." >2&
+	  nginx -t >2&
+	  exit 1
+	fi
+	EOF
+fi
