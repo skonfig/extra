@@ -2,11 +2,14 @@ chdir
 gid
 harakiri
 home
+http-modifier1
+http-modifier2
 http-socket
 max-requests
 module
 processes
 pythonpath
+rack
 state
 threads
 uid

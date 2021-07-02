@@ -35,6 +35,10 @@ harakiri
    Respawn processes when a request wasn't answered within a number of seconds.
 home
    set ``PYTHONHOME``/virtualenv
+http-modifier1
+   force the specified modifier1 when using HTTP protocol
+http-modifier2
+   force the specified modifier2 when using HTTP protocol
 http-socket
    bind to the specified UNIX/TCP socket using HTTP protocol
 max-requests
@@ -49,6 +53,12 @@ processes
    spawn the specified number of workers/processes.
 pythonpath
    add directory (or glob) to pythonpath.
+rack
+   load a (Ruby) Rack app.
+ruby-require
+   import/require a Ruby module/script.
+
+   Can be used multiple times to specify more than one import.
 state
    The state of the configuration files.
 
@@ -82,6 +92,10 @@ BOOLEAN PARAMETERS
 ------------------
 enable-threads
    enable threads.
+lazy
+   set lazy mode (load apps in workers instead of master).
+lazy-apps
+   load apps in each worker instead of the master.
 vacuum
    try to remove all of the generated file/sockets.
 

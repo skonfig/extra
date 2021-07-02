@@ -1,2 +1,4 @@
 enable-threads
+lazy
+lazy-apps
 vacuum

@@ -16,12 +16,18 @@ add_param env str_multiple
 add_param gid str
 add_param harakiri uint
 add_param home str
+add_param http-modifier1 uint
+add_param http-modifier2 uint
 add_param http-socket str
+add_param lazy bool
+add_param lazy-apps bool
 add_param max-requests uint
 add_param module str
 add_param processes uint
 add_param plugin str comma_join
 add_param pythonpath str
+add_param rack str
+add_param ruby-require str_multiple
 add_param static-map str_multiple
 add_param threads uint
 add_param uid str
