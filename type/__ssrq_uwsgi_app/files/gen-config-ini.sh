@@ -33,9 +33,11 @@ add_param rack str
 add_param ruby-require str_multiple
 add_param static-map str_multiple
 add_param threads uint
+add_param touch-workers-reload str
 add_param uid str
 add_param uwsgi-socket str
 add_param vacuum bool
+add_param workers uint
 add_param wsgi-file str
 
 

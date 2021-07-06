@@ -5,6 +5,7 @@ home
 http-modifier1
 http-modifier2
 http-socket
+http-to-https
 max-requests
 module
 processes
@@ -12,7 +13,8 @@ pythonpath
 rack
 state
 threads
+touch-workers-reload
 uid
 uwsgi-socket
+workers
 wsgi-file
-http-to-https

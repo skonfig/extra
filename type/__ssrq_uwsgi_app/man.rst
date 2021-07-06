@@ -91,10 +91,14 @@ static-map
    Can be used multiple times to specify more than one mapping.
 threads
    run each worker in prethreaded mode with the specified number of threads.
+touch-workers-reload
+   trigger reload of (only) workers if the specified file is modified/touched.
 uid
    :strong:`setuid`\ (2) to the specified user/uid.
 uwsgi-socket
    bind to the specified UNIX/TCP socket using uwsgi protocol.
+workers
+   spawn the specified number of workers/processes.
 wsgi-file
    load .wsgi file as app.
 
