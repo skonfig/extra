@@ -41,7 +41,7 @@ in
 					cat <<-EOF
 					if /etc/init.d/uwsgi status $(quote "${__object_id:?}")
 					then
-					    /etc/init.d/uwsgi reload $(quote "${__object_id:?}")
+					    /etc/init.d/uwsgi restart $(quote "${__object_id:?}")
 					else
 					    /etc/init.d/uwsgi start $(quote "${__object_id:?}")
 					fi
