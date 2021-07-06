@@ -28,6 +28,22 @@ uacme-hookscript
   Custom hook passed to the __uacme_obtain type: useful to integrate the
   dns-01 challenge with third-party DNS providers.
 
+EXAMPLES
+--------
+
+.. code-block:: sh
+
+  # TLS-enabled vhost serving static files in $WEBROOT/domain.tld (OS-specific,
+  # usually `/var/www` on GNU/Linux systemd).
+  __nginx domain.tld
+
+  # TLS-enabled vhost with custom configuration.
+  __nginx files.domain.tld \
+    --config - <<- EOF
+      root /var/www/files.domain.tld/;
+      autoindex on;
+    EOF
+
 AUTHORS
 -------
 Timothée Floure <timothee.floure@posteo.net>
