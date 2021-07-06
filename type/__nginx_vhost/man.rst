@@ -66,7 +66,8 @@ to-https
   Ignore --config flag and redirect to HTTPS. Implies --no-tls.
 
 standalone-config
-  Insert the content of 
+  Use as-in the vhost configuration (= do not wrap in generic server section)
+  the content of the `config` parameter.
 
 AUTHORS
 -------
