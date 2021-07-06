@@ -45,6 +45,13 @@ http-modifier2
    force the specified modifier2 when using HTTP protocol.
 http-socket
    bind to the specified UNIX/TCP socket using HTTP protocol.
+http-to
+   forward requests to the specified node.
+
+   Can be used multiple times for load balancing.
+http-to-https
+   add an HTTP router/server on the specified address and redirect all of the
+   requests to HTTPS.
 max-requests
    Respawn a process after it has served a number of requests.
 module

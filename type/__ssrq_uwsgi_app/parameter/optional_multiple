@@ -2,6 +2,7 @@ cap
 check-static
 env
 http
+http-to
 plugin
 ruby-require
 static-map

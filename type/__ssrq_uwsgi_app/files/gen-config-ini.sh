@@ -20,6 +20,8 @@ add_param http str_multiple
 add_param http-modifier1 uint
 add_param http-modifier2 uint
 add_param http-socket str
+add_param http-to str_multiple
+add_param http-to-https str
 add_param lazy bool
 add_param lazy-apps bool
 add_param max-requests uint
