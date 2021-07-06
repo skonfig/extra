@@ -1,0 +1,4 @@
+# Redirect request to this page in HTTPS.
+location / {
+	return 301 https://$host$request_uri;
+}
