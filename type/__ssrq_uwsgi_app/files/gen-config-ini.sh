@@ -16,6 +16,7 @@ add_param env str_multiple
 add_param gid str
 add_param harakiri uint
 add_param home str
+add_param http str_multiple
 add_param http-modifier1 uint
 add_param http-modifier2 uint
 add_param http-socket str

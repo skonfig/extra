@@ -35,12 +35,16 @@ harakiri
    Respawn processes when a request wasn't answered within a number of seconds.
 home
    set ``PYTHONHOME``/virtualenv
+http
+   add an http router/server on the specified address.
+
+   Can be used multiple times.
 http-modifier1
-   force the specified modifier1 when using HTTP protocol
+   force the specified modifier1 when using HTTP protocol.
 http-modifier2
-   force the specified modifier2 when using HTTP protocol
+   force the specified modifier2 when using HTTP protocol.
 http-socket
-   bind to the specified UNIX/TCP socket using HTTP protocol
+   bind to the specified UNIX/TCP socket using HTTP protocol.
 max-requests
    Respawn a process after it has served a number of requests.
 module
