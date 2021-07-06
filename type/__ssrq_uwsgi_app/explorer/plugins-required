@@ -29,16 +29,38 @@ in
 	(debian|devuan|ubuntu)
 		test "$(cat "${__object:?}/parameter/state")" != absent || exit 0
 
-		while read -r pkgname
+		pkg_exists() { apt-cache show "$1" >/dev/null 2>&1; }
+
+		while read -r plugin
 		do
-			if apt-cache showpkg "${pkgname}" >/dev/null 2>&1
+			case ${plugin}
+			in
+				(rack)
+					ruby_version=$(
+						apt-cache show ruby \
+						| awk -F': ' \
+						  '$1 == "Depends" {
+							  split($2, d, ", ")
+							  for (i in d)
+								  if (d[i] ~ /^ruby[0-9]/)
+									  print d[i]
+						  }')
+					pkgname="uwsgi-plugin-${plugin}-${ruby_version}"
+					;;
+				(http)
+					pkgname='uwsgi-core'
+					;;
+				(*)
+					pkgname="uwsgi-plugin-${plugin}"
+					;;
+			esac
+			if pkg_exists "${pkgname}"
 			then
 				printf '%s\n' "${pkgname}"
 			fi
-		done <<-EOF
-		$(sed 's/^/uwsgi-plugin-/' <"${__object:?}/parameter/plugin")
-		EOF
+		done <"${__object:?}/parameter/plugin"
 		;;
 	(*)
+		# TODO
 		;;
 esac
