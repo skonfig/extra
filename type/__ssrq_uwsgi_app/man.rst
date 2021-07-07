@@ -18,6 +18,17 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
+buffer-size
+   set internal buffer size.
+
+   This is the maximum size of a request (excluding request body), i.e. ~ request headers.
+
+   Defaults to: ``4096``
+
+   If you receive a bigger request (for example with big cookies or query
+   string) you may need to increase the buffer size.
+   It is a security measure too, so adapt to your app needs instead of maxing it
+   out.
 cap
    Can be used multiple times.
 chdir
