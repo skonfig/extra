@@ -70,6 +70,10 @@ ruby-require
    import/require a Ruby module/script.
 
    Can be used multiple times to specify more than one import.
+shared-socket
+   create a shared socket for advanced jailing or IPC.
+
+   Can be used multiple times.
 state
    The state of the configuration files.
 
