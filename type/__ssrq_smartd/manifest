@@ -18,8 +18,10 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
+version_ge() { printf '%s\n' "$1" "$2" | sort -t. -r -n | { read -r x; test "${x}" = "$1"; } }
 
 os=$(cat "${__global:?}/explorer/os")
+os_version=$(cat "${__global:?}/explorer/os_version")
 
 state_should=present
 
@@ -52,10 +54,20 @@ in
 		__package_apt smartmontools --state "${state_should}"
 		export require=__package_apt/smartmontools
 
+		is_bullseye=$(
+			case ${os}
+			in
+				(debian) version_ge "${os_version}" 10.99 ;;
+				(devuan) version_ge "${os_version}" 3.99 ;;
+				(*) false ;;  # having one extra key doesn't hurt
+			esac && echo true || echo false)
+
 		if test "${state_should}" = present
 		then
 			# Enable smartd
+			# https://salsa.debian.org/debian/smartmontools/-/commit/f1420bd#9c96da0e9f91d7d8937b69b524702c106258f0d1_13_15
 			__key_value /etc/default/smartmontools:start_smartd \
+				--state "$(! ${is_bullseye} && echo present || echo absent)" \
 				--delimiter = --exact_delimiter \
 				--file /etc/default/smartmontools --key start_smartd \
 				--value 'yes'
