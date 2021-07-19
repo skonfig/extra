@@ -18,8 +18,10 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
+version_ge() { printf '%s\n' "$1" "$2" | sort -t. -r -n | { read -r x; test "${x}" = "$1"; } }
 
 os=$(cat "${__global:?}/explorer/os")
+os_version=$(cat "${__global:?}/explorer/os_version")
 mach_name=$(cat "${__global:?}/explorer/machine")
 init=$(cat "${__global:?}/explorer/init")
 
@@ -47,6 +49,29 @@ in
 		require='__package/dnsmasq __package/ebtables __package/qemu-utils __update_alternatives/nc' \
 		__package libvirt-daemon-system
 		libvirtd_require=__package/libvirt-daemon-system
+
+		is_bullseye=$(
+			case ${os}
+			in
+				(debian) version_ge "${os_version}" 10.99 ;;
+				(devuan) version_ge "${os_version}" 3.99 ;;
+				(*) false ;;  # having one extra key doesn't hurt
+			esac && echo true || echo false)
+
+		if ${is_bullseye}
+		then
+			# should be required by libvirt-daemon-system automaticall,
+			# but just to be save…
+			if test "${init}" = 'sysvinit'
+			then
+				__package libvirt-daemon-system-sysv
+				libvirtd_require="${libvirtd_require-}${libvirtd_require:+ }__package/libvirt-daemon-system-sysv"
+			elif test "${init}" = 'systemd'
+			then
+				__package libvirt-daemon-system-systemd
+				libvirtd_require="${libvirtd_require-}${libvirtd_require:+ }__package/libvirt-daemon-system-systemd"
+			fi
+		fi
 
 		if test "${init}" != 'systemd'
 		then
