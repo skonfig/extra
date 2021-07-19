@@ -38,17 +38,15 @@ in
 		# are are complete idiots ignoring the fact that there are different
 		# implementations of netcat (like, ones that don't support -U). Moreover
 		# they are incapable of printing connection errors on Mac OS X.
-		export CDIST_ORDER_DEPENDENCY=true
 		__package netcat-openbsd
+		export CDIST_ORDER_DEPENDENCY=true
 		__package netcat-traditional --state absent
 		__update_alternatives nc --path /bin/nc.openbsd
 		unset CDIST_ORDER_DEPENDENCY
 
 		require='__package/dnsmasq __package/ebtables __package/qemu-utils __update_alternatives/nc' \
 		__package libvirt-daemon-system
-		export require=__package/libvirt-daemon-system
-		require=__package/libvirt-daemon-system \
-		__package libvirt-clients
+		libvirtd_require=__package/libvirt-daemon-system
 
 		if test "${init}" != 'systemd'
 		then
@@ -61,16 +59,20 @@ in
 				--onchange '/etc/init.d/libvirtd restart'
 		fi
 
+		export require="${require-}${require:+ }${libvirtd_require}"
+
+		__package libvirt-clients
+
 		# cf. https://stackoverflow.com/questions/45125516/possible-values-for-uname-m
 		case ${mach_name}
 		in
 			(aarch64|aarch64_be|armv?l|armv?b)
 				__package qemu-system-arm
-				export require=__package/qemu-system-arm
+				qemu_require=__package/qemu-system-arm
 				;;
 			(ppc64|ppc|ppc64le|ppcle)
 				__package qemu-system-ppc
-				export require=__package/qemu-system-ppc
+				qemu_require=__package/qemu-system-ppc
 
 				# NOTE: Required to fix this error when creating a new VM in virt-manager:
 				# > qemu-system-ppc64le: -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:b8:50:f0,bus=pci.0,addr=0x1: failed to find romfile "efi-virtio.rom"
@@ -78,20 +80,23 @@ in
 				# Other than that iPXE doesn’t make any sense on PowerPC,
 				# because SLOF can netboot just fine.
 				__package ipxe-qemu
+				qemu_require="${qemu_require} __package/ipxe-qemu"
 				;;
 			(mips64|mips)
 				__package qemu-system-mips
-				export require=__package/qemu-system-mips
+				qemu_require=__package/qemu-system-mips
 				;;
 			(sparc64|sparc)
 				__package qemu-system-sparc
-				export require=__package/qemu-system-sparc
+				qemu_require=__package/qemu-system-sparc
 				;;
 			(x86_64|i?86)
 				__package qemu-kvm
-				export require=__package/qemu-kvm
+				qemu_require=__package/qemu-kvm
 				;;
 		esac
+
+		export require="${require-}${require:+ }${qemu_require-}"
 
 		__package_apt libvirt-daemon-driver-storage-zfs \
 			--state "$(test -f "${__object:?}/parameter/with-zfs-storage" && echo present || echo absent)"
@@ -112,6 +117,7 @@ __key_value /etc/libvirt/libvirtd.conf:unix_sock_rw_perms --delimiter ' = ' \
 	--key 'unix_sock_rw_perms' --value '"0770"' \
 	--file /etc/libvirt/libvirtd.conf --state present \
 	--onchange 'service libvirtd restart'
+# TODO: Change SocketMode when using systemd.
 __key_value /etc/libvirt/libvirtd.conf:auth_unix_rw --delimiter ' = ' \
 	--key 'auth_unix_rw' --value '"none"' \
 	--file /etc/libvirt/libvirtd.conf --state present \
