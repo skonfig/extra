@@ -97,6 +97,9 @@ in
 			(aarch64|aarch64_be|armv?l|armv?b)
 				__package qemu-system-arm
 				qemu_require=__package/qemu-system-arm
+
+				__package qemu-efi
+				qemu_require="${qemu_require} __package/qemu-efi"
 				;;
 			(ppc64|ppc|ppc64le|ppcle)
 				__package qemu-system-ppc
