@@ -27,12 +27,14 @@ init=$(cat "${__global:?}/explorer/init")
 
 case ${os}
 in
-	(debian|devuan)
+	(debian|devuan|ubuntu)
 		# NOTE: dnsmasq is required for virtual networks (as DHCP, DNS server)
 		__package dnsmasq
 
 		# NOTE: ebtables is required for some network filtering options
 		__package ebtables
+
+		__update_alternatives iptables --path /usr/sbin/iptables-legacy
 
 		__package qemu-utils
 
@@ -55,7 +57,8 @@ in
 			in
 				(debian) version_ge "${os_version}" 10.99 ;;
 				(devuan) version_ge "${os_version}" 3.99 ;;
-				(*) false ;;  # having one extra key doesn't hurt
+				(ubuntu) version_ge "$(os_version)" 20 ;;
+				(*) false ;;
 			esac && echo true || echo false)
 
 		if ${is_bullseye}
