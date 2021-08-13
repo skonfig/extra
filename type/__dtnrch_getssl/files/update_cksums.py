@@ -12,7 +12,7 @@ from cksum import Cksum
 GITHUB_REPO = "https://github.com/srvrco/getssl"
 
 class CksumLine(collections.namedtuple("CksumLine", (
-        "tag_name", "sha256", "cksum"))):
+        "id", "sha256", "cksum"))):
     __slots__ = ()
 
     @classmethod
@@ -22,6 +22,17 @@ class CksumLine(collections.namedtuple("CksumLine", (
 
     def to_line(self):
         return "\t".join(getattr(self, k, "") or "" for k in self._fields)
+
+    @property
+    def version(self):
+        if "@" in self.id:
+            return self.id[:self.id.find("@")]
+        else:
+            return self.id
+
+    @property
+    def gitref(self):
+        return self.id[self.id.find("@")+1:]
 
 
 def extract_github_repo_path(repo_url):
@@ -75,22 +86,40 @@ if __name__ == "__main__":
         cksums = {}
         for line in filter(lambda l: l and not re.match(r"^#", l), f):
             cksum = CksumLine.from_line(line)
-            if cksum.tag_name in cksums:
+            if cksum.version in cksums:
                 raise RuntimeError(
-                    "Duplicate tag in cksums.txt: %s" % (cksum.tag_name))
-            cksums[cksum.tag_name] = cksum
+                    "Duplicate version in cksums.txt: %s" % (cksum.version))
+            cksums[cksum.version] = cksum
 
-        for release in sorted(
-                fetch_github_releases(GITHUB_REPO),
-                key=lambda r: r["published_at"]):
-            tag_name = release["tag_name"]
-            if tag_name in cksums:
+        if len(sys.argv) > 2:
+            # manual entry
+            if "@" in sys.argv[2]:
+                # it's a commit
+                releases = [sys.argv[2].split("@", 1)]
+            else:
+                # it's a tag
+                releases = [(sys.argv[2], sys.argv[2])]
+        else:
+            # automatically insert all found releases
+            releases = [
+                (r["tag_name"], r["tag_name"])
+                for r in sorted(
+                    fetch_github_releases(GITHUB_REPO),
+                    key=lambda r: r["published_at"])]
+
+        for (version, gitref) in releases:
+            if version in cksums:
                 continue
 
-            getssl_bin_url = github_file_url(GITHUB_REPO, tag_name, "/getssl")
+            getssl_bin_url = github_file_url(GITHUB_REPO, gitref, "/getssl")
             checksums = checksum_url(getssl_bin_url)
 
-            cksum = CksumLine(tag_name, **checksums)
+            if version != gitref:
+                version_id = version + "@" + gitref
+            else:
+                version_id = version
+
+            cksum = CksumLine(version_id, **checksums)
 
             # Append cksum to file
             f.write(cksum.to_line() + "\n")
