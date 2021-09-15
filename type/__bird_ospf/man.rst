@@ -39,6 +39,12 @@ instance-id
     An OSPF instance ID, allowing several OSPF instances to run on the same
     links.
 
+OPTIONAL MULTIPLE PARAMETERS
+----------------------------
+
+stubnet
+    Add an optionless stubnet definition to the configuration.
+
 SEE ALSO
 --------
 cdist-type__bird_core(7)

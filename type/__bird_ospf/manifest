@@ -58,6 +58,7 @@ $([ -n "${instance_id?}" ] && printf "\tinstance id %s;\n" "${instance_id?}")
 
 	area 0 {
 $(sed -e 's/^/\t\tinterface "/' -e 's/$/";/' "${__object:?}/parameter/interface")
+$(sed -e 's/^/\t\tsubnet /' -e 's/$/;/' "${__object:?}/parameter/subnet")
 	};
 }
 EOF
