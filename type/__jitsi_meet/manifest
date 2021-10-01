@@ -14,7 +14,7 @@ esac
 
 JITSI_HOST="${__target_host}"
 # Currently unused, see below
-JITSI_VERSION="$(cat "${__object}/parameter/jitsi-version")"
+# JITSI_VERSION="$(cat "${__object}/parameter/jitsi-version")"
 TURN_SERVER="$(cat "${__object}/parameter/turn-server")"
 TURN_SECRET="$(cat "${__object}/parameter/turn-secret")"
 
