@@ -13,6 +13,7 @@ esac
 
 
 JITSI_HOST="${__target_host}"
+# Currently unused, see below
 JITSI_VERSION="$(cat "${__object}/parameter/jitsi-version")"
 TURN_SERVER="$(cat "${__object}/parameter/turn-server")"
 TURN_SECRET="$(cat "${__object}/parameter/turn-secret")"
@@ -56,7 +57,11 @@ EOF
 export require="${require} __debconf_set_selections/jitsi_meet"
 
 # Install and upgrade packages as needed
-__package_apt jitsi-meet --version "${JITSI_VERSION}"
+__package_apt jitsi-meet
+# We are not doing version pinning anymore because it breaks when
+# the version is not the latest.
+# This happens because dependencies cannot be properly resolved.
+# --version "${JITSI_VERSION}"
 
 # Proceed only after installation/upgrade has finished
 export require="__package_apt/jitsi-meet"
@@ -163,11 +168,18 @@ VirtualHost "guest.${JITSI_HOST}"
     c2s_require_encryption = false
 EOF
 
-__line jitsi_jicofo_secured_domains \
-  --file /etc/jitsi/jicofo/sip-communicator.properties \
-  --line "org.jitsi.jicofo.auth.URL=XMPP:${JITSI_HOST}" \
-  --regex "org.jitsi.jicofo.auth.URL=" \
-  --state ${SECURED_DOMAINS_STATE_JICOFO}
+__block jitsi_jicofo_secured_domains \
+  --prefix "// begin cdist: jicofo_secured_domains" \
+  --suffix "// end   cdist: jicofo_secured_domains" \
+  --file /etc/jitsi/jicofo/jicofo.conf \
+  --state "${SECURED_DOMAINS_STATE_JICOFO}" \
+  --text '-' <<EOF
+  authentication: {
+    enabled: true
+    type: XMPP
+    login-url: ${JITSI_HOST}
+  }
+EOF
 
 # These two should be changed on new release
 PROMETHEUS_JITSI_EXPORTER_SHOULD_VERSION="1.1.5"
