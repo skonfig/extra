@@ -25,6 +25,7 @@ add_param http-to str_multiple
 add_param http-to-https str
 add_param lazy bool
 add_param lazy-apps bool
+add_param manage-script-name bool
 add_param max-requests uint
 add_param module str
 add_param mount str_multiple

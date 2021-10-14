@@ -1,4 +1,5 @@
 enable-threads
 lazy
 lazy-apps
+manage-script-name
 vacuum

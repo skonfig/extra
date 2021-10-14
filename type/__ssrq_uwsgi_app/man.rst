@@ -128,6 +128,8 @@ lazy
    set lazy mode (load apps in workers instead of master).
 lazy-apps
    load apps in each worker instead of the master.
+manage-script-name
+   force management of the ``SCRIPT_NAME`` variable
 vacuum
    try to remove all of the generated file/sockets.
 
