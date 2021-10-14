@@ -3,6 +3,7 @@ check-static
 env
 http
 http-to
+mount
 plugin
 ruby-require
 shared-socket

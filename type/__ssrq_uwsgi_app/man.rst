@@ -69,6 +69,8 @@ module
    Run a WSGI module.
 
    A ``package.module:object`` string.
+mount
+   Use mountpoints to load multiple apps into the same uWSGI process.
 plugin
    Can be used multiple times.
 processes

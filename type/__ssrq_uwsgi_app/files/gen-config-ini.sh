@@ -27,6 +27,7 @@ add_param lazy bool
 add_param lazy-apps bool
 add_param max-requests uint
 add_param module str
+add_param mount str_multiple
 add_param processes uint
 add_param plugin str comma_join
 add_param pythonpath str
