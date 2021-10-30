@@ -1,8 +1,21 @@
 #!/bin/sh -e
 
-svdir="/var/service"
+os="$(cat "${__global}/explorer/os")"
+case "${os}" in
+	debian|devuan)
+		svdir="/etc/service"
+	;;
+	*bsd)
+		svdir="/var/service"
+	;;
+	*)
+		echo "Your OS '${OS}' is currently not supported." >&2
+		exit 1
+	;;
+esac
+
 sv="${__object_id}"
-state="present"
+state="$(cat "${__object}/parameter/state")"
 run_file="${svdir}/${sv}/run"
 
 source="$(cat "$__object/parameter/source")"
@@ -15,6 +28,10 @@ __directory --state "${state}" "${svdir}/${sv}"
 
 export require="__directory${svdir}/${sv}"
 
+if [ "${state}" != "present" ]; then
+	# We are done here, the service gets removed
+	exit
+fi
 
 if [ -f "${__object}/parameter/log" ]; then
 	# Setup logger if requested

@@ -27,6 +27,11 @@ BOOLEAN PARAMETERS
 log
    Setup logging with `svlogd -tt ./main`.
 
+OPTIONAL PARAMETERS
+-------------------
+state
+   Whether this service is to be 'present' (default) or 'absent'.
+
 
 EXAMPLES
 --------

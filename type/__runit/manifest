@@ -2,9 +2,22 @@
 
 __package "runit"
 
-__key_value \
-	--file "/etc/rc.conf" \
-	--key "runsvdir_enable" \
-	--delimiter "=" \
-	--value "yes" \
-	"runsvdir_enable"
+os="$(cat "${__global}/explorer/os")"
+case "${os}" in
+	debian|devuan)
+		# zero-config sysvinit and systemd compatibility
+		__package runit-run
+	;;
+	freebsd)
+		__key_value \
+			--file "/etc/rc.conf" \
+			--key "runsvdir_enable" \
+			--delimiter "=" \
+			--value "yes" \
+			"runsvdir_enable"
+	;;
+	*)
+		echo "Your OS '${os}' is currently not supported." >&2
+		exit 1
+	;;
+esac
