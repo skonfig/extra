@@ -63,7 +63,7 @@ in
 
 		if ${is_bullseye}
 		then
-			# should be required by libvirt-daemon-system automaticall,
+			# should be required by libvirt-daemon-system automatically,
 			# but just to be save…
 			if test "${init}" = 'sysvinit'
 			then
