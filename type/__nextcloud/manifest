@@ -24,7 +24,26 @@ version_ge() {
             exit (diff < 0)
         }
         exit 1
-    }'; return $?
+    }'
+}
+
+# Version compare function if the major version is too different (only upwards)
+#
+# Arguments:
+#  1: curr version
+#  2: new version
+#
+# Return code:
+#  0: major difference bigger than 1
+#  1: major not bigger than 1
+version_majdiff() {
+    printf "%s" "$1" | awk -F '[^0-9.]' -v target="$2" '
+    BEGIN {
+        getline
+        split($1, x, ".")
+        split(target, y, ".")
+        exit (y[1] - x[1] <= 1)
+    }'
 }
 
 
@@ -103,10 +122,23 @@ if [ "$version_is" ]; then
         # if the current version is higher than the version that should be installed
         if version_ge "$version_is" "$version_should"; then
             # it's an error if the current version is higher than the one that should be installed
-            printf "The current nextcloud version '%s' is higher than the version that should be installed (%s)\n" \
+            printf "The current Nextcloud version '%s' is higher than the version that should be installed (%s)\n" \
                "$version_is" "$version_should" >&2
             printf "Please bump the nextcloud version to '%s' or higher!\n" "$version_is" >&2
             exit 2
+        fi
+
+        # Block upgrades for too great Nextcloud upgrades
+        if ! [ -f "$__object/parameter/disable-version-check" ]; then
+            if version_majdiff "$version_is" "$version_should"; then
+                # error for your safety
+                printf "The new Nextcloud version '%s' is bigger than the next major release from the current release '%s'!\n" \
+                   "$version_should" "$version_is" >&2
+                printf "Skipping major releases is discoraged from upstream as this can seriously break your instance. If you really want, use --disable-version-check (dangerous)\n" >&2
+                printf "Instead, upgrade your instance to the latest point release in the current major and then upgrade to the next latest major version.\n" >&2
+                printf "for more information, see type manual parameter --version\n" >&2
+                exit 3
+            fi
         fi
 
         # Set destination to a temporary directory

@@ -31,6 +31,17 @@ version
     upgraded via the built-in nextcloud installer. In such cases, it is
     recommended to use the ``--install-only`` option.
 
+    You should only upgrade to the next major release from the latest point
+    release (latest release available in that major); see the `how to upgrade
+    Guide <https://docs.nextcloud.com/server/latest/admin_manual/maintenance/upgrade.html>`
+    from the official Nextcloud documentation. This type will prevent skipping
+    major releases except the check is explicitly disabled through the
+    ``--disable-version-check`` parameter.
+
+    Currently, no loop is implemented to do these upgrades automaticly for you,
+    as the type does not implement any version knowledge. Manifest must be
+    changed and cdist needs to be rerun to get to the correct version you need.
+
 admin-password
     The administrator password to access the nextcloud instance. Must be given
     in plain text. This parameter has no effect if nextcloud will not be
@@ -62,6 +73,14 @@ BOOLEAN PARAMETERS
 install-only
     Skips all nextcloud upgrades done by this type. Should be used when
     nextcloud upgrades are (*exclusively*) done via the built-in updater.
+
+disable-version-check
+    Disables the version security checks that avoid breaking your Nextcloud.
+    Only do this on your own risks, as it can seriously break your instance.
+
+    Is this parameter omitted, the type will check if the new major version
+    gap is greather than 1. It will not perform more fine-tuned version checks
+    cause of a lack of more detailed versioning data.
 
 
 NEXTCLOUD CONFIG PARAMETERS
