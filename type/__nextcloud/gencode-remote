@@ -81,6 +81,9 @@ REMOTE
 
     # no more changes from the user
     occ_maintainer_mode_on
+    # updater will care about required app updates
+
+    # do the real update work
     cat << REMOTE
 
 cp -pf '$installdir/config/config.php' '$tarballdir/config/config.php'
