@@ -24,7 +24,7 @@ version_ge() {
             exit (diff < 0)
         }
         exit 1
-    }'; return $?
+    }'
 }
 
 # Version compare function if the major version is too different (only upwards)
@@ -42,9 +42,8 @@ version_majdiff() {
         getline
         split($1, x, ".")
         split(target, y, ".")
-        if((y[1] - x[1]) > 1) exit 0
-        else exit 1
-    }'; return $?
+        exit (y[1] - x[1] <= 1)
+    }'
 }
 
 
