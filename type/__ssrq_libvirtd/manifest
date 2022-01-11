@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2020-2021 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+# 2020-2022 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
 #
 # This file is part of cdist.
 #
@@ -25,16 +25,19 @@ os_version=$(cat "${__global:?}/explorer/os_version")
 mach_name=$(cat "${__global:?}/explorer/machine")
 init=$(cat "${__global:?}/explorer/init")
 
+: "${__type:?}"  # make shellcheck happy
 case ${os}
 in
 	(debian|devuan|ubuntu)
+		libvirtd_restart_cmd='service libvirtd restart'
+
 		# NOTE: dnsmasq is required for virtual networks (as DHCP, DNS server)
 		__package dnsmasq
 
 		# NOTE: ebtables is required for some network filtering options
 		__package ebtables
 
-		__update_alternatives iptables --path /usr/sbin/iptables-legacy
+		# __update_alternatives iptables --path /usr/sbin/iptables-legacy
 
 		__package qemu-utils
 
@@ -132,29 +135,64 @@ in
 		__package_apt libvirt-daemon-driver-storage-zfs \
 			--state "$(test -f "${__object:?}/parameter/with-zfs-storage" && echo present || echo absent)"
 		;;
+	(archlinux)
+		libvirtd_restart_cmd='systemctl restart libvirtd.service'
+
+		# dnsmasq is required for virtual networks (as DHCP, DNS server)
+		__package dnsmasq
+
+		# provides iptables and ebtables using the nftables backend
+
+		# FIXME: probably won't automatically install if iptables is currently
+		#        installed, due to the interactive question of pacman.
+		#        Should probably patch __package_pacman…
+		__package iptables-nft
+
+		# NOTE: We have to install netcat-openbsd because libvirt's developers
+		# are are complete idiots ignoring the fact that there are different
+		# implementations of netcat (like, ones that don't support -U). Moreover
+		# they are incapable of printing connection errors on Mac OS X.
+		__package openbsd-netcat
+
+		__package qemu-headless
+
+		require='__package/dnsmasq __package/iptables-nft __package/openbsd-netcat __package/qemu-headless' \
+		__package libvirt
+
+		libvirtd_require='__package/qemu-headless __package/libvirt'
+
+		export require="${require-}${require:+ }${libvirtd_require-}"
+
+		if test -f "${__object:?}/parameter/with-zfs-storage"
+		then
+			printf '%s --with-zfs-storage is not supported on %s.\n' "${__type##*/}" "${os}" >&2
+			exit 1
+		fi
+		;;
 	(*)
-		: "${__type:?}"  # make shellcheck happy
 		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
 		printf "Please contribute an implementation for it if you can.\n" >&2
 		exit 1
 		;;
 esac
 
+__start_on_boot libvirtd
+
 __key_value /etc/libvirt/libvirtd.conf:unix_sock_group --delimiter ' = ' \
 	--key 'unix_sock_group' --value '"libvirt"' \
 	--file /etc/libvirt/libvirtd.conf --state present \
-	--onchange 'service libvirtd restart'
+	--onchange "${libvirtd_restart_cmd:?}"
 __key_value /etc/libvirt/libvirtd.conf:unix_sock_rw_perms --delimiter ' = ' \
 	--key 'unix_sock_rw_perms' --value '"0770"' \
 	--file /etc/libvirt/libvirtd.conf --state present \
-	--onchange 'service libvirtd restart'
+	--onchange "${libvirtd_restart_cmd:?}"
 # TODO: Change SocketMode when using systemd.
 __key_value /etc/libvirt/libvirtd.conf:auth_unix_rw --delimiter ' = ' \
 	--key 'auth_unix_rw' --value '"none"' \
 	--file /etc/libvirt/libvirtd.conf --state present \
-	--onchange 'service libvirtd restart'
+	--onchange "${libvirtd_restart_cmd:?}"
 
 __key_value /etc/libvirt/libvirtd.conf:audit_logging --delimiter ' = ' \
 	--key 'audit_logging' --value '1' \
 	--file /etc/libvirt/libvirtd.conf --state present \
-	--onchange 'service libvirtd restart'
+	--onchange "${libvirtd_restart_cmd:?}"
