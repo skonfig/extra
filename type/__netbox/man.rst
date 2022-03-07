@@ -31,6 +31,12 @@ version
     on GitHub at the NetBox project page under
     "`Releases <https://github.com/netbox-community/netbox/releases>`_".
 
+    Too big version jumps can break the NetBox migration path. It's good
+    practise to don't skip major versions and common that you must upgrade to
+    the latest minor inside the current major version till you can upgrade to
+    the next major version. Diffrent version steps must be done manually as
+    this type only upgrades to the given version directly.
+
 database
     PostgreSQL database name.
 

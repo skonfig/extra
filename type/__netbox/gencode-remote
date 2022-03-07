@@ -51,7 +51,9 @@ fi
 # Install python dependencies.
 #  avoid gunicorn, because it will be done in an other type
 grep -v "^gunicorn==" "\$tmpdir/$src/requirements.txt" \
-    | xargs /opt/netbox/venv/bin/pip3 install -q
+    > "\$tmpdir/$src/requirements.txt.new"
+/opt/netbox/venv/bin/pip3 install -q -r "\$tmpdir/$src/requirements.txt.new"
+
 EOF
 
     if [ -f "$__object/parameter/ldap-server" ]; then
