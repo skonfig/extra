@@ -2,4 +2,7 @@ enable-threads
 lazy
 lazy-apps
 manage-script-name
+skip-atexit
+skip-atexit-teardown
+thunder-lock
 vacuum

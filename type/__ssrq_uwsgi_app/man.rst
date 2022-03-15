@@ -65,6 +65,14 @@ http-to-https
    requests to HTTPS.
 max-requests
    Respawn a process after it has served a number of requests.
+max-requests-delta
+   Add (``worker_id * delta``) to the ``--max-requests`` value of each worker.
+
+   This option can be used to prevent all workers from respawning at the same time.
+min-worker-lifetime
+   Number of seconds worker must run before being reloaded.
+max-worker-lifetime
+   Reload workers after the specified amount of seconds.
 module
    Run a WSGI module.
 
@@ -129,7 +137,15 @@ lazy
 lazy-apps
    load apps in each worker instead of the master.
 manage-script-name
-   force management of the ``SCRIPT_NAME`` variable
+   force management of the ``SCRIPT_NAME`` variable.
+skip-atexit
+   Skip atexit hooks (ignored by the master).
+skip-atexit-teardown
+   Skip atexit teardown (ignored by the master).
+thunder-lock
+   Enable thunder lock.
+
+   cf. `Serializing accept(), AKA Thundering Herd, AKA the Zeeg Problem <https://uwsgi-docs.readthedocs.io/en/latest/articles/SerializingAccept.html>`_.
 vacuum
    try to remove all of the generated file/sockets.
 

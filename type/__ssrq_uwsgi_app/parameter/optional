@@ -8,6 +8,9 @@ http-modifier2
 http-socket
 http-to-https
 max-requests
+max-requests-delta
+min-worker-lifetime
+max-worker-lifetime
 module
 processes
 pythonpath

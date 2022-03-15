@@ -27,6 +27,9 @@ add_param lazy bool
 add_param lazy-apps bool
 add_param manage-script-name bool
 add_param max-requests uint
+add_param max-requests-delta uint
+add_param max-worker-lifetime uint
+add_param min-worker-lifetime uint
 add_param module str
 add_param mount str_multiple
 add_param processes uint
@@ -35,8 +38,11 @@ add_param pythonpath str
 add_param rack str
 add_param ruby-require str_multiple
 add_param shared-socket str_multiple
+add_param skip-atexit bool
+add_param skip-atexit-teardown bool
 add_param static-map str_multiple
 add_param threads uint
+add_param thunder-lock bool
 add_param touch-workers-reload str
 add_param uid str
 add_param uwsgi-socket str
