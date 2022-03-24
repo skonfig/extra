@@ -74,24 +74,19 @@ do
 		unset value
 	fi
 
-	test -n "${value}" || continue
+	test -n "${value-}" || continue
 
 	case ${type}
 	in
 		(int)
-			test -n "${value-}" || continue
-
 			printf '%s = %d\n' "${param}" "${value}"
 			;;
 		(uint)
-			test -n "${value-}" || continue
-
 			printf '%s = %u\n' "${param}" "${value}"
 			;;
 		(bool|str)
 			# only print boolean options if they differ from the default
 			test -f "${__object:?}/parameter/${param}" || continue
-			test -n "${value-}" || continue
 
 			printf '%s = %s\n' "${param}" "${value}"
 			;;
