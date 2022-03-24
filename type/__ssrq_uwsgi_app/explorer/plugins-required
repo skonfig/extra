@@ -29,6 +29,11 @@ in
 	(debian|devuan|ubuntu)
 		test "$(cat "${__object:?}/parameter/state")" != absent || exit 0
 
+		core_plugins() {
+			apt-cache show uwsgi-core \
+			| sed -n -e '/^Description[:-]/,/^[^ ]/!d' -e 's/^ \{2\}\* *\(.*\)$/\1/p'
+		}
+
 		pkg_exists() { apt-cache show "$1" >/dev/null 2>&1; }
 
 		while read -r plugin
@@ -47,18 +52,22 @@ in
 						  }')
 					pkgname="uwsgi-plugin-${plugin}-${ruby_version}"
 					;;
-				(http)
-					pkgname='uwsgi-core'
-					;;
 				(*)
-					pkgname="uwsgi-plugin-${plugin}"
+					if core_plugins | grep -qxF "${plugin}"
+					then
+						pkgname='uwsgi-core'
+					else
+						pkgname="uwsgi-plugin-${plugin}"
+					fi
 					;;
 			esac
+
 			if pkg_exists "${pkgname}"
 			then
 				printf '%s\n' "${pkgname}"
 			fi
-		done <"${__object:?}/parameter/plugin"
+		done <"${__object:?}/parameter/plugin" \
+		| sort -u  # uwsgi-core could be repeated
 		;;
 	(*)
 		# TODO
