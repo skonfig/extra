@@ -36,6 +36,7 @@ add_param processes uint
 add_param plugin str comma_join
 add_param pythonpath str
 add_param rack str
+add_param route-if str_multiple
 add_param ruby-require str_multiple
 add_param shared-socket str_multiple
 add_param skip-atexit bool

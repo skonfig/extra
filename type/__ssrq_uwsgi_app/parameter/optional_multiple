@@ -5,6 +5,7 @@ http
 http-to
 mount
 plugin
+route-if
 ruby-require
 shared-socket
 static-map

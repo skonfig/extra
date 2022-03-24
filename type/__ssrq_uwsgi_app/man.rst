@@ -87,6 +87,10 @@ pythonpath
    add directory (or glob) to pythonpath.
 rack
    load a (Ruby) Rack app.
+route-if
+   add a route based on condition.
+
+   cf. `uWSGI internal routing <https://uwsgi-docs.readthedocs.io/en/latest/InternalRouting.html>`_.
 ruby-require
    import/require a Ruby module/script.
 
