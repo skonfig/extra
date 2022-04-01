@@ -29,6 +29,10 @@ buffer-size
    string) you may need to increase the buffer size.
    It is a security measure too, so adapt to your app needs instead of maxing it
    out.
+cache2
+   create a new generation shared cache.
+
+   cf. `The New Generation Cache subsystem (cache2) <https://uwsgi-docs.readthedocs.io/en/latest/Changelog-1.9.html#the-new-generation-cache-subsystem-cache2>`_ for more information.
 cap
    Can be used multiple times.
 chdir
@@ -43,7 +47,7 @@ env
 gid
    :strong:`setgid`\ (2) to the specified group/gid.
 harakiri
-   Respawn processes when a request wasn't answered within a number of seconds.
+   respawn processes when a request wasn't answered within a number of seconds.
 home
    set ``PYTHONHOME``/virtualenv
 http

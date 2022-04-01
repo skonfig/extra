@@ -9,6 +9,7 @@ add_param() {
 comma_join() { sed -e :a -e '$!N' -e 's/\n/,/' -e ta; }
 
 add_param buffer-size uint
+add_param cache2 str_multiple
 add_param cap str comma_join
 add_param chdir str
 add_param check-static str_multiple
