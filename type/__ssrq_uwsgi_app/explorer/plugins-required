@@ -32,6 +32,9 @@ in
 		core_plugins() {
 			apt-cache show uwsgi-core \
 			| sed -n -e '/^Description[:-]/,/^[^ ]/!d' -e 's/^ \{2\}\* *\(.*\)$/\1/p'
+			apt-cache show uwsgi-core \
+			| sed -n -e '/^Replaces: */{s///;s/, */\n/g;p;}' \
+			| sed -e 's/\(uwsgi\|wsgi\)-plugin-//'
 		}
 
 		pkg_exists() { apt-cache show "$1" >/dev/null 2>&1; }
