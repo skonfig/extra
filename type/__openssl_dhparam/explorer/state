@@ -1,0 +1,49 @@
+#!/bin/sh -e
+#
+# 2022 Dennis Camera (cdist at dtnr.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+# Prints the current state of the DH parameters file
+#
+
+dhfile=/${__object_id:?}
+
+state() { echo "$*"; exit 0; }
+
+test -f "${dhfile}" || state absent
+
+# if openssl not yet installed and file is non-empty, assume file is okay
+# because regeneration takes a long time
+command -v openssl >/dev/null 2>&1 || {
+	if test -s "${dhfile}"
+	then
+		state present
+	else
+		state absent
+	fi
+}
+
+# check if a dhparam file
+dhtext=$(openssl dhparam -in "${dhfile}" -noout -check -text 2>/dev/null) || state notdhparam
+
+# check bits
+bits_is=$(expr "${dhtext}" : '.*DH Parameters: (\([0-9]\{1,\}\) bit)')
+read -r bits_should <"${__object:?}/parameter/bits"
+
+test $((bits_is)) -eq $((bits_should)) || state wrongbits
+
+state present

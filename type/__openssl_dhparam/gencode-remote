@@ -1,0 +1,56 @@
+#!/bin/sh -e
+#
+# 2022 Dennis Camera (cdist at dtnr.ch)
+#
+# This file is part of cdist.
+#
+# cdist is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cdist is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+#
+
+quote() { printf '%s\n' "$*" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"; }
+
+read -r state_is <"${__object:?}/explorer/state"
+read -r state_should <"${__object:?}/parameter/state"
+
+test "${state_is}" != "${state_should}" || exit 0
+
+dhfile=/${__object_id:?}
+
+case ${state_should}
+in
+	(present)
+		read -r bits <"${__object:?}/parameter/bits"
+
+		output_redir=' >/dev/null'
+		if test -f "${__object:?}/parameter/background"
+		then
+			echo 'command -v nohup >/dev/null 2>&1 || { echo "nohup: command not found"; exit 1; }'
+			command_prefix='nohup '
+			output_redir="${output_redir} 2>&1 &"
+		fi
+
+		printf '%sopenssl dhparam -out %s %u%s\n' \
+			"${command_prefix}" \
+			"$(quote "${dhfile}")" \
+			$((bits)) \
+			"${output_redir}"
+		;;
+	(absent)
+		printf 'rm -f %s\n' "$(quote "${dhfile}")"
+		;;
+	(*)
+		printf 'Invalid --state: %s\n' "${state_should}" >&2
+		exit 1
+		;;
+esac
