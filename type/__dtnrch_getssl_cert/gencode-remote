@@ -110,7 +110,7 @@ cfg_values_should=$(
 
 			_param=${_input%%,*}
 
-			_input=${_input#${_param}}
+			_input=${_input#"${_param}"}
 			_input=${_input#,}
 
 			v_key=${_param%%=*}
@@ -123,7 +123,7 @@ cfg_values_should=$(
 
 		# Extract method
 		validation_method=${_input%%:*}
-		_input=${_input#${validation_method}:}
+		_input=${_input#"${validation_method}:"}
 
 		case ${validation_method}
 		in
