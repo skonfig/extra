@@ -202,7 +202,7 @@ post_update() {
 		cat $(quote "${getssl_cfg}.tmp") >$(quote "${getssl_cfg}")
 		rm -f $(quote "${getssl_cfg}.tmp")
 
-		getssl -f $(quote "${domain}")
+		getssl -U -f $(quote "${domain}")
 	else
 		rm -f $(quote "${getssl_cfg}.tmp")
 	fi
