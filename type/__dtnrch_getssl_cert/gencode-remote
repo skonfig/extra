@@ -56,6 +56,12 @@ cfg_values_should=$(
 			"${__object:?}/parameter/san"
 	fi
 
+	# Chain
+	if test -s "${__object:?}/parameter/preferred-chain"
+	then
+		printf 'PREFERRED_CHAIN="%s"\n' "$(head -n1 "${__object:?}/parameter/preferred-chain")"
+	fi
+
 	# File locations
 	if test -s "${__object:?}/parameter/cert-loc"
 	then

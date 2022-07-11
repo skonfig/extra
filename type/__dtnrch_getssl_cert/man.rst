@@ -40,6 +40,10 @@ pem-loc
 extra-config
    Other configuration options that should be added to the domain
    ``getssl.cfg``.
+preferred-chain
+   Select the chain which should be used to sign the certificate.
+
+   For more information cf. https://github.com/srvrco/getssl#preferred-chain
 reload-cmd
    The command to be executed once a certificate has been issued and copied to
    the ``--*-loc`` locations.
