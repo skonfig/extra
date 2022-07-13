@@ -22,7 +22,7 @@ Currently, the following OSes are supported with the following backends:
 
 
 REQUIRED MULTIPLE PARAMETERS
--------------------
+----------------------------
 peer:
     The name or IP address of a peer to synchronize to.
 

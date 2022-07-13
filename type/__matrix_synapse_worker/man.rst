@@ -1,5 +1,5 @@
-cdist-type__matrix_synapse(7)
-======================
+cdist-type__matrix_synapse_worker(7)
+====================================
 
 NAME
 ----
@@ -67,7 +67,7 @@ EXAMPLES
 
 SEE ALSO
 --------
-- `cdist-type__matrix_synapse(7) <cdist-type__matrix_synapse.html>`_
+- :strong:`cdist-type__matrix_synapse`\ (7)
 
 
 AUTHORS
