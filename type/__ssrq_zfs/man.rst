@@ -32,8 +32,15 @@ tunable
 
 BOOLEAN PARAMETERS
 ------------------
+auto-load-keys
+    Automatically load encryption keys when mounting at boot time.
+
+    Attention: if a filesystem has ``keylocation=prompt`` this will
+    cause the terminal to interactively block after asking for the key.
 notify-verbose
     Send notification even if the pool is healthy.
+verbose-mount
+    Display a mount counter when mounting at boot time.
 
 
 EXAMPLES
