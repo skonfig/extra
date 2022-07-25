@@ -51,12 +51,28 @@ in
 			exit 1
 		}
 
+		# enable backports repo
+		# XXX: maybe the type should not be the one to decide whether or not to
+		# use backports
+		__apt_backports --component main --component contrib
+
 		# ZFS
-		export CDIST_ORDER_DEPENDENCY=true
-		__package_apt "${kernel_headers_pkg}"
-		__package_apt zfs-modules
-		__package_apt zfsutils-linux
-		unset CDIST_ORDER_DEPENDENCY
+		read -r lsb_codename <"${__global:?}/explorer/lsb_codename"
+
+		if test -n "${kernel_headers_pkg%/*}" != "${kernel_headers_pkg}"
+		then
+			require=__apt_backports/ \
+			__package_apt "${kernel_headers_pkg%/*}" --target-release "${kernel_headers_pkg#*/}"
+		else
+			require=__apt_backports/ \
+			__package_apt "${kernel_headers_pkg%/*}" --target-release "${kernel_headers_pkg#*/}"
+		fi
+
+		require="__apt_backports/ __package_apt/${kernel_headers_pkg%/*}" \
+		__package_apt zfs-modules --target-release "${lsb_codename:?}-backports"
+
+		require=__apt_backports/ \
+		__package_apt zfsutils-linux --target-release "${lsb_codename:?}-backports"
 
 		# FIXME: For some reason De*an does not build/install DKMS modules after
 		# installing the package under some circumstances.
@@ -83,8 +99,9 @@ in
 		esac
 
 		export CDIST_ORDER_DEPENDENCY=true
-		require="__package_apt/zfsutils-linux ${mail_require-}" \
-		__package_apt zfs-zed
+		require="__apt_backports/ __package_apt/zfsutils-linux${mail_require:+ ${mail_require}}" \
+		__package_apt zfs-zed --target-release "${lsb_codename:?}-backports"
+
 		__start_on_boot zfs-zed
 		unset CDIST_ORDER_DEPENDENCY
 		;;
@@ -161,6 +178,12 @@ set_zed_rc ZED_NOTIFY_VERBOSE "$(test -f "${__object:?}/parameter/notify-verbose
 set_zed_rc ZED_USE_ENCLOSURE_LEDS 1
 
 # Auto load keys
+
+# NOTE: OpenZFS >= 2.1.3 ships with a zfs-load-key init script that load and
+#       unloads keys based on /etc/default/zfs options ZFS_LOAD_KEY,
+#       ZFS_UNLOAD_KEY.
+#       For some reason Debian doesn’t package this init script although the
+#       "/etc/default" options are present.
 require=__package_apt/zfsutils-linux \
 __key_value /etc/default/zfs:MOUNT_EXTRA_OPTIONS \
 	--file /etc/default/zfs \
