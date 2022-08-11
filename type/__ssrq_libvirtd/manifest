@@ -18,7 +18,21 @@
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
 
-version_ge() { printf '%s\n' "$1" "$2" | sort -t. -r -n | { read -r x; test "${x}" = "$1"; } }
+version_ge() {
+	# usage: version_ge version_is min_version_expected
+	#
+	# compares two version numbers (up to three numeric components separated
+	# with dots)
+	# returns 0 if `version_is` >= `min_version_expected`, 1 otherwise.
+	#
+	# NOTES: if the lowest value (1st line) of the two version numbers is equal
+	#        to `min_version_expected`, `version_is` must be the same or larger.
+	#        explicit `-k n,n` is required for some sort(1)s.
+	printf '%s\n' "$1" "$2" \
+	| sort -t '.' -n -k 1,1 -k 2,2 -k 3,3 \
+	| head -1 \
+	| grep -qxF "$2"
+}
 
 os=$(cat "${__global:?}/explorer/os")
 os_version=$(cat "${__global:?}/explorer/os_version")
