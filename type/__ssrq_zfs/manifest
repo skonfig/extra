@@ -174,11 +174,12 @@ set_zed_rc ZED_USE_ENCLOSURE_LEDS 1
 
 # Auto load keys
 
-# NOTE: OpenZFS >= 2.1.3 ships with a zfs-load-key init script that load and
-#       unloads keys based on /etc/default/zfs options ZFS_LOAD_KEY,
+# NOTE: OpenZFS >= 2.1.3 ships with a zfs-load-key init script which loads and
+#       unloads keys based on /etc/default/zfs options ZFS_LOAD_KEY and
 #       ZFS_UNLOAD_KEY.
 #       For some reason Debian doesn’t package this init script although the
 #       "/etc/default" options are present.
+#       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1017911
 require=__package_apt/zfsutils-linux \
 __key_value /etc/default/zfs:MOUNT_EXTRA_OPTIONS \
 	--file /etc/default/zfs \
