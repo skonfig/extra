@@ -1,0 +1,70 @@
+#!/bin/sh -e
+#
+# 2022 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+opam_vars='OPAMROOTISOK=1 OPAMUTF8=never OPAMCOLOR=never OPAMSTATUSLINE=never OPAMEDITOR=cat'
+
+quote() { printf '%s\n' "$*" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"; }
+
+read -r state_is <"${__object:?}/explorer/state"
+read -r state_should <"${__object:?}/parameter/state"
+
+test "${state_should}" != "${state_is}" || exit 0
+
+read -r user <"${__object:?}/parameter/user"
+if test -s "${__object:?}/parameter/package"
+then
+	read -r name <"${__object:?}/parameter/package"
+else
+	name=${__object_id:?}
+fi
+
+read -r OPAMSWITCH <"${__object:?}/parameter/switch"
+opam_vars="${opam_vars} OPAMSWITCH=$(quote "${OPAMSWITCH}")"
+
+opam_cmd() {
+	printf 'su - %s -c %s%s\n' \
+		"${user}" \
+		"$(quote "${opam_vars-}${opam_vars:+ }exec opam $1")" \
+		"${2-}"
+}
+
+case ${state_should}
+in
+	(present)
+		if test -s "${__object:?}/parameter/target"
+		then
+			read -r target_should <"${__object:?}/parameter/target"
+		else
+			echo 'The parameter --target is required when --state present.' >&2
+			exit 1
+		fi
+
+		# add a new pin or update an existing pin
+		opam_cmd "pin add $(quote "${name}") $(quote "${target_should}") --yes --no-action"
+		;;
+	(absent)
+		# delete the pin
+		opam_cmd "pin remove $(quote "${name%%.*}") --no-action"
+		;;
+	(*)
+		printf 'Invalid --state: %s\n' "${state_should}" >&2
+		exit 1
+		;;
+esac
