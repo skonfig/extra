@@ -36,7 +36,7 @@ test "${state_is}" != "${state_should}" || exit 0
 case ${state_should}
 in
 	(present)
-		opam_vars='OPAMROOTISOK=1 OPAMCOLOR=never'
+		opam_vars='OPAMROOTISOK=1 OPAMCOLOR=never OPAMCLI=2.0'
 		opam_init_cmd='opam init --bare -n'
 		printf 'su - %s -c %s\n' \
 			"${user}" "$(quote "${opam_vars} exec ${opam_init_cmd}")"

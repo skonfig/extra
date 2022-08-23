@@ -31,7 +31,7 @@ else
 	name=${__object_id:?}
 fi
 
-opam_vars='OPAMROOTISOK=1 OPAMCOLOR=never OPAMUTF8=never OPAMSTATUSLINE=never'
+opam_vars='OPAMROOTISOK=1 OPAMCOLOR=never OPAMUTF8=never OPAMSTATUSLINE=never OPAMCLI=2.0'
 
 su - "${user}" -c "${opam_vars} exec opam switch list" \
 | awk -v name="${name}" '

@@ -33,7 +33,7 @@ else
 	name=${__object_id:?}
 fi
 
-opam_vars='OPAMROOTISOK=1 OPAMCOLOR=never OPAMUTF8=never OPAMSTATUSLINE=never'
+opam_vars='OPAMROOTISOK=1 OPAMCOLOR=never OPAMUTF8=never OPAMSTATUSLINE=never OPAMCLI=2.0'
 
 opam_cmd() {
 	printf 'su - %s -c %s%s\n' \

@@ -34,7 +34,7 @@ then
 	exit 0
 fi
 
-opam_vars='OPAMUTF8=never OPAMCOLOR=never OPAMROOTISOK=1 OPAMSTATUSLINE=never'
+opam_vars='OPAMUTF8=never OPAMCOLOR=never OPAMROOTISOK=1 OPAMSTATUSLINE=never OPAMCLI=2.0'
 if test -s "${__object:?}/parameter/switch"
 then
 	read -r OPAMSWITCH <"${__object:?}/parameter/switch"

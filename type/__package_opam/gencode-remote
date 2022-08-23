@@ -18,7 +18,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-opam_vars='OPAMROOTISOK=1 OPAMUTF8=never OPAMCOLOR=never OPAMSTATUSLINE=never OPAMNODEPEXTS=1'
+opam_vars='OPAMROOTISOK=1 OPAMUTF8=never OPAMCOLOR=never OPAMSTATUSLINE=never OPAMNODEPEXTS=1 OPAMCLI=2.0'
 
 quote() { printf '%s\n' "$*" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"; }
 
