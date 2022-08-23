@@ -1,0 +1,41 @@
+#!/bin/sh -e
+#
+# 2022 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Prints the pathname of the user for which the opam root should be managed.
+#
+
+if test -s "${__object:?}/parameter/user"
+then
+	read -r user <"${__object:?}/parameter/user"
+else
+	user=${__object_id:?}
+fi
+
+home_dir=$(
+	if command -v getent >/dev/null 2>&1
+	then
+		getent passwd "${user}"
+	else
+		awk -F ':' -v user="${user}" '$1==user'
+	fi \
+	| cut -d ':' -f 6)
+
+test -n "${home_dir}" || home_dir=$(eval "cd ~${user} && pwd -P")
+
+printf '%s\n' "${home_dir}"
