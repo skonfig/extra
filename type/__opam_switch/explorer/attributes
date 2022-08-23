@@ -1,0 +1,90 @@
+#!/bin/sh -e
+#
+# 2022 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Prints the attributes of an opam switch if one with a matching name exists.
+#
+
+# no opam -> no switch
+command -v opam >/dev/null 2>&1 || exit 0
+
+read -r user <"${__object:?}/parameter/user"
+if test -s "${__object:?}/parameter/name"
+then
+	read -r name <"${__object:?}/parameter/name"
+else
+	name=${__object_id:?}
+fi
+
+opam_vars='OPAMROOTISOK=1 OPAMCOLOR=never OPAMUTF8=never OPAMSTATUSLINE=never'
+
+su - "${user}" -c "${opam_vars} exec opam switch list" \
+| awk -v name="${name}" '
+
+## parse the columns of the stupid but beautiful **.** opam table which cannot
+## be fetched in machine-readable format.
+## programmers…
+
+function selectcol(name,    a, s) {
+	if (!(name in coloffs)) return ""
+	split(coloffs[name], a, "-")
+
+	s = substr($0, a[1], a[2] ? a[2]-a[1] : length)
+	sub(/ *$/, "", s)
+	return s
+}
+
+FNR==1 {
+	# collect column offsets
+	for (i = 1; i <= NF; ++i) {
+		coloffs[$i] = index($0, $i)
+		if (i > 1)
+			coloffs[$(i-1)] = coloffs[$(i-1)] "-" (coloffs[$i]-1)
+	}
+
+	next
+}
+
+{
+	# only bump switch N if the switch column is non-empty. If it is, assume
+	# line continuation (description?) and append to previous line
+	if (selectcol("switch")) ++N
+
+	for (k in coloffs) {
+		if ((v = selectcol(k))) {
+			switches[N, k] = (switches[N, k] ? switches[N, k] RS : "") v
+		}
+	}
+}
+
+END {
+	for (i = 1; i <= N; ++i) {
+		if (switches[i, "switch"] == name) {
+			# print switch attributes
+			for (k in coloffs) {
+				v = switches[i, k]
+				if (k == "#") {
+					k = "active"
+					v = v ? "true" : "false"
+				}
+				gsub(/\n/, "\036", v)
+				printf "%s=%s\n", k, v
+			}
+		}
+	}
+}'
