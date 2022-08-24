@@ -56,10 +56,21 @@ in
 		then
 			opam_opts="${opam_opts-} --deps-only"
 		fi
+		if test -f "${__object:?}/parameter/destdir"
+		then
+			destdir=$(cat "${__object:?}/parameter/destdir")
+			opam_opts="${opam_opts-} --destdir=$(quote "${destdir}")"
+		fi
 
 		opam_cmd "install $(quote "${name}") --yes ${opam_opts-}"
 		;;
 	(absent)
+		if test -f "${__object:?}/parameter/destdir"
+		then
+			destdir=$(cat "${__object:?}/parameter/destdir")
+			opam_cmd "remove $(quote "${name}") --yes --destdir=$(quote "${destdir}")"
+		fi
+
 		opam_cmd "remove $(quote "${name}") --yes"
 		;;
 	(*)

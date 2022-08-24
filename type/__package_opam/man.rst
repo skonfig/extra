@@ -18,6 +18,15 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
+destdir
+   Install the files of the given package to the ``--destdir`` instead of into
+   the opam switch.
+
+   CAUTION when using this parameter: opam will only overwrite existing files
+   but not delete outdated files on pacakge upgrades. When using
+   ``--state absent`` opam will try to clean up but expect some rests left.
+   If ``--destdir`` is only used by this object, it's probably a good idea to
+   delete this directory after using ``--state absent``.
 package
    The name of the opam package to manage.
 
