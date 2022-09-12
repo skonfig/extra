@@ -50,10 +50,10 @@ case "$os" in
         __package ca-certificates
         __package gnupg2
       fi
-      __apt_key_uri docker --name "Docker Release (CE deb) <docker@docker.com>" \
-        --uri "https://download.docker.com/linux/${os}/gpg" --state "${state}"
+      __apt_key docker --uri "https://download.docker.com/linux/${os}/gpg" \
+          --state "${state}"
 
-      require="__apt_key_uri/docker" __apt_source docker \
+      require="__apt_key/docker" __apt_source docker \
          --uri "https://download.docker.com/linux/${os}" \
          --distribution "$(cat "$__global/explorer/lsb_codename")" \
          --state "${state}" \
@@ -86,10 +86,10 @@ case "$os" in
         __package ca-certificates
         __package gnupg2
       fi
-      __apt_key_uri docker --name "Docker Release (CE deb) <docker@docker.com>" \
-        --uri "https://download.docker.com/linux/${os}/gpg" --state "${state}"
+      __apt_key docker --uri "https://download.docker.com/linux/${os}/gpg" \
+          --state "${state}"
 
-      require="__apt_key_uri/docker" __apt_source docker \
+      require="__apt_key/docker" __apt_source docker \
          --uri "https://download.docker.com/linux/${os}" \
          --distribution "${distribution}" \
          --state "${state}" \
