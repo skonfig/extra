@@ -26,6 +26,11 @@ name
    The name of the opam switch.
 
    Defaults to: ``__object_id``
+root
+   The directory in which the OPAM root is located.
+
+   Defaults to: ``~user/.opam``
+   (with ``~user`` being the home directory of ``--user``)
 state
    One of:
 

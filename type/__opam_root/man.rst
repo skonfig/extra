@@ -19,6 +19,12 @@ None.
 
 OPTIONAL PARAMETERS
 -------------------
+root
+   The directory in which the OPAM root should be located
+   (like ``opam init --root``).
+
+   Defaults to: ``~user/.opam``
+   (with ``~user`` being the home directory of ``--user``)
 state
    One of:
 

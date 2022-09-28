@@ -33,17 +33,19 @@ fi
 
 test "${state_is}" != "${state_should}" || exit 0
 
+OPAMROOT=$(cat "${__object:?}/explorer/root-dir")
+
 case ${state_should}
 in
 	(present)
 		opam_vars='OPAMROOTISOK=1 OPAMCOLOR=never OPAMCLI=2.0'
-		opam_init_cmd='opam init --bare -n'
+		opam_init_cmd="opam init --bare -n --root=$(quote "${OPAMROOT}")"
+
 		printf 'su - %s -c %s\n' \
 			"${user}" "$(quote "${opam_vars} exec ${opam_init_cmd}")"
 		;;
 	(absent)
-		user_home=$(cat "${__object:?}/explorer/user-home")
-		printf 'rm -R -f %s\n' "$(quote "${user_home}/.opam/")"
+		printf 'rm -R -f %s\n' "$(quote "${OPAMROOT}")"
 		;;
 	(*)
 		printf 'Invalid --state: %s\n' "${state_should}" >&2

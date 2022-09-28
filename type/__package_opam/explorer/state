@@ -29,8 +29,16 @@ command -v opam >/dev/null 2>&1 || {
 }
 
 opam_vars='OPAMUTF8=never OPAMCOLOR=never OPAMROOTISOK=1 OPAMSTATUSLINE=never OPAMCLI=2.0'
-read -r OPAMSWITCH <"${__object:?}/parameter/switch"
-opam_vars="${opam_vars} OPAMSWITCH=$(quote "${OPAMSWITCH}")"
+if test -f "${__object:?}/parameter/root"
+then
+	OPAMROOT=$(cat "${__object:?}/parameter/root")
+	opam_vars="${opam_vars} OPAMROOT=$(quote "${OPAMROOT}")"
+fi
+if test -s "${__object:?}/parameter/switch"
+then
+	read -r OPAMSWITCH <"${__object:?}/parameter/switch"
+	opam_vars="${opam_vars} OPAMSWITCH=$(quote "${OPAMSWITCH}")"
+fi
 
 read -r user <"${__object:?}/parameter/user"
 

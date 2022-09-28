@@ -17,13 +17,16 @@
 # You should have received a copy of the GNU General Public License
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
-# Prints present if an opam root is installed for the given user,
-# absent otherwise
+# Prints present if the opam root is installed, absent otherwise.
 #
 
-user_home=$("${__type_explorer:?}/user-home")
+OPAMROOT=$("${__type_explorer:?}/root-dir")
 
-if test -d "${user_home}/.opam"
+if
+	test -d "${OPAMROOT}" \
+	&& {
+		test -f "${OPAMROOT}/config" || test -f "${OPAMROOT}/aliases"
+	}
 then
 	echo present
 else

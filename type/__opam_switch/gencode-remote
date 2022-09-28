@@ -35,6 +35,12 @@ fi
 
 opam_vars='OPAMROOTISOK=1 OPAMCOLOR=never OPAMUTF8=never OPAMSTATUSLINE=never OPAMCLI=2.0'
 
+if test -f "${__object:?}/parameter/root"
+then
+	OPAMROOT=$(cat "${__object:?}/parameter/root")
+	opam_vars="${opam_vars} OPAMROOT=$(quote "${OPAMROOT}")"
+fi
+
 opam_cmd() {
 	printf 'su - %s -c %s%s\n' \
 		"${user}" \

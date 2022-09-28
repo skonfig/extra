@@ -17,25 +17,38 @@
 # You should have received a copy of the GNU General Public License
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
-# Prints the pathname of the user for which the opam root should be managed.
+# Prints the pathname of the OPAMROOT directory.
 #
 
-if test -s "${__object:?}/parameter/user"
+if test -s "${__object:?}/parameter/root"
 then
-	read -r user <"${__object:?}/parameter/user"
+	# use --root parameter
+	cat "${__object:?}/parameter/root"
 else
-	user=${__object_id:?}
-fi
+	# default to ~user/.opam (as opam(1) would)
 
-home_dir=$(
-	if command -v getent >/dev/null 2>&1
+	if test -s "${__object:?}/parameter/user"
 	then
-		getent passwd "${user}"
+		read -r user <"${__object:?}/parameter/user"
 	else
-		awk -F ':' -v user="${user}" '$1==user'
-	fi \
-	| cut -d ':' -f 6)
+		user=${__object_id:?}
+	fi
 
-test -n "${home_dir}" || home_dir=$(eval "cd ~${user} && pwd -P")
+	home_dir=$(
+		if command -v getent >/dev/null 2>&1
+		then
+			getent passwd "${user}"
+		else
+			awk -F ':' -v user="${user}" '$1==user'
+		fi \
+			| cut -d ':' -f 6)
 
-printf '%s\n' "${home_dir}"
+	test -n "${home_dir}" || home_dir=$(eval "cd ~${user} && pwd -P")
+
+	test -d "${home_dir}" || {
+		printf 'Failed to determine home directory of user %s\n' "${user}" >&2
+		exit 1
+	}
+
+	printf '%s/.opam\n' "${home_dir}"
+fi
