@@ -36,11 +36,8 @@ fi
 
 opam_vars='OPAMROOTISOK=1 OPAMUTF8=never OPAMCOLOR=never OPAMSTATUSLINE=never OPAMEDITOR=cat OPAMCLI=2.0'
 
-if test -f "${__object:?}/parameter/root"
-then
-	OPAMROOT=$(cat "${__object:?}/parameter/root")
-	opam_vars="${opam_vars} OPAMROOT=$(quote "${OPAMROOT}")"
-fi
+OPAMROOT=$(cat "${__object:?}/explorer/root-dir")
+opam_vars="${opam_vars} OPAMROOT=$(quote "${OPAMROOT}")"
 
 read -r OPAMSWITCH <"${__object:?}/parameter/switch"
 opam_vars="${opam_vars} OPAMSWITCH=$(quote "${OPAMSWITCH}")"

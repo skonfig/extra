@@ -28,22 +28,27 @@ quote() { printf '%s\n' "$*" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"; }
 # name:\1 version:\3 state:\4 kind:\5 target:\6 extra:\7
 pin_parse_regex='^\([^. ]*\)\(\.\([0-9.]*\)\)\{0,1\}  *\(([^)]*)\)\{0,1\}  *\([^ ]*\)  *\([^(]*\)\(\(([^)]*)\)*\)$'
 
-# no opam -> no pin
-command -v opam >/dev/null 2>&1 || {
-	echo 'absent'
-	exit 0
-}
-
 opam_vars='OPAMUTF8=never OPAMCOLOR=never OPAMROOTISOK=1 OPAMSTATUSLINE=never OPAMCLI=2.0'
 
-if test -f "${__object:?}/parameter/root"
-then
-	OPAMROOT=$(cat "${__object:?}/parameter/root")
-	opam_vars="${opam_vars} OPAMROOT=$(quote "${OPAMROOT}")"
-fi
+OPAMROOT=$("${__type_explorer:?}/root-dir")
+opam_vars="${opam_vars} OPAMROOT=$(quote "${OPAMROOT}")"
 
 read -r OPAMSWITCH <"${__object:?}/parameter/switch"
 opam_vars="${opam_vars} OPAMSWITCH=$(quote "${OPAMSWITCH}")"
+
+# shellcheck disable=SC2015
+command -v opam >/dev/null 2>&1 \
+&& {
+	# NOTE: check for presence of opam root always before executing opam(1) as
+	#       opam will create a lock file inside the $OPAMROOT even if it is not
+	#       a valid root, thus preventing creation of said root later on.
+	# cf. type/__opam_root/explorer/state
+	test -e "${OPAMROOT}/config" || test -e "${OPAMROOT}/aliases"
+} || {
+	# no opam (root) -> no pin
+	echo 'absent'
+	exit 0
+}
 
 read -r user <"${__object:?}/parameter/user"
 

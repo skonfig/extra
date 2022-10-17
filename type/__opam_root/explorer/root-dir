@@ -30,8 +30,16 @@ else
 	if test -s "${__object:?}/parameter/user"
 	then
 		read -r user <"${__object:?}/parameter/user"
-	else
+	elif test "${__object_name:?}" != "${__object_name#__opam_root/}"
+	then
+		# only fall back to __object_id if this explorer is called from an
+		# __opam_root object since this explorer is linked to
+		# type/__opam_switch, type/__opam_pin and type/__package_opam, too,
+		# where __object_id has a different meaning.
 		user=${__object_id:?}
+	else
+		echo 'cannot determine OPAM user.' >&2
+		exit 1
 	fi
 
 	home_dir=$(
@@ -41,7 +49,7 @@ else
 		else
 			awk -F ':' -v user="${user}" '$1==user'
 		fi \
-			| cut -d ':' -f 6)
+		| cut -d ':' -f 6)
 
 	test -n "${home_dir}" || home_dir=$(eval "cd ~${user} && pwd -P")
 

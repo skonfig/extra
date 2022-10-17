@@ -35,11 +35,9 @@ else
 	name=${__object_id:?}
 fi
 
-if test -s "${__object:?}/parameter/root"
-then
-	OPAMROOT=$(cat "${__object:?}/parameter/root")
-	opam_vars="${opam_vars} OPAMROOT=$(quote "${OPAMROOT}")"
-fi
+OPAMROOT=$(cat "${__object:?}/explorer/root-dir")
+opam_vars="${opam_vars} OPAMROOT=$(quote "${OPAMROOT}")"
+
 if test -s "${__object:?}/parameter/switch"
 then
 	read -r OPAMSWITCH <"${__object:?}/parameter/switch"

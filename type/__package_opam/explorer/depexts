@@ -27,24 +27,34 @@ if test -f "${__object:?}/parameter/no-depexts"
 then
 	exit 0
 fi
-if ! command -v opam >/dev/null 2>&1
-then
-	# cannot determine depexts
-	echo '?'
-	exit 0
-fi
 
 opam_vars='OPAMUTF8=never OPAMCOLOR=never OPAMROOTISOK=1 OPAMSTATUSLINE=never OPAMCLI=2.0'
-if test -s "${__object:?}/parameter/root"
-then
-	OPAMROOT=$(cat "${__object:?}/parameter/root")
-	opam_vars="${opam_vars} OPAMROOT=$(quote "${OPAMROOT}")"
-fi
+
+OPAMROOT=$("${__type_explorer:?}/root-dir")
+opam_vars="${opam_vars} OPAMROOT=$(quote "${OPAMROOT}")"
+
 if test -s "${__object:?}/parameter/switch"
 then
 	read -r OPAMSWITCH <"${__object:?}/parameter/switch"
 	opam_vars="${opam_vars} OPAMSWITCH=$(quote "${OPAMSWITCH}")"
 fi
+
+# shellcheck disable=SC2015
+command -v opam >/dev/null 2>&1 \
+&& {
+	# NOTE: check for presence of opam root always before executing opam(1) as
+	#       opam will create a lock file inside the $OPAMROOT even if it is not
+	#       a valid root, thus preventing creation of said root later on.
+	# cf. type/__opam_root/explorer/state
+	test -e "${OPAMROOT}/config" || test -e "${OPAMROOT}/aliases"
+} || {
+	# cannot determine depexts if the opam root hasn’t been created, yet.
+
+	# FIXME: this likely results in a build fail because of missing
+	#        dependencies.
+	echo '?'
+	exit 0
+}
 
 read -r user <"${__object:?}/parameter/user"
 
