@@ -1,0 +1,135 @@
+#!/bin/sh -e
+#
+# 2023 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+quote() { printf '%s\n' "$*" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"; }
+
+state_is=$(test -s "${__object:?}/explorer/state")
+state_should=$(cat "${__object:?}/parameter/state")
+
+if test -f "${__object:?}/parameter/path"
+then
+	path=$(cat "${__object:?}/parameter/path")
+else
+	path=/${__object_id:?}
+fi
+
+if test "${state_is}" = "${state_should}"
+then
+	if test "${state_is}" != 'absent'
+	then
+		# if the repository already exists, check if it’s properties match the
+		# given parameters and print an error if not.
+		# This type does not manipulate SVN repositories automatically.
+		for _pm in \
+			fs-type:filesystem_type \
+			compatible-version:compatible_with_version
+		do
+			test -f "${__object:?}/parameter/${_pm%%:*}" || continue
+
+			_param_is=$(sed -n -e "s/^${_pm#*:}=//p" "${__object:?}/explorer/repo-info")
+			_param_should=$(cat "${__object:?}/parameter/${_pm%%:*}")
+
+			if test "${_param_is}" != "${_param_should}"
+			then
+				: "${__type:=this type}"
+				printf 'The SVN repository at %s has --%s %s.\n' >&2 \
+					"${path}" \
+					"${_pm%%:*}" \
+					"${_param_is}"
+				printf 'Conversion to --%s %s is not supported by %s.\n' >&2 \
+					"${_pm%%:*}" \
+					"${_param_should}" \
+					"${__type##*/}"
+				exit 1
+			fi
+			unset _param_is _param_should
+		done
+		unset _pm
+	fi
+
+	exit 0
+fi
+
+case ${state_should}
+in
+	(present)
+		if test "${state_is}" = 'absent'
+		then
+			# create a new repository
+			if test -f "${__object:?}/parameter/fs-type"
+			then
+				read -r fs_type <"${__object:?}/parameter/fs-type"
+				# NOTE: --fs-type was added in SVN 1.1.0
+				svnadmin_opts="${svnadmin_opts-} --fs-type $(quote "${fs_type}")"
+			fi
+			if test -f "${__object:?}/parameter/compatible-version"
+			then
+				read -r version_compat <"${__object:?}/parameter/compatible-version"
+				# NOTE: --compatible-version was added in SVN 1.8.0
+				svnadmin_opts="${svnadmin_opts-} --compatible-version $(quote "${version_compat}")"
+			fi
+
+			printf 'svnadmin create%s %s\n' "${svnadmin_opts-}" "$(quote "${path}")"
+		fi
+
+		if test "${state_is}" = 'absent' -o "${state_is}" = 'wrongowner'
+		then
+			# set desired ownership
+
+			if test -f "${__object:?}/parameter/owner"
+			then
+				read -r owner <"${__object:?}/parameter/owner"
+
+				test -n "${owner}" || {
+					echo 'parameter --owner must not be empty' >&2
+					exit 1
+				}
+
+				printf 'chown -R %s %s\n' "$(quote "${owner}")" "$(quote "${path}")"
+			fi
+
+			if test -f "${__object:?}/parameter/db-owner"
+			then
+				read -r db_owner <"${__object:?}/parameter/db-owner"
+
+				test -n "${db_owner}" || {
+					echo 'parameter --db-owner must not be empty' >&2
+					exit 1
+				}
+
+				# NOTE: sync directories with explorer/state
+				for _d in db locks
+				do
+					db_dirs=${db_dirs-}${db_dirs:+ }"$(quote "${path}/${_d}")"
+				done
+				unset _d
+
+				printf 'chown -R %s %s\n' "$(quote "${db_owner}")" "${db_dirs}"
+			fi
+		fi
+		;;
+	(absent)
+		printf 'rm -R -f %s\n' "$(quote "${path}")"
+		;;
+	(*)
+		printf 'Invalid --state: %s\n' "${state_should}" >&2
+		exit 1
+		;;
+esac

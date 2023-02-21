@@ -1,0 +1,135 @@
+#!/bin/sh -e
+#
+# 2023 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Prints the state of the repository directory (presence of the directory itself
+# and ownership of the files and directories below it).
+#
+# Expected output:
+# present
+#    the directory exists and ownership is correct
+# wrongowner
+#    the directory exists but the ownership is incorrect
+# absent
+#    the directory does not exist
+#
+
+if test -f "${__object:?}/parameter/path"
+then
+	path=$(cat "${__object:?}/parameter/path")
+else
+	path=/${__object_id:?}
+fi
+
+wrongowner() {
+	echo wrongowner
+	exit 0
+}
+
+empty_dir() (
+	# NOTE: only works with set +f.
+	#       This function is executed in a subshell to not overwrite the f flag
+	#       in the rest of the script.
+	set +f
+	set -- "$1" "$1"/*
+	case $2
+	in
+		("$1"/\*) return 0 ;;
+		(*) return 1 ;;
+	esac
+)
+
+# NOTE: treat an empty directory as absent because svnadmin(1) create will
+#       happily work with it
+# shellcheck disable=SC2015
+test -d "${path}" && ! empty_dir "${path}" || {
+	echo absent
+	exit 0
+}
+
+if test -f "${__object:?}/parameter/owner"
+then
+	read -r owner <"${__object:?}/parameter/owner"
+fi
+if test -f "${__object:?}/parameter/db-owner"
+then
+	read -r db_owner <"${__object:?}/parameter/db-owner"
+else
+	db_owner=${owner-}
+fi
+
+if test -n "${owner}"
+then
+	for d in "${path}"/*
+	do
+		if test -d "${d}"
+		then
+			case ${d##*/}
+			in
+				(db|locks)  # sync with gencode-remote
+					# DB subdirectory
+					db_dirs=${db_dirs-}${db_dirs:+}${d##*/}
+					;;
+				(*)
+					dirs=${dirs-}${dirs:+}${d##*/}
+					;;
+			esac
+		fi
+	done
+
+	# check non-DB dirs
+
+	case ${owner}
+	in
+		(*:*)
+			set -- ! -user "${owner%%:*}" ! -group "${owner#*:}"
+			;;
+		(*)
+			set -- ! -user "${owner%%:*}"
+			;;
+	esac
+
+	cd "${path}"
+
+	# check files in the root
+	find ./* -prune ! -type d "$@" -print | grep -q . && wrongowner
+
+	# check non-DB dirs
+	# shellcheck disable=SC2086
+	find ${dirs} -print | grep -q . && wrongowner
+
+
+	# check DB dirs
+
+	case ${db_owner}
+	in
+		(*:*)
+			set -- "$@" ! -user "${db_owner%%:*}" ! -group "${db_owner#*:}"
+			;;
+		(*)
+			set -- "$@" ! -user "${db_owner%%:*}"
+			;;
+	esac
+
+	cd "${path}"
+
+	# shellcheck disable=SC2086
+	find ${db_dirs} "$@" -print | grep -q . && wrongowner
+fi
+
+echo present
