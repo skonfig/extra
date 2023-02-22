@@ -1,0 +1,174 @@
+#!/bin/sh -e
+#
+# 2023 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Prints the repository information printed by svnadmin-info in a more
+# "shell-like" format.
+#
+
+if test -f "${__object:?}/parameter/path"
+then
+	path=$(cat "${__object:?}/parameter/path")
+else
+	path=/${__object_id:?}
+fi
+
+if command -v svnadmin >/dev/null 2>&1
+then
+	# use svnadmin(1) when available
+	awk -F ': ' '
+	$1 {
+		k = tolower($1)
+		gsub(/ +/, "_", k)
+		v = substr($0, length($1 ": "))
+		sub(/^ */, "", v)
+
+		printf "%s=%s\n", k, v
+	}
+	' <<-EOF
+	$(svnadmin info "${path}" 2>/dev/null)
+	EOF
+elif test -d "${path}"
+then
+	# fallback to manual processing of repo files
+	# i.e. try to replicate the output of svnadmin info.
+	# based on:
+	# bdb:
+	# ?
+	# fsfs:
+	# https://svn.apache.org/viewvc/subversion/trunk/subversion/libsvn_fs_fs/structure?view=markup#l1
+	# fsx:
+	# https://svn.apache.org/viewvc/subversion/trunk/subversion/libsvn_fs_x/structure?view=markup#l1
+
+	printf 'path=%s\n' "${path}"
+
+	if test -f "${path}/db/uuid"
+	then
+		sed -n -e '1s/^/uuid=/p' "${path}/db/uuid"
+	fi
+
+	if test -f "${path}/db/current"
+	then
+		read -r youngest_rev _ <"${path}/db/current"
+		printf 'revisions=%u\n' "${youngest_rev}"
+	fi
+
+	if test -f "${path}/format"
+	then
+		read -r repository_format <"${path}/format"
+		printf 'repository_format=%s\n' "${repository_format}"
+	fi
+
+	read -r filesystem_type <"${path}/db/fs-type"
+
+	if test -f "${path}/db/format"
+	then
+		read -r fs_format <"${path}/db/format"
+	fi
+
+	# calculate compatible Subversion version
+
+	case $((repository_format))
+	in
+		(3) repos_minor=0 ;;
+		(5) repos_minor=4 ;;
+	esac
+
+	case ${filesystem_type:?}
+	in
+		(bdb)
+			# https://svn.apache.org/viewvc/subversion/trunk/subversion/libsvn_fs_base/fs.c?view=markup
+			# base_bdb_info_format()
+			case $((fs_format))
+			in
+				(1) fs_minor=0 ;;
+				(2) fs_minor=4 ;;
+				(3) fs_minor=5 ;;
+				(4) fs_minor=6 ;;
+			esac
+			;;
+		(fsfs)
+			# https://svn.apache.org/viewvc/subversion/trunk/subversion/libsvn_fs_fs/fs_fs.c?view=markup
+			# svn_fs_fs__info_format()
+			case $((fs_format))
+			in
+				(1) fs_minor=1 ;;
+				(2) fs_minor=4 ;;
+				(3) fs_minor=5 ;;
+				(4) fs_minor=6 ;;
+				(6) fs_minor=8 ;;
+				(7) fs_minor=9 ;;
+				(8) fs_minor=10 ;;
+			esac
+			;;
+		(fsx)
+			# https://svn.apache.org/viewvc/subversion/trunk/subversion/libsvn_fs_x/fs_x.c?view=markup
+			# svn_fs_x__info_format()
+			case $((fs_format))
+			in
+				(1) fs_minor=9 ;;
+				(2) fs_minor=10 ;;
+			esac
+			;;
+	esac
+
+	printf 'compatible_with_version=%d.%d.0\n' \
+		1 $((repos_minor > fs_minor ? repos_minor : fs_minor))
+
+	if test -f "${path}/db/fs-type"
+	then
+		printf 'filesystem_type=%s\n' "${filesystem_type}"
+	fi
+
+	if test -f "${path}/db/format"
+	then
+		awk -v fs_type="${filesystem_type-}" '
+		FNR == 1 {
+			printf "filesystem_format=%u\n", $0
+		}
+		$1 == "layout" {
+			if ($2 == "sharded") {
+				if (fs_type == "fsfs") {
+					printf "fsfs_sharded=yes\n"
+				}
+				if (fs_type == "fsfs" || fs_type == "fsx") {
+					printf "%s_shard_size=%u\n", fs_type, $3
+				}
+			}
+		}
+		$1 == "addressing" {
+			printf "%s_logical_addressing=%s\n", fs_type, ($2 == "logical" ? "yes" : "no")
+		}
+		' "${path}/db/format"
+	else
+		printf 'filesystem_format=1\n'
+	fi
+
+	case ${filesystem_type:?}
+	in
+		(bdb)
+			printf 'configuration_file=%s/db/DB_CONFIG\n' "${path}"
+			;;
+		(fsfs)
+			printf 'configuration_file=%s/db/fsfs.conf\n' "${path}"
+			;;
+		(fsx)
+			printf 'configuration_file=%s/db/fsx.conf\n' "${path}"
+			;;
+	esac
+fi
