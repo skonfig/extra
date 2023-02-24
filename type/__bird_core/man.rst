@@ -1,9 +1,9 @@
-cdist-type__bird-core(7)
+cdist-type__bird_core(7)
 ========================
 
 NAME
 ----
-cdist-type__bird-core - setup a skeleton bird configuration.
+cdist-type__bird_core - setup a skeleton bird configuration.
 
 
 DESCRIPTION
@@ -37,10 +37,10 @@ EXAMPLES
 
 .. code-block:: sh
 
-    __bird-core --router-id 198.51.100.4
+    __bird_core --router-id 198.51.100.4
 
-    require='__bird-core' __bird_bgp <...>
-    require='__bird-core' __bird_ospf <...>
+    require='__bird_core' __bird_bgp <...>
+    require='__bird_core' __bird_ospf <...>
 
 
 SEE ALSO

@@ -1,9 +1,9 @@
-cdist-type__rvm_gemset(7)
-==========================
+cdist-type__rvm_gem(7)
+======================
 
 NAME
 ----
-cdist-type__rvm_gemset - Manage Ruby gems through rvm
+cdist-type__rvm_gem - Manage Ruby gems through rvm
 
 
 DESCRIPTION

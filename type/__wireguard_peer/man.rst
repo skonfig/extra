@@ -1,9 +1,9 @@
-cdist-type__wiregurad_peer(7)
+cdist-type__wireguard_peer(7)
 =============================
 
 NAME
 ----
-cdist-type__wiregurad_peer - Add an authorized peer to a wireguard interface.
+cdist-type__wireguard_peer - Add an authorized peer to a wireguard interface.
 
 DESCRIPTION
 -----------

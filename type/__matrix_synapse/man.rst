@@ -310,11 +310,12 @@ You might also be interested in ungleich's `__ungleich_matrix
 <https://code.ungleich.ch/ungleich-public/cdist-ungleich/-/tree/master/type/__ungleich_matrix>`_
 meta-type.
 
+
 SEE ALSO
 --------
-- `cdist-type__matrix_element(7) <cdist-type__matrix_element.html>`_
-- `cdist-type__matrix_synapse_admin(7) <cdist-type__matrix_synapse_admin.html>`_
-- `cdist-type__matrix_synapse_worker(7) <cdist-type__matrix_synapse_worker.html>`_
+- :strong:`cdist-type__matrix_element`\ (7),
+- :strong:`cdist-type__matrix_synapse_admin`\ (7),
+- :strong:`cdist-type__matrix_synapse_worker`\ (7)
 
 
 AUTHORS

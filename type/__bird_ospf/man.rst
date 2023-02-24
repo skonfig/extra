@@ -1,9 +1,9 @@
-cdist-type__bird-ospf(7)
+cdist-type__bird_ospf(7)
 ========================
 
 NAME
 ----
-cdist-type__bird-ospf - Configure an instance of the OSPF protocol
+cdist-type__bird_ospf - Configure an instance of the OSPF protocol
 
 
 DESCRIPTION

@@ -3,7 +3,7 @@ cdist-type__keyboard(7)
 
 NAME
 ----
-cdit-type__keyboard - Set keyboard layout
+cdist-type__keyboard - Set keyboard layout
 
 
 DESCRIPTION
