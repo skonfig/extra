@@ -3,7 +3,7 @@ cdist-type__jail_freebsd10(7)
 
 NAME
 ----
-cdist-type__jail_freeebsd10 - Manage FreeBSD jails
+cdist-type__jail_freebsd10 - Manage FreeBSD jails
 
 
 DESCRIPTION

@@ -33,7 +33,7 @@ database
   used.
 
 database-user
-  The name of the PSQL database user to connec as. If omitted, then 'wikijs' is
+  The name of the PSQL database user to connect as. If omitted, then 'wikijs' is
   used.
 
 letsencrypt-mail
@@ -43,7 +43,7 @@ letsencrypt-mail
 http-port
   Specify HTTP port, defaults to 80.
 
-http-port
+https-port
   Specify HTTPS port, defaults to 443. Only relevant if the SSL flag is enabled.
 
 BOOLEAN PARAMETERS
