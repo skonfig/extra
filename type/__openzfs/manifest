@@ -1,21 +1,21 @@
 #!/bin/sh -e
 #
-# 2020-2021 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+# 2020-2022 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
 #
-# This file is part of cdist.
+# This file is part of skonfig-extra.
 #
-# cdist is free software: you can redistribute it and/or modify
+# skonfig-extra is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# cdist is distributed in the hope that it will be useful,
+# skonfig-extra is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
 version_ge() {
@@ -39,13 +39,6 @@ os=$(cat "${__global:?}/explorer/os")
 case ${os}
 in
 	(debian|devuan)
-		kernel_headers_pkg=$(cat "${__object:?}/explorer/kernel_headers_pkg")
-
-		test -n "${kernel_headers_pkg}" || {
-			echo 'Could not determine the name of the kernel headers package.' >&2
-			exit 1
-		}
-
 		# enable backports repo
 		# XXX: maybe the type should not be the one to decide whether or not to
 		# use backports
@@ -54,16 +47,24 @@ in
 		# ZFS
 		read -r lsb_codename <"${__global:?}/explorer/lsb_codename"
 
-		if test -n "${kernel_headers_pkg%/*}" != "${kernel_headers_pkg}"
-		then
-			require=__apt_backports/ \
-			__package_apt "${kernel_headers_pkg%/*}" --target-release "${kernel_headers_pkg#*/}"
-		else
-			require=__apt_backports/ \
-			__package_apt "${kernel_headers_pkg%/*}" --target-release "${kernel_headers_pkg#*/}"
-		fi
+		kernel_headers_pkg=$(cat "${__object:?}/explorer/kernel_headers_pkg")
+		case ${kernel_headers_pkg}
+		in
+			('')
+				echo 'Could not determine the name of the kernel headers package.' >&2
+				exit 1
+				;;
+			(*/*)
+				require=__apt_backports/ \
+				__package_apt "${kernel_headers_pkg%%/*}" --target-release "${kernel_headers_pkg#*/}"
+				;;
+			(*)
+				require=__apt_backports/ \
+				__package_apt "${kernel_headers_pkg%%/*}"
+				;;
+		esac
 
-		require="__apt_backports/ __package_apt/${kernel_headers_pkg%/*}" \
+		require="__apt_backports/ __package_apt/${kernel_headers_pkg%%/*}" \
 		__package_apt zfs-modules --target-release "${lsb_codename:?}-backports"
 
 		require=__apt_backports/ \

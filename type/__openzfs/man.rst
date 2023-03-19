@@ -1,14 +1,16 @@
-cdist-type__ssrq_zfs(7)
-=======================
+cdist-type__openzfs(7)
+======================
 
 NAME
 ----
-cdist-type__ssrq_zfs - Manage OpenZFS installation and configuration
+cdist-type__openzfs - Manage OpenZFS installation and configuration
 
 
 DESCRIPTION
 -----------
-This space intentionally left blank.
+This type can be used to set up OpenZFS on the system and set tunables.
+
+This type only works on Debian derivatives.
 
 
 REQUIRED PARAMETERS
@@ -49,7 +51,7 @@ EXAMPLES
 .. code-block:: sh
 
     # Make sure OpenZFS is installed on the target.
-    __ssrq_zfs
+    __openzfs
 
 
 SEE ALSO
@@ -60,12 +62,12 @@ SEE ALSO
 
 AUTHORS
 -------
-Dennis Camera <dennis.camera@ssrq-sds-fds.ch>
+Dennis Camera <dennis.camera--@--ssrq-sds-fds.ch>
 
 
 COPYING
 -------
-Copyright \(C) 2020 Dennis Camera. You can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+Copyright \(C) 2020-2023 Dennis Camera.
+You can redistribute it and/or modify it under the terms of the GNU General
+Public License as published by the Free Software Foundation, either version 3
+of the License, or (at your option) any later version.
