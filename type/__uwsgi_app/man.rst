@@ -1,9 +1,9 @@
-cdist-type__ssrq_uwsgi_app(7)
-=============================
+cdist-type__uwsgi_app(7)
+========================
 
 NAME
 ----
-cdist-type__ssrq_uwsgi_app - Manage uWSGI apps
+cdist-type__uwsgi_app - Manage uWSGI apps
 
 
 DESCRIPTION
@@ -164,12 +164,12 @@ EXAMPLES
 .. code-block:: sh
 
    # Simple app
-   __ssrq_uwsgi_app myapp \
+   __uwsgi_app myapp \
       --http-socket 8080 \
       --wsgi-file /path/to/wsgi.py
 
    # Run a Django app (https://docs.djangoproject.com/en/3.1/howto/deployment/wsgi/uwsgi/)
-   __ssrq_uwsgi_app mydjangoapp \
+   __uwsgi_app mydjangoapp \
       --plugin python3 \
       --chdir /path/to/mydjangoapp \
       --module mydjangoapp.wsgi:application \
@@ -182,10 +182,9 @@ EXAMPLES
       --home /path/to/virtual/env
 
 
-
 SEE ALSO
 --------
-None.
+* `<https://uwsgi-docs.readthedocs.io/>`_
 
 
 AUTHORS
@@ -195,7 +194,7 @@ Dennis Camera <dennis.camera--@--ssrq-sds-fds.ch>
 
 COPYING
 -------
-Copyright \(C) 2021 Dennis Camera. You can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
+Copyright \(C) 2021-2023 Dennis Camera.
+You can redistribute it and/or modify it under the terms of the GNU General
+Public License as published by the Free Software Foundation, either version 3
+of the License, or (at your option) any later version.
