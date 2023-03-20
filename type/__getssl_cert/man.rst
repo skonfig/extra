@@ -1,9 +1,9 @@
-cdist-type__dtnrch_getssl_cert(7)
-=================================
+cdist-type__getssl_cert(7)
+==========================
 
 NAME
 ----
-cdist-type__dtnrch_getssl_cert - Manage an SSL certficiate using GetSSL.
+cdist-type__getssl_cert - Manage an SSL certficiate using GetSSL.
 
 
 DESCRIPTION
@@ -113,17 +113,17 @@ EXAMPLES
 .. code-block:: sh
 
    # Get an SSL certficate for example.com
-   __dtnrch_getssl_cert example.com
+   __getssl_cert example.com
 
 
 SEE ALSO
 --------
-:strong:`cdist-type__dtnrch_getssl`\ (7)
+:strong:`cdist-type__getssl`\ (7)
 
 
 AUTHORS
 -------
-Dennis Camera <cdist--@--dtnr.ch>
+Dennis Camera <skonfig--@--dtnr.ch>
 
 
 COPYING

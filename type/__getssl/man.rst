@@ -1,9 +1,9 @@
-cdist-type__dtnrch_getssl(7)
-============================
+cdist-type__getssl(7)
+=====================
 
 NAME
 ----
-cdist-type__dtnrch_getssl - Set up GetSSL.
+cdist-type__getssl - Set up GetSSL.
 
 
 DESCRIPTION
@@ -53,7 +53,7 @@ EXAMPLES
 .. code-block:: sh
 
    # Ensure the latest version of getssl is installed
-   __dtnrch_getssl --version latest
+   __getssl --version latest
 
 
 SEE ALSO
@@ -63,7 +63,7 @@ SEE ALSO
 
 AUTHORS
 -------
-Dennis Camera <cdist--@--dtnr.ch>
+Dennis Camera <skonfig--@--dtnr.ch>
 
 
 COPYING

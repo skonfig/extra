@@ -1,28 +1,29 @@
 #!/bin/sh -e
 #
-# 2021 Dennis Camera (cdist at dtnr.ch)
+# 2021 Dennis Camera (skonfig at dtnr.ch)
 #
-# This file is part of cdist.
+# This file is part of skonfig-extra.
 #
-# cdist is free software: you can redistribute it and/or modify
+# skonfig is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# cdist is distributed in the hope that it will be useful,
+# skonfig is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+# along with skonfig. If not, see <http://www.gnu.org/licenses/>.
 #
+# Prints the "active" getssl.cfg values
 
 CONF_DIR=/etc/getssl
 
 domain=${__object_id:?}
-state_should=$(cat "${__object:?}/parameter/state")
+getssl_cfg=${CONF_DIR:?}/${domain}/getssl.cfg
 
-test "${state_should}" = absent || export require=__dtnrch_getssl/
+test -e "${getssl_cfg}" || exit 0
 
-__directory "${CONF_DIR}/${domain}" --state "${state_should}"
+sed -e 's/^[ \t]*\(.*\)[ \t]*$/\1/' -e '/^#/d' -e '/^$/d' "${getssl_cfg}" | sort
