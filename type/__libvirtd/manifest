@@ -1,21 +1,21 @@
 #!/bin/sh -e
 #
-# 2020-2022 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+# 2020-2023 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
 #
-# This file is part of cdist.
+# This file is part of skonfig-extra.
 #
-# cdist is free software: you can redistribute it and/or modify
+# skonfig-extra is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# cdist is distributed in the hope that it will be useful,
+# skonfig-extra is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with cdist. If not, see <http://www.gnu.org/licenses/>.
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
 version_ge() {
@@ -43,7 +43,7 @@ init=$(cat "${__global:?}/explorer/init")
 case ${os}
 in
 	(debian|devuan|ubuntu)
-		libvirtd_restart_cmd='service libvirtd restart'
+		libvirtd_restart_cmd='/etc/init.d/libvirtd restart'
 
 		# NOTE: dnsmasq is required for virtual networks (as DHCP, DNS server)
 		__package dnsmasq
@@ -55,10 +55,8 @@ in
 
 		__package qemu-utils
 
-		# NOTE: We have to install netcat-openbsd because libvirt's developers
-		# are are complete idiots ignoring the fact that there are different
-		# implementations of netcat (like, ones that don't support -U). Moreover
-		# they are incapable of printing connection errors on Mac OS X.
+		# NOTE: installing netcat-openbsd is required because libvirt assumes a
+		#       netcat implementation supporting the -U option.
 		__package netcat-openbsd
 		export CDIST_ORDER_DEPENDENCY=true
 		__package netcat-traditional --state absent
@@ -82,31 +80,40 @@ in
 		then
 			# should be required by libvirt-daemon-system automatically,
 			# but just to be save…
-			if test "${init}" = 'sysvinit'
-			then
-				__package libvirt-daemon-system-sysv
-				libvirtd_require="${libvirtd_require-}${libvirtd_require:+ }__package/libvirt-daemon-system-sysv"
-			elif test "${init}" = 'systemd'
-			then
-				__package libvirt-daemon-system-systemd
-				libvirtd_require="${libvirtd_require-}${libvirtd_require:+ }__package/libvirt-daemon-system-systemd"
-			fi
+			case ${init}
+			in
+				(systemd)
+					__package libvirt-daemon-system-systemd
+					libvirtd_require="${libvirtd_require-}${libvirtd_require:+ }__package/libvirt-daemon-system-systemd"
+					;;
+				(*)
+					__package libvirt-daemon-system-sysv
+					libvirtd_require="${libvirtd_require-}${libvirtd_require:+ }__package/libvirt-daemon-system-sysv"
+					;;
+			esac
 		fi
 
-		if test "${init}" != 'systemd'
-		then
-			require=${libvirtd_require} \
-			__key_value /etc/default/libvirtd:mount_cgroups \
-				--state present \
-				--file /etc/default/libvirtd \
-				--delimiter = --exact_delimiter \
-				--key 'mount_cgroups' --value 'yes' \
-				--onchange '/etc/init.d/libvirtd restart'
-		fi
+		case ${init}
+		in
+			(systemd)
+				libvirtd_restart_cmd='systemctl restart libvirtd.service'
+				;;
+			(*)
+				libvirtd_restart_cmd='/etc/init.d/libvirtd restart'
 
-		export require="${require-}${require:+ }${libvirtd_require}"
+				require=${libvirtd_require} \
+				__key_value /etc/default/libvirtd:mount_cgroups \
+					--state present \
+					--file /etc/default/libvirtd \
+					--delimiter = --exact_delimiter \
+					--key 'mount_cgroups' --value 'yes' \
+					--onchange "${libvirtd_restart_cmd:?}"
+				;;
+		esac
 
+		require=${libvirtd_require} \
 		__package libvirt-clients
+		libvirtd_require=${libvirtd_require-}${libvirtd_require:+ }__package/libvirt-clients
 
 		# cf. https://stackoverflow.com/questions/45125516/possible-values-for-uname-m
 		case ${mach_name}
@@ -139,15 +146,26 @@ in
 				qemu_require=__package/qemu-system-sparc
 				;;
 			(x86_64|i?86)
-				__package qemu-kvm
-				qemu_require=__package/qemu-kvm
+				if ${is_bullseye}
+				then
+					__package qemu-system-x86
+					qemu_require=__package/qemu-system-x86
+				else
+					__package qemu-kvm
+					qemu_require=__package/qemu-kvm
+				fi
+				;;
+			(*)
+				__package qemu-system-misc
+				qemu_require=__package/qemu-system-misc
 				;;
 		esac
 
-		export require="${require-}${require:+ }${qemu_require-}"
+		libvirtd_require=${libvirtd_require-}${libvirtd_require:+ }${qemu_require}
 
 		__package_apt libvirt-daemon-driver-storage-zfs \
 			--state "$(test -f "${__object:?}/parameter/with-zfs-storage" && echo present || echo absent)"
+		libvirtd_require=${libvirtd_require-}${libvirtd_require:+ }__package_apt/libvirt-daemon-driver-storage-zfs
 		;;
 	(archlinux)
 		libvirtd_restart_cmd='systemctl restart libvirtd.service'
@@ -162,10 +180,8 @@ in
 		#        Should probably patch __package_pacman…
 		__package iptables-nft
 
-		# NOTE: We have to install netcat-openbsd because libvirt's developers
-		# are are complete idiots ignoring the fact that there are different
-		# implementations of netcat (like, ones that don't support -U). Moreover
-		# they are incapable of printing connection errors on Mac OS X.
+		# NOTE: installing openbsd-netcat is required because libvirt assumes a
+		#       netcat implementation supporting the -U option.
 		__package openbsd-netcat
 
 		__package qemu-headless
@@ -174,8 +190,6 @@ in
 		__package libvirt
 
 		libvirtd_require='__package/qemu-headless __package/libvirt'
-
-		export require="${require-}${require:+ }${libvirtd_require-}"
 
 		if test -f "${__object:?}/parameter/with-zfs-storage"
 		then
@@ -190,23 +204,26 @@ in
 		;;
 esac
 
+require=${libvirtd_require} \
 __start_on_boot libvirtd
+libvirtd_require="${libvirtd_require} __start_on_boot/libvirtd"
 
-__key_value /etc/libvirt/libvirtd.conf:unix_sock_group --delimiter ' = ' \
-	--key 'unix_sock_group' --value '"libvirt"' \
-	--file /etc/libvirt/libvirtd.conf --state present \
-	--onchange "${libvirtd_restart_cmd:?}"
-__key_value /etc/libvirt/libvirtd.conf:unix_sock_rw_perms --delimiter ' = ' \
-	--key 'unix_sock_rw_perms' --value '"0770"' \
-	--file /etc/libvirt/libvirtd.conf --state present \
-	--onchange "${libvirtd_restart_cmd:?}"
+libvirt_config() {
+	require=${libvirtd_require} \
+	__key_value "${1:?}:${2:?}" --state present \
+		--file "${1:?}" \
+		--delimiter ' = ' \
+		--key "${2:?}" --value "${3:?}"
+	libvirt_config_require="${libvirt_config_require-}${libvirt_config_require:+ }__key_value$1:$2"
+}
+
+libvirt_config /etc/libvirt/libvirtd.conf unix_sock_group '"libvirt"'
+libvirt_config /etc/libvirt/libvirtd.conf unix_sock_rw_perms '"0770"'
 # TODO: Change SocketMode when using systemd.
-__key_value /etc/libvirt/libvirtd.conf:auth_unix_rw --delimiter ' = ' \
-	--key 'auth_unix_rw' --value '"none"' \
-	--file /etc/libvirt/libvirtd.conf --state present \
-	--onchange "${libvirtd_restart_cmd:?}"
+libvirt_config /etc/libvirt/libvirtd.conf auth_unix_rw '"none"'
+libvirt_config /etc/libvirt/libvirtd.conf audit_logging '1'
 
-__key_value /etc/libvirt/libvirtd.conf:audit_logging --delimiter ' = ' \
-	--key 'audit_logging' --value '1' \
-	--file /etc/libvirt/libvirtd.conf --state present \
-	--onchange "${libvirtd_restart_cmd:?}"
+require=${libvirt_config_require-} \
+__check_messages libvirtd_restart \
+	--pattern '^__key_value/etc/libvirt/' \
+	--execute "${libvirtd_restart_cmd:?}"
