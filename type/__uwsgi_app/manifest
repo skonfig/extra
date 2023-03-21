@@ -1,0 +1,105 @@
+#!/bin/sh -e
+#
+# 2021 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+
+os=$(cat "${__global:?}/explorer/os")
+
+state_should=$(cat "${__object:?}/parameter/state")
+
+case ${os}
+in
+	(debian|devuan|ubuntu)
+		if test "${state_should}" != 'absent'
+		then
+			__package uwsgi
+			require=__package/uwsgi \
+			__start_on_boot uwsgi
+		fi
+
+		# NOTE: the explorer will only print packages if --state requires them.
+		while read -r _pkgname
+		do
+			require=__package/uwsgi \
+			__package "${_pkgname}" </dev/null
+			pkg_require=${pkg_require-}${pkg_require:+ }__package/${_pkgname}
+		done <"${__object:?}/explorer/plugins-required"
+
+
+		conf_name=${__object_id:?}.ini
+		conf_available_path=/etc/uwsgi/apps-available/${conf_name:?}
+		conf_enabled_path=/etc/uwsgi/apps-enabled/${conf_name:?}
+
+		case ${state_should}
+		in
+			(present)
+				need_config_file=true
+				uwsgi_app_available_state=present
+				uwsgi_app_enabled_state=present
+
+				conf_require=${pkg_require-}
+				conf_available_require=${conf_require?}
+				conf_enabled_require=${conf_require?}${conf_require:+ }__file${conf_available_path:?}
+				;;
+			(disabled)
+				need_config_file=true
+				uwsgi_app_available_state=present
+				uwsgi_app_enabled_state=absent
+
+				conf_require=${pkg_require-}
+				conf_available_require=${conf_require?}
+				conf_enabled_require=${conf_require?}
+				;;
+			(absent)
+				need_config_file=false
+				uwsgi_app_available_state=absent
+				uwsgi_app_enabled_state=absent
+
+				conf_require=${__object_name:?}/
+				conf_available_require=${conf_require?}${conf_require:+ }__link${conf_enabled_path:?}
+				conf_enabled_require=${conf_require?}
+				;;
+		esac
+
+		if ${need_config_file}
+		then
+			# generate config file
+			mkdir "${__object:?}/files"
+			"${__type:?}/files/gen-config-ini.sh" >"${__object:?}/files/${conf_name:?}"
+		fi
+
+		require=${conf_available_require-} \
+		__file "${conf_available_path:?}" \
+			--state "${uwsgi_app_available_state}" \
+			--owner 0 --group 0 --mode 0644 \
+			--source "${__object:?}/files/${conf_name:?}"
+
+		require=${conf_enabled_require-} \
+		__link "${conf_enabled_path:?}" \
+			--state "${uwsgi_app_enabled_state}" \
+			--type symbolic \
+			--source "../apps-available/${conf_name:?}"
+		;;
+	(*)
+		: "${__type:?}"  # make shellcheck happy
+		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+		;;
+esac

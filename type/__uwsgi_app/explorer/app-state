@@ -1,0 +1,46 @@
+#!/bin/sh -e
+#
+# 2021 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Prints "started" if the uWSGI app is started, or "stopped" if it is not
+# running. If the app is not present it prints nothing.
+
+os=$("${__explorer:?}/os")
+
+case ${os}
+in
+	(debian|devuan|ubuntu)
+		# No app found
+		test -e "/etc/uwsgi/apps-enabled/${__object_id:?}.ini" || exit 0
+
+		test -x /etc/init.d/uwsgi || {
+			# NOTE: this assumes that a sysvinit script will always be installed
+			# and working, independent of the init system in use.
+			echo stopped
+			exit 0
+		}
+
+		/etc/init.d/uwsgi status "${__object_id:?}" >/dev/null \
+			&& echo started \
+			|| echo stopped
+		;;
+	(*)
+		printf 'Do not know how to check uWSGI service state on %s.\n' "${os}" >&2
+		exit 1
+		;;
+esac

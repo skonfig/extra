@@ -1,0 +1,78 @@
+#!/bin/sh -e
+#
+# 2021-2022 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Print the packages that need to be installed for this uWSGI app to be
+# functional (plugins only)
+
+test -s "${__object:?}/parameter/plugin" || exit 0
+
+os=$("${__explorer:?}/os")
+
+case ${os}
+in
+	(debian|devuan|ubuntu)
+		test "$(cat "${__object:?}/parameter/state")" != absent || exit 0
+
+		core_plugins() {
+			apt-cache show uwsgi-core \
+			| sed -n -e '/^Description[:-]/,/^[^ ]/!d' -e 's/^ \{2\}\* *\(.*\)$/\1/p'
+			apt-cache show uwsgi-core \
+			| sed -n -e '/^Replaces: */{s///;s/, */\n/g;p;}' \
+			| sed -e 's/\(uwsgi\|wsgi\)-plugin-//'
+		}
+
+		pkg_exists() { apt-cache show "$1" >/dev/null 2>&1; }
+
+		while read -r plugin
+		do
+			case ${plugin}
+			in
+				(rack)
+					ruby_version=$(
+						apt-cache show ruby \
+						| awk -F': ' \
+						  '$1 == "Depends" {
+							  split($2, d, ", ")
+							  for (i in d)
+								  if (d[i] ~ /^ruby[0-9]/)
+									  print d[i]
+						  }')
+					pkgname="uwsgi-plugin-${plugin}-${ruby_version}"
+					;;
+				(*)
+					if core_plugins | grep -qxF "${plugin}"
+					then
+						pkgname='uwsgi-core'
+					else
+						pkgname="uwsgi-plugin-${plugin}"
+					fi
+					;;
+			esac
+
+			if pkg_exists "${pkgname}"
+			then
+				printf '%s\n' "${pkgname}"
+			fi
+		done <"${__object:?}/parameter/plugin" \
+		| sort -u  # uwsgi-core could be repeated
+		;;
+	(*)
+		# TODO
+		;;
+esac
