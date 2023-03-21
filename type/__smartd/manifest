@@ -1,0 +1,103 @@
+#!/bin/sh -e
+#
+# 2020,2022,2023 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+version_ge() {
+	# usage: version_ge version_is min_version_expected
+	#
+	# compares two version numbers (up to three numeric components separated
+	# with dots)
+	# returns 0 if `version_is` >= `min_version_expected`, 1 otherwise.
+	#
+	# NOTES: if the lowest value (1st line) of the two version numbers is equal
+	#        to `min_version_expected`, `version_is` must be the same or larger.
+	#        explicit `-k n,n` is required for some sort(1)s.
+	printf '%s\n' "$1" "$2" \
+	| sort -t '.' -n -k 1,1 -k 2,2 -k 3,3 \
+	| head -1 \
+	| grep -qxF "$2"
+}
+
+os=$(cat "${__global:?}/explorer/os")
+os_version=$(cat "${__global:?}/explorer/os_version")
+
+state_should=present
+
+case ${os}
+in
+	(debian|devuan)
+		mailer=$(cat "${__object:?}/explorer/mailer")
+		case ${mailer}
+		in
+			(mail)
+				sendmail_patch_state=absent
+				;;
+			(sendmail)
+				sendmail_patch_state=present
+				;;
+			(*)
+				sendmail_patch_state=absent
+				if test "${state_should}" != absent
+				then
+					__package bsd-mailx
+					require=__package/bsd-mailx
+				fi
+				;;
+		esac
+
+		require=${require-}$(test "${state_should}" = absent || echo ' __package_apt/smartmontools') \
+		__file /etc/smartmontools/run.d/10sendmail \
+			--state "${sendmail_patch_state}" \
+			--owner 0 --group 0 --mode 0755 \
+			--source "${__type:?}/files/10sendmail"
+
+		require=${require-}$(test "${state_should}" != absent || echo ' __file/etc/smartmontools/run.d/10sendmail') \
+		__package_apt smartmontools \
+			--state "${state_should}"
+
+		is_bullseye=$(
+			case ${os}
+			in
+				(debian) version_ge "${os_version}" 10.99 ;;
+				(devuan) version_ge "${os_version}" 3.99 ;;
+				(*) false ;;  # having one extra key doesn't hurt
+			esac && echo true || echo false)
+
+		if test "${state_should}" = present
+		then
+			# Enable smartd
+			# https://salsa.debian.org/debian/smartmontools/-/commit/f1420bd#9c96da0e9f91d7d8937b69b524702c106258f0d1_13_15
+			require=__package_apt/smartmontools \
+			__key_value /etc/default/smartmontools:start_smartd \
+				--state "$(! ${is_bullseye} && echo present || echo absent)" \
+				--file /etc/default/smartmontools \
+				--delimiter = --exact_delimiter \
+				--key start_smartd --value 'yes'
+
+			require=__key_value/etc/default/smartmontools:start_smartd \
+			__start_on_boot smartmontools
+		fi
+		;;
+	(*)
+		: "${__type:?}"  # make shellcheck happy
+		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+		;;
+esac
