@@ -8,7 +8,10 @@ cdist-type__smartd - Configure the S.M.A.R.T. monitoring daemon.
 
 DESCRIPTION
 -----------
-This space intentionally left blank.
+This type installs `smartmontools <http://www.smartmontools.org>`_' S.M.A.R.T.
+monitoring daemon (``smartd``).
+
+This type only works on Debian derivatives.
 
 
 REQUIRED PARAMETERS
@@ -19,7 +22,14 @@ None.
 OPTIONAL PARAMETERS
 -------------------
 state
-    ``present`` or ``absent``. Defaults to ``present``.
+   One of:
+
+   ``present``
+      the S.M.A.R.T. monitoring daemon is installed and running.
+   ``absent``
+      the S.M.A.R.T. monitoring daemon is not installed.
+
+   Defaults to ``present``.
 
 
 BOOLEAN PARAMETERS
@@ -32,7 +42,7 @@ EXAMPLES
 
 .. code-block:: sh
 
-    # TODO
+    # Install and configure smartd
     __smartd
 
 

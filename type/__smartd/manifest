@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2020,2022 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+# 2020,2022,2023 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
 #
 # This file is part of skonfig-extra.
 #
@@ -53,20 +53,23 @@ in
 				;;
 			(*)
 				sendmail_patch_state=absent
-				__package bsd-mailx
-				export require=__package/bsd-mailx
+				if test "${state_should}" != absent
+				then
+					__package bsd-mailx
+					require=__package/bsd-mailx
+				fi
 				;;
 		esac
 
-		require=$(test "${state_should}" = absent || echo __package_apt/smartmontools) \
+		require=${require-}$(test "${state_should}" = absent || echo ' __package_apt/smartmontools') \
 		__file /etc/smartmontools/run.d/10sendmail \
 			--state "${sendmail_patch_state}" \
 			--owner 0 --group 0 --mode 0755 \
 			--source "${__type:?}/files/10sendmail"
 
-		require=$(test "${state_should}" != absent || echo __file/etc/smartmontools/run.d/10sendmail) \
-		__package_apt smartmontools --state "${state_should}"
-		export require=__package_apt/smartmontools
+		require=${require-}$(test "${state_should}" != absent || echo ' __file/etc/smartmontools/run.d/10sendmail') \
+		__package_apt smartmontools \
+			--state "${state_should}"
 
 		is_bullseye=$(
 			case ${os}
@@ -80,11 +83,12 @@ in
 		then
 			# Enable smartd
 			# https://salsa.debian.org/debian/smartmontools/-/commit/f1420bd#9c96da0e9f91d7d8937b69b524702c106258f0d1_13_15
+			require=__package_apt/smartmontools \
 			__key_value /etc/default/smartmontools:start_smartd \
 				--state "$(! ${is_bullseye} && echo present || echo absent)" \
+				--file /etc/default/smartmontools \
 				--delimiter = --exact_delimiter \
-				--file /etc/default/smartmontools --key start_smartd \
-				--value 'yes'
+				--key start_smartd --value 'yes'
 
 			require=__key_value/etc/default/smartmontools:start_smartd \
 			__start_on_boot smartmontools
