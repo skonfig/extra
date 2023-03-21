@@ -1,0 +1,28 @@
+#!/bin/sh -e
+#
+# 2021 Dennis Camera (skonfig at dtnr.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Prints the "active" getssl.cfg values
+
+CONF_DIR=/etc/getssl
+
+test -e "${CONF_DIR:?}/getssl.cfg" || exit 0
+
+sed -e 's/^[ \t]*\(.*\)[ \t]*$/\1/' -e '/^#/d' -e '/^$/d' \
+	"${CONF_DIR}/getssl.cfg" \
+| sort

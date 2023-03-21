@@ -1,0 +1,10 @@
+ca-loc
+cert-loc
+chain-loc
+key-loc
+pem-loc
+preferred-chain
+reload-cmd
+server-type
+state
+validation

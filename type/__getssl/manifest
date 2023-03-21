@@ -1,0 +1,99 @@
+#!/bin/sh -e
+#
+# 2020-2021 Dennis Camera (skonfig at dtnr.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+os=$(cat "${__global:?}/explorer/os")
+
+DEST=/usr/local/bin
+CONF_DIR=/etc/getssl
+
+state_should=$(cat "${__object:?}/parameter/state")
+
+case ${state_should}
+in
+	(present)
+		case ${os}
+		in
+			(alpine)
+				pkg_list='bash curl drill openssl' ;;
+			(debian|devuan|ubuntu)
+				pkg_list='bash curl dnsutils openssl' ;;
+			(freebsd)
+				pkg_list='bash curl' ;;
+			(openwrt)
+				pkg_list='bash curl openssl-util' ;;
+			(*)
+				pkg_list='bash curl openssl' ;;
+		esac
+
+		for pkg in ${pkg_list}
+		do
+			__package "${pkg}" --state present
+			require=${require:-}${require:+ }__package/${pkg}
+		done
+		export require
+
+		__directory "${DEST}" --state present --parents
+		require=${require:-}${require:+ }__directory${DEST}
+		;;
+	(absent)
+		:
+		;;
+	(*)
+		printf 'Invalid --state: %s\n' "${state_should}" >&2
+		exit 1
+		;;
+esac
+
+# shellcheck disable=SC2034
+IFS='	' read -r gitref sha256_should cksum_should <<EOF
+$(
+	version_should=$(cat "${__object:?}/parameter/version")
+	case ${version_should}
+	in
+		(latest)
+			tail -n 1 "${__type:?}/files/cksums.txt"
+			;;
+		(*)
+			awk -F '\t' -v vers="v${version_should#v}" '{ v = $1; sub(/@.*$/, "", v) } v == vers' "${__type:?}/files/cksums.txt"
+			;;
+	esac
+)
+EOF
+
+require="${require-}${require:+ }$(test "${state_should}" != 'absent' || echo __cron/getssl)" \
+__staged_file "${DEST}/getssl" --state "${state_should}" \
+	--owner 0 --mode 0755 \
+	--source "https://raw.githubusercontent.com/srvrco/getssl/${gitref#*@}/getssl" \
+	--cksum "${cksum_should}"
+
+if test "${state_should}" != 'absent'
+then
+	require="__staged_file${DEST}/getssl"
+fi
+
+__directory "${CONF_DIR}" \
+	--state "${state_should}" \
+	--owner 0 --mode 0750
+
+__cron getssl \
+	--state "${state_should}" \
+	--user root \
+	--hour 1 --minute 0 \
+	--command "${DEST}/getssl -a -q -U"
