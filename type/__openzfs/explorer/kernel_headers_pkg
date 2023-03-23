@@ -1,0 +1,70 @@
+#!/bin/sh -e
+#
+# 2020,2022 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Determines the name of the kernel headers package on the target.
+#
+
+linux_version() (
+	# cf. include/linux/uts.h
+	UTS_SYSNAME=$(uname -s)
+
+	test "${UTS_SYSNAME}" = 'Linux' || {
+		echo 'Only Linux kernels are supported.' >&2
+		exit 1
+	}
+
+	test -f /proc/version || {
+		echo '/proc/version missing. Cannot determine kernel version.' >&2
+		exit 1
+	}
+
+	# /proc/version contains a fixed string; cf. fs/proc/version.c
+	expr "$(head -n 1 /proc/version)" : "${UTS_SYSNAME} version \(.*\) (.*@.*)"
+)
+
+case $("${__explorer:?}/os")
+in
+	(debian|devuan)
+		KSUFFIX=$(expr "$(linux_version)" : '.*-\(.*\)$')
+
+		kernel_pkg_name="linux-headers-${KSUFFIX}"
+
+		target_release=$(
+				awk -v pkg_name="${kernel_pkg_name}" '
+				/^[^ ]/ { p = ($0 == pkg_name ":") }
+				p && /^  [^ ]/ {
+				  match($0, /^  [^:]+:/)
+				  s = substr($0, RSTART+2, RLENGTH-3)
+				}
+				p && s == "Version table" && /^ *\*\*\* / {
+				  while (getline > 0 && /^        [0-9]/ && NF > 2)  # filter repo lines
+				    print substr($3, 1, index($3, "/") - 1)
+				}
+				' <<-EOF
+				$(LC_ALL=C apt-cache policy "${kernel_pkg_name}")
+				EOF
+				)
+		if test -n "${target_release}"
+		then
+			kernel_pkg_name="${kernel_pkg_name}/${target_release}"
+		fi
+
+		printf '%s\n' "${kernel_pkg_name}"
+		;;
+esac
