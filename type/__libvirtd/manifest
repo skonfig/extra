@@ -1,0 +1,229 @@
+#!/bin/sh -e
+#
+# 2020-2023 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+version_ge() {
+	# usage: version_ge version_is min_version_expected
+	#
+	# compares two version numbers (up to three numeric components separated
+	# with dots)
+	# returns 0 if `version_is` >= `min_version_expected`, 1 otherwise.
+	#
+	# NOTES: if the lowest value (1st line) of the two version numbers is equal
+	#        to `min_version_expected`, `version_is` must be the same or larger.
+	#        explicit `-k n,n` is required for some sort(1)s.
+	printf '%s\n' "$1" "$2" \
+	| sort -t '.' -n -k 1,1 -k 2,2 -k 3,3 \
+	| head -1 \
+	| grep -qxF "$2"
+}
+
+os=$(cat "${__global:?}/explorer/os")
+os_version=$(cat "${__global:?}/explorer/os_version")
+mach_name=$(cat "${__global:?}/explorer/machine")
+init=$(cat "${__global:?}/explorer/init")
+
+: "${__type:?}"  # make shellcheck happy
+case ${os}
+in
+	(debian|devuan|ubuntu)
+		libvirtd_restart_cmd='/etc/init.d/libvirtd restart'
+
+		# NOTE: dnsmasq is required for virtual networks (as DHCP, DNS server)
+		__package dnsmasq
+
+		# NOTE: ebtables is required for some network filtering options
+		__package ebtables
+
+		# __update_alternatives iptables --path /usr/sbin/iptables-legacy
+
+		__package qemu-utils
+
+		# NOTE: installing netcat-openbsd is required because libvirt assumes a
+		#       netcat implementation supporting the -U option.
+		__package netcat-openbsd
+		export CDIST_ORDER_DEPENDENCY=true
+		__package netcat-traditional --state absent
+		__update_alternatives nc --path /bin/nc.openbsd
+		unset CDIST_ORDER_DEPENDENCY
+
+		require='__package/dnsmasq __package/ebtables __package/qemu-utils __update_alternatives/nc' \
+		__package libvirt-daemon-system
+		libvirtd_require=__package/libvirt-daemon-system
+
+		is_bullseye=$(
+			case ${os}
+			in
+				(debian) version_ge "${os_version}" 10.99 ;;
+				(devuan) version_ge "${os_version}" 3.99 ;;
+				(ubuntu) version_ge "$(os_version)" 20 ;;
+				(*) false ;;
+			esac && echo true || echo false)
+
+		if ${is_bullseye}
+		then
+			# should be required by libvirt-daemon-system automatically,
+			# but just to be save…
+			case ${init}
+			in
+				(systemd)
+					__package libvirt-daemon-system-systemd
+					libvirtd_require="${libvirtd_require-}${libvirtd_require:+ }__package/libvirt-daemon-system-systemd"
+					;;
+				(*)
+					__package libvirt-daemon-system-sysv
+					libvirtd_require="${libvirtd_require-}${libvirtd_require:+ }__package/libvirt-daemon-system-sysv"
+					;;
+			esac
+		fi
+
+		case ${init}
+		in
+			(systemd)
+				libvirtd_restart_cmd='systemctl restart libvirtd.service'
+				;;
+			(*)
+				libvirtd_restart_cmd='/etc/init.d/libvirtd restart'
+
+				require=${libvirtd_require} \
+				__key_value /etc/default/libvirtd:mount_cgroups \
+					--state present \
+					--file /etc/default/libvirtd \
+					--delimiter = --exact_delimiter \
+					--key 'mount_cgroups' --value 'yes' \
+					--onchange "${libvirtd_restart_cmd:?}"
+				;;
+		esac
+
+		require=${libvirtd_require} \
+		__package libvirt-clients
+		libvirtd_require=${libvirtd_require-}${libvirtd_require:+ }__package/libvirt-clients
+
+		# cf. https://stackoverflow.com/questions/45125516/possible-values-for-uname-m
+		case ${mach_name}
+		in
+			(aarch64|aarch64_be|armv?l|armv?b)
+				__package qemu-system-arm
+				qemu_require=__package/qemu-system-arm
+
+				__package qemu-efi
+				qemu_require="${qemu_require} __package/qemu-efi"
+				;;
+			(ppc64|ppc|ppc64le|ppcle)
+				__package qemu-system-ppc
+				qemu_require=__package/qemu-system-ppc
+
+				# NOTE: Required to fix this error when creating a new VM in virt-manager:
+				# > qemu-system-ppc64le: -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:b8:50:f0,bus=pci.0,addr=0x1: failed to find romfile "efi-virtio.rom"
+				#
+				# Other than that iPXE doesn’t make any sense on PowerPC,
+				# because SLOF can netboot just fine.
+				__package ipxe-qemu
+				qemu_require="${qemu_require} __package/ipxe-qemu"
+				;;
+			(mips64|mips)
+				__package qemu-system-mips
+				qemu_require=__package/qemu-system-mips
+				;;
+			(sparc64|sparc)
+				__package qemu-system-sparc
+				qemu_require=__package/qemu-system-sparc
+				;;
+			(x86_64|i?86)
+				if ${is_bullseye}
+				then
+					__package qemu-system-x86
+					qemu_require=__package/qemu-system-x86
+				else
+					__package qemu-kvm
+					qemu_require=__package/qemu-kvm
+				fi
+				;;
+			(*)
+				__package qemu-system-misc
+				qemu_require=__package/qemu-system-misc
+				;;
+		esac
+
+		libvirtd_require=${libvirtd_require-}${libvirtd_require:+ }${qemu_require}
+
+		__package_apt libvirt-daemon-driver-storage-zfs \
+			--state "$(test -f "${__object:?}/parameter/with-zfs-storage" && echo present || echo absent)"
+		libvirtd_require=${libvirtd_require-}${libvirtd_require:+ }__package_apt/libvirt-daemon-driver-storage-zfs
+		;;
+	(archlinux)
+		libvirtd_restart_cmd='systemctl restart libvirtd.service'
+
+		# dnsmasq is required for virtual networks (as DHCP, DNS server)
+		__package dnsmasq
+
+		# provides iptables and ebtables using the nftables backend
+
+		# FIXME: probably won't automatically install if iptables is currently
+		#        installed, due to the interactive question of pacman.
+		#        Should probably patch __package_pacman…
+		__package iptables-nft
+
+		# NOTE: installing openbsd-netcat is required because libvirt assumes a
+		#       netcat implementation supporting the -U option.
+		__package openbsd-netcat
+
+		__package qemu-headless
+
+		require='__package/dnsmasq __package/iptables-nft __package/openbsd-netcat __package/qemu-headless' \
+		__package libvirt
+
+		libvirtd_require='__package/qemu-headless __package/libvirt'
+
+		if test -f "${__object:?}/parameter/with-zfs-storage"
+		then
+			printf '%s --with-zfs-storage is not supported on %s.\n' "${__type##*/}" "${os}" >&2
+			exit 1
+		fi
+		;;
+	(*)
+		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+		;;
+esac
+
+require=${libvirtd_require} \
+__start_on_boot libvirtd
+libvirtd_require="${libvirtd_require} __start_on_boot/libvirtd"
+
+libvirt_config() {
+	require=${libvirtd_require} \
+	__key_value "${1:?}:${2:?}" --state present \
+		--file "${1:?}" \
+		--delimiter ' = ' \
+		--key "${2:?}" --value "${3:?}"
+	libvirt_config_require="${libvirt_config_require-}${libvirt_config_require:+ }__key_value$1:$2"
+}
+
+libvirt_config /etc/libvirt/libvirtd.conf unix_sock_group '"libvirt"'
+libvirt_config /etc/libvirt/libvirtd.conf unix_sock_rw_perms '"0770"'
+# TODO: Change SocketMode when using systemd.
+libvirt_config /etc/libvirt/libvirtd.conf auth_unix_rw '"none"'
+libvirt_config /etc/libvirt/libvirtd.conf audit_logging '1'
+
+require=${libvirt_config_require-} \
+__check_messages libvirtd_restart \
+	--pattern '^__key_value/etc/libvirt/' \
+	--execute "${libvirtd_restart_cmd:?}"
