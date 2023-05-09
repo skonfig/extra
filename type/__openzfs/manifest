@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2020-2022 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+# 2020,2023 Dennis Camera (dennis.camera at riiengineering.ch)
 #
 # This file is part of skonfig-extra.
 #
@@ -32,6 +32,20 @@ version_ge() {
 	| sort -t '.' -n -k 1,1 -k 2,2 -k 3,3 \
 	| head -1 \
 	| grep -qxF "$2"
+}
+
+zfs_param_bool() {
+	# usage: zfs_param_bool param_name
+	#
+	# prints "yes" if the boolean parameter is used, "no" otherwise.
+
+	if test -f "${__object:?}/parameter/${1:?}"
+	then
+		echo 'yes'
+	else
+		echo 'no'
+	fi
+
 }
 
 os=$(cat "${__global:?}/explorer/os")
@@ -84,7 +98,8 @@ in
 		#      - dkms build zfs/0.8.4
 		#      - dkms install zfs/0.8.4
 
-		case $(cat "${__object:?}/explorer/mailer")
+		read -r mailer <"${__object:?}/explorer/mailer"
+		case ${mailer}
 		in
 			(mail)
 				;;
@@ -94,12 +109,11 @@ in
 				;;
 		esac
 
-		export CDIST_ORDER_DEPENDENCY=true
 		require="__apt_backports/ __package_apt/zfsutils-linux${mail_require:+ ${mail_require}}" \
 		__package_apt zfs-zed --target-release "${lsb_codename:?}-backports"
 
+		require=__package_apt/zfs-zed \
 		__start_on_boot zfs-zed
-		unset CDIST_ORDER_DEPENDENCY
 		;;
 	(*)
 		: "${__type:?}"  # make shellcheck happy
@@ -109,7 +123,7 @@ in
 		;;
 esac
 
-require='__package_apt/zfs-modules' \
+require=__package_apt/zfs-modules \
 __block /etc/modprobe.d/zfs.conf:cdist-zfs-tunables \
 	--state "$(test -s "${__object:?}/parameter/tunable" && echo present || echo absent)" \
 	--file /etc/modprobe.d/zfs.conf \
@@ -133,7 +147,7 @@ then
 	# We only need to apply this hack on OpenZFS < 2.0.5
 	spl_kmem_cache_slab_limit=16384
 fi
-require='__package_apt/zfs-modules' \
+require=__package_apt/zfs-modules \
 __block /etc/modprobe.d/zfs.conf:cdist-spl-workaround-11574 \
 	--state "$(test "${spl_kmem_cache_slab_limit-}" && echo present || echo absent)" \
 	--file /etc/modprobe.d/zfs.conf \
@@ -184,7 +198,7 @@ set_zed_rc ZED_USE_ENCLOSURE_LEDS 1
 require=__package_apt/zfsutils-linux \
 __key_value /etc/default/zfs:MOUNT_EXTRA_OPTIONS \
 	--file /etc/default/zfs \
-	--delimiter = --exact_delimiter \
+	--delimiter '=' --exact_delimiter \
 	--key MOUNT_EXTRA_OPTIONS \
 	--value "\"$(test -f "${__object:?}/parameter/auto-load-keys" && printf '%s' '-l')\""
 
@@ -194,4 +208,4 @@ __key_value /etc/default/zfs:VERBOSE_MOUNT \
 	--file /etc/default/zfs \
 	--delimiter = --exact_delimiter \
 	--key VERBOSE_MOUNT \
-	--value "'$(test -f "${__object:?}/parameter/verbose-mount" && echo yes || echo no)'"
+	--value "'$(zfs_param_bool verbose-mount)'"
