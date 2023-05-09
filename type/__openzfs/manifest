@@ -48,6 +48,10 @@ zfs_param_bool() {
 
 }
 
+# FIXME: the version variables may be empty if ZFS is not yet installed
+zfs_version=$(sed -n -e 's/^zfs-\([0-9.]*\).*/\1/p' <"${__object:?}/explorer/openzfs_version")
+kmod_version=$(sed -n -e 's/^zfs-kmod-\([0-9.]*\).*/\1/p' <"${__object:?}/explorer/openzfs_version")
+
 os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
@@ -141,7 +145,6 @@ EOF
 #       Was fixed in OpenZFS 2.0.5:
 #         https://github.com/openzfs/zfs/pull/12152
 #         https://github.com/openzfs/zfs/releases/tag/zfs-2.0.5
-kmod_version=$(sed -n -e 's/^zfs-kmod-\([0-9.]*\).*/\1/p' <"${__object:?}/explorer/openzfs_version")
 if ! version_ge "${kmod_version}" 2.0.5
 then
 	# We only need to apply this hack on OpenZFS < 2.0.5
@@ -192,15 +195,39 @@ set_zed_rc ZED_USE_ENCLOSURE_LEDS 1
 # NOTE: OpenZFS >= 2.1.3 ships with a zfs-load-key init script which loads and
 #       unloads keys based on /etc/default/zfs options ZFS_LOAD_KEY and
 #       ZFS_UNLOAD_KEY.
-#       For some reason Debian doesn’t package this init script although the
-#       "/etc/default" options are present.
+#
+#       For some reason Debian didn’t package this init script until version
+#       2.1.6 although the /etc/default options were present, cf.
 #       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1017911
+if version_ge "${zfs_version}" 2.1.3
+then
+	zfs_load_key=$(zfs_param_bool auto-load-keys)
+
+	require=__package_apt/zfsutils-linux \
+	__key_value /etc/default/zfs:ZFS_LOAD_KEY \
+		--file /etc/default/zfs \
+		--delimiter '=' --exact_delimiter \
+		--key ZFS_LOAD_KEY \
+		--value "'${zfs_load_key}'"
+	require=__package_apt/zfsutils-linux \
+	__key_value /etc/default/zfs:ZFS_UNLOAD_KEY \
+		--file /etc/default/zfs \
+		--delimiter '=' --exact_delimiter \
+		--key ZFS_UNLOAD_KEY \
+		--value "'${zfs_load_key}'"
+else
+	if test -f "${__object:?}/parameter/auto-load-keys"
+	then
+		mount_extra_options=${mount_extra_options-}${mount_extra_options:+ }-l
+	fi
+fi
+
 require=__package_apt/zfsutils-linux \
 __key_value /etc/default/zfs:MOUNT_EXTRA_OPTIONS \
 	--file /etc/default/zfs \
 	--delimiter '=' --exact_delimiter \
 	--key MOUNT_EXTRA_OPTIONS \
-	--value "\"$(test -f "${__object:?}/parameter/auto-load-keys" && printf '%s' '-l')\""
+	--value "\"${mount_extra_options-}\""
 
 # Verbose mount
 require=__package_apt/zfsutils-linux \
