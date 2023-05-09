@@ -145,20 +145,26 @@ EOF
 #       Was fixed in OpenZFS 2.0.5:
 #         https://github.com/openzfs/zfs/pull/12152
 #         https://github.com/openzfs/zfs/releases/tag/zfs-2.0.5
-if ! version_ge "${kmod_version}" 2.0.5
+if test -n "${kmod_version}"
 then
-	# We only need to apply this hack on OpenZFS < 2.0.5
-	spl_kmem_cache_slab_limit=16384
+	# NOTE: $kmod_version could be empty on the first run (explorers run before
+	#       zfs could be installed). In this case we skip this section and only
+	#       apply it on subsequent runs.
+	if ! version_ge "${kmod_version}" 2.0.5
+	then
+		# We only need to apply this hack on OpenZFS < 2.0.5
+		spl_kmem_cache_slab_limit=16384
+	fi
+	require=__package_apt/zfs-modules \
+	__block /etc/modprobe.d/zfs.conf:cdist-spl-workaround-11574 \
+		--state "$(test "${spl_kmem_cache_slab_limit-}" && echo present || echo absent)" \
+		--file /etc/modprobe.d/zfs.conf \
+		--prefix '# cdist:spl-workaround-11574' \
+		--suffix '#/cdist:spl-workaround-11574' \
+		--text - <<-EOF
+	options spl spl_kmem_cache_slab_limit=$((spl_kmem_cache_slab_limit))
+	EOF
 fi
-require=__package_apt/zfs-modules \
-__block /etc/modprobe.d/zfs.conf:cdist-spl-workaround-11574 \
-	--state "$(test "${spl_kmem_cache_slab_limit-}" && echo present || echo absent)" \
-	--file /etc/modprobe.d/zfs.conf \
-	--prefix '# cdist:spl-workaround-11574' \
-	--suffix '#/cdist:spl-workaround-11574' \
-	--text - <<EOF
-options spl spl_kmem_cache_slab_limit=$((spl_kmem_cache_slab_limit))
-EOF
 
 set_zed_rc() {
 	require=__package_apt/zfs-zed \
@@ -199,26 +205,34 @@ set_zed_rc ZED_USE_ENCLOSURE_LEDS 1
 #       For some reason Debian didn’t package this init script until version
 #       2.1.6 although the /etc/default options were present, cf.
 #       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1017911
-if version_ge "${zfs_version}" 2.1.3
+if test -n "${zfs_version}"
 then
-	zfs_load_key=$(zfs_param_bool auto-load-keys)
-
-	require=__package_apt/zfsutils-linux \
-	__key_value /etc/default/zfs:ZFS_LOAD_KEY \
-		--file /etc/default/zfs \
-		--delimiter '=' --exact_delimiter \
-		--key ZFS_LOAD_KEY \
-		--value "'${zfs_load_key}'"
-	require=__package_apt/zfsutils-linux \
-	__key_value /etc/default/zfs:ZFS_UNLOAD_KEY \
-		--file /etc/default/zfs \
-		--delimiter '=' --exact_delimiter \
-		--key ZFS_UNLOAD_KEY \
-		--value "'${zfs_load_key}'"
-else
-	if test -f "${__object:?}/parameter/auto-load-keys"
+	# NOTE: $zfs_version could be empty on the first run (explorers run before
+	#       zfs could be installed). In this case we skip this section and only
+	#       apply it on subsequent runs.
+	if version_ge "${zfs_version}" 2.1.3
 	then
-		mount_extra_options=${mount_extra_options-}${mount_extra_options:+ }-l
+		zfs_load_key=$(zfs_param_bool auto-load-keys)
+
+		# NOTE: require zfsutils-linux package because an upgrade in this run
+		#       could've overwritten /etc/default/zfs.
+		require=__package_apt/zfsutils-linux \
+		__key_value /etc/default/zfs:ZFS_LOAD_KEY \
+			--file /etc/default/zfs \
+			--delimiter '=' --exact_delimiter \
+			--key ZFS_LOAD_KEY \
+			--value "'${zfs_load_key}'"
+		require=__package_apt/zfsutils-linux \
+		__key_value /etc/default/zfs:ZFS_UNLOAD_KEY \
+			--file /etc/default/zfs \
+			--delimiter '=' --exact_delimiter \
+			--key ZFS_UNLOAD_KEY \
+			--value "'${zfs_load_key}'"
+	else
+		if test -f "${__object:?}/parameter/auto-load-keys"
+		then
+			mount_extra_options=${mount_extra_options-}${mount_extra_options:+ }-l
+		fi
 	fi
 fi
 
