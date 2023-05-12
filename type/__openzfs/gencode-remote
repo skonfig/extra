@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2021 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+# 2021,2023 Dennis Camera (dennis.camera at riiengineering.ch)
 #
 # This file is part of skonfig-extra.
 #
@@ -20,15 +20,15 @@
 
 kernel_name=$(cat "${__global:?}/explorer/kernel_name")
 
-if grep -q -e '^__block/etc/modprobe.d/zfs.conf:' "${__messages_in:?}" \
+if grep -q -e '^__block/etc/modprobe\.d/zfs\.conf:' "${__messages_in:?}" \
 	&& test "${kernel_name}" = 'Linux'
 then
 	# tunables changed -> also update running config (currently only on Linux)
 	cat <<-'EOF'
-	sed -n -e 's/^options \(.*\)/\1/p' /etc/modprobe.d/zfs.conf \
+	sed -n -e 's/^options //p' /etc/modprobe.d/zfs.conf \
 	| while read -r kmod tunable
 	  do
-		  printf '%s\n' "${tunable#*=}" >"/sys/module/${kmod}/parameters/${tunable%%=*}"
+	      printf '%s\n' "${tunable#*=}" >"/sys/module/${kmod}/parameters/${tunable%%=*}"
 	  done
 	EOF
 fi
