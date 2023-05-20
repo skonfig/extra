@@ -1,0 +1,60 @@
+#!/bin/sh -e
+#
+# 2023 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+os=$(cat "${__global:?}/explorer/os")
+
+read -r state_should <"${__object:?}/parameter/state"
+
+case ${os}
+in
+	(alpine|archlinux|freebsd|openbsd)
+		package_name=gnupg
+		;;
+	(debian|devuan|ubuntu)
+		package_name=gnupg
+		;;
+	(centos|almalinux|eurolinux|rocky|fedora|redhat|scientific)
+		package_name=gnupg
+		;;
+	(gentoo)
+		package_name=app-crypt/gnupg
+		;;
+	(netbsd)
+		package_name=security/gnupg2
+		;;
+	(suse)
+		package_name=gpg2
+		;;
+	(*)
+		: "${__type:?}"  # make shellcheck happy
+		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+		;;
+esac
+
+if test "${state_should}" != 'absent' \
+	|| test -s "${__object:?}/explorer/pub-data" \
+	|| test -s "${__object:?}/explorer/sec-data"
+then
+	# the package is only required if a key is to be installed or it exists and
+	# needs to be removed
+	__package "${package_name}"
+fi

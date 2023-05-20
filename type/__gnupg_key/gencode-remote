@@ -1,0 +1,82 @@
+#!/bin/sh -e
+#
+# 2023 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+shquot() {
+	sed -e "s/'/'\\\\''/g" -e "1s/^/'/" -e "\$s/\$/'/" <<-EOF
+	$*
+	EOF
+}
+
+GNUPGHOME_remote=$(cat "${__object:?}/parameter/homedir")
+if test -f "${__object:?}/parameter/key-id"
+then
+	read -r keyid <"${__object:?}/parameter/key-id"
+else
+	keyid=${__object_id:?}
+fi
+read -r state_should <"${__object:?}/parameter/state"
+
+
+case ${state_should}
+in
+	(present)
+		test -f "${__object:?}/files/needs-update" || exit 0
+
+		if test -f "${__object:?}/parameter/source"
+		then
+			# "manual" source, use uploaded file from code-remote
+			printf 'gpg --homedir %s --batch --no-autostart --import "${__object:?}/files/src.gpg"\n' \
+				"$(shquot "${GNUPGHOME_remote:?}")"
+		else
+			# auto key locate
+			gpgopts=
+			if test -f "${__object:?}/parameter/key-locate-mechanisms"
+			then
+				while read -r _mechanisms
+				do
+					gpgopts="${gpgopts-} --auto-key-locate $(shquot "${_mechanisms}")"
+				done <"${__object:?}/parameter/key-locate-mechanisms"
+				unset -v _mechanisms
+			fi
+
+			printf 'gpg --homedir %s%s --batch --locate-external-keys %s\n' \
+				"$(shquot "${GNUPGHOME_remote:?}")" "${gpgopts}" "$(shquot "${keyid}")"
+		fi
+		;;
+	(absent)
+		# XXX: think again about using --yes for deleting keys.
+
+		if test -s "${__object:?}/explorer/pub-data"
+		then
+			printf 'gpg --homedir %s --batch --yes --delete-keys %s\n' \
+				"$(shquot "${GNUPGHOME_remote:?}")" "$(shquot "${keyid}")"
+		fi
+
+		if test -s "${__object:?}/explorer/sec-data"
+		then
+			printf 'gpg --homedir %s --batch --yes --delete-secret-keys %s\n' \
+				"$(shquot "${GNUPGHOME_remote:?}")" "$(shquot "${keyid}")"
+		fi
+		;;
+	(*)
+		printf 'Invalid --state: %s\n' "${state_should-}" >&2
+		exit 1
+		;;
+esac
