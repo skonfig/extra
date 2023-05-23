@@ -47,6 +47,21 @@ key-locate-mechanisms
    be concatenated by :strong:`gpg`\ (1).
 
    Hint: this parameter also accepts keyserver URLs.
+ownertrust
+   Set the ownertrust of the imported key to the given value.
+
+   The value must be one of:
+
+   undefined
+      not enough information to assign an ownertrust
+   never
+      never trusted
+   marginal
+      marginally trusted
+   fully
+      fully trusted
+   ultimate
+      ultimately trusted
 source
    the source to take the key from.
    Will use auto-key-locate if not used.
