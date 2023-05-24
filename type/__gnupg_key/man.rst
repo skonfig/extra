@@ -10,11 +10,11 @@ DESCRIPTION
 -----------
 This type can be used to manage PGP keys inside `GnuPG <https://www.gnupg.org>`_
 keyrings.
-Keys can be retrieved from files (either local or via HTTP) or automatically
-found and imported using :strong:`gpg`\ (1)'s ``--locate-keys`` feature.
+Keys can be retrieved from files (either local or via HTTP) or imported from a
+keyserver.
 
 Because the PGP file format is complex, this type requires that you give it the
-key ID even if you import from a file/URL.
+full key ID (i.e. fingerprint) of the primary key even if you import from a file/URL.
 
 Once a key is present in the keyring, this type will not process it further,
 i.e. it won't update the keyring if e.g. new signatures or sub keys were added.
@@ -32,23 +32,14 @@ homedir
 
    Defaults to: ``/root/.gnupg``
 key-id
-   the PGP key id of the key to import or of the key in ``--source``.
-   The value of this parameter is used to check if the key already exists, so
-   it does not necessarily have to be an ID, but it should be unique, especially
-   for ``--state absent`` :-).
+   the PGP key id of the key to receive when importing from a keyserver or of
+   the key in ``--source`` when importing from a file.
+
+   The value of this parameter is used to check if the key already exists.
 
    Defaults to: ``__object_id``
-key-locate-mechanisms
-   this parameter takes any number of GnuPG ``--auto-key-locate`` mechanisms.
-   If a key needs to be fetched, these mechanisms will be tried in the order
-   listed in this parameter.
-
-   This parameter can be used multiple times. The values of all instances will
-   be concatenated by :strong:`gpg`\ (1).
-
-   Hint: this parameter also accepts keyserver URLs.
 ownertrust
-   Set the ownertrust of the imported key to the given value.
+   set the ownertrust of the imported key to the given value.
 
    The value must be one of:
 
@@ -64,16 +55,19 @@ ownertrust
       ultimately trusted
 source
    the source to take the key from.
-   Will use auto-key-locate if not used.
 
    Acceptable values:
 
    ``http://...`` / ``https://...``
-      key file downloaded from the web.
+      key file downloaded from the web
+   ``hkp://...`` / ``hkps://...``
+      receive public key from an HTTP (compatible) keyserver
+   ``ldap://...`` / ``ldaps://...``
+      receive public key from an LDAP keyserver
    ``file://...`` / ``/...``
-      files local to the config host
+      key file local to the config host
    ``-``
-      stdin
+      read key data from standard input
 state
    One of:
 
@@ -101,13 +95,13 @@ EXAMPLES
    __gnupg_key 453B65310595562855471199CA68BE8010084C9C \
       --source https://download.libvirt.org/gpg_key.asc
 
-   # import a PGP key from a keyserver/WKD
-   __gnupg_key wk@gnupg.org
+   # import a PGP key from the default keyserver
+   __gnupg_key AEA84EDCF01AD86C4701C85C63113AE866587D0A
 
    # import a PGP key from a specific keyserver
    __gnupg_key openzfs-release-key \
-      --key-id bass6@llnl.gov \
-      --key-locate-mechanisms clear,'hkps://pgp.mit.edu'
+      --key-id 29D5610EAE2941E355A2FE8AB97467AAC77B9667 \
+      --source 'hkps://pgp.mit.edu'
 
 
 SEE ALSO

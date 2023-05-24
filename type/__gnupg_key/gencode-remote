@@ -58,24 +58,23 @@ in
 	(present)
 		if test -f "${__object:?}/files/needs-update"
 		then
-			if test -f "${__object:?}/parameter/source"
+			if test -f "${__object:?}/files/remote-input-file"
 			then
 				# "manual" source, use uploaded file from code-remote
-				printf 'gpg --homedir %s --batch --no-autostart --import "${__object:?}/files/src.gpg"\n' \
-					"$(shquot "${GNUPGHOME_remote:?}")"
+				remote_input_file=$(cat "${__object:?}/files/remote-input-file")
+
+				printf 'gpg --homedir %s --batch --no-autostart --import %s\n' \
+					"$(shquot "${GNUPGHOME_remote:?}")" \
+					"$(shquot "${remote_input_file:?}")"
 			else
-				# auto key locate
+				# receive from keyserver
 				gpgopts=
-				if test -f "${__object:?}/parameter/key-locate-mechanisms"
+				if test -f "${__object:?}/parameter/source"
 				then
-					while read -r _mechanisms
-					do
-						gpgopts="${gpgopts-} --auto-key-locate $(shquot "${_mechanisms}")"
-					done <"${__object:?}/parameter/key-locate-mechanisms"
-					unset -v _mechanisms
+					gpgopts="${gpgopts-} --keyserver $(shquot "$(cat "${__object:?}/parameter/source")")"
 				fi
 
-				printf 'gpg --homedir %s%s --batch --locate-external-keys %s\n' \
+				printf 'gpg --homedir %s%s --batch --recv-key %s\n' \
 					"$(shquot "${GNUPGHOME_remote:?}")" "${gpgopts}" \
 					"$(shquot "${keyid}")"
 			fi
