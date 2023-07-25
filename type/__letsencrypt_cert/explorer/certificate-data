@@ -14,7 +14,7 @@ if [ -n "${certbot_path}" ]; then
 		${python_path} - 2>/dev/null <<EOF
 from certbot.main import main
 import fcntl
-lock_file = "/tmp/certbot.cdist.lock"
+lock_file = "/tmp/certbot.skonfig.lock"
 timeout=60
 with open(lock_file, 'w') as fd:
     for i in range(timeout):

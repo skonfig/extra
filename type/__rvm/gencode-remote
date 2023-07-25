@@ -34,8 +34,8 @@ DONE
     absent)
         cat << DONE
 su - $user -c "rm -Rf \"\\\$HOME/.rvm\";
-sed '/rvm\\/scripts\\/rvm/d' \"\\\$HOME/.bashrc\" > \"\\\$HOME/.bashrc.cdist-tmp\"
-mv \"\\\$HOME/.bashrc.cdist-tmp\" \"\\\$HOME/.bashrc\""
+sed '/rvm\\/scripts\\/rvm/d' \"\\\$HOME/.bashrc\" > \"\\\$HOME/.bashrc.skonfig.tmp\"
+mv \"\\\$HOME/.bashrc.skonfig.tmp\" \"\\\$HOME/.bashrc\""
 DONE
     ;;
 esac
