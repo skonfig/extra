@@ -1,0 +1,98 @@
+#!/bin/sh -e
+#
+# 2023 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+shquot() {
+	sed -e "s/'/'\\\\''/g" -e "1s/^/'/" -e "\$s/\$/'/" <<-EOF
+	$*
+	EOF
+}
+
+version_ge() {
+	sort <<-EOF -t. -r -n | { read -r x; test "${x}" = "$1"; }
+	$1
+	$2
+	EOF
+}
+
+read -r state_should <"${__object:?}/parameter/state"
+
+# initialise files directory (communication with gencode-remote)
+mkdir "${__object:?}/files"
+
+# check if --state present and --source (otherwise, gencode-local does not need
+# to do anything)
+test "${state_should}" = 'present' || exit 0
+
+if test -s "${__object:?}/explorer/pub-data" \
+	|| test -s "${__object:?}/explorer/sec-data"
+then
+	# already exists
+	exit 0
+else
+	# key does not exist, it needs to be imported
+
+	# create the needs-update file to signal to gencode-remote that a new key
+	# needs to be imported and that, if needed, the source file was copied to
+	# the target
+	touch "${__object:?}/files/needs-update"
+fi
+
+test -f "${__object:?}/parameter/source" || exit 0
+
+# if we get here, the key needs to be uploaded to the target
+key_source=$(cat "${__object:?}/parameter/source")
+case ${key_source-}
+in
+	(hkp://*|hkps://*|ldap://*|ldaps://*)
+		# key server addresses
+		exit 0
+		;;
+	(http://*|https://*)
+		# download
+		src_file="${__object:?}/files/download.gpg"
+
+		python3 -c 'import sys, urllib.request; urllib.request.urlretrieve(sys.argv[1], filename=sys.argv[2]); urllib.request.urlcleanup()' \
+			"${key_source}" "${src_file}"
+		;;
+	('-')
+		# stdin
+		src_file="${__object:?}/stdin"
+		;;
+	(file://*|*)
+		# assume file
+		src_file=${key_source#file://}
+		;;
+esac
+
+test -s "${src_file}" || {
+	printf 'cannot find key source: %s\n' "${key_source}" >&2
+	exit 1
+}
+
+__object_remote=$(cat "${__object:?}/explorer/remote-object")
+remote_input_file="${__object_remote:?}/files/src.gpg"
+
+printf '%s\n' "${remote_input_file}" >"${__object:?}/files/remote-input-file"
+
+remote_cmd="mkdir $(shquot "${remote_input_file%/*}") && cat >$(shquot "${remote_input_file:?}")"
+printf '%s %s %s <%s\n' \
+	"${__remote_exec:?}" "$(shquot "${__target_host:?}")" \
+	"$(shquot "${remote_cmd}")" \
+	"$(shquot "${src_file}")"

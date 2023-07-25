@@ -1,0 +1,56 @@
+#!/bin/sh -e
+#
+# 2023 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Prints the current ownertrust of the public key
+#
+
+GNUPGHOME=$(cat "${__object:?}/parameter/homedir")
+export GNUPGHOME
+
+test -d "${GNUPGHOME-}" || {
+	# no GNUPGHOME, no key
+	exit 0
+}
+
+command -v gpg >/dev/null 2>&1 || {
+	# assume that if gpg is not installed, the key is also not imported
+	exit 0
+}
+
+if test -f "${__object:?}/parameter/key-id"
+then
+	read -r keyid <"${__object:?}/parameter/key-id"
+else
+	keyid=${__object_id:?}
+fi
+
+case ${#keyid}
+in
+	(40)
+		;;
+	(*)
+		# convert key ID to fingerprint
+		keyid=$(
+			gpg --fingerprint --with-colons --list-keys "${keyid}" \
+			| awk -F: '/^fpr:/ { print $10; exit }')
+		;;
+esac
+
+gpg --homedir "${GNUPGHOME:?}" --export-ownertrust \
+| awk -F: -v keyid="${keyid}" 'keyid == $1 { print $2 }'

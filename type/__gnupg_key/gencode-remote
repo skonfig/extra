@@ -1,0 +1,132 @@
+#!/bin/sh -e
+#
+# 2023 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+shquot() {
+	sed -e "s/'/'\\\\''/g" -e "1s/^/'/" -e "\$s/\$/'/" <<-EOF
+	$*
+	EOF
+}
+
+map_ownertrust_s() {
+	# https://git.gnupg.org/cgi-bin/gitweb.cgi?p=gnupg.git;a=blob;f=g10/trustdb.h;hb=gnupg-2.4.1#l28
+	case $1
+	in
+		(undefined)
+			echo 2 ;;
+		(never)
+			echo 3 ;;
+		(marginal)
+			echo 4 ;;
+		(full|fully)
+			echo 5 ;;
+		(ultimate)
+			echo 6 ;;
+		(*)
+			return 1 ;;
+	esac
+}
+
+GNUPGHOME_remote=$(cat "${__object:?}/parameter/homedir")
+if test -f "${__object:?}/parameter/key-id"
+then
+	read -r keyid <"${__object:?}/parameter/key-id"
+else
+	keyid=${__object_id:?}
+fi
+read -r state_should <"${__object:?}/parameter/state"
+
+
+case ${state_should}
+in
+	(present)
+		if test -f "${__object:?}/files/needs-update"
+		then
+			if test -f "${__object:?}/files/remote-input-file"
+			then
+				# "manual" source, use uploaded file from code-remote
+				remote_input_file=$(cat "${__object:?}/files/remote-input-file")
+
+				printf 'gpg --homedir %s --batch --no-autostart --import %s\n' \
+					"$(shquot "${GNUPGHOME_remote:?}")" \
+					"$(shquot "${remote_input_file:?}")"
+			else
+				# receive from keyserver
+				gpgopts=
+				if test -f "${__object:?}/parameter/source"
+				then
+					gpgopts="${gpgopts-} --keyserver $(shquot "$(cat "${__object:?}/parameter/source")")"
+				fi
+
+				printf 'gpg --homedir %s%s --batch --recv-key %s\n' \
+					"$(shquot "${GNUPGHOME_remote:?}")" "${gpgopts}" \
+					"$(shquot "${keyid}")"
+			fi
+		fi
+
+		if test -f "${__object:?}/parameter/ownertrust"
+		then
+			read -r ownertrust_is <"${__object:?}/explorer/ownertrust" || :
+			read -r ownertrust_should_s <"${__object:?}/parameter/ownertrust"
+
+			ownertrust_should=$(map_ownertrust_s "${ownertrust_should_s}") || {
+				printf 'Invalid --ownertrust: %s\n' "${ownertrust_should_s-}" >&2
+				exit 1
+			}
+
+			if test "${ownertrust_is}" != "${ownertrust_should}"
+			then
+				# update ownertrust
+				case ${#keyid}
+				in
+					(40)
+						;;
+					(*)
+						printf 'key ID must be a fingerprint to set ownertrust' >&2
+						exit 1
+						;;
+				esac
+
+				printf "echo '%s:%u:' | gpg --homedir %s --batch --import-ownertrust\n" \
+					"${keyid}" \
+					$((ownertrust_should)) \
+					"$(shquot "${GNUPGHOME_remote:?}")"
+			fi
+		fi
+		;;
+	(absent)
+		# XXX: think again about using --yes for deleting keys.
+
+		if test -s "${__object:?}/explorer/pub-data"
+		then
+			printf 'gpg --homedir %s --batch --yes --delete-keys %s\n' \
+				"$(shquot "${GNUPGHOME_remote:?}")" "$(shquot "${keyid}")"
+		fi
+
+		if test -s "${__object:?}/explorer/sec-data"
+		then
+			printf 'gpg --homedir %s --batch --yes --delete-secret-keys %s\n' \
+				"$(shquot "${GNUPGHOME_remote:?}")" "$(shquot "${keyid}")"
+		fi
+		;;
+	(*)
+		printf 'Invalid --state: %s\n' "${state_should-}" >&2
+		exit 1
+		;;
+esac

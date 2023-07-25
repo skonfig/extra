@@ -1,0 +1,46 @@
+#!/bin/sh -e
+#
+# 2023 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Prints the public key information in machine readable form.
+#
+
+GNUPGHOME=$(cat "${__object:?}/parameter/homedir")
+export GNUPGHOME
+
+test -d "${GNUPGHOME-}" || {
+	# no GNUPGHOME, no key
+	exit 0
+}
+
+command -v gpg >/dev/null 2>&1 || {
+	# assume that if gpg is not installed, the key is also not imported
+	exit 0
+}
+
+if test -f "${__object:?}/parameter/key-id"
+then
+	read -r keyid <"${__object:?}/parameter/key-id"
+else
+	keyid=${__object_id:?}
+fi
+
+# silence stderr because --list-keys prints an error message if the key is not in the keyring
+# https://git.gnupg.org/cgi-bin/gitweb.cgi?p=gnupg.git;a=blob_plain;f=doc/DETAILS
+gpg --homedir "${GNUPGHOME:?}" --with-colons --list-keys "${keyid}" 2>/dev/null \
+| grep -v '^tru:' || :
