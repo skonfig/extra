@@ -139,8 +139,11 @@ fi
 
 # Install hooks as needed
 for hook in deploy pre post; do
+	# remove old hook file
+	__file "${HOOKS_DIR}/${hook}/${__object_id}.cdist.sh" --state absent
+
 	# Using something unique and specific to this object
-	hook_file="${HOOKS_DIR}/${hook}/${__object_id}.cdist.sh"
+	hook_file="${HOOKS_DIR}/${hook}/${__object_id}.skonfig.sh"
 
 	# This defines hook_contents
 	# shellcheck source=cdist/conf/type/__letsencrypt_cert/files/gen_hook.sh

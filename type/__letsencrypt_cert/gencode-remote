@@ -19,8 +19,10 @@ case "${state}" in
 		echo remove >> "${__messages_out:?}"
 	;;
 	present)
+		mkdir "${__global:?}/tmp"
+
 		domain_param_file="${__object}/parameter/domain"
-		requested_domains=$(mktemp "${TMPDIR:-/tmp}/domain.cdist.XXXXXXXXXX")
+		requested_domains=$(mktemp "${__global:?}/tmp/domain.skonfig.XXXXXX")
 		if [ -f "${domain_param_file}" ]; then
 			cp "${domain_param_file}" "${requested_domains}"
 		else
@@ -33,9 +35,9 @@ case "${state}" in
 		fi
 
 		if [ "${certificate_exists}" = "yes" ]; then
-			existing_domains=$(mktemp "${TMPDIR:-/tmp}/existing_domains.cdist.XXXXXXXXXX")
-			tail -n +4 "${__object:?}/explorer/certificate-data" | grep -v '^$' > "${existing_domains}"
-			certificate_is_test="$(_explorer_var certificate_is_test)"
+			existing_domains=$(mktemp "${__global:?}/tmp/existing_domains.skonfig.XXXXXX")
+			sed -e '1,3d' -e '/^$/d' <"${__object:?}/explorer/certificate-data" >"${existing_domains}"
+			certificate_is_test=$(_explorer_var certificate_is_test)
 
 			sort -uo "${requested_domains}" "${requested_domains}"
 			sort -uo "${existing_domains}" "${existing_domains}"
