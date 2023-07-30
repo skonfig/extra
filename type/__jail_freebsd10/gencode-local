@@ -17,19 +17,18 @@
 # You should have received a copy of the GNU General Public License
 # along with cdist. If not, see <http://www.gnu.org/licenses/>.
 #
-#
 # The __jail type creates, configures, and deletes FreeBSD jails for use as
 #  virtual machines.
 #
 
-# Debug
-#exec >&2
-#set -x
+shquot() {
+	sed -e "s/'/'\\\\''/g" -e "1s/^/'/" -e "\$s/\$/'/" <<-EOF
+	$*
+	EOF
+}
 
 jaildir="$(cat "$__object/parameter/jaildir")"
-
 jailbase="$(cat "$__object/parameter/jailbase")"
-
 state="$(cat "$__object/parameter/state")"
 
 if [ "$state" = "present" ] && [ -z "$jailbase" ]; then
@@ -43,16 +42,21 @@ basepresent="$(cat "$__object/explorer/basepresent")"
 
 if [ "$state" = "present" ]; then
    if [ "$basepresent" = "NONE" ]; then
-     # IPv6 fix
-     if echo "${__target_host}" | grep -q -E '^[0-9a-fA-F:]+$'
-     then
+      # IPv6 fix
+      if echo "${__target_host}" | grep -q -E '^[0-9a-fA-F:]+$'
+      then
          my_target_host="[${__target_host}]"
-     else
+      else
          my_target_host="${__target_host}"
-     fi
-      echo "$__remote_copy" "${jailbase}" "${my_target_host}:${remotebase}"
-   fi   # basepresent=NONE
-fi   # state=present
+      fi
+
+      printf '%s %s %s <%s\n' \
+         "${__remote_exec:?}" \
+         "$(shquot "${my_target_host}")" \
+         "$(shquot "cat >$(shquot "${remotebase}")")" \
+         "$(shquot "${jailbase}")"
+   fi  # basepresent=NONE
+fi  # state=present
 
 # Debug
 #set +x
