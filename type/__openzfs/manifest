@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2020,2023 Dennis Camera (dennis.camera at riiengineering.ch)
+# 2020,2023,2024 Dennis Camera (dennis.camera at riiengineering.ch)
 #
 # This file is part of skonfig-extra.
 #
@@ -163,6 +163,31 @@ then
 		--suffix '#/cdist:spl-workaround-11574' \
 		--text - <<-EOF
 	options spl spl_kmem_cache_slab_limit=$((spl_kmem_cache_slab_limit))
+	EOF
+fi
+
+# HACK: Workaround 2023 data corruption issue
+#       https://github.com/openzfs/zfs/releases/tag/zfs-2.1.5
+#       https://github.com/openzfs/zfs/releases/tag/zfs-2.2.2
+#       https://github.com/openzfs/zfs/issues/15526
+#       https://github.com/openzfs/zfs/pull/15571
+if test -n "${kmod_version}"
+then
+	if { version_ge "${kmod_version}" 2.2.0 && ! version_ge "${kmod_version}" 2.2.2; } \
+	|| { version_ge "${kmod_version}" 2.1.5 && ! version_ge "${kmod_version}" 2.1.14; }
+	then
+		# We only need to apply this hack on OpenZFS < 2.1.14 or < 2.2.2
+		zfs_dmu_offset_next_sync=0
+	fi
+
+	require= \
+	__block /etc/modprobe.d/zfs.conf:cdist-data-corruption-workaround \
+		--state "$(test "${zfs_dmu_offset_next_sync-}" && echo present || echo absent)" \
+		--file /etc/modprobe.d/zfs.conf \
+		--prefix '# skonfig:zfs-corruption-mitigation' \
+		--suffix '#/skonfig:zfs-corruption-mitigation' \
+		-text - <<-EOF
+	options zfs zfs_dmu_offset_next_sync=$((zfs_dmu_offset_next_sync))
 	EOF
 fi
 
