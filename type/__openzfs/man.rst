@@ -10,7 +10,7 @@ DESCRIPTION
 -----------
 This type can be used to set up OpenZFS on the system and set tunables.
 
-This type only works on Debian derivatives.
+**NOTE:** This type only works on Debian derivatives.
 
 
 REQUIRED PARAMETERS
@@ -50,8 +50,20 @@ EXAMPLES
 
 .. code-block:: sh
 
-    # Make sure OpenZFS is installed on the target.
-    __openzfs
+   # Make sure OpenZFS is installed on the target.
+   __openzfs
+
+   # Install OpenZFS from backports to get a newer version
+   __apt_backports \
+      --component main \
+      --component contrib
+   require=__apt_backports/ \
+   __apt_pin zfs-backports \
+      --package 'src:zfs-linux' \
+      --release 'n=*-backports*' \
+      --priority 600
+   require=__apt_pin/zfs-backports \
+   __openzfs
 
 
 SEE ALSO
@@ -62,12 +74,12 @@ SEE ALSO
 
 AUTHORS
 -------
-Dennis Camera <dennis.camera--@--ssrq-sds-fds.ch>
+Dennis Camera <dennis.camera--@--riiengineering.ch>
 
 
 COPYING
 -------
-Copyright \(C) 2020-2023 Dennis Camera.
+Copyright \(C) 2020-2024 Dennis Camera.
 You can redistribute it and/or modify it under the terms of the GNU General
 Public License as published by the Free Software Foundation, either version 3
 of the License, or (at your option) any later version.

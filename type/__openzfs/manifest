@@ -57,14 +57,7 @@ os=$(cat "${__global:?}/explorer/os")
 case ${os}
 in
 	(debian|devuan)
-		# enable backports repo
-		# XXX: maybe the type should not be the one to decide whether or not to
-		# use backports
-		__apt_backports --component main --component contrib
-
 		# ZFS
-		read -r lsb_codename <"${__global:?}/explorer/lsb_codename"
-
 		kernel_headers_pkg=$(cat "${__object:?}/explorer/kernel_headers_pkg")
 		case ${kernel_headers_pkg}
 		in
@@ -73,20 +66,17 @@ in
 				exit 1
 				;;
 			(*/*)
-				require=__apt_backports/ \
 				__package_apt "${kernel_headers_pkg%%/*}" --target-release "${kernel_headers_pkg#*/}"
 				;;
 			(*)
-				require=__apt_backports/ \
 				__package_apt "${kernel_headers_pkg%%/*}"
 				;;
 		esac
 
-		require="__apt_backports/ __package_apt/${kernel_headers_pkg%%/*}" \
-		__package_apt zfs-modules --target-release "${lsb_codename:?}-backports"
+		require="__package_apt/${kernel_headers_pkg%%/*}" \
+		__package_apt zfs-modules
 
-		require=__apt_backports/ \
-		__package_apt zfsutils-linux --target-release "${lsb_codename:?}-backports"
+		__package_apt zfsutils-linux
 
 		# FIXME: For some reason De*an does not build/install DKMS modules after
 		# installing the package under some circumstances.
@@ -113,8 +103,8 @@ in
 				;;
 		esac
 
-		require="__apt_backports/ __package_apt/zfsutils-linux${mail_require:+ ${mail_require}}" \
-		__package_apt zfs-zed --target-release "${lsb_codename:?}-backports"
+		require="__package_apt/zfsutils-linux${mail_require:+ ${mail_require}}" \
+		__package_apt zfs-zed
 
 		require=__package_apt/zfs-zed \
 		__start_on_boot zfs-zed
@@ -157,7 +147,7 @@ then
 	fi
 	require=__package_apt/zfs-modules \
 	__block /etc/modprobe.d/zfs.conf:cdist-spl-workaround-11574 \
-		--state "$(test "${spl_kmem_cache_slab_limit-}" && echo present || echo absent)" \
+		--state "$(test -n "${spl_kmem_cache_slab_limit-}" && echo present || echo absent)" \
 		--file /etc/modprobe.d/zfs.conf \
 		--prefix '# cdist:spl-workaround-11574' \
 		--suffix '#/cdist:spl-workaround-11574' \
@@ -182,11 +172,11 @@ then
 
 	require= \
 	__block /etc/modprobe.d/zfs.conf:cdist-data-corruption-workaround \
-		--state "$(test "${zfs_dmu_offset_next_sync-}" && echo present || echo absent)" \
+		--state "$(test -n "${zfs_dmu_offset_next_sync-}" && echo present || echo absent)" \
 		--file /etc/modprobe.d/zfs.conf \
 		--prefix '# skonfig:zfs-corruption-mitigation' \
 		--suffix '#/skonfig:zfs-corruption-mitigation' \
-		-text - <<-EOF
+		--text - <<-EOF
 	options zfs zfs_dmu_offset_next_sync=$((zfs_dmu_offset_next_sync))
 	EOF
 fi
