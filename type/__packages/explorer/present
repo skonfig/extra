@@ -1,0 +1,13 @@
+#!/bin/sh -e
+
+os=$("${__explorer}/os")
+
+case "${os}" in
+    (debian|ubuntu|devuan)
+        dpkg-query -W -f '${Package}\n' | LC_ALL=C sort
+        ;;
+    (*)
+        echo "${os} not supported" >&2
+        exit 1
+        ;;
+esac

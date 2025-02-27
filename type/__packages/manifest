@@ -1,0 +1,48 @@
+#!/bin/sh -e
+
+os=$(cat "${__global}/explorer/os")
+
+process_package() {
+    case "${os}"
+    in
+        (debian|ubuntu|devuan)
+            __package_apt "${1}" \
+                --state "${2}" \
+                --purge-if-absent \
+                </dev/null
+            ;;
+        (*)
+            __package "${1}" \
+                --state "${2}" \
+                </dev/null
+            ;;
+    esac
+}
+
+is_present="${__object}/explorer/present"
+should_present="${__object}/parameter/present"
+should_absent="${__object}/parameter/absent"
+
+for packages_list in "${should_present}" "${should_absent}"
+do
+    test ! -f "${packages_list}" && continue
+
+    package_state=$(basename "${packages_list}")
+
+    case "${package_state}"
+    in
+        (present)
+            set -- '-23'
+            ;;
+        (absent)
+            set -- '-12'
+            ;;
+    esac
+
+    grep '^[^#]' "${packages_list}" \
+    | LC_ALL=C sort \
+    | comm "$@" - "${is_present}" \
+    | while read -r package_name
+    do process_package "${package_name}" "${package_state}"
+    done
+done
