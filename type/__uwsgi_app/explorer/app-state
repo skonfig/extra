@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2021 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+# 2021 Dennis Camera (dennis.camera at riiengineering.ch)
 #
 # This file is part of skonfig-extra.
 #
@@ -19,6 +19,7 @@
 #
 # Prints "started" if the uWSGI app is started, or "stopped" if it is not
 # running. If the app is not present it prints nothing.
+#
 
 os=$("${__explorer:?}/os")
 

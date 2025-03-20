@@ -1,4 +1,30 @@
 #!/bin/sh
+#
+# 2017 Kamila Součková (kamila at ksp.sk)
+# 2017 _moep_ (moep-gh at moep.name)
+# 2018 Darko Poljak (darko.poljak at gmail.com)
+# 2018 Ľubomír Kučera (lubomir.kucera.jr at gmail.com)
+# 2019-2020 Nico Schottelius (nico-cdist at schottelius.org)
+# 2019 PCoder (purple.coder at yahoo.co.uk)
+# 2019 Ahmed Bilal Khalid (ahmedbilal96 at gmail.com)
+# 2021 Evilham (cvs at evilham.com)
+# 2023 Michelle (michelle.quintero at camilion.eu)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
 
 certbot_fullpath="$(grep "^certbot_path:" "${__object:?}/explorer/certificate-data" | cut -d ':' -f 2-)"
 state=$(cat "${__object}/parameter/state")
