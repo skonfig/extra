@@ -26,8 +26,8 @@ stat_file="$__object/explorer/stat"
 
 get_current_value() {
     if [ -s "$stat_file" ]; then
-        _name="$1"
-        _value="$2"
+        _name=$1
+        _value=$2
         case "$_value" in
             [0-9]*)
                 _index=2

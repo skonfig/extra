@@ -44,7 +44,7 @@ if [ "$state" = "present" ]; then
       then
          my_target_host="[${__target_host}]"
       else
-         my_target_host="${__target_host}"
+         my_target_host=${__target_host}
       fi
 
       printf '%s %s %s <%s\n' \

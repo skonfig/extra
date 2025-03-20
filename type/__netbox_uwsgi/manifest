@@ -26,7 +26,7 @@ param_state=$(cat "$__object/parameter/state")
 case "$param_state" in
     enabled|disabled)
         state="present"
-        unit_state="$param_state"
+        unit_state=$param_state
         ;;
 
     absent)

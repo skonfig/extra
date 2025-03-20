@@ -19,7 +19,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-user="$__object_id"
+user=$__object_id
 state_is=$(cat "$__object/explorer/state")
 state_should=$(cat "$__object/parameter/state")
 

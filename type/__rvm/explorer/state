@@ -20,7 +20,7 @@
 # Prints "present" if rvm is installed, "absent" otherwise.
 #
 
-user="$__object_id"
+user=$__object_id
 
 # RVM behaves differently if root is the username / uid == 0
 if [ "$user" = "root" ]; then

@@ -48,7 +48,7 @@ case "$backend" in
 		--mode 0644 --onchange "service ntpd restart"\
 		--source - <<- EOF
 		# NTPd OpenRC configuration file. Managed by cdist.
-		NTPD_OPTS="$argstring"
+		NTPD_OPTS=$argstring
 		EOF
 	;;
 

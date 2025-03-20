@@ -32,14 +32,14 @@ case "${os}" in
 esac
 
 
-JITSI_HOST="${__target_host}"
+JITSI_HOST=${__target_host}
 # Currently unused, see below
 # JITSI_VERSION=$(cat "${__object}/parameter/jitsi-version")
 TURN_SERVER=$(cat "${__object}/parameter/turn-server")
 TURN_SECRET=$(cat "${__object}/parameter/turn-secret")
 
 if [ -z "${TURN_SERVER}" ]; then
-	TURN_SERVER="${JITSI_HOST}"
+	TURN_SERVER=${JITSI_HOST}
 fi
 
 PROMETHEUS_JITSI_EXPORTER_IS_VERSION=$(cat "${__object}/explorer/prometheus-jitsi-meet-explorer-version")

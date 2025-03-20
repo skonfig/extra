@@ -32,7 +32,7 @@ if [ -z "${PASSWD}" ] && [ "${STATE}" != "absent" ]; then
 	EOF
 fi
 
-JITSI_USER_RAW="${__object_id}"
+JITSI_USER_RAW=${__object_id}
 if echo "${JITSI_USER_RAW}" | grep -q ".*[A-Z\"&'/:<>@]"; then
   cat > /dev/stderr <<EOF
 Username (XMPP's localpart) ${JITSI_USER_RAW} has uppercase characters or

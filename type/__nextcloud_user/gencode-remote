@@ -99,7 +99,7 @@ user="$__object/parameter/user"
 if [ -f "$user" ]; then
     user=$(cat "$user")
 else
-    user="$__object_id"
+    user=$__object_id
 fi
 if [ -s "$__object/explorer/user" ]; then
     if match_param enabled true; then

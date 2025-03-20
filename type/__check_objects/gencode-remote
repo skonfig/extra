@@ -31,7 +31,7 @@ __check()
         return
     fi
 
-    object="$1"
+    object=$1
     object_path="$__global/object/$object"
 
     for check_file in code-local code-remote children

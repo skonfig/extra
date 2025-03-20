@@ -21,7 +21,7 @@
 # Prints "present" if the gem is installed, "absent" otherwise.
 #
 
-gem="$__object_id"
+gem=$__object_id
 gemset=$(cat "$__object/parameter/gemset")
 ruby=$(echo "$gemset" | cut -d '@' -f 1)
 gemsetname=$(echo "$gemset" | cut -d '@' -f2)

@@ -24,7 +24,7 @@ fstype=$(cat "$__object/parameter/fstype")
 if [ -f "$__object/parameter/device" ]; then
     mydev=$(cat "$__object/parameter/device")
 else
-    mydev="$__object_id"
+    mydev=$__object_id
 fi
 
 label=$(cat "$__object/parameter/label")
@@ -70,7 +70,7 @@ fi
 
 
 # ok, all conditions checked, we need to format the device, lets go
-opts="$mkfsoptions"
+opts=$mkfsoptions
 if [ -n "$label" ]; then
     opts="$opts -L '$label'"
 fi

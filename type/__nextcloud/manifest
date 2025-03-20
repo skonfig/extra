@@ -162,7 +162,7 @@ if [ "$version_is" ]; then
     fi
 else
     # Set destination to the real destination
-    destination="$installdir"
+    destination=$installdir
 fi
 
 # Install/Upgrade the nextcloud version if there is a destination set.

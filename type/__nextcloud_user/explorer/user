@@ -28,7 +28,7 @@ user="$__object/parameter/user"
 if [ -f "$user" ]; then
     user=$(cat "$user")
 else
-    user="$__object_id"
+    user=$__object_id
 fi
 cloud=$(cat "$__object/parameter/cloud")
 www_user=$(cat "$__object/parameter/www-user")

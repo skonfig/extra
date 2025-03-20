@@ -176,7 +176,7 @@ manual_setup () {
           ;;
       centos|redhat)
           os_version=$(sed 's/[^0-9.]//g' "$__global/explorer/os_version")
-          major_version="${os_version%%.*}"
+          major_version=${os_version%%.*}
           case "$major_version" in
               [456])
                   init_sysvinit redhat
@@ -193,7 +193,7 @@ manual_setup () {
 
       debian)
           os_version=$(cat "$__global/explorer/os_version")
-          major_version="${os_version%%.*}"
+          major_version=${os_version%%.*}
 
           case "$major_version" in
               [567])
@@ -232,7 +232,7 @@ if [ -f "$__object/parameter/ca-file-source" ] || \
    [ -f "$__object/parameter/cert-file-source" ] || \
    [ -f "$__object/parameter/key-file-source" ]; then
 
-   requires="$config_deployment_requires" __directory "$tls_dir" \
+   requires=$config_deployment_requires __directory "$tls_dir" \
      --owner root --group "$group" --mode 750 --state "$state"
 
    # Append to service restart requirements.
@@ -305,7 +305,7 @@ json_configuration=$(
   fi
   echo "}"
 )
-echo "$json_configuration" | require="$config_deployment_requires" \
+echo "$json_configuration" | require=$config_deployment_requires \
   __file "$conf_dir/$conf_file" \
       --owner root --group "$group" --mode 640 \
       --state "$state" \
@@ -316,4 +316,4 @@ restart_requires="__file/$conf_dir/$conf_file"
 
 ###
 # Restart consul agent after everything else.
-require="$restart_requires" __service consul --action restart
+require=$restart_requires __service consul --action restart

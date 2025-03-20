@@ -29,7 +29,7 @@ if [ -f "$__object/parameter/common-name" ]
 then
     common_name=$(cat "$__object/parameter/common-name")
 else
-    common_name="$__object_id"
+    common_name=$__object_id
 fi
 
 key_path=$(cat "$__object/parameter/key-path")

@@ -27,7 +27,7 @@ dirmode=$(cat "${__object}/parameter/dirmode")
 if [ -f "${__object}/parameter/file" ]; then
     file=$(cat "${__object}/parameter/file")
 else
-    file="${__object_id}"
+    file=${__object_id}
 fi
 
 

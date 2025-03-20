@@ -18,8 +18,8 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-cdist_type="${__type##*/}"
-watch_type="${cdist_type##*_}"
+cdist_type=${__type##*/}
+watch_type=${cdist_type##*_}
 conf_dir=$(cat "$__object/explorer/conf-dir")
 conf_file="watch_${watch_type}_${__object_id}.json"
 state=$(cat "$__object/parameter/state")

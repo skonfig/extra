@@ -335,30 +335,30 @@ mkdir -p "$__object/files"
 "$__type/files/homeserver.yaml.sh" > "$__object/files/homeserver.yaml"
 "$__type/files/log.config.sh" > "$__object/files/log.config"
 
-require="$synapse_req" __file "$synapse_conf_dir/homeserver.yaml" \
+require=$synapse_req __file "$synapse_conf_dir/homeserver.yaml" \
   --owner $synapse_user \
   --mode 600 \
   --source "$__object/files/homeserver.yaml"
-require="$synapse_req" __file "$LOG_CONFIG_PATH" \
+require=$synapse_req __file "$LOG_CONFIG_PATH" \
   --owner $synapse_user \
   --mode 600 \
   --source "$__object/files/log.config"
 
 for directory in $DATA_DIR $LOG_DIR; do
-	require="$synapse_req" __directory $directory \
+	require=$synapse_req __directory $directory \
 		--state present \
 		--owner $synapse_user
 done
 
 # Make dpkg-reconfigure happy on debian systems.
 if [ "$os" = "debian" ]; then
-	require="$synapse_req" __file "$synapse_conf_dir/conf.d/server_name.yaml" \
+	require=$synapse_req __file "$synapse_conf_dir/conf.d/server_name.yaml" \
 		--owner $synapse_user \
 		--source - <<- EOF
 		server_name: "$SERVER_NAME"
 		EOF
 
-	require="$synapse_req" __file "$synapse_conf_dir/conf.d/report_stats.yaml" \
+	require=$synapse_req __file "$synapse_conf_dir/conf.d/report_stats.yaml" \
 		--owner $synapse_user \
 		--source - <<- EOF
 		report_stats: $REPORT_STATS
@@ -366,4 +366,4 @@ if [ "$os" = "debian" ]; then
 fi
 
 # Start service at boot - started/reload in gencode-remote.
-require="$synapse_req" __start_on_boot $synapse_service
+require=$synapse_req __start_on_boot $synapse_service

@@ -21,7 +21,7 @@
 
 base_dir=/etc/iptables.d
 
-name="$__object_id"
+name=$__object_id
 state=$(cat "$__object/parameter/state")
 
 if [ -f "$__object/parameter/v4" ]; then
@@ -41,7 +41,7 @@ if { [ "$only_v4" = "yes" ] && [ "$only_v6" = "yes" ]; } ||
 fi
 
 # set rule directory based on if it's the base or subdirectory
-rule_dir="${specific_dir:-$base_dir}"
+rule_dir=${specific_dir:-$base_dir}
 
 ################################################################################
 # Basic setup
@@ -55,7 +55,7 @@ if [ "$specific_dir" ]; then
 fi
 
 # Have apply do the real job
-require="$__object_name" __iptables_apply
+require=$__object_name __iptables_apply
 
 ################################################################################
 # The rule
@@ -64,7 +64,7 @@ require="$__object_name" __iptables_apply
 for dir in "$base_dir" "$base_dir/v6" "$base_dir/all"; do
     # defaults to absent except the directory that should contain the file
     if [ "$rule_dir" = "$dir" ]; then
-        curr_state="$state"
+        curr_state=$state
     else
         curr_state="absent"
     fi

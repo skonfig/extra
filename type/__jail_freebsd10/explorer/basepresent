@@ -33,14 +33,14 @@ fi
 name="base:jailbase.tgz"
 out=""
 
-save_IFS="$IFS"
+save_IFS=$IFS
 IFS=":"
 for cur in $name; do
     if [ -e "${jaildir}/$cur" ]; then
         out="${out}:${cur}"
     fi
 done
-IFS="$save_IFS"
+IFS=$save_IFS
 
 if [ -z "$out" ]; then
     echo "NONE"

@@ -25,7 +25,7 @@
 if [ -f "$__object/parameter/name" ]; then
    name=$(cat "$__object/parameter/name")
 else
-   name="$__object_id"
+   name=$__object_id
 fi
 
 state=$(cat "$__object/parameter/state")
@@ -49,7 +49,7 @@ fi
 if [ -f "$__object/parameter/hostname" ]; then
    hostname=$(cat "$__object/parameter/hostname")
 else
-   hostname="$name"
+   hostname=$name
 fi
 
 if [ -f "$__object/parameter/interface" ]; then
@@ -85,13 +85,13 @@ status=$(cat "$__object/explorer/status")
 if [ "$(expr "${ip}" : ".*|.*")" -gt "0" ]; then
    # If we have multiple IPs defined, $interface doesn't make sense because ip="iface|addr, iface|addr" implies it
    interface=""
-   SAVE_IFS="$IFS"
+   SAVE_IFS=$IFS
    IFS=", "
    for cur_ip in ${ip}; do
       # Just get the last IP address for SSH to listen on
       mgmt_ip=$(echo "${cur_ip}" | sed -E -e 's/^.*\|(.*)\/[0-9]+$/\1/')
    done
-   IFS="$SAVE_IFS"
+   IFS=$SAVE_IFS
 else
    mgmt_ip=$(echo "${ip}" | cut '-d ' -f1)
 fi
@@ -242,9 +242,9 @@ cat <<EOF
    fi
    cat >>/etc/rc.conf <<END
 jail_${name}_rootdir="${jaildir}/${name}"
-jail_${name}_hostname="${hostname}"
-jail_${name}_ip="${ip}"
-jail_${name}_devfs_enable="${devfsenable}"
+jail_${name}_hostname=${hostname}
+jail_${name}_ip=${ip}
+jail_${name}_devfs_enable=${devfsenable}
 jail_${name}_mount_enable="YES"
 jail_${name}_fstab="/etc/fstab.${name}"
 jail_${name}_flags="-n ${name} \\\${jail_flags}"
@@ -254,7 +254,7 @@ EOF
 if [ -n "$interface" ]; then
    cat <<EOF
    cat >>/etc/rc.conf <<END
-jail_${name}_interface="${interface}"
+jail_${name}_interface=${interface}
 END
 EOF
 elif [ "$(expr "${ip}" : ".*|.*")" -eq "0" ]; then
@@ -269,7 +269,7 @@ fi
 if [ "$devfsenable" = "true" ]; then
    cat <<EOF
    cat >>/etc/rc.conf <<END
-jail_${name}_devfs_ruleset="${devfsruleset}"
+jail_${name}_devfs_ruleset=${devfsruleset}
 END
    if [ "${devfsruleset}" = "jailrules" ]; then   # The default ruleset is to be used
       if [ ! -f /etc/devfs.rules ]; then

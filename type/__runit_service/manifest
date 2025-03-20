@@ -32,7 +32,7 @@ case "${os}" in
 	;;
 esac
 
-sv="${__object_id}"
+sv=${__object_id}
 state=$(cat "${__object}/parameter/state")
 run_file="${svdir}/${sv}/run"
 

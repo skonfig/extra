@@ -29,7 +29,7 @@ case "$os" in
 		nginx_confdir="/etc/nginx"
 		install_reqs="__package/nginx"
 
-		require="$install_reqs" __start_on_boot nginx
+		require=$install_reqs __start_on_boot nginx
 
 		export NGINX_SITEDIR="$nginx_confdir/conf.d"
 		export NGINX_CERTDIR="$nginx_confdir/ssl"
@@ -59,7 +59,7 @@ if [ -f "${__object:?}/parameter/domain" ];
 then
 	DOMAIN=$(cat "${__object:?}/parameter/domain")
 else
-	DOMAIN="${__object_id:?}"
+	DOMAIN=${__object_id:?}
 fi
 export DOMAIN
 
@@ -142,7 +142,7 @@ else
 	"${__type:?}/files/static.conf.sh" > "${__object:?}/files/vhost.conf"
 	vhost_conf="${__object:?}/files/vhost.conf"
 
-	require="$install_reqs" __directory "$NGINX_WEBROOT/$DOMAIN"
+	require=$install_reqs __directory "$NGINX_WEBROOT/$DOMAIN"
 	require="__directory$NGINX_WEBROOT/$DOMAIN" \
 		__file "$NGINX_WEBROOT/$DOMAIN/index.html" --state exists \
 		--source "${__type:?}/files/index.html" \
@@ -150,13 +150,13 @@ else
 fi
 
 # Install snippets.
-require="$install_reqs" __directory "$NGINX_SNIPPETSDIR"
+require=$install_reqs __directory "$NGINX_SNIPPETSDIR"
 for snippet in hsts 301-to-https; do
 	require="__directory/$NGINX_SNIPPETSDIR" __file \
 		"$NGINX_SNIPPETSDIR/$snippet" --source "${__type:?}/files/$snippet"
 done
 
 # Install vhost.
-require="$install_reqs" __file "$NGINX_SITEDIR/$__object_id.conf" \
+require=$install_reqs __file "$NGINX_SITEDIR/$__object_id.conf" \
 	--source "$vhost_conf" \
 	--mode 0644

@@ -130,7 +130,7 @@ for proxy in v4proxy v6proxy; do
 				send_proxy=" send-proxy"
 			else
 				# Just use tcp proxy mode
-				host="$hostdefinition"
+				host=$hostdefinition
 				send_proxy=""
 			fi
 			if echo "$hostdefinition" | grep -qE ":${proto}="; then

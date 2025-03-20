@@ -226,7 +226,7 @@ migrate_db() {
     # this is required for pgsql, but mysql can do it itself, too
     if printf "%s" "$database_host" | grep -q ":[[:digit:]]\+$"; then
         # extract the last part, which is the port number
-        database_port="${database_host##*:}"
+        database_port=${database_host##*:}
     else
         # set default port because the tool can not do this for pgsql
         # it looks like mysql get struggles, too

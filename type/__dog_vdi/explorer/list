@@ -20,6 +20,6 @@
 # List information about the current VDI on the target.
 #
 
-name="$__object_id"
+name=$__object_id
 
 dog vdi list -r "$name"

@@ -30,7 +30,7 @@ case "${os}" in
 	;;
 esac
 
-DOMAIN="${__object_id}"
+DOMAIN=${__object_id}
 ADMIN_EMAIL=$(cat "${__object}/parameter/admin-email")
 CHANNEL_LAST_N=$(cat "${__object}/parameter/channel-last-n")
 DEFAULT_LANGUAGE=$(cat "${__object}/parameter/default-language")
@@ -57,10 +57,10 @@ if [ -f "${__object}/parameter/secured-domains" ]; then
 fi
 
 if [ -z "${TURN_SERVER}" ]; then
-	TURN_SERVER="${__target_host}"
+	TURN_SERVER=${__target_host}
 fi
 if [ -z "${JITSI_HOST}" ]; then
-	JITSI_HOST="${__target_host}"
+	JITSI_HOST=${__target_host}
 fi
 
 if [ -n "${BRANDING_JSON}" ]; then

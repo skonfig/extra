@@ -20,7 +20,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-name="${__target_host}"
+name=${__target_host}
 manager_dn=$(cat "${__object}/parameter/manager-dn")
 manager_password_hash=$(cat "${__object}/parameter/manager-password-hash")
 serverid=$(cat "${__object}/parameter/serverid")
@@ -87,7 +87,7 @@ case "${os}" in
             PKGS="$PKGS openldap-back-mdb openldap-back-monitor openldap-overlay-all"
         fi
         CONF_OWNER="ldap"
-        CONF_GROUP="$SLAPD_USER"
+        CONF_GROUP=$SLAPD_USER
         if [ -z "${tls_cipher_suite}" ]; then
             tls_cipher_suite="DEFAULT"
         fi
@@ -296,9 +296,9 @@ syncrepl rid=${rid}
  provider=ldap://${syncrepl}
  bindmethod=simple
  starttls=yes
- binddn="${manager_dn}"
+ binddn=${manager_dn}
  credentials=${syncrepl_credentials}
- searchbase="${syncrepl_searchbase}"
+ searchbase=${syncrepl_searchbase}
  type=refreshAndPersist
  retry="5 + 5 +"
  interval=00:00:00:05

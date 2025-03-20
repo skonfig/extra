@@ -29,7 +29,7 @@ appid="$__object/parameter/appid"
 if [ -f "$appid" ]; then
     appid=$(cat "$appid")
 else
-    appid="$__object_id"
+    appid=$__object_id
 fi
 
 # Get the installation directory

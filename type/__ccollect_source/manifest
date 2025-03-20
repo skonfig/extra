@@ -18,7 +18,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-name="$__object_id"
+name=$__object_id
 state=$(cat "$__object/parameter/state")
 source=$(cat "$__object/parameter/source")
 destination=$(cat "$__object/parameter/destination")
