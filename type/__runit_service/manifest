@@ -18,7 +18,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global}/explorer/os")"
+os=$(cat "${__global}/explorer/os")
 case "${os}" in
 	debian|devuan)
 		svdir="/etc/service"
@@ -33,10 +33,10 @@ case "${os}" in
 esac
 
 sv="${__object_id}"
-state="$(cat "${__object}/parameter/state")"
+state=$(cat "${__object}/parameter/state")
 run_file="${svdir}/${sv}/run"
 
-source="$(cat "$__object/parameter/source")"
+source=$(cat "$__object/parameter/source")
 if [ "$source" = "-" ]; then
 	source="$__object/stdin"
 fi

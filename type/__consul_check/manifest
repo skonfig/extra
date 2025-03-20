@@ -18,10 +18,10 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-name="$(cat "$__object/parameter/name" 2>/dev/null || echo "$__object_id")"
+name=$(cat "$__object/parameter/name" 2>/dev/null || echo "$__object_id")
 conf_dir=$(cat "$__object/explorer/conf-dir")
 conf_file="check_${name}.json"
-state="$(cat "$__object/parameter/state")"
+state=$(cat "$__object/parameter/state")
 
 # Sanity checks
 if [ -f "$__object/parameter/ttl" ]; then
@@ -55,7 +55,7 @@ for param in *; do
    case "$param" in
       state|name) continue ;;
       *)
-         key="$(echo "$param" | tr '-' '_')"
+         key=$(echo "$param" | tr '-' '_')
          printf '      ,"%s": "%s"\n' "$key" "$(cat "$__object/parameter/$param")"
       ;;
    esac

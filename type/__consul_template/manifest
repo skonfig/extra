@@ -37,7 +37,7 @@ case "$os" in
 esac
 
 versions_dir="$__type/files/versions"
-version="$(cat "$__object/parameter/version")"
+version=$(cat "$__object/parameter/version")
 version_dir="$versions_dir/$version"
 
 if [ ! -d "$version_dir" ]; then
@@ -46,7 +46,7 @@ if [ ! -d "$version_dir" ]; then
    exit 1
 fi
 
-state="$(cat "$__object/parameter/state")"
+state=$(cat "$__object/parameter/state")
 
 __staged_file /usr/local/bin/consul-template \
    --source "$(cat "$version_dir/source")" \
@@ -134,7 +134,7 @@ for param in *; do
       ;;
       *)
          # string key=value parameters
-         key="$(echo "$param" | tr '-' '_')"
+         key=$(echo "$param" | tr '-' '_')
          printf '%s = "%s"\n' "$key" "$(cat "$__object/parameter/$param")"
       ;;
    esac
@@ -152,7 +152,7 @@ require="__directory${conf_dir}" \
 service="consul-template"
 case "$os" in
    centos|redhat)
-      os_version="$(sed 's/[^0-9.]//g' "$__global/explorer/os_version")"
+      os_version=$(sed 's/[^0-9.]//g' "$__global/explorer/os_version")
       major_version="${os_version%%.*}"
       case "$major_version" in
          7)

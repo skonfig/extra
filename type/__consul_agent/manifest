@@ -25,9 +25,9 @@ os=$(cat "$__global/explorer/os")
 ###
 # Type parameters.
 
-state="$(cat "$__object/parameter/state")"
-user="$(cat "$__object/parameter/user")"
-group="$(cat "$__object/parameter/group")"
+state=$(cat "$__object/parameter/state")
+user=$(cat "$__object/parameter/user")
+group=$(cat "$__object/parameter/group")
 release=$(cat "$__global/explorer/lsb_release")
 if [ -f "$__object/parameter/use-distribution-package" ]; then
   use_distribution_package=1
@@ -175,7 +175,7 @@ manual_setup () {
           init_sysvinit debian
           ;;
       centos|redhat)
-          os_version="$(sed 's/[^0-9.]//g' "$__global/explorer/os_version")"
+          os_version=$(sed 's/[^0-9.]//g' "$__global/explorer/os_version")
           major_version="${os_version%%.*}"
           case "$major_version" in
               [456])
@@ -253,48 +253,48 @@ json_configuration=$(
      case "$param" in
         state|user|group|json-config|use-distribution-package) continue ;;
         ca-file-source|cert-file-source|key-file-source)
-           source="$(cat "$__object/parameter/$param")"
+           source=$(cat "$__object/parameter/$param")
            destination="$tls_dir/${source##*/}"
            require="__directory/$tls_dir" \
               __file "$destination" \
                  --owner root --group consul --mode 640 \
                  --source "$source" \
                  --state "$state"
-           key="$(echo "${param%-*}" | tr '-' '_')"
+           key=$(echo "${param%-*}" | tr '-' '_')
            printf '   ,"%s": "%s"\n' "$key" "$destination"
         ;;
         disable-remote-exec|disable-update-check|leave-on-terminate\
           |rejoin-after-leave|server|enable-syslog|verify-incoming|verify-outgoing)
            # handle boolean parameters
-           key="$(echo "$param" | tr '-' '_')"
+           key=$(echo "$param" | tr '-' '_')
            printf '   ,"%s": true\n' "$key"
         ;;
         retry-join)
            # join multiple parameters into json array
-           retry_join="$(awk '{printf "\""$1"\","}' "$__object/parameter/retry-join")"
+           retry_join=$(awk '{printf "\""$1"\","}' "$__object/parameter/retry-join")
            # remove trailing ,
            printf '   ,"retry_join": [%s]\n' "${retry_join%*,}"
         ;;
         retry-join-wan)
            # join multiple parameters into json array over wan
-           retry_join_wan="$(awk '{printf "\""$1"\","}' "$__object/parameter/retry-join-wan")"
+           retry_join_wan=$(awk '{printf "\""$1"\","}' "$__object/parameter/retry-join-wan")
            # remove trailing ,
            printf '   ,"retry_join_wan": [%s]\n' "${retry_join_wan%*,}"
         ;;
         bootstrap-expect)
            # integer key=value parameters
-           key="$(echo "$param" | tr '-' '_')"
+           key=$(echo "$param" | tr '-' '_')
            printf '   ,"%s": %s\n' "$key" "$(cat "$__object/parameter/$param")"
         ;;
         *)
            # string key=value parameters
-           key="$(echo "$param" | tr '-' '_')"
+           key=$(echo "$param" | tr '-' '_')
            printf '   ,"%s": "%s"\n' "$key" "$(cat "$__object/parameter/$param")"
         ;;
      esac
   done
   if [ -f "$__object/parameter/json-config" ]; then
-     json_config="$(cat "$__object/parameter/json-config")"
+     json_config=$(cat "$__object/parameter/json-config")
      if [ "$json_config" = "-" ]; then
         json_config="$__object/stdin"
      fi

@@ -21,7 +21,7 @@
 # Check states
 state=""
 unit_state=""
-param_state="$(cat "$__object/parameter/state")"
+param_state=$(cat "$__object/parameter/state")
 
 case "$param_state" in
     enabled|disabled)

@@ -36,7 +36,7 @@ do
 done < "${__object:?}/parameter/gpgid"
 
 # Load required password store location parameter.
-PASSWORD_STORE_DIR="$(cat "${__object:?}/parameter/storedir")"
+PASSWORD_STORE_DIR=$(cat "${__object:?}/parameter/storedir")
 export PASSWORD_STORE_DIR
 
 # Do our work.

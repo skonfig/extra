@@ -18,7 +18,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global:?}"/explorer/os)"
+os=$(cat "${__global:?}"/explorer/os)
 init=$(cat "$__global/explorer/init")
 nginx_confdir="/etc/nginx"
 

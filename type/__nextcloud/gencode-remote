@@ -62,16 +62,16 @@ getparam() {
 }
 
 # Get existing versions
-version_is="$( cat "$__object/explorer/version" )"
-version_should="$( cat "$__object/parameter/version" )"
+version_is=$(cat "$__object/explorer/version")
+version_should=$(cat "$__object/parameter/version")
 
 # the install directory
 installdir="/$__object_id"
-tarballdir="$(dirname "$installdir")/.$(basename "$installdir")"
+tarballdir=$(dirname "$installdir")/.$(basename "$installdir")
 
 # get used user and group
-user="$( cat "$__object/parameter/user" )"
-group="$( cat "$__object/parameter/group" )"
+user=$(cat "$__object/parameter/user")
+group=$(cat "$__object/parameter/group")
 
 
 
@@ -161,7 +161,7 @@ if ! grep -q -F "installed = 1" "$__object/explorer/config"; then
         fi
     }
 
-    database_type="$(cat "$__object/parameter/database-type")"
+    database_type=$(cat "$__object/parameter/database-type")
     case "$database_type" in
         sqlite3)
             occ_install_args="$occ_install_args --database sqlite"
@@ -227,8 +227,8 @@ fi
 
 
 # Get the current and future data directory
-data_old="$(getparam datadirectory)"
-data_new="$(cat "$__object/parameter/data-directory" 2>/dev/null || printf "%s/data" "$installdir")"
+data_old=$(getparam datadirectory)
+data_new=$(cat "$__object/parameter/data-directory" 2>/dev/null || printf "%s/data" "$installdir")
 
 # Move if they should be moved. Avoid false positives if $data_old is empty
 if [ "$data_old" ] && [ "$data_old" != "$data_new" ]; then

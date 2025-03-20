@@ -19,7 +19,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global:?}"/explorer/os)"
+os=$(cat "${__global:?}"/explorer/os)
 
 case "$os" in
 	alpine)
@@ -33,14 +33,14 @@ esac
 DB_USER=wikijs
 if [ -f "${__object:?}/parameter/database-user" ];
 then
-	DB_USER="$(cat "${__object:?}/parameter/database-user")"
+	DB_USER=$(cat "${__object:?}/parameter/database-user")
 fi
 export DB_USER
 
 DB_NAME=wikijs
 if [ -f "${__object:?}/parameter/database" ];
 then
-	DB_NAME="$(cat "${__object:?}/parameter/database")"
+	DB_NAME=$(cat "${__object:?}/parameter/database")
 fi
 export DB_NAME
 
@@ -55,7 +55,7 @@ if [ "$SSL" = "true" ];
 then
 	if [ -f "${__object:?}/parameter/letsencrypt-mail" ];
 	then
-		LE_EMAIL="$(cat "${__object:?}/parameter/letsencrypt-mail")"
+		LE_EMAIL=$(cat "${__object:?}/parameter/letsencrypt-mail")
 		export LE_EMAIL
 	else
 		echo "You must specify an email account if you request SSL."
@@ -68,7 +68,7 @@ HTTP_PORT=$(cat "${__object:?}/parameter/http-port")
 HTTPS_PORT=$(cat "${__object:?}/parameter/https-port")
 export HTTP_PORT HTTPS_PORT
 
-db_pass="$(cat "${__object:?}/parameter/database-password")"
+db_pass=$(cat "${__object:?}/parameter/database-password")
 
 __package nodejs
 __user wikijs --home /var/wiki --create-home

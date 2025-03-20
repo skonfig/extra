@@ -28,10 +28,10 @@ CONF=$CONF_DIR/prometheus.yml
 
 ##### GET SETTINGS ##########################################################
 
-config="$(cat "$__object/parameter/config")"
-retention_days="$(cat "$__object/parameter/retention-days")"
-storage_path="$(cat "$__object/parameter/storage-path")"
-rule_files="$(cat "$__object/parameter/rule-files")"
+config=$(cat "$__object/parameter/config")
+retention_days=$(cat "$__object/parameter/retention-days")
+storage_path=$(cat "$__object/parameter/storage-path")
+rule_files=$(cat "$__object/parameter/rule-files")
 
 # explorer in kB => convert; by default we go with 1/2 RAM
 [ "$target_heap_size" = "auto" ] && target_heap_size=$(($(cat "$__global/explorer/memory")*1024/2))

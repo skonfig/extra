@@ -23,7 +23,7 @@
 os=$("${__explorer:?}/os")
 
 if [ -f "${__object:?}/parameter/device" ]; then
-    blkdev="$(cat "$__object/parameter/device")"
+    blkdev=$(cat "$__object/parameter/device")
 else
     blkdev="${__object_id:?}"
 fi

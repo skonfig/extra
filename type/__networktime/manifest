@@ -53,7 +53,7 @@ case "$backend" in
 	;;
 
 'systemd-timesyncd')
-	peers="$(tr '\n' ' ' < "${__object:?}/parameter/peer")"
+	peers=$(tr '\n' ' ' < "${__object:?}/parameter/peer")
 
 	__package ntp --state absent
 	require="__package/ntp" __systemd_unit systemd-timesyncd \

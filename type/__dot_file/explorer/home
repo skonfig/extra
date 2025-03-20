@@ -22,7 +22,7 @@
 
 set -eu
 
-user="$(cat "${__object}/parameter/user")"
+user=$(cat "${__object}/parameter/user")
 
 if command -v getent >/dev/null 2>&1; then
 	line=$(getent passwd "${user}")

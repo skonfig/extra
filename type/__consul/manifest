@@ -36,7 +36,7 @@ case "$os" in
 esac
 
 versions_dir="$__type/files/versions"
-version="$(cat "$__object/parameter/version")"
+version=$(cat "$__object/parameter/version")
 version_dir="$versions_dir/$version"
 
 if [ ! -d "$version_dir" ]; then

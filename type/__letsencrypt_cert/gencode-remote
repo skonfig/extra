@@ -25,7 +25,7 @@ _explorer_var() {
 	grep "^$1:" "${__object:?}/explorer/certificate-data" | cut -d ':' -f 2-
 }
 
-certificate_exists="$(_explorer_var certificate_exists)"
+certificate_exists=$(_explorer_var certificate_exists)
 name="${__object_id:?}"
 state=$(cat "${__object}/parameter/state")
 
@@ -69,8 +69,8 @@ case "${state}" in
 			fi
 		fi
 
-		admin_email="$(cat "$__object/parameter/admin-email")"
-		webroot="$(cat "$__object/parameter/webroot")"
+		admin_email=$(cat "$__object/parameter/admin-email")
+		webroot=$(cat "$__object/parameter/webroot")
 
 		cat <<-EOF
 		certbot certonly \

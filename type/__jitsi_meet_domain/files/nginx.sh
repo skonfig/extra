@@ -23,7 +23,7 @@
 #
 
 # shellcheck disable=SC2034  # This is intended to be included
-JITSI_NGINX_CONFIG="$(cat <<EOF
+JITSI_NGINX_CONFIG=$(cat <<EOF
 server {
     listen 80;
     listen [::]:80;
@@ -177,4 +177,4 @@ server {
     }
 }
 EOF
-)"
+)

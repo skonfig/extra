@@ -35,13 +35,13 @@ esac
 description=
 if [ -f "${__object:?}/parameter/description" ];
 then
-	description="$(cat "${__object:?}/parameter/description")"
+	description=$(cat "${__object:?}/parameter/description")
 fi
 
 instance_id=
 if [ -f "${__object:?}/parameter/instance-id" ];
 then
-	instance_id="$(cat "${__object:?}/parameter/instance-id")"
+	instance_id=$(cat "${__object:?}/parameter/instance-id")
 fi
 
 __file "${confdir:?}/ospf-${__object_id:?}.conf" \

@@ -18,7 +18,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-iface="$(cat "${__object:?}/parameter/iface")"
+iface=$(cat "${__object:?}/parameter/iface")
 
 if grep -q "^__block/${__object_id:?}" "${__messages_in:?}";
 then

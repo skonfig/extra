@@ -65,7 +65,7 @@ case "$os" in
       fi
    ;;
    devuan)
-      os_version="$(cat "$__global/explorer/os_version")"
+      os_version=$(cat "$__global/explorer/os_version")
 
       case "$os_version" in
         ascii)

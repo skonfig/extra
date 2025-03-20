@@ -29,7 +29,7 @@ case "$(cat "${__object:?}/parameter/encryption")" in
 		enc=repokey
 		if [ -f "${__object:?}/parameter/passphrase" ];
 		then
-			passphrase="$(cat "${__object:?}/parameter/passphrase")"
+			passphrase=$(cat "${__object:?}/parameter/passphrase")
 		else
 			echo "__borg_repo cannot use repokey encryption with no passphrase. Aborting." >&2;
 			exit 1;

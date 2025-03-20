@@ -19,7 +19,7 @@
 #
 
 # control state
-state="$(cat "$__object/parameter/state")"
+state=$(cat "$__object/parameter/state")
 
 # Set capabilities to aquire privileaged ports as netbox user. Two modes are
 # available to efficiently set capabilites. Assumes libcap-bin is installed as
@@ -65,7 +65,7 @@ set_bind_cap() {
         printf "setcap -q CAP_NET_BIND_SERVICE%s /opt/netbox/venv/bin/uwsgi\n" "$cap_mode"
     fi
 }
-SYSTEMD_SOCKET="$(cat "$__object/files/systemd_socket")"
+SYSTEMD_SOCKET=$(cat "$__object/files/systemd_socket")
 
 
 case "$state" in

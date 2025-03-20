@@ -23,8 +23,8 @@ basic_urlencode() {
   echo "${1}" | sed 's/\./%2e/g' | sed 's/-/%2d/g' | sed 's/_/%5f/g'
 }
 
-PASSWD="$(cat "${__object}/parameter/password" 2>/dev/null || true)"
-STATE="$(cat "${__object}/parameter/state")"
+PASSWD=$(cat "${__object}/parameter/password" 2>/dev/null || true)
+STATE=$(cat "${__object}/parameter/state")
 
 if [ -z "${PASSWD}" ] && [ "${STATE}" != "absent" ]; then
 	cat >> dev/stderr <<-EOF
@@ -41,8 +41,8 @@ EOF
   exit 1
 fi
 
-JITSI_USER="$(basic_urlencode "${JITSI_USER_RAW}")"
-FQDN="$(basic_urlencode "${__target_host}")"
+JITSI_USER=$(basic_urlencode "${JITSI_USER_RAW}")
+FQDN=$(basic_urlencode "${__target_host}")
 FQDN_PATH="/var/lib/prosody/${FQDN}/accounts"
 FILENAME="${FQDN_PATH}/${JITSI_USER}.dat"
 

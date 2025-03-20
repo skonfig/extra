@@ -32,7 +32,7 @@ tls_cipher_suite=$(cat "${__object}/parameter/tls-cipher-suite" 2>/dev/null || t
 extra_config=$(cat "${__object}/parameter/extra-config" || true)
 
 
-os="$(cat "${__global}/explorer/os")"
+os=$(cat "${__global}/explorer/os")
 
 # Setup OS-dependent vars
 CONF_OWNER="root"

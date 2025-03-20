@@ -18,8 +18,8 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-name="$(cat "$__object/parameter/name" 2>/dev/null || echo "$__object_id")"
-state="$(cat "$__object/parameter/state")"
+name=$(cat "$__object/parameter/name" 2>/dev/null || echo "$__object_id")
+state=$(cat "$__object/parameter/state")
 conf_dir="/etc/consul-template/conf.d"
 conf_file="template_${name}.hcl"
 template_dir="/etc/consul-template/template"
@@ -47,7 +47,7 @@ cd "$__object/parameter/"
 for param in *; do
    case "$param" in
       source-file)
-         source="$(cat "$__object/parameter/$param")"
+         source=$(cat "$__object/parameter/$param")
          if [ "$source" = "-" ]; then
             source="$__object/stdin"
          fi

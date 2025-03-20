@@ -18,11 +18,11 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-state="$(cat "$__object/parameter/state")"
+state=$(cat "$__object/parameter/state")
 
 case "$state" in
     present|enabled)
-        os="$(cat "$__global/explorer/os")"
+        os=$(cat "$__global/explorer/os")
 
         case "$os" in
             centos)

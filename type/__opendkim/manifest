@@ -34,32 +34,32 @@ esac
 __package opendkim
 
 # Required parameters
-SOCKET="$(cat "${__object:?}/parameter/socket")"
+SOCKET=$(cat "${__object:?}/parameter/socket")
 export SOCKET
 
 # Optional parameters
 if [ -f "${__object:?}/parameter/basedir" ]; then
-	BASEDIR="$(cat "${__object:?}/parameter/basedir")"
+	BASEDIR=$(cat "${__object:?}/parameter/basedir")
 	export BASEDIR
 fi
 
 if [ -f "${__object:?}/parameter/canonicalization" ]; then
-	CANON="$(cat "${__object:?}/parameter/canonicalization")"
+	CANON=$(cat "${__object:?}/parameter/canonicalization")
 	export CANON
 fi
 
 if [ -f "${__object:?}/parameter/subdomains" ]; then
-	SUBDOMAINS="$(cat "${__object:?}/parameter/subdomains")"
+	SUBDOMAINS=$(cat "${__object:?}/parameter/subdomains")
 	export SUBDOMAINS
 fi
 
 if [ -f "${__object:?}/parameter/umask" ]; then
-	UMASK="$(cat "${__object:?}/parameter/umask")"
+	UMASK=$(cat "${__object:?}/parameter/umask")
 	export UMASK
 fi
 
 if [ -f "${__object:?}/parameter/userid" ]; then
-	USERID="$(cat "${__object:?}/parameter/userid")"
+	USERID=$(cat "${__object:?}/parameter/userid")
 	export USERID
 fi
 

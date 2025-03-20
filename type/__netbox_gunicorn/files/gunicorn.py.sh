@@ -26,7 +26,7 @@
 __explorer="$__global/explorer"
 
 # size workes by cpu
-cores="$(cat "$__explorer/cpu_cores")"
+cores=$(cat "$__explorer/cpu_cores")
 
 
 cat << EOF

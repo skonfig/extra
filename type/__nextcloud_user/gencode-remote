@@ -97,7 +97,7 @@ match_param() {
 # Get parameters
 user="$__object/parameter/user"
 if [ -f "$user" ]; then
-    user="$(cat "$user")"
+    user=$(cat "$user")
 else
     user="$__object_id"
 fi
@@ -111,9 +111,9 @@ else
     state_is="absent"
 fi
 
-state_should="$(cat "$__object/parameter/state")"
-cloud="$(cat "$__object/parameter/cloud")"
-www_user="$(cat "$__object/parameter/www-user")"
+state_should=$(cat "$__object/parameter/state")
+cloud=$(cat "$__object/parameter/cloud")
+www_user=$(cat "$__object/parameter/www-user")
 
 
 # Check if the state changes
@@ -167,7 +167,7 @@ if [ "$state_should" != "absent" ] && [ "$ignore_config" != "yes" ]; then
     if ! [ -f "$__object/parameter/keep-displayname" ]; then
         # Check if the display name is correct if someone is set
         if [ -f "$__object/parameter/displayname" ]; then
-            displayname="$(cat "$__object/parameter/displayname")"
+            displayname=$(cat "$__object/parameter/displayname")
             if ! match_param display_name "$displayname"; then
                 cat <<SHELL
 su -s /bin/sh -l "$www_user" -- -e <<'SU'
@@ -186,7 +186,7 @@ SHELL
     if ! [ -f "$__object/paramter/keep-email" ]; then
         # Check if the email address is correct
         if [ -f "$__object/parameter/email" ]; then
-            email="$(cat "$__object/parameter/email")"
+            email=$(cat "$__object/parameter/email")
             if ! match_param email "$email"; then
                 occ user:setting -- "'$user'" settings email "'$email'"
             fi
@@ -215,7 +215,7 @@ SHELL
     if ! [ -f "$__object/parameter/keep-quota" ]; then
         # Handle the qouta
         # the parameter is always set cause of the default value
-        quota="$(cat "$__object/parameter/quota")"
+        quota=$(cat "$__object/parameter/quota")
         if ! match_param quota_param "$quota"; then
             occ user:setting -- "'$user'" files quota "'$quota'"
         fi

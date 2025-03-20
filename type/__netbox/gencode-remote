@@ -19,7 +19,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-old_version="$(cat "$__object/explorer/version")"
+old_version=$(cat "$__object/explorer/version")
 VERSION=$(cat "$__object/parameter/version")
 
 src="netbox-$VERSION"

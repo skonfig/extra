@@ -19,10 +19,10 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-manager="$(cat "$__object/explorer/service-manager")"
+manager=$(cat "$__object/explorer/service-manager")
 
 name=$__object_id
-action="$(cat "$__object/parameter/action")"
+action=$(cat "$__object/parameter/action")
 
 case "$manager" in
 	systemd)

@@ -20,10 +20,10 @@
 #
 
 gem="$__object_id"
-gemset="$(cat "$__object/parameter/gemset")"
-state_is="$(cat "$__object/explorer/state")"
-user="$(cat "$__object/parameter/user")"
-state_should="$(cat "$__object/parameter/state")"
+gemset=$(cat "$__object/parameter/gemset")
+state_is=$(cat "$__object/explorer/state")
+user=$(cat "$__object/parameter/user")
+state_should=$(cat "$__object/parameter/state")
 
 [ "$state_is" = "$state_should" ] && exit 0
 

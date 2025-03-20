@@ -20,7 +20,7 @@
 #
 
 os=$(cat "$__global/explorer/os")
-keyboard_type="$(cat "$__object/parameter/type")"
+keyboard_type=$(cat "$__object/parameter/type")
 
 case "$os" in
     centos)

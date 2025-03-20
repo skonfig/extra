@@ -24,9 +24,9 @@ shquot() {
 	EOF
 }
 
-jaildir="$(cat "$__object/parameter/jaildir")"
-jailbase="$(cat "$__object/parameter/jailbase")"
-state="$(cat "$__object/parameter/state")"
+jaildir=$(cat "$__object/parameter/jaildir")
+jailbase=$(cat "$__object/parameter/jailbase")
+state=$(cat "$__object/parameter/state")
 
 if [ "$state" = "present" ] && [ -z "$jailbase" ]; then
    exec >&2
@@ -35,7 +35,7 @@ if [ "$state" = "present" ] && [ -z "$jailbase" ]; then
 fi
 
 remotebase="${jaildir}/jailbase.tgz"
-basepresent="$(cat "$__object/explorer/basepresent")"
+basepresent=$(cat "$__object/explorer/basepresent")
 
 if [ "$state" = "present" ]; then
    if [ "$basepresent" = "NONE" ]; then

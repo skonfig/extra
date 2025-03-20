@@ -37,18 +37,18 @@ SHELL
 # Get the app id
 appid="$__object/parameter/appid"
 if [ -f "$appid" ]; then
-    appid="$(cat "$appid")"
+    appid=$(cat "$appid")
 else
     appid="$__object_id"
 fi
 
 # Get the app state
-state_is="$(cat "$__object/explorer/state")"
-state_should="$(cat "$__object/parameter/state")"
+state_is=$(cat "$__object/explorer/state")
+state_should=$(cat "$__object/parameter/state")
 
 # Get general parameters
-cloud="$(cat "$__object/parameter/cloud")"
-www_user="$(cat "$__object/parameter/www-user")"
+cloud=$(cat "$__object/parameter/cloud")
+www_user=$(cat "$__object/parameter/www-user")
 
 
 # Abort if nextcloud is not installed

@@ -20,15 +20,15 @@
 #
 
 
-os="$(cat "${__global}/explorer/os")"
+os=$(cat "${__global}/explorer/os")
 if [ "${os}" != "freebsd" ]; then
 	exit
 fi
 
 # FreeBSD-specific
 svdir="/var/service"
-svdir_exists="$(cat "${__object}/explorer/svdir-exists")"
-runit_etc="$(cat "${__object}/explorer/runit-etc")"
+svdir_exists=$(cat "${__object}/explorer/svdir-exists")
+runit_etc=$(cat "${__object}/explorer/runit-etc")
 
 if [ -z "${svdir_exists}" ]; then
 	echo "mkdir '${svdir}'"

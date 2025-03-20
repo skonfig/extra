@@ -21,7 +21,7 @@
 
 # FIXME: this code is duplicated from the manifest -> let's share it somehow.
 
-os="$(cat "${__global:?}"/explorer/os)"
+os=$(cat "${__global:?}"/explorer/os)
 case "$os" in
 	alpine|ubuntu|debian)
 		default_confdir=/etc/ssl/uacme
@@ -35,7 +35,7 @@ esac
 confdir="${default_confdir:?}"
 if [ -f "${__object:?}/parameter/confdir" ];
 then
-	confdir="$(cat "${__object:?}/parameter/confdir")"
+	confdir=$(cat "${__object:?}/parameter/confdir")
 fi
 
 # Run renew script 'by hand' for intial issue - renews will be handled by the

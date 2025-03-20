@@ -33,7 +33,7 @@ case "$os" in
 esac
 
 # Required parameters
-channel="$(cat "${__object:?}/parameter/channel")"
+channel=$(cat "${__object:?}/parameter/channel")
 
 # Boolean switches
 persist=
@@ -52,19 +52,19 @@ fi
 description=
 if [ -f "${__object:?}"/parameter/description ];
 then
-	description="$(cat "${__object:?}/parameter/description")"
+	description=$(cat "${__object:?}/parameter/description")
 fi
 
 import=
 if [ -f "${__object:?}"/parameter/import ];
 then
-	import="$(cat "${__object:?}/parameter/import")"
+	import=$(cat "${__object:?}/parameter/import")
 fi
 
 _export=
 if [ -f "${__object:?}"/parameter/export ];
 then
-	_export="$(cat "${__object:?}/parameter/export")"
+	_export=$(cat "${__object:?}/parameter/export")
 fi
 
 # Install resulting configuration

@@ -19,7 +19,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global:?}"/explorer/os)"
+os=$(cat "${__global:?}"/explorer/os)
 case "$os" in
 	alpine|ubuntu|debian)
 		__package uacme
@@ -37,14 +37,14 @@ esac
 CHALLENGEDIR=${default_challengedir:?}
 if [ -f "${__object:?}/parameter/challengedir" ];
 then
-	CHALLENGEDIR="$(cat "${__object:?}/parameter/challengedir")"
+	CHALLENGEDIR=$(cat "${__object:?}/parameter/challengedir")
 fi
 export CHALLENGEDIR
 
 CONFDIR="${default_confdir:?}"
 if [ -f "${__object:?}/parameter/confdir" ];
 then
-	CONFDIR="$(cat "${__object:?}/parameter/confdir")"
+	CONFDIR=$(cat "${__object:?}/parameter/confdir")
 fi
 export CONFDIR
 
@@ -70,7 +70,7 @@ export MAIN_DOMAIN DOMAIN
 HOOKSCRIPT=${default_hookscript}
 if [ -f "${__object:?}/parameter/hookscript" ];
 then
-	HOOKSCRIPT="$(cat "${__object:?}/parameter/hookscript")"
+	HOOKSCRIPT=$(cat "${__object:?}/parameter/hookscript")
 fi
 export HOOKSCRIPT
 
@@ -91,28 +91,28 @@ export MUST_STAPLE
 OWNER=root
 if [ -f "${__object:?}/parameter/owner" ];
 then
-	OWNER="$(cat "${__object:?}/parameter/owner")"
+	OWNER=$(cat "${__object:?}/parameter/owner")
 fi
 export OWNER
 
 KEY_TARGET=
 if [ -f "${__object:?}/parameter/install-key-to" ];
 then
-	KEY_TARGET="$(cat "${__object:?}/parameter/install-key-to")"
+	KEY_TARGET=$(cat "${__object:?}/parameter/install-key-to")
 fi
 export KEY_TARGET
 
 CERT_TARGET=
 if [ -f "${__object:?}/parameter/install-cert-to" ];
 then
-	CERT_TARGET="$(cat "${__object:?}/parameter/install-cert-to")"
+	CERT_TARGET=$(cat "${__object:?}/parameter/install-cert-to")
 fi
 export CERT_TARGET
 
 RENEW_HOOK=
 if [ -f "${__object:?}/parameter/renew-hook" ];
 then
-	RENEW_HOOK="$(cat "${__object:?}/parameter/renew-hook")"
+	RENEW_HOOK=$(cat "${__object:?}/parameter/renew-hook")
 fi
 export RENEW_HOOK
 

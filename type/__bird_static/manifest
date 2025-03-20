@@ -38,7 +38,7 @@ esac
 description=
 if [ -f "${__object:?}/parameter/description" ];
 then
-	description="$(cat "${__object:?}/parameter/description")"
+	description=$(cat "${__object:?}/parameter/description")
 fi
 export description
 

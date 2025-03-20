@@ -21,7 +21,7 @@
 
 export GOBIN=/opt/gocode/bin  # where to find go binaries
 
-exporter="$(cat "$__object/parameter/exporter")"
+exporter=$(cat "$__object/parameter/exporter")
 [ -z "$exporter" ] && exporter="$__object_id"
 
 __user prometheus

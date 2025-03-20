@@ -34,7 +34,7 @@ case "$1" in
         ;;
     stop)
         printf "Stopping daemontools: "
-        pids="$(pidof svscan)"
+        pids=$(pidof svscan)
         if [ -n "${pids}" ]
         then
                 printf "svscan"
@@ -43,7 +43,7 @@ case "$1" in
                     # shellcheck disable=SC2086
                     kill ${pids}
                     printf "."
-                    pids="$(pidof svscan)"
+                    pids=$(pidof svscan)
                 done
         fi
         printf " services"

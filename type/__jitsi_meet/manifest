@@ -20,8 +20,8 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global}/explorer/os")"
-init="$(cat "${__global}/explorer/init")"
+os=$(cat "${__global}/explorer/os")
+init=$(cat "${__global}/explorer/init")
 case "${os}" in
 	devuan|debian)
 	;;
@@ -34,15 +34,15 @@ esac
 
 JITSI_HOST="${__target_host}"
 # Currently unused, see below
-# JITSI_VERSION="$(cat "${__object}/parameter/jitsi-version")"
-TURN_SERVER="$(cat "${__object}/parameter/turn-server")"
-TURN_SECRET="$(cat "${__object}/parameter/turn-secret")"
+# JITSI_VERSION=$(cat "${__object}/parameter/jitsi-version")
+TURN_SERVER=$(cat "${__object}/parameter/turn-server")
+TURN_SECRET=$(cat "${__object}/parameter/turn-secret")
 
 if [ -z "${TURN_SERVER}" ]; then
 	TURN_SERVER="${JITSI_HOST}"
 fi
 
-PROMETHEUS_JITSI_EXPORTER_IS_VERSION="$(cat "${__object}/explorer/prometheus-jitsi-meet-explorer-version")"
+PROMETHEUS_JITSI_EXPORTER_IS_VERSION=$(cat "${__object}/explorer/prometheus-jitsi-meet-explorer-version")
 
 # The rest is loosely based on Jitsi's documentation
 # https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-quickstart

@@ -33,20 +33,20 @@ case "$os" in
 esac
 
 # Required parameters
-local_as="$(cat "${__object:?}"/parameter/local-as)"
+local_as=$(cat "${__object:?}"/parameter/local-as)
 export local_as
 
-neighbor_as="$(cat "${__object:?}"/parameter/neighbor-as)"
+neighbor_as=$(cat "${__object:?}"/parameter/neighbor-as)
 export neighbor_as
 
-neighbor_ip="$(cat "${__object:?}"/parameter/neighbor-ip)"
+neighbor_ip=$(cat "${__object:?}"/parameter/neighbor-ip)
 export neighbor_ip
 
 # Optional parameters
 description=
 if [ -f "${__object:?}"/parameter/description ];
 then
-	description="$(cat "${__object:?}"/parameter/description)"
+	description=$(cat "${__object:?}"/parameter/description)
 fi
 export description
 
@@ -74,21 +74,21 @@ export ipv6_extended_next_hop
 local_ip=
 if [ -f "${__object:?}"/parameter/local-ip ];
 then
-	local_ip="$(cat "${__object:?}"/parameter/local-ip)"
+	local_ip=$(cat "${__object:?}"/parameter/local-ip)
 fi
 export local_ip
 
 password=
 if [ -f "${__object:?}"/parameter/password ];
 then
-	password="$(cat "${__object:?}"/parameter/password)"
+	password=$(cat "${__object:?}"/parameter/password)
 fi
 export password
 
 ipv4_import=
 if [ -f "${__object:?}"/parameter/ipv4-import ];
 then
-	ipv4_import="$(cat "${__object:?}"/parameter/ipv4-import)"
+	ipv4_import=$(cat "${__object:?}"/parameter/ipv4-import)
 	echo "FOO" >&2
 fi
 export ipv4_import
@@ -96,21 +96,21 @@ export ipv4_import
 ipv4_export=
 if [ -f "${__object:?}"/parameter/ipv4-export ];
 then
-	ipv4_export="$(cat "${__object:?}"/parameter/ipv4-export)"
+	ipv4_export=$(cat "${__object:?}"/parameter/ipv4-export)
 fi
 export ipv4_export
 
 ipv6_import=
 if [ -f "${__object:?}"/parameter/ipv6-import ];
 then
-	ipv6_import="$(cat "${__object:?}"/parameter/ipv6-import)"
+	ipv6_import=$(cat "${__object:?}"/parameter/ipv6-import)
 fi
 export ipv6_import
 
 ipv6_export=
 if [ -f "${__object:?}"/parameter/ipv6-export ];
 then
-	ipv6_export="$(cat "${__object:?}"/parameter/ipv6-export)"
+	ipv6_export=$(cat "${__object:?}"/parameter/ipv6-export)
 fi
 export ipv6_export
 

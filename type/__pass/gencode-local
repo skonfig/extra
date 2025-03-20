@@ -39,7 +39,7 @@ command -v pass >/dev/null 2>&1 ||
 # Check for optional length parameter.
 if [ -f "${__object:?}/parameter/length" ];
 then
-	LENGTH="$(cat "${__object:?}/parameter/length")"
+	LENGTH=$(cat "${__object:?}/parameter/length")
 	export LENGTH
 fi
 
@@ -51,7 +51,7 @@ then
 fi
 
 # Load required password store location parameter.
-PASSWORD_STORE_DIR="$(cat "${__object:?}/parameter/storedir")"
+PASSWORD_STORE_DIR=$(cat "${__object:?}/parameter/storedir")
 export PASSWORD_STORE_DIR
 
 # Check if the password store is initialized.

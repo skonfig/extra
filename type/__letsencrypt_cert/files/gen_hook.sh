@@ -43,7 +43,7 @@ if [ "${state}" = "present" ] && \
 	# (at each state for deploy, pre, post), it is up to us to
 	# differentiate whether or not the hook must run
 	hook_state="present"
-	hook_contents_head="$(cat <<EOF
+	hook_contents_head=$(cat <<EOF
 #!/bin/sh -e
 #
 # Managed remotely with https://cdi.st
@@ -55,20 +55,20 @@ ${domains}
 eof
 )"
 EOF
-)"
+)
 	case "${hook}" in
 		pre|post)
 			# Certbot is kind of terrible, we have
 			# no way of knowing what domain/lineage the
 			# hook is running for
-			hook_contents_logic="$(cat <<EOF
+			hook_contents_logic=$(cat <<EOF
 # pre/post-hooks apply always due to a certbot limitation
 APPLY_HOOK="YES"
 EOF
-)"
+)
 		;;
 		deploy)
-			hook_contents_logic="$(cat <<EOF
+			hook_contents_logic=$(cat <<EOF
 # certbot defines these environment variables:
 # RENEWED_DOMAINS="DOMAIN1 DOMAIN2"
 # RENEWED_LINEAGE="/etc/letsencrypt/live/__object_id"
@@ -77,7 +77,7 @@ if [ "\${lineage}" = "\${RENEWED_LINEAGE}" ]; then
 	APPLY_HOOK="YES"
 fi
 EOF
-)"
+)
 		;;
 		*)
 			echo "Unknown hook '${hook}'" >> /dev/stderr
@@ -85,20 +85,20 @@ EOF
 		;;
 	esac
 
-	hook_contents_tail="$(cat <<EOF
+	hook_contents_tail=$(cat <<EOF
 if [ -n "\${APPLY_HOOK}" ]; then
 	# Messing with indentation can eff up the users' scripts, let's not
 $(cat "${hook_source}")
 fi
 EOF
-)"
+)
 fi
 
-hook_contents="$(cat <<EOF
+hook_contents=$(cat <<EOF
 ${hook_contents_head}
 
 ${hook_contents_logic}
 
 ${hook_contents_tail}
 EOF
-)"
+)

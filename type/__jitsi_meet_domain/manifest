@@ -20,7 +20,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global}/explorer/os")"
+os=$(cat "${__global}/explorer/os")
 case "${os}" in
 	devuan|debian)
 	;;
@@ -31,16 +31,16 @@ case "${os}" in
 esac
 
 DOMAIN="${__object_id}"
-ADMIN_EMAIL="$(cat "${__object}/parameter/admin-email")"
-CHANNEL_LAST_N="$(cat "${__object}/parameter/channel-last-n")"
-DEFAULT_LANGUAGE="$(cat "${__object}/parameter/default-language")"
-NOTICE_MESSAGE="$(cat "${__object}/parameter/notice-message")"
-START_VIDEO_MUTED="$(cat "${__object}/parameter/start-video-muted")"
-TURN_SERVER="$(cat "${__object}/parameter/turn-server")"
-VIDEO_CONSTRAINTS="$(cat "${__object}/parameter/video-constraints")"
-BRANDING_INDEX="$(cat "${__object}/parameter/branding-index")"
-BRANDING_JSON="$(cat "${__object}/parameter/branding-json")"
-BRANDING_WATERMARK="$(cat "${__object}/parameter/branding-watermark")"
+ADMIN_EMAIL=$(cat "${__object}/parameter/admin-email")
+CHANNEL_LAST_N=$(cat "${__object}/parameter/channel-last-n")
+DEFAULT_LANGUAGE=$(cat "${__object}/parameter/default-language")
+NOTICE_MESSAGE=$(cat "${__object}/parameter/notice-message")
+START_VIDEO_MUTED=$(cat "${__object}/parameter/start-video-muted")
+TURN_SERVER=$(cat "${__object}/parameter/turn-server")
+VIDEO_CONSTRAINTS=$(cat "${__object}/parameter/video-constraints")
+BRANDING_INDEX=$(cat "${__object}/parameter/branding-index")
+BRANDING_JSON=$(cat "${__object}/parameter/branding-json")
+BRANDING_WATERMARK=$(cat "${__object}/parameter/branding-watermark")
 
 if [ "${BRANDING_INDEX}" = "-" ]; then
 	BRANDING_INDEX="${__object}/stdin"

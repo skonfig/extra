@@ -34,7 +34,7 @@ if [ "$state" = "absent" ]; then
 fi
 
 versions_dir="$__type/files/versions"
-version="$(cat "$__object/parameter/version")"
+version=$(cat "$__object/parameter/version")
 version_dir="$versions_dir/$version"
 
 source=$(cat "$version_dir/source")

@@ -21,7 +21,7 @@
 # Check states
 state=""
 unit_state=""
-param_state="$(cat "$__object/parameter/state")"
+param_state=$(cat "$__object/parameter/state")
 
 case "$param_state" in
     enabled|disabled)
@@ -57,7 +57,7 @@ if [ "$state" = "present" ]; then
     # already checked outside this if-clause
     export SYSTEMD_SOCKET
 
-    PROTOCOL="$(cat "$__object/parameter/protocol")"
+    PROTOCOL=$(cat "$__object/parameter/protocol")
     export PROTOCOL
 
     if [ -f "$__object/parameter/serve-static" ]; then

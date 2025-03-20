@@ -18,10 +18,10 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-name="$(cat "$__object/parameter/name" 2>/dev/null || echo "$__object_id")"
+name=$(cat "$__object/parameter/name" 2>/dev/null || echo "$__object_id")
 conf_dir=$(cat "$__object/explorer/conf-dir")
 conf_file="service_${name}.json"
-state="$(cat "$__object/parameter/state")"
+state=$(cat "$__object/parameter/state")
 
 # Sanity checks
 if [ -f "$__object/parameter/check-script" ] && [ -f "$__object/parameter/check-ttl" ]; then
@@ -65,18 +65,18 @@ for param in *; do
       ;;
       tag)
          # create json array from newline delimited file
-         tags="$(awk '{printf "\""$1"\","}' "$__object/parameter/tag")"
+         tags=$(awk '{printf "\""$1"\","}' "$__object/parameter/tag")
          # remove trailing ,
          printf '      ,"tags": [%s]\n' "${tags%*,}"
       ;;
       port)
          # integer key=value parameters
-         key="$(echo "$param" | tr '-' '_')"
+         key=$(echo "$param" | tr '-' '_')
          printf '      ,"%s": %s\n' "$key" "$(cat "$__object/parameter/$param")"
       ;;
       *)
          # string key=value parameters
-         key="$(echo "$param" | tr '-' '_')"
+         key=$(echo "$param" | tr '-' '_')
          printf '      ,"%s": "%s"\n' "$key" "$(cat "$__object/parameter/$param")"
       ;;
    esac

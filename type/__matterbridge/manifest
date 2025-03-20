@@ -33,7 +33,7 @@ esac
 # Required parameters.
 VERSION=$(cat "$__object/parameter/version")
 if [ -f "$__object/parameter/config" ]; then
-    CONFIG="$(cat "$__object/parameter/config")"
+    CONFIG=$(cat "$__object/parameter/config")
     if [ "$CONFIG" = "-" ]; then
         CONFIG=$(cat "$__object/stdin")
     fi

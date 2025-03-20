@@ -71,7 +71,7 @@ paramexist() {
 #  5: "installation" default value, can be used to backup the user value
 conf_base() {
     if [ -f "$__object/parameter/$1" ] || [ "$5" ]; then
-        value="$(cat "$__object/parameter/$1" || printf "%s" "$5")"
+        value=$(cat "$__object/parameter/$1" || printf "%s" "$5")
         if ! testparam "$2" "$value"; then
             # set it because it does not exist
             # shellcheck disable=SC2059  # $4 contains patterns
@@ -217,10 +217,10 @@ migrate_db() {
     database_type="$1"
 
     # hostname, database, username and password
-    database_host="$(cat "$__object/parameter/database-host" 2>/dev/null || printf "localhost")"
-    database_name="$(cat "$__object/parameter/database-name")"
-    database_user="$(cat "$__object/parameter/database-user")"
-    database_pass="$(cat "$__object/parameter/database-password")"
+    database_host=$(cat "$__object/parameter/database-host" 2>/dev/null || printf "localhost")
+    database_name=$(cat "$__object/parameter/database-name")
+    database_user=$(cat "$__object/parameter/database-user")
+    database_pass=$(cat "$__object/parameter/database-password")
 
     # Extract the port from the host
     # this is required for pgsql, but mysql can do it itself, too
@@ -275,8 +275,8 @@ conf_array host trusted_domains
 if [ -z "$install" ]; then
     # Database to check if the type changed
     # use the current type if no old type found to match instead of migrate
-    database_type="$(cat "$__object/parameter/database-type")"
-    old_db_type="$(getparam dbtype || printf "%s" "$database_type")"
+    database_type=$(cat "$__object/parameter/database-type")
+    old_db_type=$(getparam dbtype || printf "%s" "$database_type")
 
     case "$database_type" in
         sqlite3)

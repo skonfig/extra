@@ -64,7 +64,7 @@ version_majdiff() {
 
 
 # Check support status
-os="$(cat "$__global/explorer/os")"
+os=$(cat "$__global/explorer/os")
 
 case "$os" in
     debian|ubuntu)
@@ -106,9 +106,9 @@ esac
 
 
 # Get the user and group
-mode="$(cat "$__object/parameter/mode")"
-user="$(cat "$__object/parameter/user")"
-group="$(cat "$__object/parameter/group")"
+mode=$(cat "$__object/parameter/mode")
+user=$(cat "$__object/parameter/user")
+group=$(cat "$__object/parameter/group")
 
 # Get the installation directory
 installdir="/$__object_id"
@@ -121,8 +121,8 @@ require="__nextcloud/$__object_id" __directory "$installdir" \
 
 
 # Get version information
-version_is="$( cat "$__object/explorer/version" )"
-version_should="$( cat "$__object/parameter/version" )"
+version_is=$(cat "$__object/explorer/version")
+version_should=$(cat "$__object/parameter/version")
 # The version URI
 nextcloud_uri="https://download.nextcloud.com/server/releases/nextcloud-${version_should}.tar.bz2"
 nextcloud_sum="${nextcloud_uri}.sha256"
@@ -158,7 +158,7 @@ if [ "$version_is" ]; then
         fi
 
         # Set destination to a temporary directory
-        destination="$(dirname "$installdir")/.$(basename "$installdir")"
+        destination=$(dirname "$installdir")/.$(basename "$installdir")
     fi
 else
     # Set destination to the real destination

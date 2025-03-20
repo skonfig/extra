@@ -71,7 +71,7 @@ defaults
 	timeout check		10s
 EOF
 
-dig_cmd="$(command -v dig || true)"
+dig_cmd=$(command -v dig || true)
 get_ip() {
 	# Usage: get_ip (ipv4|ipv6) NAME
 	# uses "dig" if available, else fallback to "host"
@@ -93,7 +93,7 @@ get_ip() {
 	esac
 }
 
-PROTOCOLS="$(cat "$__object/parameter/protocol")"
+PROTOCOLS=$(cat "$__object/parameter/protocol")
 
 for proxy in v4proxy v6proxy; do
 	param=$__object/parameter/$proxy
@@ -126,7 +126,7 @@ for proxy in v4proxy v6proxy; do
 		while read -r hostdefinition; do
 			if echo "$hostdefinition" | grep -qE '^proxy:'; then
 				# Proxy protocol was requested
-				host="$(echo "$hostdefinition" | sed -E 's/^proxy:([^:]+).*$/\1/')"
+				host=$(echo "$hostdefinition" | sed -E 's/^proxy:([^:]+).*$/\1/')
 				send_proxy=" send-proxy"
 			else
 				# Just use tcp proxy mode
@@ -135,7 +135,7 @@ for proxy in v4proxy v6proxy; do
 			fi
 			if echo "$hostdefinition" | grep -qE ":${proto}="; then
 				# Use custom port definition if requested
-				port="$(echo "$hostdefinition" | sed -E "s/^(.*:)?${proto}=([0-9]+).*$/:\2/")"
+				port=$(echo "$hostdefinition" | sed -E "s/^(.*:)?${proto}=([0-9]+).*$/:\2/")
 			else
 				# Else use the default
 				port=""

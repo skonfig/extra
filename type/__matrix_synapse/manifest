@@ -199,7 +199,7 @@ if [ -f "$__object/parameter/registration-requires-email" ]; then
 fi
 
 if [ -f "$__object/parameter/auto-join-room" ]; then
-    AUTO_JOIN_ROOMS="$(cat "$__object/parameter/auto-join-room")"
+    AUTO_JOIN_ROOMS=$(cat "$__object/parameter/auto-join-room")
     export AUTO_JOIN_ROOMS
 fi
 

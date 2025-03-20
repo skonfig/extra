@@ -18,7 +18,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global:?}"/explorer/os)"
+os=$(cat "${__global:?}"/explorer/os)
 case "$os" in
 	alpine)
 		nginx_user=nginx
@@ -36,7 +36,7 @@ esac
 
 if [ -f "${__object:?}/parameter/domain" ];
 then
-	domain="$(cat "${__object:?}/parameter/domain")"
+	domain=$(cat "${__object:?}/parameter/domain")
 else
 	domain="${__object_id:?}"
 fi
@@ -44,13 +44,13 @@ fi
 altdomains=
 if [ -f "${__object:?}/parameter/altdomains" ];
 then
-	altdomains="$(cat "${__object:?}/parameter/altdomains")"
+	altdomains=$(cat "${__object:?}/parameter/altdomains")
 fi
 
 set_custom_uacme_hookscript=
 if [ -f "${__object:?}/parameter/uacme-hookscript" ];
 then
-	uacme_hookscript="$(cat "${__object:?}/parameter/uacme-hookscript")"
+	uacme_hookscript=$(cat "${__object:?}/parameter/uacme-hookscript")
 	set_custom_uacme_hookscript="--hookscript $uacme_hookscript"
 fi
 

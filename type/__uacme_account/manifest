@@ -19,7 +19,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global:?}"/explorer/os)"
+os=$(cat "${__global:?}"/explorer/os)
 
 case "$os" in
 	"alpine"|"debian"|"ubuntu")

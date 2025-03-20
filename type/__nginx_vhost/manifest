@@ -19,7 +19,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global:?}"/explorer/os)"
+os=$(cat "${__global:?}"/explorer/os)
 mkdir -p "${__object:?}/files"
 
 case "$os" in
@@ -57,7 +57,7 @@ esac
 # Domain
 if [ -f "${__object:?}/parameter/domain" ];
 then
-	DOMAIN="$(cat "${__object:?}/parameter/domain")"
+	DOMAIN=$(cat "${__object:?}/parameter/domain")
 else
 	DOMAIN="${__object_id:?}"
 fi
@@ -66,7 +66,7 @@ export DOMAIN
 ALTDOMAINS=
 if [ -f "${__object:?}/parameter/altdomains" ];
 then
-	ALTDOMAINS="$(cat "${__object:?}/parameter/altdomains")"
+	ALTDOMAINS=$(cat "${__object:?}/parameter/altdomains")
 fi
 export ALTDOMAINS
 
@@ -101,7 +101,7 @@ export HSTS
 # Port to listen on
 if [ -f "${__object:?}/parameter/lport" ];
 then
-	LPORT="$(cat "${__object:?}/parameter/lport")"
+	LPORT=$(cat "${__object:?}/parameter/lport")
 else
 	if [ -n "$TLS" ] && [ -z "$TO_HTTPS" ];
 	then

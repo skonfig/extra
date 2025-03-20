@@ -20,7 +20,7 @@
 # Prints "present" if the gemset exists, "absent" otherwise.
 #
 
-user="$(cat "$__object/parameter/user")"
+user=$(cat "$__object/parameter/user")
 
 if [ ! -e "~$user/.rvm/scripts/rvm" ] ; then
    echo "absent"

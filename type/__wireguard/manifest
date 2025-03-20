@@ -18,7 +18,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global:?}"/explorer/os)"
+os=$(cat "${__global:?}"/explorer/os)
 
 case $os in
 	'alpine')
@@ -33,9 +33,9 @@ esac
 __package "wireguard-tools-wg"
 
 # Template configuration
-private_key="$(cat "${__object:?}/parameter/privkey")"
+private_key=$(cat "${__object:?}/parameter/privkey")
 
-WG_ADDRESS="$(cat "${__object:?}/parameter/address")"
+WG_ADDRESS=$(cat "${__object:?}/parameter/address")
 WG_IFACE="${__object_id:?}"
 
 export WG_IFACE
@@ -44,7 +44,7 @@ export WG_ADDRESS
 WG_PORT=
 if [ -f "${__object:?}/parameter/port" ];
 then
-	WG_PORT="$(cat "${__object:?}/parameter/port")"
+	WG_PORT=$(cat "${__object:?}/parameter/port")
 fi
 export WG_PORT
 

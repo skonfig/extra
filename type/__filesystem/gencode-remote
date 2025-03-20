@@ -19,16 +19,16 @@
 #
 
 
-fstype="$(cat "$__object/parameter/fstype")"
+fstype=$(cat "$__object/parameter/fstype")
 
 if [ -f "$__object/parameter/device" ]; then
-    mydev="$(cat "$__object/parameter/device")"
+    mydev=$(cat "$__object/parameter/device")
 else
     mydev="$__object_id"
 fi
 
-label="$(cat "$__object/parameter/label")"
-mkfsoptions="$(cat "$__object/parameter/mkfsoptions")"
+label=$(cat "$__object/parameter/label")
+mkfsoptions=$(cat "$__object/parameter/mkfsoptions")
 
 
 if [ -f "$__object/parameter/force" ]; then
@@ -40,10 +40,10 @@ fi
 
 
 
-blkdev_devname="$(grep -P -o 'NAME="\K[^"]*' "$__object/explorer/lsblk")"
-blkdev_fstype="$(grep -P -o 'FSTYPE="\K[^"]*' "$__object/explorer/lsblk")"
-blkdev_label="$(grep -P -o 'LABEL="\K[^"]*' "$__object/explorer/lsblk")"
-blkdev_mountpoint="$(grep -P -o 'MOUNTPOINT="\K[^"]*' "$__object/explorer/lsblk")"
+blkdev_devname=$(grep -P -o 'NAME="\K[^"]*' "$__object/explorer/lsblk")
+blkdev_fstype=$(grep -P -o 'FSTYPE="\K[^"]*' "$__object/explorer/lsblk")
+blkdev_label=$(grep -P -o 'LABEL="\K[^"]*' "$__object/explorer/lsblk")
+blkdev_mountpoint=$(grep -P -o 'MOUNTPOINT="\K[^"]*' "$__object/explorer/lsblk")
 
 if [ -z "$blkdev_devname" ]; then
     echo "Specified device $mydev not found on target system" >&2

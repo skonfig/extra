@@ -22,7 +22,7 @@
 base_dir=/etc/iptables.d
 
 name="$__object_id"
-state="$(cat "$__object/parameter/state")"
+state=$(cat "$__object/parameter/state")
 
 if [ -f "$__object/parameter/v4" ]; then
     only_v4="yes"

@@ -19,8 +19,8 @@
 #
 
 destination="/$__object_id"
-state_should="$(cat "$__object/parameter/state")"
-type="$(cat "$__object/explorer/type")"
+state_should=$(cat "$__object/parameter/state")
+type=$(cat "$__object/explorer/type")
 stat_file="$__object/explorer/stat"
 
 
@@ -62,14 +62,14 @@ case "$state_should" in
     #  clearing S_ISUID and S_ISGID bits (see chown(2))
     for attribute in group owner mode; do
         if [ -f "$__object/parameter/$attribute" ]; then
-            value_should="$(cat "$__object/parameter/$attribute")"
+            value_should=$(cat "$__object/parameter/$attribute")
 
             # change 0xxx format to xxx format => same as stat returns
             if [ "$attribute" = mode ]; then
-                value_should="$(echo "$value_should" | sed 's/^0\(...\)/\1/')"
+                value_should=$(echo "$value_should" | sed 's/^0\(...\)/\1/')
             fi
 
-            value_is="$(get_current_value "$attribute" "$value_should")"
+            value_is=$(get_current_value "$attribute" "$value_should")
             if [ -f "$__object/files/set-attributes" ] || [ "$value_should" != "$value_is" ]; then
                 "set_$attribute" "$value_should"
             fi

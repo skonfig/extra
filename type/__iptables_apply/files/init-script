@@ -37,7 +37,7 @@ gothrough() {
         echo "Appling iptables rule $rule ..."
 
         # execute it with all commands specificed
-        ruleparam="$(cat "$rule")"
+        ruleparam=$(cat "$rule")
         for cmd in "$@"; do
             # Command and Rule should be split.
             # shellcheck disable=SC2046

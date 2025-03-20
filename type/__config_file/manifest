@@ -23,7 +23,7 @@ cd "$__object/parameter/"
 for param in *; do
    case "$param" in
       source)
-         source="$(cat "$__object/parameter/source")"
+         source=$(cat "$__object/parameter/source")
          if [ "$source" = "-" ]; then
             source="$__object/stdin"
          fi

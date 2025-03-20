@@ -19,8 +19,8 @@
 #
 
 # Variables
-version="$(cat "$__object/parameter/version")"
-state="$(cat "$__object/parameter/state")"
+version=$(cat "$__object/parameter/version")
+state=$(cat "$__object/parameter/state")
 
 if [ "${state}" = "present" ]; then
     # Download docker-compose file

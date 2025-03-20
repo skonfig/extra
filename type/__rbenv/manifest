@@ -20,8 +20,8 @@
 
 homedir="$__object_id"
 
-state_should="$(cat "$__object/parameter/state")"
-owner="$(cat "$__object/parameter/owner")"
+state_should=$(cat "$__object/parameter/state")
+owner=$(cat "$__object/parameter/owner")
 
 rbenvdir="$homedir/.rbenv"
 rubybuilddir="$rbenvdir/plugins/ruby-build"

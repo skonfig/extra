@@ -24,7 +24,7 @@
 # (and also analysing the deb-src)
 if false; then
 	# We are currently not using these, just here as documentation
-	DEBCONF_SETTINGS="$(cat <<EOF
+	DEBCONF_SETTINGS=$(cat <<EOF
 # Jicofo user password:
 jicofo	jicofo/jicofo-authpassword	password	STH
 jitsi-meet-prosody	jicofo/jicofo-authpassword	password	STH
@@ -45,10 +45,10 @@ jitsi-meet-web-config	jitsi-meet/cert-path-crt	string
 # Full local server path to the SSL key file:
 jitsi-meet-web-config	jitsi-meet/cert-path-key	string
 EOF
-)"
+)
 fi
 
-DEBCONF_SETTINGS="$(cat <<EOF
+DEBCONF_SETTINGS=$(cat <<EOF
 # The hostname of the current installation:
 jitsi-meet-web-config	jitsi-meet/jvb-hostname	string	${JITSI_HOST}
 # Hostname:
@@ -64,13 +64,13 @@ jitsi-meet-prosody	jitsi-meet-prosody/jvb-hostname string	${JITSI_HOST}
 # Choices: Generate a new self-signed certificate (You will later get a chance to obtain a Let's encrypt certificate), I want to use my own certificate
 jitsi-meet-web-config	jitsi-meet/cert-choice	select	Generate a new self-signed certificate (You will later get a chance to obtain a Let's encrypt certificate)
 EOF
-)"
+)
 
 if [ -n "${TURN_SECRET}" ]; then
-	DEBCONF_SETTINGS="$(cat <<EOF
+	DEBCONF_SETTINGS=$(cat <<EOF
 ${DEBCONF_SETTINGS}
 # The turn server secret
 jitsi-meet-prosody	jitsi-meet-prosody/turn-secret	string	${TURN_SECRET}
 EOF
-)"
+)
 fi

@@ -39,19 +39,19 @@ done
 instance="default"
 if [ -f "${__object:?}/parameter/instance" ];
 then
-	instance="$(cat "${__object:?}/parameter/instance")"
+	instance=$(cat "${__object:?}/parameter/instance")
 fi
 
 framework="netfilter"
 if [ -f "${__object:?}/parameter/framework" ];
 then
-	framework="$(cat "${__object:?}/parameter/framework")"
+	framework=$(cat "${__object:?}/parameter/framework")
 fi
 
 pool6="64:ff9b::/96"
 if [ -f "${__object:?}/parameter/pool6" ];
 then
-	pool6="$(cat "${__object:?}/parameter/pool6")"
+	pool6=$(cat "${__object:?}/parameter/pool6")
 fi
 
 require='__package/jool-tools' __file /etc/jool/jool.conf \

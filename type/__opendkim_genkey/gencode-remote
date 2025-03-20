@@ -19,8 +19,8 @@
 #
 
 # Required parameters
-DOMAIN="$(cat "${__object:?}/parameter/domain")"
-SELECTOR="$(cat "${__object:?}/parameter/selector")"
+DOMAIN=$(cat "${__object:?}/parameter/domain")
+SELECTOR=$(cat "${__object:?}/parameter/selector")
 
 # Optional parameters
 BITS=
@@ -30,7 +30,7 @@ fi
 
 DIRECTORY="/var/db/dkim/"
 if [ -f "${__object:?}/parameter/directory" ]; then
-	DIRECTORY="$(cat "${__object:?}/parameter/directory")"
+	DIRECTORY=$(cat "${__object:?}/parameter/directory")
 fi
 
 # Boolean parameters

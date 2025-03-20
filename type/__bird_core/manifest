@@ -46,7 +46,7 @@ fi
 log_params="syslog all"
 if [ -f "${__object:?}/parameter/log-params" ];
 then
-	log_params="$(cat "${__object:?}"/parameter/log-params)"
+	log_params=$(cat "${__object:?}"/parameter/log-params)
 fi
 
 __package "$package"

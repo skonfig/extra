@@ -23,19 +23,19 @@
 #set -x
 
 if [ -f "$__object/parameter/name" ]; then
-   name="$(cat "$__object/parameter/name")"
+   name=$(cat "$__object/parameter/name")
 else
    name="$__object_id"
 fi
 
-state="$(cat "$__object/parameter/state")"
+state=$(cat "$__object/parameter/state")
 
 started="true"
 # If the user wants the jail gone, it implies it shouldn't be started.
 { [ -f "$__object/parameter/stopped" ] || [ "$state" = "absent" ]; } && started="false"
 
 if [ -f "$__object/parameter/ip" ]; then
-   ip="$(cat "$__object/parameter/ip")"
+   ip=$(cat "$__object/parameter/ip")
 else
 # IP is an optional param when $state=absent, but
 #    when $state=present, it's required. Enforce this.
@@ -47,13 +47,13 @@ else
 fi
 
 if [ -f "$__object/parameter/hostname" ]; then
-   hostname="$(cat "$__object/parameter/hostname")"
+   hostname=$(cat "$__object/parameter/hostname")
 else
    hostname="$name"
 fi
 
 if [ -f "$__object/parameter/interface" ]; then
-   interface="$(cat "$__object/parameter/interface")"
+   interface=$(cat "$__object/parameter/interface")
 fi
 
 if [ -f "$__object/parameter/devfs-disable" ]; then
@@ -62,7 +62,7 @@ else
    devfsenable="true"
 fi
 
-devfsruleset="$(cat "$__object/parameter/devfs-ruleset")"
+devfsruleset=$(cat "$__object/parameter/devfs-ruleset")
 
 # devfs_ruleset being defined without devfs_enable being true
 #     is pointless. Treat this as an error.
@@ -76,10 +76,10 @@ if [ -f "$__object/parameter/onboot" ]; then
    onboot="true"
 fi
 
-jaildir="$(cat "$__object/parameter/jaildir")"
+jaildir=$(cat "$__object/parameter/jaildir")
 
-present="$(cat "$__object/explorer/present")"
-status="$(cat "$__object/explorer/status")"
+present=$(cat "$__object/explorer/present")
+status=$(cat "$__object/explorer/status")
 
 # Handle ip="iface|addr, iface|addr" format
 if [ "$(expr "${ip}" : ".*|.*")" -gt "0" ]; then
