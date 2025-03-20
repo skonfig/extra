@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2021-2022 Dennis Camera (dennis.camera at ssrq-sds-fds.ch)
+# 2021-2022 Dennis Camera (dennis.camera at riiengineering.ch)
 #
 # This file is part of skonfig-extra.
 #
@@ -19,6 +19,7 @@
 #
 # Print the packages that need to be installed for this uWSGI app to be
 # functional (plugins only)
+#
 
 test -s "${__object:?}/parameter/plugin" || exit 0
 
