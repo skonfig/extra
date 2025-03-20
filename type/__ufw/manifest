@@ -64,4 +64,3 @@ case "$state" in
         exit 1
         ;;
 esac
-

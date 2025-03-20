@@ -23,5 +23,5 @@ cat <<-EOT
 	if [ ! -L /usr/lib/xymon/server/ext ]; then
 		mv /usr/lib/xymon/server/ext /etc/xymon
 		ln -s /etc/xymon/ext /usr/lib/xymon/server/
-	fi	
+	fi
 EOT

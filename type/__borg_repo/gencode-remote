@@ -56,4 +56,3 @@ cat <<- EOF
 		$doas BORG_NEW_PASSPHRASE=$passphrase borg init -e ${enc:?} $appendonly /${__object_id:?}
 	fi
 EOF
-

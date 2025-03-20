@@ -26,4 +26,4 @@ if grep -q ^__key_value/CLIENTHOSTNAME "$__messages_in" || grep -q ^__key_value/
 	cat <<-EOT
 		echo "xymon-client xymon-client/XYMONSERVERS string $servers" | debconf-set-selections
 	EOT
-fi	
+fi

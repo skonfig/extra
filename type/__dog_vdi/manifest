@@ -33,5 +33,5 @@ case "$state_should" in
     *)
         echo "Unsupported state: $state_should" >&2
         exit 1
-    ;;  
+    ;;
 esac

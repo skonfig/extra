@@ -33,7 +33,7 @@ case "$os" in
                 --file /etc/sysconfig/keyboard \
                 --delimiter '=' \
                 --value "\"$keyboard_type\""
-        
+
         require="__file/etc/sysconfig/keyboard" \
             __key_value LAYOUT \
                 --file /etc/sysconfig/keyboard \

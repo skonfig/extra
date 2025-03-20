@@ -91,4 +91,3 @@ for file in $rule_files; do
 		--owner prometheus \
 		--onchange "promtool check rules '$dest' && service prometheus restart"
 done
-

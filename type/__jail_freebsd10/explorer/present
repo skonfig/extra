@@ -39,4 +39,3 @@ fi
 [ -d "${jaildir}/$name" ] && echo "EXISTS" || echo "NOTEXIST"
 
 #set +x
-

@@ -41,7 +41,7 @@ case $os in
 	*)
 		case $init in
 			init)
-				if [ -f "$__object/parameter/install-init-script" ]; then		
+				if [ -f "$__object/parameter/install-init-script" ]; then
 					__config_file /etc/init.d/svscan --mode 755 --source "$__type/files/init.d-svscan"
 					REQUIREEXTRA="__config_file/etc/init.d/svscan"
 				fi

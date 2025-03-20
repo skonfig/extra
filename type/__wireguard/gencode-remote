@@ -23,4 +23,3 @@ if grep -q "^__block/${__object_id:?}" "${__messages_in:?}"; then
 	wg syncconf ${__object_id:?} /etc/wireguard/${__object_id:?}.conf
 	EOF
 fi
-

@@ -148,7 +148,7 @@ EOF
          fi
       done
       jail_list="\${new_list}"
-      
+
       sed -i '.bak' "s/^jail_list=\".*\"/jail_list=\"\${jail_list}\"/" /etc/rc.conf
       unset jail_list
       if [ -f "/etc/rc.conf.bak" ]; then
@@ -355,4 +355,3 @@ else   # The jail does not currently exist
       exit 0
    fi
 fi
-

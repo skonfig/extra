@@ -56,7 +56,7 @@ EXAMPLES
         --source doc.ungleich.ch:/ \
         --destination /backup/doc.ungleich.ch \
         --exclude '/proc/*' --exclude '/sys/*' \
-        --verbose \ 
+        --verbose \
         --create-destination
 
 

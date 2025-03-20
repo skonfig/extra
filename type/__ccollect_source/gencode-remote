@@ -68,7 +68,7 @@ case "$state_should" in
             if [ "$attribute" = mode ]; then
                 value_should="$(echo "$value_should" | sed 's/^0\(...\)/\1/')"
             fi
-            
+
             value_is="$(get_current_value "$attribute" "$value_should")"
             if [ -f "$__object/files/set-attributes" ] || [ "$value_should" != "$value_is" ]; then
                 "set_$attribute" "$value_should"

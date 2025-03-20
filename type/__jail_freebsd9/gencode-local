@@ -54,4 +54,3 @@ if [ "$state" = "present" ]; then
          "$(shquot "${jailbase}")"
    fi   # basepresent=NONE
 fi   # state=present
-

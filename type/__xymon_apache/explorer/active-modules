@@ -21,5 +21,5 @@
 #
 
 if [ -d /etc/apache2/mods-enabled ]; then
-	/usr/sbin/apachectl -t -D DUMP_MODULES | awk '/.*_module/ { gsub(/_module.*$/, ""); gsub(/^ /, ""); print }' 
+	/usr/sbin/apachectl -t -D DUMP_MODULES | awk '/.*_module/ { gsub(/_module.*$/, ""); gsub(/^ /, ""); print }'
 fi

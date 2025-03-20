@@ -70,7 +70,7 @@ EXAMPLES
 
 .. code-block:: sh
 
-    # Setup the firewall 
+    # Setup the firewall
     . "${__global}/type/__jitsi_meet/files/ufw"
     export require="__ufw"
     # Setup Jitsi on this host

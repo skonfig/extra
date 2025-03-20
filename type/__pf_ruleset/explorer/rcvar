@@ -32,4 +32,3 @@ echo "${PFCONF:-"/etc/pf.conf"}"
 
 # Debug
 #set +x
-
