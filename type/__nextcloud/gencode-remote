@@ -172,17 +172,17 @@ then
     database_type=$(cat "${__object:?}/parameter/database-type")
     case ${database_type}
     in
-        sqlite3)
+        (sqlite3)
             occ_install_args="${occ_install_args} --database sqlite"
             ;;
-        mysql)
+        (mysql)
             db_setup mysql
             ;;
-        pgsql)
+        (pgsql)
             db_setup pgsql
             ;;
 
-        *)
+        (*)
             printf "Database type '%s' is unkown!\n" "${database_type}" >&2
             exit 3
             ;;
@@ -279,7 +279,7 @@ then
     # variable accessible from the last ${install} if-clause
     case ${database_type}
     in
-        mysql)
+        (mysql)
             # only available for mysql
             occ db:convert-mysql-charset
             ;;

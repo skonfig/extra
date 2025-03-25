@@ -59,7 +59,7 @@ EOF
 )
 	case ${hook}
 	in
-		pre|post)
+		(pre|post)
 			# Certbot is kind of terrible, we have
 			# no way of knowing what domain/lineage the
 			# hook is running for
@@ -68,8 +68,8 @@ EOF
 APPLY_HOOK="YES"
 EOF
 )
-		;;
-		deploy)
+			;;
+		(deploy)
 			hook_contents_logic=$(cat <<EOF
 # certbot defines these environment variables:
 # RENEWED_DOMAINS="DOMAIN1 DOMAIN2"
@@ -81,11 +81,11 @@ then
 fi
 EOF
 )
-		;;
-		*)
+			;;
+		(*)
 			echo "Unknown hook '${hook}'" >&2
 			exit 1
-		;;
+			;;
 	esac
 
 	hook_contents_tail=$(cat <<EOF

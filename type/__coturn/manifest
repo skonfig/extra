@@ -22,15 +22,15 @@ os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
 in
-    debian|devuan|ubuntu)
+    (debian|devuan|ubuntu)
         __package coturn
         coturn_config='/etc/turnserver.conf'
-    ;;
-   *)
-      printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
-      printf "Please contribute an implementation for it if you can.\n" >&2
-      exit 1
-   ;;
+      ;;
+   (*)
+        printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
+        printf "Please contribute an implementation for it if you can.\n" >&2
+        exit 1
+        ;;
 esac
 
 # Type parameters.

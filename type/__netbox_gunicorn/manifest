@@ -25,17 +25,17 @@ param_state=$(cat "${__object:?}/parameter/state")
 
 case ${param_state}
 in
-    enabled|disabled)
+    (enabled|disabled)
         state="present"
         unit_state=${param_state}
         ;;
 
-    absent)
+    (absent)
         state="absent"
         unit_state="disabled"
         ;;
 
-    *)
+    (*)
         # does not exist
         printf "The state '%s' does not exist, can't continue!\n" "${param_state}" >&2
         exit 2

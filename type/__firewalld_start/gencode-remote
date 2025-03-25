@@ -27,13 +27,13 @@ name="firewalld"
 
 case ${startstate}
 in
-    present)
+    (present)
         cmd="start"
         ;;
-    absent)
+    (absent)
         cmd="stop"
         ;;
-    *)
+    (*)
         echo "Unknown startstate: ${startstate}" >&2
         exit 1
     ;;
@@ -47,41 +47,41 @@ then
 else
     case ${os}
     in
-        debian)
+        (debian)
             case ${os_version}
             in
-                [1-7]*)
+                ([1-7]*)
                     echo "service \"${name}\" \"${cmd}\""
-                ;;
-                8*)
+                    ;;
+                (8*)
                     echo "systemctl \"${cmd}\" \"${name}\""
-                ;;
-                *)
+                    ;;
+                (*)
                     echo "Unsupported version ${os_version} of ${os}" >&2
                     exit 1
-                ;;
+                    ;;
             esac
-        ;;
+            ;;
 
-        gentoo)
+        (gentoo)
             echo service \"${name}\" \"${cmd}\"
-        ;;
+            ;;
 
-        amazon|scientific|centos|fedora|owl|redhat|suse)
+        (amazon|scientific|centos|fedora|owl|redhat|suse)
             echo service \"${name}\" \"${cmd}\"
-        ;;
+            ;;
 
-        openwrt)
+        (openwrt)
             echo "/etc/init.d/\"${name}\" \"${cmd}\""
-        ;;
+            ;;
 
-        ubuntu)
+        (ubuntu)
             echo "service \"${name}\" \"${cmd}\""
-        ;;
+            ;;
 
-        *)
+        (*)
            echo "Unsupported os: ${os}" >&2
            exit 1
-        ;;
+           ;;
     esac
 fi

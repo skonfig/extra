@@ -23,12 +23,12 @@ os=$(cat "${__global:?}"/explorer/os)
 
 case ${os}
 in
-	alpine)
-		:
+	(alpine)
 		;;
-	*)
-		echo "This type has no implementation for ${os}. Aborting." >&2;
-		exit 1;
+	(*)
+		echo "This type has no implementation for ${os}. Aborting." >&2
+		exit 1
+		;;
 esac
 
 DB_USER=wikijs

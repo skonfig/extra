@@ -23,15 +23,15 @@ os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
 in
-alpine)
-	__package unbound
-	openssl_package=openssl
-	;;
-*)
-	printf "%s is currently not supported by __unbound\n" "${os}" >&2
-	printf "Please contribute an implementation for it if you can.\n" >&2
-	exit 1
-	;;
+	(alpine)
+		__package unbound
+		openssl_package=openssl
+		;;
+	(*)
+		printf "%s is currently not supported by __unbound\n" "${os}" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+		;;
 esac
 
 # Optional parameters:

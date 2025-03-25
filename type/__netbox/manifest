@@ -23,7 +23,7 @@ os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
 in
-    debian|ubuntu)
+    (debian|ubuntu)
         # Install netbox dependencies.
         for pkg in python3-pip python3-venv python3-dev build-essential libxml2-dev \
                    libxslt1-dev libffi-dev libpq-dev libssl-dev zlib1g-dev curl sudo; do
@@ -38,7 +38,7 @@ in
             done
         fi
         ;;
-    *)
+    (*)
         printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
         printf "Please contribute an implementation for it if you can.\n" >&2
         exit 1

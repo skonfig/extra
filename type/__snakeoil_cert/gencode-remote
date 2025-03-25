@@ -54,12 +54,12 @@ key_type_arg=$(echo "${key_type}" | cut -d : -f 2)
 
 case ${key_type}
 in
-    rsa:*)
+    (rsa:*)
         echo "openssl genrsa -out '${key_path}' ${key_type_arg}"
-    ;;
-    ec:*)
+        ;;
+    (ec:*)
         echo "openssl ecparam -name ${key_type_arg} -genkey -noout -out '${key_path}'"
-    ;;
+        ;;
 esac
 
 # shellcheck disable=SC2016

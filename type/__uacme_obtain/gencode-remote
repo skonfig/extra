@@ -24,13 +24,13 @@
 os=$(cat "${__global:?}"/explorer/os)
 case ${os}
 in
-	alpine|ubuntu|debian)
+	(alpine|ubuntu|debian)
 		default_confdir=/etc/ssl/uacme
-	;;
-	*)
-		echo "__uacme_obtain currently has no implementation for ${os}. Aborting." >&2;
-		exit 1;
-	;;
+		;;
+	(*)
+		echo "__uacme_obtain currently has no implementation for ${os}. Aborting." >&2
+		exit 1
+		;;
 esac
 
 confdir="${default_confdir:?}"

@@ -25,7 +25,7 @@ version=$(cat "${__object:?}/parameter/version")
 
 case ${os}
 in
-    centos)
+    (centos)
         # shellcheck source=/dev/null
         if (. "${__global:?}/explorer/os_release" && [ "${VERSION_ID}" = "7" ])
         then
@@ -46,8 +46,8 @@ in
           echo "CentOS version 7 is required!" >&2
           exit 1
         fi
-    ;;
-    ubuntu|debian)
+        ;;
+    (ubuntu|debian)
       if [ "${state}" = "present" ]
       then
         __package apt-transport-https
@@ -68,23 +68,23 @@ in
       else
         require="__apt_source/docker" __package docker-ce --state "${state}"
       fi
-   ;;
-   devuan)
+      ;;
+   (devuan)
       os_version=$(cat "${__global:?}/explorer/os_version")
 
       case ${os_version}
       in
-        ascii)
+        (ascii)
           distribution="stretch"
-        ;;
-        jessie)
+          ;;
+        (jessie)
           distribution="jessie"
-        ;;
-        *)
+          ;;
+        (*)
           echo "Your devuan release (${os_version}) is currently not supported by this type (${__type##*/}).">&2
           echo "Please contribute an implementation for it if you can." >&2
           exit 1
-        ;;
+          ;;
       esac
 
       if [ "${state}" = "present" ]
@@ -107,11 +107,10 @@ in
       else
         require="__apt_source/docker" __package docker-ce --state "${state}"
       fi
-
-   ;;
-   *)
+      ;;
+   (*)
       echo "Your operating system (${os}) is currently not supported by this type (${__type##*/})." >&2
       echo "Please contribute an implementation for it if you can." >&2
       exit 1
-   ;;
+      ;;
 esac

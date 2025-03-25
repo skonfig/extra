@@ -24,7 +24,7 @@ state=$(cat "${__object:?}/parameter/state")
 case ${state}
 in
     # install gunicorn
-    enabled|disabled)
+    (enabled|disabled)
         curr_installed=$(cat "${__object:?}/explorer/installed")
         should_installed=$(cat "${__object:?}/explorer/should_installed")
 
@@ -63,7 +63,7 @@ EOF
         ;;
 
     # uninstall
-    absent)
+    (absent)
         # check if installed
         if [ -s "${__object:?}/explorer/installed" ]
         then
@@ -71,4 +71,5 @@ EOF
             echo "/opt/netbox/venv/bin/pip3 uninstall -y gunicorn"
             printf "uninstalled\n" >>"${__messages_out:?}"
         fi
+        ;;
 esac

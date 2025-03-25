@@ -22,11 +22,11 @@ state=$(cat "${__object:?}/parameter/state")
 
 case ${state}
 in
-    enabled)
+    (enabled)
         echo 'ufw --force enable'
         ;;
 
-    present)
+    (present)
         echo 'ufw --force disable'
         ;;
     # absent will be uninstalled in manifest
@@ -39,10 +39,10 @@ then
         logging=$(cat "${__object:?}/parameter/logging")
         case ${logging}
         in
-            off|low|medium|high|full)
+            (off|low|medium|high|full)
                 echo "ufw --force logging ${logging}"
                 ;;
-            *)
+            (*)
                 echo 'Logging parameter must be off, low, medium, high, or full!' >&2
                 exit 1
                 ;;
@@ -56,10 +56,10 @@ then
             treatment=$(cat "${__object:?}/parameter/default_${direction}")
             case ${treatment}
             in
-                allow|deny|reject)
+                (allow|deny|reject)
                     echo "ufw --force default ${treatment} ${direction}"
                     ;;
-                *)
+                (*)
                     echo 'UFW default policies must be either "allow", "deny", or "reject".' >&2
                     exit 1
                     ;;

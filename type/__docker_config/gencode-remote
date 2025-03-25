@@ -24,15 +24,15 @@ state=$(cat "${__object:?}/parameter/state")
 
 case ${state}
 in
-	absent)
+	(absent)
 		if [ "${config_exists}" != "yes" ]
 		then
 			exit 0
 		fi
 
 		echo "docker config rm \"${config}\""
-	;;
-	present)
+		;;
+	(present)
 		source=$(cat "${__object:?}/parameter/source")
 
 		if [ -z "${source}" ]
@@ -66,10 +66,10 @@ in
 
 		rm "\${source_file}"
 		EOF
-	;;
-	*)
+		;;
+	(*)
 		echo "Unsupported state: ${state}" >&2
 
 		exit 1
-	;;
+		;;
 esac

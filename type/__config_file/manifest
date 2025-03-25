@@ -24,21 +24,20 @@ for param in *
 do
    case ${param}
    in
-      source)
+      (source)
          source=$(cat "${__object:?}/parameter/source")
          if [ "${source}" = "-" ]
          then
             source="${__object:?}/stdin"
          fi
          set -- "$@" --source "${source}"
-      ;;
-      owner|group|mode|state)
+         ;;
+      (owner|group|mode|state)
          set -- "$@" "--${param}" "$(cat "${__object:?}/parameter/${param}")"
-      ;;
-      *)
+         ;;
+      (*)
          # ignore unknown parameters
-         :
-      ;;
+         ;;
    esac
 done
 

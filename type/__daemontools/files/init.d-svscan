@@ -23,7 +23,7 @@ fi
 
 case $1
 in
-    start)
+    (start)
         printf "Starting daemontools: "
         if  ! pidof svscan > /dev/null 2>&1; then
                 printf "svscan "
@@ -33,7 +33,7 @@ in
                 echo "already running."
         fi
         ;;
-    stop)
+    (stop)
         printf "Stopping daemontools: "
         pids=$(pidof svscan)
         if [ -n "${pids}" ]
@@ -59,11 +59,11 @@ in
         done
         echo ""
         ;;
-    restart|force-reload)
+    (restart|force-reload)
         $0 stop
         $0 start
         ;;
-    *)
+    (*)
         echo 'Usage: /etc/init.d/svscan {start|stop|restart|force-reload}'
         exit 1
 esac

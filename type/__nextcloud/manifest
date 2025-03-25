@@ -68,7 +68,7 @@ os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
 in
-    debian|ubuntu)
+    (debian|ubuntu)
         # PHP main
         __package php-cli
         # to unpack the package
@@ -86,20 +86,20 @@ in
         # check support database additions (but don't remove junk of old ones)
         case $(cat "${__object:?}/parameter/database-type")
         in
-            sqlite|sqlite3)
+            (sqlite|sqlite3)
                 __package php-sqlite3
                 ;;
-            mysql|mariadb)
+            (mysql|mariadb)
                 __package php-mysql
                 ;;
-            pgsql|postgres|postgresql)
+            (pgsql|postgres|postgresql)
                 __package php-pgsql
                 ;;
         esac
         ;;
 
     # unkown distro - what to install?
-    *)
+    (*)
         printf "unkown %s, don't know what to install ..\n" "${os}" >&2
         echo "checkout the __nextcloud/manifest to contribute a working package list" >&2
         exit 1

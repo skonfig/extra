@@ -28,7 +28,7 @@ destination="/${__object_id:?}"
 os=$("${__explorer:?}/os")
 case ${os}
 in
-   "freebsd"|"netbsd"|"openbsd")
+   (freebsd|netbsd|openbsd)
       # FIXME: should be something like this based on man page, but can not test
       stat -f "type: %ST
 owner: %Du %Su
@@ -37,8 +37,8 @@ mode: %Op %Sp
 size: %Dz
 links: %Dl
 " "${destination}"
-   ;;
-    "macosx")
+       ;;
+    (macosx)
        stat -f "type: %HT
  owner: %Du %Su
  group: %Dg %Sg
@@ -46,8 +46,8 @@ links: %Dl
  size: %Dz
  links: %Dl
  " "${destination}"
-    ;;
-   *)
+        ;;
+   (*)
       stat --printf="type: %F
 owner: %u %U
 group: %g %G
@@ -55,5 +55,5 @@ mode: %a %A
 size: %s
 links: %h
 " "${destination}"
-   ;;
+       ;;
 esac

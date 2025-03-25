@@ -31,7 +31,7 @@ state=$(cat "${__object:?}/parameter/state")
 
 case ${state}
 in
-	absent)
+	(absent)
 		if [ "${certificate_exists}" = "no" ]
 		then
 			exit 0
@@ -40,8 +40,8 @@ in
 		echo "certbot delete --cert-name '${name}' --quiet"
 
 		echo remove >>"${__messages_out:?}"
-	;;
-	present)
+		;;
+	(present)
 		mkdir "${__global:?}/tmp"
 
 		domain_param_file="${__object:?}/parameter/domain"
@@ -108,10 +108,10 @@ in
 		else
 			echo change >>"${__messages_out:?}"
 		fi
-	;;
-	*)
+		;;
+	(*)
 		echo "Unsupported state: ${state}" >&2
 
 		exit 1
-	;;
+		;;
 esac

@@ -34,7 +34,7 @@ set_bind_cap() {
     case $1
     in
         # assumes capabilites are not set (cause of new binaries)
-        set)
+        (set)
             if [ "${SYSTEMD_SOCKET}" != "yes" ]
             then
                 cap_mode="+ep"
@@ -42,7 +42,7 @@ set_bind_cap() {
             ;;
 
         # check if capabilities have changed
-        correct)
+        (correct)
             if [ -s "${__object:?}/explorer/bind-capability" ]
             then
                 # capabilites are set
@@ -60,7 +60,7 @@ set_bind_cap() {
             ;;
 
         # faulty mode
-        *)
+        (*)
             echo "called set_bind_cap incorrect (\$1 missing)" >&2
             ;;
     esac
@@ -77,7 +77,7 @@ SYSTEMD_SOCKET=$(cat "${__object:?}/files/systemd_socket")
 case ${state}
 in
     # install uwsgi
-    enabled|disabled)
+    (enabled|disabled)
         # not installed
         if ! [ -s "${__object:?}/explorer/installed" ]
         then
@@ -120,7 +120,7 @@ EOF
         ;;
 
     # uninstall
-    absent)
+    (absent)
         # check if installed
         if [ -s "${__object:?}/explorer/installed" ]
         then

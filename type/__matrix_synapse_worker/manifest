@@ -26,7 +26,7 @@ os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
 in
-	debian)
+	(debian)
 		synapse_conf_dir='/etc/matrix-synapse'
 		synapse_workers_conf_dir="${synapse_conf_dir}/workers"
 
@@ -39,7 +39,7 @@ in
 		systemd_worker_service_override=present
 		systemd_worker_service="matrix-synapse-worker@${name}"
 		;;
-	*)
+	(*)
 		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
 		printf "Please contribute an implementation for it if you can.\n" >&2
 		exit 1

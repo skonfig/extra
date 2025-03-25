@@ -37,16 +37,16 @@ then
 	certbot_fullpath="/usr/bin/certbot"
 	case ${os}
 	in
-		archlinux)
+		(archlinux)
 			__package certbot
-		;;
-		alpine)
+			;;
+		(alpine)
 			__package certbot
-		;;
-		debian)
+			;;
+		(debian)
 			case ${os_version}
 			in
-				8*)
+				(8*)
 					__apt_source jessie-backports \
 						--uri http://http.debian.net/debian \
 						--distribution jessie-backports \
@@ -58,8 +58,8 @@ then
 						--target-release jessie-backports
 					# Seems to be a missing dependency on debian 8
 					__package python-ndg-httpsclient
-				;;
-				9*)
+					;;
+				(9*)
 					__apt_source stretch-backports \
 						--uri http://http.debian.net/debian \
 						--distribution stretch-backports \
@@ -69,21 +69,21 @@ then
 						--target-release stretch-backports
 					require="__apt_source/stretch-backports" __package_apt certbot \
 						--target-release stretch-backports
-				;;
-				10*|11*)
+					;;
+				(10*|11*)
 					__package_apt certbot
-				;;
+					;;
 
-				*)
+				(*)
 					echo "Unsupported OS version: ${os_version}" >&2
 					exit 1
-				;;
+					;;
 			esac
-		;;
-		devuan)
+			;;
+		(devuan)
 			case ${os_version}
 			in
-				jessie)
+				(jessie)
 					__apt_source jessie-backports \
 								 --uri http://auto.mirror.devuan.org/merged \
 								 --distribution jessie-backports \
@@ -95,8 +95,8 @@ then
 						--target-release jessie-backports
 					# Seems to be a missing dependency on debian 8
 					__package python-ndg-httpsclient
-				;;
-				ascii*)
+					;;
+				(ascii*)
 					__apt_source ascii-backports \
 								 --uri http://auto.mirror.devuan.org/merged \
 								 --distribution ascii-backports \
@@ -104,27 +104,27 @@ then
 
 					require="__apt_source/ascii-backports" __package_apt certbot \
 						--target-release ascii-backports
-				;;
-				beowulf*)
+					;;
+				(beowulf*)
 					__package_apt certbot
-				;;
-				*)
+					;;
+				(*)
 					echo "Unsupported OS version: ${os_version}" >&2
 					exit 1
-				;;
+					;;
 			esac
-		;;
-		freebsd)
+			;;
+		(freebsd)
 			__package py39-certbot
 			certbot_fullpath="/usr/local/bin/certbot"
-		;;
-		ubuntu)
+			;;
+		(ubuntu)
 			__package certbot
-		;;
-		*)
+			;;
+		(*)
 			echo "Unsupported os: ${os}" >&2
 			exit 1
-		;;
+			;;
 	esac
 fi
 
@@ -133,10 +133,10 @@ LE_DIR="/etc/letsencrypt"
 certbot_cronjob_state="absent"
 case ${os}
 in
-	archlinux|alpine)
+	(archlinux|alpine)
 		certbot_cronjob_state="present"
-	;;
-	freebsd)
+		;;
+	(freebsd)
 		LE_DIR="/usr/local/etc/letsencrypt"
 		# FreeBSD uses periodic(8) instead of crontabs for this
 		__line "periodic.conf_weekly_certbot" \
@@ -144,9 +144,7 @@ in
 			--regex "^(#[[:space:]]*)?weekly_certbot_enable=.*" \
 			--state "replace" \
 			--line 'weekly_certbot_enable="YES"'
-	;;
-	*)
-	;;
+		;;
 esac
 
 # This is only necessary in certain OS

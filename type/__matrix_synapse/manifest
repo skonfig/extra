@@ -24,7 +24,7 @@ distribution=$(cat "${__global:?}/explorer/lsb_codename")
 
 case ${os}
 in
-	debian)
+	(debian)
 		synapse_user=matrix-synapse
 		synapse_pkg=matrix-synapse
 		synapse_service=matrix-synapse
@@ -36,28 +36,27 @@ in
 		# synapse packaging in debian.
 		case ${distribution}
 		in
-			stretch)
+			(stretch)
 				echo "The matrix-synapse package in debian stretch is outdated and unusable." >&2
 				exit 1
 				;;
-			buster)
+			(buster)
 				# Enable debian-backports for debian Buster, as the 'stable'
 				# matrix-synapse package is ways too old (< 1.0).
 				apt_target_release=buster-backports
 				__apt_backports
 				;;
-				bullseye|sid)
-					# As of writting (2021-02), the default matrix-synapse of those
-					# release is perfectly usable.
-					:
+			(bullseye|sid)
+				# As of writting (2021-02), the default matrix-synapse of those
+				# release is perfectly usable.
 				;;
-				*)
-					echo "Unknown debian release '${distribution}'. Exiting" >&2
-					exit 1
+			(*)
+				echo "Unknown debian release '${distribution}'. Exiting" >&2
+				exit 1
 				;;
 		esac
 		;;
-	alpine)
+	(alpine)
 		synapse_user=synapse
 		synapse_pkg=synapse
 		synapse_service=synapse
@@ -66,7 +65,7 @@ in
 		synapse_conf_dir='/etc/synapse'
 		synapse_data_dir='/var/lib/synapse'
 		;;
-	*)
+	(*)
 		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
 		printf "Please contribute an implementation for it if you can.\n" >&2
 		exit 1
@@ -318,18 +317,17 @@ export ENABLE_REPLICATION ENABLE_REDIS_SUPPORT WORKER_REPLICATION_SECRET \
 # Error out on invalid parameter combination.
 case ${DATABASE_ENGINE}
 in
-	sqlite3)
-		:
-	;;
-	psycopg2)
+	(sqlite3)
+		;;
+	(psycopg2)
 		when='database engine is psycopg2'
 		is_required_when "${DATABASE_HOST}" '--database-host' "${when}"
 		is_required_when "${DATABASE_USER}" '--database-user' "${when}"
-	;;
-	*)
+		;;
+	(*)
 		echo "Invalid database engine: ${DATABASE_ENGINE}." >&2
 		exit 1
-	;;
+		;;
 esac
 
 

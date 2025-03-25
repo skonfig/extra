@@ -28,7 +28,7 @@ configtmp="${__object:?}/files/haproxy.cfg"
 os=$(cat "${__global:?}/explorer/os")
 case ${os}
 in
-	freebsd)
+	(freebsd)
 		CONFIG_FILE="/usr/local/etc/haproxy.conf"
 		cat <<EOF > "${configtmp}"
 global
@@ -40,7 +40,7 @@ global
 EOF
 
 		;;
-	*)
+	(*)
 		CONFIG_FILE="/etc/haproxy/haproxy.cfg"
 		cat <<EOF > "${configtmp}"
 global
@@ -78,7 +78,7 @@ get_ip() {
 	# uses "dig" if available, else fallback to "host"
 	case $1
 	in
-		ipv4)
+		(ipv4)
 			if [ -n "${dig_cmd}" ]
 			then
 				${dig_cmd} +short A "$2"
@@ -86,7 +86,7 @@ get_ip() {
 				host -t A "$2" | cut -d ' ' -f 4 | grep -v 'found:'
 			fi
 			;;
-		ipv6)
+		(ipv6)
 			if [ -n "${dig_cmd}" ]
 			then
 				${dig_cmd} +short AAAA "$2"
@@ -113,10 +113,10 @@ do
 
 	case ${bind}
 	in
-		ipv4)
+		(ipv4)
 			backendproto=ipv6
 			;;
-		ipv6)
+		(ipv6)
 			backendproto=ipv4
 			;;
 	esac

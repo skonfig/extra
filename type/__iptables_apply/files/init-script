@@ -59,7 +59,7 @@ status6="${basedir}/.pre-start6"
 
 case $1
 in
-    start)
+    (start)
         # Save status
         iptables-save > "$status4"
         ip6tables-save > "$status6"
@@ -69,9 +69,9 @@ in
         #gothrough "$basedir/v4"  iptables  # conflicts with $basedir
         gothrough "$basedir/v6"  ip6tables
         gothrough "$basedir/all" iptables  ip6tables
-    ;;
+        ;;
 
-    stop)
+    (stop)
         # Restore from status before, if there is something to restore
         if [ -f "$status4" ]; then
             iptables-restore < "$status4"
@@ -79,11 +79,11 @@ in
         if [ -f "$status6" ]; then
             ip6tables-restore < "$status6"
         fi
-    ;;
-    restart)
+        ;;
+    (restart)
         "$0" stop &&  "$0" start
-    ;;
-    reset)
+        ;;
+    (reset)
         for table in INPUT FORWARD OUTPUT; do
             iptables -P "$table" ACCEPT
             iptables -F "$table"
@@ -92,5 +92,5 @@ in
             iptables -t nat -P "$table" ACCEPT
             iptables -t nat -F "$table"
         done
-    ;;
+        ;;
 esac

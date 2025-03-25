@@ -131,7 +131,7 @@ then
     # check what to do
     case ${state_should}
     in
-        enabled)
+        (enabled)
             if [ "${state_is}" = "disabled" ]
             then
                 occ user:enable "'${user}'"
@@ -142,7 +142,7 @@ then
             fi
             ;;
 
-        disabled)
+        (disabled)
             if [ "${state_is}" = "absent" ]
             then
                 occ_create
@@ -153,7 +153,7 @@ then
             echo disabled >>"${__messages_out:?}"
             ;;
 
-        present)
+        (present)
             if [ "${state_is}" = "absent" ]
             then
                 occ_create
@@ -162,7 +162,7 @@ then
             # else, everything is ok
             ;;
 
-        absent)
+        (absent)
             occ user:delete "'${user}'"
             echo removed >>"${__messages_out:?}"
             ;;

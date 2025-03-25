@@ -23,14 +23,14 @@ os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
 in
-	"alpine"|"debian"|"ubuntu")
-		confdir="/etc/bird.d"
-	;;
-	*)
+	(alpine|debian|ubuntu)
+		confdir=/etc/bird.d
+		;;
+	(*)
 		printf "Your operating system (%s) is currently not supported by __bird_kernel\n" "${os}" >&2
 		printf "Please contribute an implementation for it if you can.\n" >&2
 		exit 1
-	;;
+		;;
 esac
 
 # Required parameters

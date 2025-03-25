@@ -31,19 +31,15 @@ if [ -n "${CANON}" ]
 then
 	case ${CANON}
 	in
-		"simple/simple")
-			:
+		(simple/simple)
 			;;
-		"simple/relaxed")
-			:
+		(simple/relaxed)
 			;;
-		"relaxed/simple")
-			:
+		(relaxed/simple)
 			;;
-		"relaxed/relaxed")
-			:
+		(relaxed/relaxed)
 			;;
-		*)
+		(*)
 			echo "Invalid Canonicalization setting!" >&2
 			exit 1
 			;;

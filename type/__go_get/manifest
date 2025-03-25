@@ -24,10 +24,10 @@ go_executable=$(cat "${__object:?}/explorer/go-executable")
 os=$(cat "${__global:?}/explorer/os")
 case ${os}
 in
-	debian|devuan|ubuntu)
+	(debian|devuan|ubuntu)
 		__package build-essential
 		;;
-	*)
+	(*)
 		echo "__go_get: Don't know how to install g++ on ${os}" >&2
 		echo "__go_get: Send a pull request or contact <kamila@ksp.sk> to add support for ${os}." >&2
 		exit 1

@@ -53,40 +53,42 @@ for param in *
 do
    case ${param}
    in
-      state|name|check-interval|conf-dir) continue ;;
-      check-script)
+      (state|name|check-interval|conf-dir)
+         continue
+         ;;
+      (check-script)
          printf '     ,"check": {\n'
          printf '         "script": "%s"\n' "$(cat "${__object:?}/parameter/check-script")"
          printf '         ,"interval": "%s"\n' "$(cat "${__object:?}/parameter/check-interval")"
          printf '      }\n'
-      ;;
-      check-ttl)
+         ;;
+      (check-ttl)
          printf '     ,"check": {\n'
          printf '         "ttl": "%s"\n' "$(cat "${__object:?}/parameter/check-ttl")"
          printf '      }\n'
-      ;;
-      check-http)
+         ;;
+      (check-http)
          printf '     ,"check": {\n'
          printf '         "http": "%s"\n' "$(cat "${__object:?}/parameter/check-http")"
          printf '         ,"interval": "%s"\n' "$(cat "${__object:?}/parameter/check-interval")"
          printf '      }\n'
-      ;;
-      tag)
+         ;;
+      (tag)
          # create json array from newline delimited file
          tags=$(awk '{printf "\""$1"\","}' "${__object:?}/parameter/tag")
          # remove trailing ,
          printf '      ,"tags": [%s]\n' "${tags%*,}"
-      ;;
-      port)
+         ;;
+      (port)
          # integer key=value parameters
          key=$(echo "${param}" | tr '-' '_')
          printf '      ,"%s": %s\n' "${key}" "$(cat "${__object:?}/parameter/${param}")"
-      ;;
-      *)
+         ;;
+      (*)
          # string key=value parameters
          key=$(echo "${param}" | tr '-' '_')
          printf '      ,"%s": "%s"\n' "${key}" "$(cat "${__object:?}/parameter/${param}")"
-      ;;
+         ;;
    esac
 done
 # end service

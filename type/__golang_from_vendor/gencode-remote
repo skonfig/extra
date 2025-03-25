@@ -24,13 +24,13 @@ kernel_name=$(tr '[:upper:]' '[:lower:]' <"${__global:?}/explorer/kernel_name")
 machine=$(cat "${__global:?}/explorer/machine")
 case ${machine}
 in
-	x86_64|amd64)
+	(x86_64|amd64)
 		arch=amd64
 		;;
-	x86)
+	(x86)
 		arch=386
 		;;
-	*)
+	(*)
 		arch=${machine}  # at least try...
 		;;
 esac

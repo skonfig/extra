@@ -39,7 +39,7 @@ CONF_OWNER="root"
 CONF_GROUP="root"
 case ${os}
 in
-    freebsd)
+    (freebsd)
         PKGS="openldap-server"
         ETC="/usr/local/etc"
         SLAPD_DIR="/usr/local/etc/openldap"
@@ -60,7 +60,7 @@ in
             tls_cipher_suite="HIGH:MEDIUM:+SSLv2"
         fi
         ;;
-    debian|ubuntu|devuan)
+    (debian|ubuntu|devuan)
         PKGS="slapd ldap-utils"
         ETC="/etc"
         SLAPD_DIR="/etc/ldap"
@@ -79,7 +79,7 @@ in
             tls_cipher_suite="NORMAL"
         fi
         ;;
-    alpine)
+    (alpine)
         PKGS="openldap openldap-clients"
         ETC="/etc"
         SLAPD_DIR="/etc/openldap"
@@ -99,7 +99,7 @@ in
             tls_cipher_suite="DEFAULT"
         fi
         ;;
-    *)
+    (*)
         echo "Don't know the openldap defaults for: ${os}" >&2
         exit 1
         ;;
@@ -185,7 +185,7 @@ require="__package/${PKG_MAIN}" __start_on_boot slapd
 # Setup -h flag for the listeners. See man slapd (-h flag).
 case ${os}
 in
-    freebsd)
+    (freebsd)
         require="__start_on_boot/slapd" __key_value \
                --file "/etc/rc.conf" \
                --key "slapd_flags" \
@@ -194,7 +194,7 @@ in
                --comment "# LDAP Listener URLs" \
                "${__target_host:?}__slapd_flags"
         ;;
-    debian|ubuntu|devuan)
+    (debian|ubuntu|devuan)
         require="__package/${PKG_MAIN}" __line rm_slapd_conf \
                --file ${ETC}/default/slapd \
                --regex 'SLAPD_CONF=.*' \
@@ -215,13 +215,13 @@ in
                --line "SLAPD_SERVICES=\"${slapd_urls}\"" \
                --state present
         ;;
-    alpine)
+    (alpine)
         require="__package/${PKG_MAIN}" __line add_slapd_services \
                --file ${ETC}/conf.d/slapd \
                --line "command_args=\"-h '${slapd_urls}'\"" \
                --state present
         ;;
-    *)
+    (*)
         # Nothing to do here, move on.
         ;;
 esac

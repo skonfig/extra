@@ -24,7 +24,7 @@ mkdir -p "${__object:?}/files"
 
 case ${os}
 in
-	alpine)
+	(alpine)
 		__package nginx
 
 		nginx_confdir="/etc/nginx"
@@ -38,7 +38,7 @@ in
 		export NGINX_WEBROOT="/var/www"
 		export ACME_CHALLENGE_DIR="${NGINX_WEBROOT}/.well-known/acme-challenge/"
 		;;
-	debian|ubuntu)
+	(debian|ubuntu)
 		__package nginx
 
 		nginx_confdir="/etc/nginx"
@@ -50,9 +50,10 @@ in
 		export NGINX_WEBROOT="/var/www"
 		export ACME_CHALLENGE_DIR="${NGINX_WEBROOT}/.well-known/acme-challenge/"
 		;;
-	*)
-		echo "This type does not support ${os} yet. Aborting." >&2;
-		exit 1;
+	(*)
+		echo "This type does not support ${os} yet. Aborting." >&2
+		exit 1
+		;;
 esac
 
 # Domain

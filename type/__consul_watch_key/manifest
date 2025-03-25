@@ -34,11 +34,13 @@ for param in *
 do
    case ${param}
    in
-      state) continue ;;
-      *)
+      (state)
+         continue
+         ;;
+      (*)
          key=$(echo "${param}" | tr '-' '_')
          printf '      ,"%s": "%s"\n' "${key}" "$(cat "${__object:?}/parameter/${param}")"
-      ;;
+        ;;
    esac
 done
 # end watches

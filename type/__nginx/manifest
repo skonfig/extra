@@ -21,15 +21,15 @@
 os=$(cat "${__global:?}"/explorer/os)
 case ${os}
 in
-	alpine)
+	(alpine)
 		nginx_user=nginx
 		nginx_certdir=/etc/nginx/ssl
 		;;
-	debian|ubuntu)
+	(debian|ubuntu)
 		nginx_user=www-data
 		nginx_certdir=/etc/nginx/ssl
 		;;
-	*)
+	(*)
 		echo "This type does not support ${os} yet. Aborting." >&2;
 		exit 1;
 		;;

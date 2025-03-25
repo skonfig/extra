@@ -232,10 +232,10 @@ migrate_db() {
         # it looks like mysql get struggles, too
         case $database_type
         in
-            mysql)
+            (mysql)
                 database_port=3306
                 ;;
-            pgsql)
+            (pgsql)
                 database_port=5432
                 ;;
         esac
@@ -281,7 +281,7 @@ if [ -z "$install" ]; then
 
     case $database_type
     in
-        sqlite3)
+        (sqlite3)
             if [ "$old_db_type" != "sqlite3" ]; then
                 echo "Migrating to a SQLite database is not supported by upstream!" >&2
                 echo "Do it manually or reinstall nextcloud .." >&2
@@ -290,7 +290,7 @@ if [ -z "$install" ]; then
             conf_string database-type dbtype
             ;;
 
-        mysql|pgsql)
+        (mysql|pgsql)
             if [ "$old_db_type" != "$database_type" ]; then
                 # the migration will change all database parameters itself
                 migrate_db "$database_type"
@@ -307,7 +307,7 @@ if [ -z "$install" ]; then
             conf_string database-prefix dbtableprefix
             ;;
 
-        *)
+        (*)
             printf "Databasetype '%s' is unkown!\n" "$database_type" >&2
             exit 3
             ;;

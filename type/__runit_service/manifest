@@ -21,16 +21,16 @@
 os=$(cat "${__global:?}/explorer/os")
 case ${os}
 in
-	debian|devuan)
+	(debian|devuan)
 		svdir="/etc/service"
-	;;
-	*bsd)
+		;;
+	(*bsd)
 		svdir="/var/service"
-	;;
-	*)
+		;;
+	(*)
 		echo "Your OS '${OS}' is currently not supported." >&2
 		exit 1
-	;;
+		;;
 esac
 
 sv=${__object_id:?}

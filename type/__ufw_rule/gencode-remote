@@ -27,11 +27,12 @@ ufw='ufw --force rule'
 
 case $(cat "${__object:?}/parameter/state")
 in
-    present) ;;
-    absent)
+    (present)
+        ;;
+    (absent)
         ufw="${ufw} delete"
         ;;
-    *)
+    (*)
         echo 'State must be "present" or "absent".' >&2
         exit 1
         ;;

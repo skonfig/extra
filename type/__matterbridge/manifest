@@ -21,14 +21,14 @@
 os=$(cat "${__global:?}/explorer/os")
 case ${os}
 in
-   debian)
-     # This type assume systemd for service installation.
-   ;;
-   *)
-      printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
-      printf "Please contribute an implementation for it if you can.\n" >&2
-      exit 1
-   ;;
+    (debian)
+        # This type assume systemd for service installation.
+        ;;
+    (*)
+        printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
+        printf "Please contribute an implementation for it if you can.\n" >&2
+        exit 1
+        ;;
 esac
 
 # Required parameters.

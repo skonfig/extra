@@ -842,7 +842,7 @@ EOF
 
 case ${DATABASE_ENGINE:?}
 in
-	sqlite3)
+	(sqlite3)
 		cat <<EOF
 database:
   # The database engine name
@@ -852,8 +852,8 @@ database:
     # Path to the database
     database: "${DATABASE_NAME:?}"
 EOF
-	;;
-	psycopg2)
+		;;
+	(psycopg2)
 		cat <<EOF
 database:
   # The database engine name
@@ -867,11 +867,11 @@ database:
     cp_min: ${DATABASE_CP_MIN:?}
     cp_min: ${DATABASE_CP_MAX:?}
 EOF
-	;;
-	*)
+		;;
+	(*)
 		echo "Invalid database engine ${DATABASE_ENGINE}." >&2
 		exit 1
-	;;
+		;;
 esac
 
 cat <<EOF

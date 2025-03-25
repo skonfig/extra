@@ -23,10 +23,9 @@ state=$(cat "${__object:?}/parameter/state")
 
 case ${state}
 in
-   present)
-      :
-   ;;
-   absent)
+   (present)
+      ;;
+   (absent)
       echo "service ${service} stop || true"
-   ;;
+      ;;
 esac

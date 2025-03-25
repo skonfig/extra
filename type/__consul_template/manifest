@@ -23,18 +23,18 @@ os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
 in
-   scientific|centos|redhat)
+   (scientific|centos|redhat)
       # whitelist safeguard
       service_onchange='service consul-template status >/dev/null && service consul-template reload || true' \
-   ;;
-   archlinux)
+      ;;
+   (archlinux)
       service_onchange="systemctl status consul-template >/dev/null && systemctl reload consul-template || true"
-   ;;
-   *)
+       ;;
+   (*)
       echo "Your operating system (${os}) is currently not supported by this type (${__type##*/})." >&2
       echo "Please contribute an implementation for it if you can." >&2
       exit 1
-   ;;
+      ;;
 esac
 
 versions_dir="${__type:?}/files/versions"
@@ -82,8 +82,10 @@ for param in *
 do
    case ${param}
    in
-      auth-password|state|ssl-*|syslog-*|version|vault-token|vault-ssl*) continue ;;
-      auth-username)
+      (auth-password|state|ssl-*|syslog-*|version|vault-token|vault-ssl*)
+         continue
+         ;;
+      (auth-username)
          printf 'auth {\n'
          printf '  enabled = true\n'
          printf '  username = "%s"\n' "$(cat "${__object:?}/parameter/auth-username")"
@@ -92,8 +94,8 @@ do
             printf '  password = %s\n' "$(cat "${__object:?}/parameter/auth-password")"
          fi
          printf '}\n'
-      ;;
-      ssl)
+         ;;
+      (ssl)
          printf 'ssl {\n'
          printf '  enabled = true\n'
          if [ -f "${__object:?}/parameter/ssl-no-verify" ]
@@ -109,8 +111,8 @@ do
             printf '  ca_cert = "%s"\n' "$(cat "${__object:?}/parameter/ssl-ca-cert")"
          fi
          printf '}\n'
-      ;;
-      syslog)
+         ;;
+      (syslog)
          printf 'syslog {\n'
          printf '  enabled = true\n'
          if [ -f "${__object:?}/parameter/syslog-facility" ]
@@ -118,8 +120,8 @@ do
             printf '  facility = "%s"\n' "$(cat "${__object:?}/parameter/syslog-facility")"
          fi
          printf '}\n'
-      ;;
-      vault-address)
+         ;;
+      (vault-address)
          printf 'vault {\n'
          printf '  address = "%s"\n' "$(cat "${__object:?}/parameter/vault-address")"
          if [ -f "${__object:?}/parameter/vault-token" ]
@@ -145,12 +147,12 @@ do
          printf '  }\n'
          fi
          printf '}\n'
-      ;;
-      *)
+         ;;
+      (*)
          # string key=value parameters
          key=$(echo "${param}" | tr '-' '_')
          printf '%s = "%s"\n' "${key}" "$(cat "${__object:?}/parameter/${param}")"
-      ;;
+         ;;
    esac
 done
 ) | \
@@ -166,42 +168,42 @@ require="__directory${conf_dir}" \
 service="consul-template"
 case ${os}
 in
-   centos|redhat)
+   (centos|redhat)
       os_version=$(sed 's/[^0-9.]//g' "${__global:?}/explorer/os_version")
       major_version="${os_version%%.*}"
       case ${major_version}
       in
-         7)
+         (7)
             __file "/lib/systemd/system/${service}.service" \
                --owner root --group root --mode 0555 \
                --state "${state}" \
                --source "${__type:?}/files/${service}.systemd"
             export require="__file/lib/systemd/system/${service}.service"
-         ;;
-         *)
+            ;;
+         (*)
             __file "/etc/init.d/${service}" \
                --owner root --group root --mode 0555 \
                --state "${state}" \
                --source "${__type:?}/files/${service}.sysv"
             export require="__file/etc/init.d/${service}"
-         ;;
+            ;;
       esac
       __start_on_boot "${service}" --state "${state}"
-   ;;
-   ubuntu)
+      ;;
+   (ubuntu)
       __file "/etc/init/${service}.conf" \
          --owner root --group root --mode 0644 \
          --state "${state}" \
          --source "${__type:?}/files/${service}.upstart"
       export require="__file/etc/init/${service}.conf"
       __start_on_boot "${service}" --state "${state}"
-   ;;
-   archlinux)
+      ;;
+   (archlinux)
       __file "/lib/systemd/system/${service}.service" \
          --owner root --group root --mode 0555 \
          --state "${state}" \
          --source "${__type:?}/files/${service}.systemd"
       export require="__file/lib/systemd/system/${service}.service"
       __start_on_boot "${service}" --state "${state}"
-   ;;
+      ;;
 esac

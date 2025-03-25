@@ -45,11 +45,11 @@ tls_dir="${conf_dir}/tls"
 
 case ${os}
 in
-    alpine)
+    (alpine)
         conf_dir="/etc/consul"
         conf_file="server.json"
         ;;
-    *)
+    (*)
         conf_dir="/etc/consul/conf.d"
         conf_file="config.json"
         ;;
@@ -61,7 +61,7 @@ esac
 distribution_setup () {
   case ${os}
   in
-     debian)
+     (debian)
        # consul is only available starting Debian 10 (buster).
        # See https://packages.debian.org/buster/consul
        if [ "${release}" -lt 10 ]
@@ -76,8 +76,8 @@ distribution_setup () {
        conf_dir='/etc/consul.d'
        user='consul'
        group='consul'
-     ;;
-     alpine)
+       ;;
+     (alpine)
        # consul is only available starting Alpine 3.12 (= edge during the 3.11 cycle).
        # See https://pkgs.alpinelinux.org/packages?name=consul&branch=edge
 
@@ -87,14 +87,14 @@ distribution_setup () {
        data_dir='/var/consul'
        user='consul'
        group='consul'
-     ;;
-     *)
+       ;;
+     (*)
         echo "Your operating system (${os}) is currently not supported with the \
           --use-distribution-package flag (${__type##*/})." >&2
         echo "Please use non-package installation or contribute an \
           implementation for if you can." >&2
         exit 1
-     ;;
+       ;;
   esac
 
   # Install consul package.
@@ -141,30 +141,29 @@ init_upstart()
 manual_setup () {
   case ${os}
   in
-     alpine|scientific|centos|debian|devuan|redhat|ubuntu)
+     (alpine|scientific|centos|debian|devuan|redhat|ubuntu)
         # whitelist safeguard
-        :
-     ;;
-     *)
+        ;;
+     (*)
         echo "Your operating system (${os}) is currently not supported by this \
           type (${__type##*/})." >&2
         echo "Please contribute an implementation for it if you can." >&2
         exit 1
-     ;;
+        ;;
   esac
 
   # FIXME: there has got to be a better way to handle the dependencies in this case
   case ${state}
   in
-     present)
+     (present)
         __group "${group}" --system --state "${state}"
         require="__group/${group}" __user "${user}" \
           --system --gid "${group}" --home "${data_dir}" --state "${state}"
-     ;;
-     *)
+        ;;
+     (*)
         echo "The ${state} state is not (yet?) supported by this type." >&2
         exit 1
-     ;;
+        ;;
   esac
 
   # Create data directory.
@@ -178,47 +177,47 @@ manual_setup () {
   # Install init script to start on boot
   case ${os}
   in
-      devuan)
+      (devuan)
           init_sysvinit debian
           ;;
-      centos|redhat)
+      (centos|redhat)
           os_version=$(sed 's/[^0-9.]//g' "${__global:?}/explorer/os_version")
           major_version=${os_version%%.*}
           case ${major_version}
           in
-              [456])
+              ([456])
                   init_sysvinit redhat
                   ;;
-              7)
+              (7)
                   init_systemd
                   ;;
-              *)
+              (*)
                   echo "Unsupported CentOS/Redhat version: ${os_version}" >&2
                   exit 1
                   ;;
           esac
           ;;
 
-      debian)
+      (debian)
           os_version=$(cat "${__global:?}/explorer/os_version")
           major_version=${os_version%%.*}
 
           case ${major_version}
           in
-              [567])
+              ([567])
                   init_sysvinit debian
-              ;;
-              [89]|10)
+                  ;;
+              ([89]|10)
                   init_systemd
-              ;;
-              *)
+                  ;;
+              (*)
                   echo "Unsupported Debian version ${os_version}" >&2
                   exit 1
-              ;;
+                  ;;
           esac
           ;;
 
-      ubuntu)
+      (ubuntu)
           init_upstart
           ;;
   esac
@@ -263,8 +262,9 @@ json_configuration=$(
   do
      case ${param}
      in
-        state|user|group|json-config|use-distribution-package) continue ;;
-        ca-file-source|cert-file-source|key-file-source)
+        (state|user|group|json-config|use-distribution-package)
+           continue ;;
+        (ca-file-source|cert-file-source|key-file-source)
            source=$(cat "${__object:?}/parameter/${param}")
            destination="${tls_dir}/${source##*/}"
            require="__directory/${tls_dir}" \
@@ -274,35 +274,35 @@ json_configuration=$(
                  --state "${state}"
            key=$(echo "${param%-*}" | tr '-' '_')
            printf '   ,"%s": "%s"\n' "${key}" "${destination}"
-        ;;
-        disable-remote-exec|disable-update-check|leave-on-terminate\
+           ;;
+        (disable-remote-exec|disable-update-check|leave-on-terminate\
           |rejoin-after-leave|server|enable-syslog|verify-incoming|verify-outgoing)
            # handle boolean parameters
            key=$(echo "${param}" | tr '-' '_')
            printf '   ,"%s": true\n' "${key}"
-        ;;
-        retry-join)
+           ;;
+        (retry-join)
            # join multiple parameters into json array
            retry_join=$(awk '{printf "\""$1"\","}' "${__object:?}/parameter/retry-join")
            # remove trailing ,
            printf '   ,"retry_join": [%s]\n' "${retry_join%*,}"
-        ;;
-        retry-join-wan)
+           ;;
+        (retry-join-wan)
            # join multiple parameters into json array over wan
            retry_join_wan=$(awk '{printf "\""$1"\","}' "${__object:?}/parameter/retry-join-wan")
            # remove trailing ,
            printf '   ,"retry_join_wan": [%s]\n' "${retry_join_wan%*,}"
-        ;;
-        bootstrap-expect)
+           ;;
+        (bootstrap-expect)
            # integer key=value parameters
            key=$(echo "${param}" | tr '-' '_')
            printf '   ,"%s": %s\n' "${key}" "$(cat "${__object:?}/parameter/${param}")"
-        ;;
-        *)
+           ;;
+        (*)
            # string key=value parameters
            key=$(echo "${param}" | tr '-' '_')
            printf '   ,"%s": "%s"\n' "${key}" "$(cat "${__object:?}/parameter/${param}")"
-        ;;
+           ;;
      esac
   done
   if [ -f "${__object:?}/parameter/json-config" ]

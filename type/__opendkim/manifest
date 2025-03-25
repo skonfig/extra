@@ -22,14 +22,13 @@ os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
 in
-'alpine')
-	:
-	;;
-*)
-	printf "__opendkim does not yet support %s.\n" "${os}" >&2
-	printf "Please contribute an implementation if you can.\n" >&2
-	exit 1
-	;;
+	(alpine)
+		;;
+	(*)
+		printf "__opendkim does not yet support %s.\n" "${os}" >&2
+		printf "Please contribute an implementation if you can.\n" >&2
+		exit 1
+		;;
 esac
 
 __package opendkim

@@ -23,13 +23,13 @@ os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
 in
-'alpine')
-	packages="jool-tools jool-tools-openrc $(cat "${__object:?}"/explorer/alpine-kernel-modules)"
-	;;
-*)
-	printf "This type has no implementation for %s. Please contribute one if you can.\n" "${os}"
-	exit 1
-	;;
+	(alpine)
+		packages="jool-tools jool-tools-openrc $(cat "${__object:?}"/explorer/alpine-kernel-modules)"
+		;;
+	(*)
+		printf "This type has no implementation for %s. Please contribute one if you can.\n" "${os}"
+		exit 1
+		;;
 esac
 
 for pkg in ${packages}

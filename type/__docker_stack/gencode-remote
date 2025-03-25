@@ -23,7 +23,7 @@ state=$(cat "${__object:?}/parameter/state")
 
 case ${state}
 in
-	absent)
+	(absent)
 		stack_exists=$(cat "${__object:?}/explorer/stack-exists")
 
 		if [ "${stack_exists}" -ne 1 ]
@@ -32,8 +32,8 @@ in
 		fi
 
 		echo "docker stack rm ${stack}"
-	;;
-	present)
+		;;
+	(present)
 		compose_file=$(cat "${__object:?}/parameter/compose-file")
 
 		if [ -z "${compose_file}" ]
@@ -58,10 +58,10 @@ in
 
 		rm "\${compose_file}"
 		EOF
-	;;
-	*)
+		;;
+	(*)
 		echo "Unsupported state: ${state}" >&2
 
 		exit 1
-	;;
+		;;
 esac

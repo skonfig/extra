@@ -45,13 +45,13 @@ __check()
 
         case ${check_file}
         in
-            code-*)
+            (code-*)
                 echo "${object}/${check_file}" >>"${__messages_out:?}"
                 break
-            ;;
-            children)
+                ;;
+            (children)
                 __objects "${check_file_path}"
-            ;;
+                ;;
         esac
     done
 }

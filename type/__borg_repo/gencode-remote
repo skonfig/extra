@@ -23,10 +23,10 @@ appendonly=
 
 case $(cat "${__object:?}/parameter/encryption")
 in
-	none)
+	(none)
 		enc=none
 		;;
-	repokey)
+	(repokey)
 		enc=repokey
 		if [ -f "${__object:?}/parameter/passphrase" ];
 		then
@@ -36,7 +36,7 @@ in
 			exit 1;
 		fi
 		;;
-	*)
+	(*)
 		echo "${enc} is not a known encryption mode for __borg_repo. Aborting." >&2
 		exit 1;
 esac

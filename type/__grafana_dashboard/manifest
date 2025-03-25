@@ -29,22 +29,22 @@ os_version=$(cat "${__global:?}/explorer/os_version")
 require=""
 case ${os}
 in
-    debian|devuan)
+    (debian|devuan)
         case ${os_version}
         in
-            8*|jessie)
+            (8*|jessie)
                 # Differntation not needed anymore
                 apt_source_distribution=stable
                 ;;
-            9*|ascii/ceres|ascii)
+            (9*|ascii/ceres|ascii)
                 # Differntation not needed anymore
                 apt_source_distribution=stable
                 ;;
-            10*|11*)
+            (10*|11*)
                 # Differntation not needed anymore
                 apt_source_distribution=stable
                 ;;
-            *)
+            (*)
                 echo "Don't know how to install Grafana on ${os} ${os_version}. Send us a pull request!" >&2
                 exit 1
                 ;;
@@ -64,7 +64,7 @@ in
         require="${require} __package/grafana" __start_on_boot grafana-server
         require="${require} __start_on_boot/grafana-server" __process grafana-server --start "service grafana-server start"
         ;;
-    *)
+    (*)
         echo "Don't know how to install Grafana on ${os}. Send us a pull request!" >&2
         exit 1
         ;;

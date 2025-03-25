@@ -32,12 +32,12 @@ then
 else
     case ${os}
     in
-        archlinux|redhat)
+        (archlinux|redhat)
             source="${__type:?}/files/${os}"
-        ;;
-        *)
+            ;;
+        (*)
             source="${__type:?}/files/default"
-        ;;
+            ;;
     esac
 fi
 

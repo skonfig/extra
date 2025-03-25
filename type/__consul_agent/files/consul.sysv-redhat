@@ -49,51 +49,51 @@ stop() {
 
 case $1
 in
-   start)
+   (start)
       if status -p "$PID_FILE" "$NAME" >/dev/null; then
          echo "$NAME already running"
       else
          start
       fi
-   ;;
-   stop)
+      ;;
+   (stop)
       if status -p "$PID_FILE" "$NAME" >/dev/null; then
          stop
       else
          echo "$NAME not running"
       fi
-   ;;
-   info)
+      ;;
+   (info)
       "$CONSUL" info
-   ;;
-   status)
+      ;;
+   (status)
       status -p "$PID_FILE" "$NAME"
       exit $?
-   ;;
-   restart)
+      ;;
+   (restart)
       if status -p "$PID_FILE" "$NAME" >/dev/null; then
          stop
       fi
       start
-   ;;
-   reload)
+      ;;
+   (reload)
       if status -p "$PID_FILE" "$NAME" >/dev/null; then
          kill -HUP "$(cat "$PID_FILE")"
       else
          echo "$NAME not running"
       fi
-   ;;
-   condrestart)
+      ;;
+   (condrestart)
       if [ -f "/var/lock/subsys/$NAME" ]; then
          if status -p "$PID_FILE" "$NAME" >/dev/null; then
             stop
          fi
          start
       fi
-   ;;
-   *)
+      ;;
+   (*)
       echo "Usage: $NAME {start|stop|status|reload|restart|condrestart|info}"
       exit 1
-   ;;
+      ;;
 esac
 exit $?

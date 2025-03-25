@@ -24,12 +24,12 @@ os=$(cat "${__global:?}/explorer/os")
 init=$(cat "${__global:?}/explorer/init")
 case ${os}
 in
-	devuan|debian)
-	;;
-	*)
+	(devuan|debian)
+		;;
+	(*)
 		echo "Your OS '${os}' is currently not supported." >&2
 		exit 1
-	;;
+		;;
 esac
 
 
@@ -213,7 +213,7 @@ if [ ! -f "${__object:?}/parameter/disable-prometheus-exporter" ]
 then
 	case ${init}
 	in
-		init|sysvinit)
+		(init|sysvinit)
 			__runit
 			require="__runit" __runit_service \
 				prometheus-jitsi-meet-exporter --log --source - <<EOF
@@ -227,8 +227,8 @@ EOF
 
 			export require="__runit_service/prometheus-jitsi-meet-exporter"
 			JITSI_MEET_EXPORTER_SERVICE="sv %s prometheus-jitsi-meet-exporter"
-		;;
-		systemd)
+			;;
+		(systemd)
 			__systemd_unit prometheus-jitsi-meet-exporter.service \
 				--source "-" \
 				--enablement-state "enabled" <<EOF
@@ -247,7 +247,7 @@ WantedBy=multi-user.target
 EOF
 			export require="__systemd_unit/prometheus-jitsi-meet-exporter.service"
 			JITSI_MEET_EXPORTER_SERVICE="service prometheus-jitsi-meet-exporter %s"
-		;;
+			;;
 	esac
 	if [ "${PROMETHEUS_JITSI_EXPORTER_SHOULD_VERSION}" != \
 		"${PROMETHEUS_JITSI_EXPORTER_IS_VERSION}" ]; then

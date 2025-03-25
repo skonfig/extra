@@ -22,55 +22,56 @@ os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
 in
-'alpine')
-	backend=busybox-openrc
-	;;
-'debian' | 'ubuntu')
-	backend=systemd-timesyncd
-	;;
-*)
-	printf "__networktime is not yet implemented for %s.\n" "${os}" >&2
-	printf "Please contribute an implementation for it if you can.\n" >&2
-	exit 1
-	;;
+	(alpine)
+		backend=busybox-openrc
+		;;
+	(debian|ubuntu)
+		backend=systemd-timesyncd
+		;;
+	(*)
+		printf "__networktime is not yet implemented for %s.\n" "${os}" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+		;;
 esac
 
 case ${backend}
 in
-'busybox-openrc')
-	argstring="-N"
-	while read -r peer;
-	do
-		argstring="${argstring} -p ${peer}"
-	done <"${__object:?}/parameter/peer"
+	(busybox-openrc)
+		argstring="-N"
+		while read -r peer;
+		do
+			argstring="${argstring} -p ${peer}"
+		done <"${__object:?}/parameter/peer"
 
-	__start_on_boot ntpd
+		__start_on_boot ntpd
 
-	__file /etc/conf.d/ntpd \
-		--mode 0644 --onchange "service ntpd restart"\
-		--source - <<-EOF
-		# NTPd OpenRC configuration file. Managed by cdist.
-		NTPD_OPTS=${argstring}
-		EOF
-	;;
+		__file /etc/conf.d/ntpd \
+			--mode 0644 --onchange "service ntpd restart"\
+			--source - <<-EOF
+			# NTPd OpenRC configuration file. Managed by cdist.
+			NTPD_OPTS=${argstring}
+			EOF
+		;;
 
-'systemd-timesyncd')
-	peers=$(tr '\n' ' ' <"${__object:?}/parameter/peer")
+	(systemd-timesyncd)
+		peers=$(tr '\n' ' ' <"${__object:?}/parameter/peer")
 
-	__package ntp --state absent
-	require="__package/ntp" __systemd_unit systemd-timesyncd \
-		--enablement-state enabled --restart
+		__package ntp --state absent
+		require="__package/ntp" __systemd_unit systemd-timesyncd \
+			--enablement-state enabled --restart
 
-	__file /etc/systemd/timesyncd.conf \
-		--mode 0644 --onchange "systemctl restart systemd-timesyncd" \
-		--source - <<-EOF
-		# timesyncd(8) configuration file. Managed by cdist.
-		[Time]
-		NTP=${peers}
-		EOF
-	;;
-*)
-	printf "Unkown backend in __networktime. This is a bug.\n" >&2
-	exit 1
-	;;
+		__file /etc/systemd/timesyncd.conf \
+			--mode 0644 --onchange "systemctl restart systemd-timesyncd" \
+			--source - <<-EOF
+			# timesyncd(8) configuration file. Managed by cdist.
+			[Time]
+			NTP=${peers}
+			EOF
+		;;
+
+	(*)
+		printf "Unkown backend in __networktime. This is a bug.\n" >&2
+		exit 1
+		;;
 esac

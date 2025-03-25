@@ -26,16 +26,16 @@ conffile=
 confdir=
 case ${os}
 in
-	"alpine")
+	(alpine)
 		package=bird
 		conffile=/etc/bird.conf
 		confdir=/etc/bird.d
-	;;
-	*)
+		;;
+	(*)
 		printf "Your operating system (%s) is currently not supported by __bird_core\n" "${os}" >&2
 		printf "Please contribute an implementation for it if you can.\n" >&2
 		exit 1
-	;;
+		;;
 esac
 
 router_id=

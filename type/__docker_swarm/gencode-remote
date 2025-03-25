@@ -30,21 +30,21 @@ fi
 
 case ${state}
 in
-    absent)
+    (absent)
         if [ "${swarm_state}" = "active" ]
         then
             echo "docker swarm leave --force"
         fi
-    ;;
-    present)
+        ;;
+    (present)
         if [ "${swarm_state}" = "inactive" ]
         then
             echo "docker swarm init"
         fi
-    ;;
-    *)
+        ;;
+    (*)
         echo "Unsupported state: ${state}" >&2
 
         exit 1
-    ;;
+        ;;
 esac

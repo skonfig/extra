@@ -67,7 +67,7 @@ then
     # check what to do
     case ${state_should}
     in
-        enabled)
+        (enabled)
             if [ "${state_is}" = "disabled" ]
             then
                 occ app:enable "'${appid}'"
@@ -78,7 +78,7 @@ then
             fi
             ;;
 
-        disabled)
+        (disabled)
             if [ "${state_is}" = "absent" ]
             then
                 occ app:install --keep-disabled "'${appid}'"
@@ -89,7 +89,7 @@ then
             fi
             ;;
 
-        present)
+        (present)
             if [ "${state_is}" = "absent" ]
             then
                 occ app:install "'${appid}'"
@@ -98,7 +98,7 @@ then
             # else, everything is ok
             ;;
 
-        absent)
+        (absent)
             occ app:remove "'${appid}'"
             echo removed >>"${__messages_out:?}"
             ;;

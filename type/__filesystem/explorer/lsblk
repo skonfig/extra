@@ -31,7 +31,7 @@ fi
 
 case ${os}
 in
-    alpine|centos|fedora|gentoo|redhat|suse|ubuntu)
+    (alpine|centos|fedora|gentoo|redhat|suse|ubuntu)
         if [ ! -x "$(command -v lsblk)" ]
         then
             echo "lsblk is required for __filesystem type" >&2
@@ -40,9 +40,9 @@ in
             #echo -n $(lsblk -nd -P -o NAME,FSTYPE,LABEL,MOUNTPOINT "${blkdev}" 2>/dev/null)
             lsblk -nd -P -o NAME,FSTYPE,LABEL,MOUNTPOINT "${blkdev}" 2>/dev/null
         fi
-    ;;
-    *)
+        ;;
+    (*)
         echo "__filesystem type lacks implementation for os: ${os}" >&2
         exit 1
-    ;;
+        ;;
 esac

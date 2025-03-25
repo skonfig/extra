@@ -23,7 +23,7 @@ os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
 in
-    alpine)
+    (alpine)
         # Used in gencode-remote.
         __package curl
         __package tar
@@ -31,7 +31,7 @@ in
         __package go
         __package libc-dev
         ;;
-    *)
+    (*)
         printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
         printf "Please contribute an implementation for it if you can.\n" >&2
         exit 1

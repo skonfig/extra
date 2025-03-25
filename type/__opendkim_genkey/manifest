@@ -23,15 +23,14 @@ os=$(cat "${__global:?}/explorer/os")
 
 case ${os}
 in
-'alpine')
-	:
-;;
-*)
-	cat <<-EOF >&2
-	__opendkim_genkey currently only supports Alpine Linux. Please
-	contribute an implementation for ${os} if you can.
-	EOF
-;;
+	(alpine)
+		;;
+	(*)
+		cat <<-EOF >&2
+		__opendkim_genkey currently only supports Alpine Linux. Please
+		contribute an implementation for ${os} if you can.
+		EOF
+		;;
 esac
 
 SELECTOR=$(cat "${__object:?}/parameter/selector")

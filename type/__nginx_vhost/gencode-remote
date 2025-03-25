@@ -32,13 +32,13 @@ if grep -q "^__file${nginx_confdir}" "${__messages_in:?}"
 then
 	case ${init}
 	in
-		systemd)
+		(systemd)
 			reload_hook="systemctl reload-or-restart nginx"
 			;;
-		busybox-init+openrc)
+		(busybox-init+openrc)
 			reload_hook="service nginx reload"
 			;;
-		*)
+		(*)
 			echo "Unknown init ${init}." >&2
 			exit 1
 			;;

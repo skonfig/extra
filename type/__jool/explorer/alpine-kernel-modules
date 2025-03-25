@@ -24,16 +24,17 @@
 
 case $(uname -r)
 in
-*-virt)
-	printf "jool-modules-virt"
-	;;
-*-lts)
-	printf "jool-modules-lts"
-	;;
-*)
-	cat <<-EOF >&2
-	Incompatible kernel version found - could not install jool kernel
-	modules. Please use one of linux-lts or linux-virt.
-	EOF
-	exit 1
+	(*-virt)
+		printf "jool-modules-virt"
+		;;
+	(*-lts)
+		printf "jool-modules-lts"
+		;;
+	(*)
+		cat <<-EOF >&2
+		Incompatible kernel version found - could not install jool kernel
+		modules. Please use one of linux-lts or linux-virt.
+		EOF
+		exit 1
+		;;
 esac

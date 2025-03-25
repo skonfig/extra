@@ -85,30 +85,30 @@ fi
 
 case ${fstype}
 in
-    ext2|ext3|ext4)
+    (ext2|ext3|ext4)
         if [ "${forcefs}" = "true" ]
         then
             opts="${opts} -F"
         fi
         echo "mkfs.${fstype} ${opts} /dev/${blkdev_devname}"
-    ;;
-    btrfs)
+        ;;
+    (btrfs)
         if [ "${forcefs}" = "true" ]
         then
             opts="${opts} --force"
         fi
         echo "mkfs.btrfs ${opts} /dev/${blkdev_devname}"
-    ;;
-    xfs)
+        ;;
+    (xfs)
         if [ "${forcefs}" = "true" ]
         then
             opts="${opts} -f"
         fi
         echo "mkfs.xfs ${opts} /dev/${blkdev_devname}"
-    ;;
-    *)
+        ;;
+    (*)
         echo "__filesystem type lacks implementation for filesystem: ${fstype}" >&2
         exit 1
-    ;;
+        ;;
 esac
 echo "filesystem ${fstype} on ${mydev} : /dev/${blkdev_devname} created" >>"${__messages_out:?}"
