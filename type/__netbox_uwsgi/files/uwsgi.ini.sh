@@ -35,12 +35,8 @@ multi_options() {
     done <"$2"
 }
 
-# fix missing ${__explorer:?}
-# see https://code.ungleich.ch/ungleich-public/cdist/-/issues/834
-__explorer="${__global:?}/explorer"
-
 # size workes by cpu
-cores=$(cat "${__explorer:?}/cpu_cores")
+cores=$(cat "${__global:?}/explorer/cpu_cores")
 
 
 cat <<EOF

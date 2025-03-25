@@ -177,7 +177,7 @@ do
 	hook_file="${HOOKS_DIR}/${hook}/${__object_id:?}.skonfig.sh"
 
 	# This defines hook_contents
-	# shellcheck source=cdist/conf/type/__letsencrypt_cert/files/gen_hook.sh
+	# shellcheck source=SOURCEDIR/files/gen_hook.sh
 	. "${__type:?}/files/gen_hook.sh"
 
 	# Ensure hook directory exists

@@ -177,7 +177,7 @@ fi
 if [ "${destination}" ] && [ "${version_is}" != "${version_should}" ]
 then
     # download it to the tmp directory
-    # FIXME --sum is currently rather a hack, see cdist#844
+    # FIXME: --sum is currently rather a hack
     __download "/tmp/nextcloud-${version_should}.tar.bz2" \
        --url "${nextcloud_uri}" \
        --sum "sha256:$(curl -sS -L "${nextcloud_sum}" | awk '{print $1}')"
