@@ -22,7 +22,8 @@
 
 [ "$(sh -e "${__explorer:?}"/os)" = 'alpine' ] || exit 0
 
-case $(uname -r) in
+case $(uname -r)
+in
 *-virt)
 	printf "jool-modules-virt"
 	;;

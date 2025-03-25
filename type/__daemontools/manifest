@@ -28,7 +28,8 @@ os=$(cat "${__global:?}/explorer/os")
 init=$(cat "${__global:?}/explorer/init")
 
 require=""
-case ${os} in
+case ${os}
+in
 	freebsd)
 		# TODO change to __start_on_boot once it supports freebsd
 		__config_file /etc/rc.conf.d/svscan --source - <<-EOT
@@ -39,7 +40,8 @@ case ${os} in
 		__process svscan --name ".*/svscan ${servicedir}" --start 'service svscan start'
 	;;
 	*)
-		case ${init} in
+		case ${init}
+		in
 			init)
 				if [ -f "${__object:?}/parameter/install-init-script" ]; then
 					__config_file /etc/init.d/svscan --mode 755 --source "${__type:?}/files/init.d-svscan"

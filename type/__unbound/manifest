@@ -21,7 +21,8 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case ${os} in
+case ${os}
+in
 alpine)
 	__package unbound
 	openssl_package=openssl

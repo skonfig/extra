@@ -21,7 +21,8 @@
 os=$(cat "${__global:?}/explorer/os")
 init=$(cat "${__global:?}/explorer/init")
 
-case ${os} in
+case ${os}
+in
 	alpine)
 		synapse_conf_dir=/etc/synapse
 		synapse_service=synapse
@@ -37,7 +38,8 @@ case ${os} in
 esac
 
 if grep -qE "^__file${synapse_conf_dir}" "${__messages_in:?}"; then
-	case ${init} in
+	case ${init}
+	in
 		systemd)
 			echo "systemctl restart ${synapse_service}"
 			;;

@@ -22,7 +22,8 @@
 # FIXME: this code is duplicated from the manifest -> let's share it somehow.
 
 os=$(cat "${__global:?}"/explorer/os)
-case ${os} in
+case ${os}
+in
 	alpine|ubuntu|debian)
 		default_confdir=/etc/ssl/uacme
 	;;

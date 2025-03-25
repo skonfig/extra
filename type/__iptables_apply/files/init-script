@@ -57,7 +57,8 @@ basedir=/etc/iptables.d
 status4="${basedir}/.pre-start"
 status6="${basedir}/.pre-start6"
 
-case $1 in
+case $1
+in
     start)
         # Save status
         iptables-save > "$status4"

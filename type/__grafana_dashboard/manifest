@@ -27,9 +27,11 @@ os=$(cat "${__global:?}/explorer/os")
 os_version=$(cat "${__global:?}/explorer/os_version")
 
 require=""
-case ${os} in
+case ${os}
+in
     debian|devuan)
-        case ${os_version} in
+        case ${os_version}
+        in
             8*|jessie)
                 # Differntation not needed anymore
                 apt_source_distribution=stable

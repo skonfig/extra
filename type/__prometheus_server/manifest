@@ -44,7 +44,8 @@ if [ -f "${__object:?}/parameter/install-from-backports" ]; then
 	os=$(cat "${__global:?}/explorer/os")
 	os_version=$(cat "${__global:?}/explorer/os_version")
 
-	case ${os} in
+	case ${os}
+	in
 		devuan)
 			[ "${os_version}" = "ascii/ceres" ] && os_version='ascii'  # "ascii" used in the repo URLs
 			__apt_source backports --uri http://auto.mirror.devuan.org/merged --distribution ${os_version}-backports --component main

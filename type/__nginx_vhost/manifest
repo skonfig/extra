@@ -22,7 +22,8 @@
 os=$(cat "${__global:?}"/explorer/os)
 mkdir -p "${__object:?}/files"
 
-case ${os} in
+case ${os}
+in
 	alpine)
 		__package nginx
 

@@ -22,7 +22,8 @@ secret="${__object_id:?}"
 secret_exists=$(cat "${__object:?}/explorer/secret-exists")
 state=$(cat "${__object:?}/parameter/state")
 
-case ${state} in
+case ${state}
+in
 	absent)
 		if [ "${secret_exists}" != "yes" ]; then
 			exit 0

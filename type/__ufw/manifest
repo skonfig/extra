@@ -20,11 +20,13 @@
 
 state=$(cat "${__object:?}/parameter/state")
 
-case ${state} in
+case ${state}
+in
     present|enabled)
         os=$(cat "${__global:?}/explorer/os")
 
-        case ${os} in
+        case ${os}
+        in
             centos)
                 # shellcheck source=/dev/null
                 if (. "${__global:?}/explorer/os_release" && [ "${VERSION_ID}" = "7" ]); then

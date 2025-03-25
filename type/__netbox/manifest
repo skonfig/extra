@@ -21,7 +21,8 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case ${os} in
+case ${os}
+in
     debian|ubuntu)
         # Install netbox dependencies.
         for pkg in python3-pip python3-venv python3-dev build-essential libxml2-dev \

@@ -21,7 +21,8 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case ${os} in
+case ${os}
+in
     alpine)
         # Used in gencode-remote.
         __package curl

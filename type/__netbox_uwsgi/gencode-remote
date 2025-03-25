@@ -31,7 +31,8 @@ set_bind_cap() {
     cap_mode=""  # reset variable from the execution before
 
     # check if capabilites are required after given mode
-    case $1 in
+    case $1
+    in
         # assumes capabilites are not set (cause of new binaries)
         set)
             if [ "${SYSTEMD_SOCKET}" != "yes" ]; then
@@ -68,7 +69,8 @@ set_bind_cap() {
 SYSTEMD_SOCKET=$(cat "${__object:?}/files/systemd_socket")
 
 
-case ${state} in
+case ${state}
+in
     # install uwsgi
     enabled|disabled)
         # not installed

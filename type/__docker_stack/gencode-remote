@@ -21,7 +21,8 @@
 stack="${__object_id:?}"
 state=$(cat "${__object:?}/parameter/state")
 
-case ${state} in
+case ${state}
+in
 	absent)
 		stack_exists=$(cat "${__object:?}/explorer/stack-exists")
 

@@ -22,7 +22,8 @@
 __package "runit"
 
 os=$(cat "${__global:?}/explorer/os")
-case ${os} in
+case ${os}
+in
 	debian|devuan)
 		# zero-config sysvinit and systemd compatibility
 		__package runit-run

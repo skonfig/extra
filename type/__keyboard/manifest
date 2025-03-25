@@ -22,7 +22,8 @@
 os=$(cat "${__global:?}/explorer/os")
 keyboard_type=$(cat "${__object:?}/parameter/type")
 
-case ${os} in
+case ${os}
+in
     centos)
         __file /etc/sysconfig/keyboard \
             --owner root --group root --mode 644 \

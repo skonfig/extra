@@ -26,7 +26,8 @@ destination="/${__object_id:?}"
 [ -e "${destination}" ] || exit 0
 
 os=$("${__explorer:?}/os")
-case ${os} in
+case ${os}
+in
    "freebsd"|"netbsd"|"openbsd")
       # FIXME: should be something like this based on man page, but can not test
       stat -f "type: %ST

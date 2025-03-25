@@ -21,7 +21,8 @@
 # control state
 state=$(cat "${__object:?}/parameter/state")
 
-case ${state} in
+case ${state}
+in
     # install gunicorn
     enabled|disabled)
         curr_installed=$(cat "${__object:?}/explorer/installed")

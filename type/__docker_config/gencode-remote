@@ -22,7 +22,8 @@ config="${__object_id:?}"
 config_exists=$(cat "${__object:?}/explorer/config-exists")
 state=$(cat "${__object:?}/parameter/state")
 
-case ${state} in
+case ${state}
+in
 	absent)
 		if [ "${config_exists}" != "yes" ]; then
 			exit 0

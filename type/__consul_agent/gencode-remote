@@ -21,7 +21,8 @@
 service="consul"
 state=$(cat "${__object:?}/parameter/state")
 
-case ${state} in
+case ${state}
+in
    present)
       :
    ;;

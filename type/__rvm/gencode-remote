@@ -25,7 +25,8 @@ state_should=$(cat "${__object:?}/parameter/state")
 
 [ "${state_is}" = "${state_should}" ] && exit 0
 
-case ${state_should} in
+case ${state_should}
+in
     present)
         cat << DONE
 su - ${user} -c "unset rvm_path; unset rvm_bin_path; unset rvm_prefix; unset rvm_version; curl -L get.rvm.io | bash -s stable"

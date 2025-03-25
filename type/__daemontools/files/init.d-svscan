@@ -21,7 +21,8 @@ if [ ! -d $l ]; then
   chown daemon $l
 fi
 
-case $1 in
+case $1
+in
     start)
         printf "Starting daemontools: "
         if  ! pidof svscan > /dev/null 2>&1; then

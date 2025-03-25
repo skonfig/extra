@@ -21,7 +21,8 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case ${os} in
+case ${os}
+in
 'alpine')
 	packages="jool-tools jool-tools-openrc $(cat "${__object:?}"/explorer/alpine-kernel-modules)"
 	;;

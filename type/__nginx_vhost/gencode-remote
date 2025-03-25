@@ -28,7 +28,8 @@ if [ "${os}" = "alpine" ]; then
 fi
 
 if grep -qE "^__file${nginx_confdir}" "${__messages_in:?}"; then
-	case ${init} in
+	case ${init}
+	in
 		systemd)
 			reload_hook="systemctl reload-or-restart nginx"
 			;;

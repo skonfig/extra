@@ -19,7 +19,8 @@
 #
 
 os=$(cat "${__global:?}"/explorer/os)
-case ${os} in
+case ${os}
+in
 	alpine)
 		nginx_user=nginx
 		nginx_certdir=/etc/nginx/ssl

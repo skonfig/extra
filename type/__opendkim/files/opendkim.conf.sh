@@ -29,7 +29,8 @@ fi
 # Optional canonicalization settings
 if [ "${CANON}" ];
 then
-	case ${CANON} in
+	case ${CANON}
+	in
 		"simple/simple")
 			:
 			;;

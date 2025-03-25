@@ -49,7 +49,8 @@ chmod 2770 /var/run/$NAME
 
 export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
 
-case $1 in
+case $1
+in
     start)
         log_daemon_msg "Starting consul agent" "consul" || true
         if start-stop-daemon --start --quiet --oknodo \

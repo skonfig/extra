@@ -20,7 +20,8 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case ${os} in
+case ${os}
+in
 'alpine')
 	backend=busybox-openrc
 	;;
@@ -34,7 +35,8 @@ case ${os} in
 	;;
 esac
 
-case ${backend} in
+case ${backend}
+in
 'busybox-openrc')
 	argstring="-N"
 	while read -r peer;

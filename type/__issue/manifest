@@ -28,7 +28,8 @@ if [ -f "${__object:?}/parameter/source" ]; then
         source="${__object:?}/stdin"
     fi
 else
-    case ${os} in
+    case ${os}
+    in
         archlinux|redhat)
             source="${__type:?}/files/${os}"
         ;;

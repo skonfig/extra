@@ -26,7 +26,8 @@ mkdir "${tmpdir}"
 configtmp="${__object:?}/files/haproxy.cfg"
 
 os=$(cat "${__global:?}/explorer/os")
-case ${os} in
+case ${os}
+in
 	freebsd)
 		CONFIG_FILE="/usr/local/etc/haproxy.conf"
 		cat <<EOF > "${configtmp}"
@@ -75,7 +76,8 @@ dig_cmd=$(command -v dig || true)
 get_ip() {
 	# Usage: get_ip (ipv4|ipv6) NAME
 	# uses "dig" if available, else fallback to "host"
-	case $1 in
+	case $1
+	in
 		ipv4)
 			if [ -n "${dig_cmd}" ]; then
 				${dig_cmd} +short A "$2"
@@ -105,7 +107,8 @@ for proxy in v4proxy v6proxy; do
 	# turn backend name into bind parameter: v4backend -> ipv4@
 	bind=$(echo ${proxy} | sed -e 's/^/ip/' -e 's/proxy//')
 
-	case ${bind} in
+	case ${bind}
+	in
 		ipv4)
 			backendproto=ipv6
 			;;

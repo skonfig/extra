@@ -23,7 +23,8 @@ os=$(cat "${__global:?}/explorer/os")
 state=$(cat "${__object:?}/parameter/state")
 version=$(cat "${__object:?}/parameter/version")
 
-case ${os} in
+case ${os}
+in
     centos)
         # shellcheck source=/dev/null
         if (. "${__global:?}/explorer/os_release" && [ "${VERSION_ID}" = "7" ]); then
@@ -67,7 +68,8 @@ case ${os} in
    devuan)
       os_version=$(cat "${__global:?}/explorer/os_version")
 
-      case ${os_version} in
+      case ${os_version}
+      in
         ascii)
           distribution="stretch"
         ;;

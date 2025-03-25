@@ -23,7 +23,8 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case ${os} in
+case ${os}
+in
    alpine|scientific|centos|redhat|ubuntu|debian|devuan|archlinux|gentoo)
       # any linux should work
       :

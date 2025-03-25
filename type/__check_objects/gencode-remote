@@ -43,7 +43,8 @@ __check()
             continue
         fi
 
-        case ${check_file} in
+        case ${check_file}
+        in
             code-*)
                 echo "${object}/${check_file}" >> "${__messages_out:?}"
                 break

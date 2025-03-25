@@ -24,7 +24,8 @@
 name=${__object_id:?}
 os=$(cat "${__global:?}/explorer/os")
 
-case ${os} in
+case ${os}
+in
 	debian)
 		synapse_conf_dir='/etc/matrix-synapse'
 		synapse_workers_conf_dir="${synapse_conf_dir}/workers"

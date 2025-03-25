@@ -62,7 +62,8 @@ fi
 # Check if the state changes
 if [ "${state_is}" != "${state_should}" ]; then
     # check what to do
-    case ${state_should} in
+    case ${state_should}
+    in
         enabled)
             if [ "${state_is}" = "disabled" ]; then
                 occ app:enable "'${appid}'"

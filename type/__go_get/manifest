@@ -22,7 +22,8 @@ go_executable=$(cat "${__object:?}/explorer/go-executable")
 [ -z "${go_executable}" ] && echo "__go_get: Cannot find go executable; make sure it is installed and in PATH" >&2 && exit 1
 
 os=$(cat "${__global:?}/explorer/os")
-case ${os} in
+case ${os}
+in
 	debian|devuan|ubuntu)
 		__package build-essential
 		;;

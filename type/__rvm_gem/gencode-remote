@@ -27,7 +27,8 @@ state_should=$(cat "${__object:?}/parameter/state")
 
 [ "${state_is}" = "${state_should}" ] && exit 0
 
-case ${state_should} in
+case ${state_should}
+in
     present)
         cat << DONE
 su - "${user}" -c 'source ~/.rvm/scripts/rvm; rvm use "${gemset}"; gem install "${gem}"'
