@@ -273,9 +273,8 @@ WORKER MODE
 -----------
 
 Worker mode allows to move some processing out of the main synapse process for
-horizontal scaling. You are expected to use the
-`cdist-type__matrix_synapse_worker(7)
-<cdist-type__matrix_synapse_worker.html>`_ type to set up workers when the
+horizontal scaling. You are expected to use
+:strong:`cdist-type__matrix_synapse_worker`\ (7) to set up workers when the
 worker-mode flag is set.
 
 Worker mode depend on the following components:
@@ -288,8 +287,7 @@ Worker mode depend on the following components:
     as of 2021-02-17.
 
 The current way to install the above two python packages (if not packaged in
-your distribution) is sadly to use pip (see `cdist-type__python_pip(7)
-<cdist-type__python_pip.html>`_ core cdist type).
+your distribution) is sadly to use pip (cf. :strong:`cdist-type__python_pip`\ (7)).
 
 It is also recommended to first take a look at:
 

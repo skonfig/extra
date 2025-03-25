@@ -10,8 +10,8 @@ DESCRIPTION
 -----------
 
 This type writes the configuration for an instance of the kernel protocol to be
-ran by the bird internet routing daemon. It **expects** to depend on the
-`cdist-type__bird_core(7)` type.
+ran by the bird internet routing daemon. It **expects** to depend on
+:strong:`cdist-type__bird_core`\ (7).
 
 OPTIONAL PARAMETERS
 -------------------

@@ -29,9 +29,8 @@ You should apply your own rules here.
 This type only works on De{bi,vu}an systems.
 
 NOTE: This type currently does not deal with setting up coturn.
-      For that, you might want to check `__coturn` in
-      https://code.ungleich.ch/ungleich-public/cdist-contrib
-      In that case, this type should run *after* `__coturn`.
+      For that, you might want to check :strong:`cdist-type__coturn`\ (7).
+      In that case, this type should run *after* ``__coturn``.
 
 
 OPTIONAL PARAMETERS

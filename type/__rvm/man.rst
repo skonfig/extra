@@ -31,8 +31,9 @@ EXAMPLES
 
 SEE ALSO
 --------
-:strong:`cdist-type__rvm_gem`\ (7), :strong:`cdist-type__rvm_gemset`\ (7),
-:strong:`cdist-type__rvm_ruby`\ (7)
+* :strong:`cdist-type__rvm_gem`\ (7)
+* :strong:`cdist-type__rvm_gemset`\ (7)
+* :strong:`cdist-type__rvm_ruby`\ (7)
 
 
 AUTHORS

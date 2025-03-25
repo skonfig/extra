@@ -20,18 +20,18 @@ None.
 OPTIONAL PARAMETERS
 -------------------
 group
-   see cdist-type__file
+   see :strong:`cdist-type__file`\ (7)
 mode
-   see cdist-type__file
+   see :strong:`cdist-type__file`\ (7)
 onchange
    the code to run if the file changes
 owner
-   see cdist-type__file
+   see :strong:`cdist-type__file`\ (7)
 source
    Path to the config file.
    If source is '-' (dash), take what was written to stdin as the config file content.
 state
-   see cdist-type__file
+   see :strong:`cdist-type__file`\ (7)
 
 
 EXAMPLES

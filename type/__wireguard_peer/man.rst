@@ -3,18 +3,18 @@ cdist-type__wireguard_peer(7)
 
 NAME
 ----
-cdist-type__wireguard_peer - Add an authorized peer to a wireguard interface.
+cdist-type__wireguard_peer - Add an authorized peer to a WireGuard interface.
 
 DESCRIPTION
 -----------
 
 This type configures a peer to be authorized on a wireguard interface. The
-`${__object_id}` is used to differentiate the `cdist-type__block(7)` where each peer is
-defined. See `wg(8)` for details on the options.
+``__object_id`` is used to differentiate the :strong:`cdist-type__block`\ (7)
+where each peer is defined. See :strong:`wg`\ (8) for details on the options.
 
-Note that this type **requires** a configuration file named after the `iface`
+Note that this type **requires** a configuration file named after the ``iface``
 parameter to add and remove the peers from. The recommended way to accomplish
-this is to call `cdist-type__wireguard(7)`, and set it as a requirement for
+this is to call :strong:`cdist-type__wireguard`\ (7), and set it as a requirement for
 calls to this type adding peers to that interface.
 
 Currently, this type is only implemented for Alpine Linux.
@@ -41,7 +41,8 @@ preshared-key
   A pre-shared symmetric key. Used for "post-quantum resistance".
 
 state
-  Directly passed on the `cdist-type__block(7)`, to enable removing a user.
+  Directly passed on the :strong:`cdist-type__block`\ (7), to enable removing a user.
+
 
 OPTIONAL MULTIPLE PARAMETERS
 ----------------------------
@@ -55,12 +56,14 @@ allowed-ip
 
 SEE ALSO
 --------
-
-`wg(8)`, `wg-quick(8)`, `cdist-type__wireguard(7)`, `cdist-type__block(7)`
+* :strong:`wg`\ (8)
+* :strong:`wg-quick`\ (8)
+* :strong:`cdist-type__wireguard`\ (7)
+* :strong:`cdist-type__block`\ (7)
 
 AUTHORS
 -------
-Joachim Desroches <joachim.desroches@epfl.ch>
+* Joachim Desroches <joachim.desroches--@--epfl.ch>
 
 COPYING
 -------

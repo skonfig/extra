@@ -57,7 +57,8 @@ looks up in the skonfig messages to find it:
 
 SEE ALSO
 --------
-`pass`\ (7), `cdist-type__pass_init`\ (7)
+* :strong:`pass`\ (1)
+* :strong:`cdist-type__pass_init`\ (7)
 
 
 AUTHORS

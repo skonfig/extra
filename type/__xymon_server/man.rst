@@ -12,14 +12,14 @@ This type installs a Xymon (https://www.xymon.com/) server and (optional)
 required helper packages.
 
 This includes the Xymon client as a dependency, so NO NEED to install
-`__xymon_client` separately.
+``__xymon_client`` separately.
 
-To access the webinterface a webserver is required.  The cdist-type
-`__xymon_apache` can be used to install and configure the apache webserver for
-the use with Xymon.
+To access the webinterface a webserver is required.
+:strong:`cdist-type__xymon_apache`\ (7) can be used to install and configure the
+apache webserver for the use with Xymon.
 
 Further and day-to-day configuration of Xymon can either be done manually in
-`/etc/xymon/` or the directory can be deployed and managed by `__xymon_config`.
+``/etc/xymon/`` or the directory can be deployed and managed by ``__xymon_config``.
 
 
 REQUIRED PARAMETERS

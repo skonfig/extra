@@ -30,8 +30,11 @@ EXAMPLES
 
     __issue
 
+    # When called from manifest
+    __issue --source "${__files:?}/myfancyissue"
+
     # When called from another type
-    __issue --source "$__type/files/myfancyissue"
+    __issue --source "${__type:?}/files/myfancyissue"
 
 
 AUTHORS
