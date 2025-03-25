@@ -59,7 +59,7 @@ Your OS (${os}) is not supported yet.
 
 Maybe adding support is as simple as adapting the packages or allowing it,
 we highly encourage you to open a PR with the necessary changes.
-See: https://code.ungleich.ch/ungleich-public/cdist-contrib/
+See: https://github.com/skonfig/extra/
 EOF
 		exit 1
 		;;

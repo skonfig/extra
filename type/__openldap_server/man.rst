@@ -116,7 +116,7 @@ schema
 
 description
     The description of the base DN passed in the `suffix` parameter.
-    Defaults to `Managed by cdist, do not edit manually.`
+    Defaults to: "Managed by skonfig, do not edit manually."
 
 
 BOOLEAN PARAMETERS
@@ -154,7 +154,7 @@ EXAMPLES
     # objectClass: top
     # objectClass: dcObject
     # objectClass: organization
-    # o: Managed by cdist, do not edit manually.
+    # o: Managed by skonfig, do not edit manually.
     # dc: camilion
     #
     # Do not change it manually, the type will overwrite your changes.
@@ -180,7 +180,7 @@ EXAMPLES
             --syncrepl-host 'ldap-test2.ungleich.ch' \
             --description 'Ungleich LDAP server'" \
             --staging \
-            | cdist config -i - -v ${host}
+            | skonfig -i - ${host}
         id=$((id + 1))
     done
 

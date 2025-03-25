@@ -69,7 +69,7 @@ EXAMPLES
 
     # Proxy the IPv6-only HTTP(S) services so IPv4-only clients can access them
     # Note this means that the backend IPv6-only server will only see
-    # the IPv6 address of the haproxy host managed by cdist, which can be
+    # the IPv6 address of the haproxy host managed by skonfig, which can be
     # troublesome if this information is relevant for analytics/security/...
     # See the PROXY example below
     __haproxy_dualstack \

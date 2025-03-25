@@ -120,7 +120,7 @@ keep-quota
 
 keep-groups
     Do not touch the user groups if the user is already set up. This will avoid
-    to delete group assosiactions not defined via cdist. If the parameter
+    to delete group assosiactions not defined via skonfig. If the parameter
     `--group` is set despite of this parameter, it will only be used in the user
     setup if he does not already exists.
 
@@ -158,7 +158,7 @@ EXAMPLES
         --quota "2 GB"
         --only-setup
 
-    # manages an admin user fully controlled by cdist
+    # manages an admin user fully controlled by skonfig
     require="__nextcloud/var/www/html/cloud" __nextcloud_user bar \
         --cloud /var/www/html/cloud/ \
         --displayname "Bar" \

@@ -21,7 +21,7 @@
 # Function to compare version strings. Returns success (0) if the version
 # given by stdin is higher than the version provided by the argument.
 #
-# Taken from the cdist core type __sensible_editor.
+# Taken from cdist-type__sensible_editor(7).
 version_ge() {
 	awk -F '[^0-9.]' -v target="${1:?}" '
 	function max(x, y) { return x > y ? x : y; }

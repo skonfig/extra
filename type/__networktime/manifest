@@ -49,7 +49,7 @@ in
 		__file /etc/conf.d/ntpd \
 			--mode 0644 --onchange "service ntpd restart"\
 			--source - <<-EOF
-			# NTPd OpenRC configuration file. Managed by cdist.
+			# NTPd OpenRC configuration file. Managed by skonfig.
 			NTPD_OPTS=${argstring}
 			EOF
 		;;
@@ -64,7 +64,7 @@ in
 		__file /etc/systemd/timesyncd.conf \
 			--mode 0644 --onchange "systemctl restart systemd-timesyncd" \
 			--source - <<-EOF
-			# timesyncd(8) configuration file. Managed by cdist.
+			# timesyncd(8) configuration file. Managed by skonfig.
 			[Time]
 			NTP=${peers}
 			EOF

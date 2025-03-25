@@ -47,7 +47,7 @@ if [ "${state}" = "present" ] && \
 	hook_contents_head=$(cat <<EOF
 #!/bin/sh -e
 #
-# Managed remotely with https://cdi.st
+# Managed by skonfig. Changes will be overwritten.
 #
 # Domains for which this hook is supposed to apply
 lineage="${LE_DIR}/live/${__object_id:?}"

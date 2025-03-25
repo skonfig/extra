@@ -47,7 +47,7 @@ in
 		fi
 
 		cat <<-EOF
-		compose_file="\$(mktemp cdist.XXXXXXXXXX)"
+		compose_file="\$(mktemp skonfig.XXXXXXXXXX)"
 
 		base64 -d >"\${compose_file}" <<eof
 		$(base64 "${compose_file}")

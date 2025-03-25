@@ -30,7 +30,7 @@ then
 	# Find python executable that has access to certbot's module
 	python_path=$(sed -n '1s/^#! *//p' "${certbot_path}")
 
-	# Use a lock for cdist due to certbot not exiting with failure
+	# Use a lock due to certbot not exiting with failure
 	# or having any flags for concurrent use.
 	_certbot() {
 		${python_path} - 2>/dev/null <<EOF

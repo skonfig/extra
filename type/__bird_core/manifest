@@ -58,7 +58,7 @@ __file "${conffile}" \
 	--mode 0640 --owner root --group bird \
 	--source - <<EOF
 # ${conffile} - bird(1) configuration file.
-# Managed by cdist. Do not edit by hand.
+# Managed by skonfig. Do not edit by hand.
 
 ${router_id}
 log ${log_params};

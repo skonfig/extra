@@ -40,7 +40,7 @@ version
 
     Currently, no loop is implemented to do these upgrades automaticly for you,
     as the type does not implement any version knowledge. Manifest must be
-    changed and cdist needs to be rerun to get to the correct version you need.
+    changed and skonfig needs to be rerun to get to the correct version you need.
 
 admin-password
     The administrator password to access the nextcloud instance. Must be given
@@ -145,7 +145,7 @@ database-host
 
     This type will not migrate data if the type does not change. You must do
     this manually by setting the maintainer mode (to avoid data changes) and
-    then cloning the database to the new destination. After that, run cdist to
+    then cloning the database to the new destination. After that, run skonfig to
     apply the config changes. It should automaticly remove the maintainer mode.
 
 database-name

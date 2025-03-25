@@ -162,7 +162,7 @@ then
 	then
 		cat <<-CODE
 		sendmail root <<'EOF'
-		Subject: [cdist] Test mail from '${__target_fqdn:?}'
+		Subject: [skonfig] Test mail from '${__target_fqdn:?}'
 
 		Hi,
 
