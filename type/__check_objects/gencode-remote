@@ -18,38 +18,38 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-if [ ! -f "$__object/require" ]
+if [ ! -f "${__object:?}/require" ]
 then
-    echo '$require not set' >&2
+    echo '${require} not set' >&2
     exit 1
 fi
 
 __check()
 {
-    if [ -s "$__messages_out" ]
+    if [ -s "${__messages_out:?}" ]
     then
         return
     fi
 
     object=$1
-    object_path="$__global/object/$object"
+    object_path="${__global:?}/object/${object}"
 
     for check_file in code-local code-remote children
     do
-        check_file_path="$object_path/$__cdist_object_marker/$check_file"
+        check_file_path="${object_path}/${__cdist_object_marker:?}/${check_file}"
 
-        if [ ! -s "$check_file_path" ]
+        if [ ! -s "${check_file_path}" ]
         then
             continue
         fi
 
-        case "$check_file" in
+        case "${check_file}" in
             code-*)
-                echo "$object/$check_file" >> "$__messages_out"
+                echo "${object}/${check_file}" >> "${__messages_out:?}"
                 break
             ;;
             children)
-                __objects "$check_file_path"
+                __objects "${check_file_path}"
             ;;
         esac
     done
@@ -58,13 +58,13 @@ __check()
 __objects()
 {
     while read -r object
-    do __check "$object"
+    do __check "${object}"
     done < "$1"
 }
 
-__objects "$__object/require"
+__objects "${__object:?}/require"
 
-if [ -s "$__messages_out" ]
+if [ -s "${__messages_out:?}" ]
 then
-    cat "$__object/parameter/onchange"
+    cat "${__object:?}/parameter/onchange"
 fi

@@ -27,7 +27,7 @@ _explorer_var() {
 
 certificate_exists=$(_explorer_var certificate_exists)
 name="${__object_id:?}"
-state=$(cat "${__object}/parameter/state")
+state=$(cat "${__object:?}/parameter/state")
 
 case "${state}" in
 	absent)
@@ -42,16 +42,16 @@ case "${state}" in
 	present)
 		mkdir "${__global:?}/tmp"
 
-		domain_param_file="${__object}/parameter/domain"
+		domain_param_file="${__object:?}/parameter/domain"
 		requested_domains=$(mktemp "${__global:?}/tmp/domain.skonfig.XXXXXX")
 		if [ -f "${domain_param_file}" ]; then
 			cp "${domain_param_file}" "${requested_domains}"
 		else
-			echo "$__object_id" >> "${requested_domains}"
+			echo "${__object_id:?}" >> "${requested_domains}"
 		fi
 
 		staging=no
-		if [ -f "${__object}/parameter/staging" ]; then
+		if [ -f "${__object:?}/parameter/staging" ]; then
 			staging=yes
 		fi
 
@@ -69,8 +69,8 @@ case "${state}" in
 			fi
 		fi
 
-		admin_email=$(cat "$__object/parameter/admin-email")
-		webroot=$(cat "$__object/parameter/webroot")
+		admin_email=$(cat "${__object:?}/parameter/admin-email")
+		webroot=$(cat "${__object:?}/parameter/webroot")
 
 		cat <<-EOF
 		certbot certonly \
@@ -97,9 +97,9 @@ case "${state}" in
 		rm -f "${requested_domains}"
 
 		if [ "${certificate_exists}" = "no" ]; then
-			echo create >> "${__messages_out}"
+			echo create >> "${__messages_out:?}"
 		else
-			echo change >> "${__messages_out}"
+			echo change >> "${__messages_out:?}"
 		fi
 	;;
 	*)

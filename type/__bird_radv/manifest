@@ -20,12 +20,12 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
+case "${os}" in
 'alpine'|'debian'|'ubuntu')
 	confdir='/etc/bird.d'
 ;;
 *)
-	printf "Your operating system (%s) is currently not supported by __bird_radv\n" "$os" >&2
+	printf "Your operating system (%s) is currently not supported by __bird_radv\n" "${os}" >&2
 	printf "Please contribute an implementation for it if you can.\n" >&2
 	exit 1
 ;;
@@ -73,9 +73,9 @@ protocol radv ${__object_id:?} {
 
 $(sed -e 's/^/\tinterface "/' -e 's/$/";/' "${__object:?}/parameter/interface")
 
-$RDNS
+${RDNS}
 
-$DNSSL
+${DNSSL}
 
 }
 EOF

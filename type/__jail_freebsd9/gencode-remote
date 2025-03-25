@@ -22,93 +22,93 @@
 #exec >&2
 #set -x
 
-if [ -f "$__object/parameter/name" ]; then
-   name=$(cat "$__object/parameter/name")
+if [ -f "${__object:?}/parameter/name" ]; then
+   name=$(cat "${__object:?}/parameter/name")
 else
-   name=$__object_id
+   name=${__object_id:?}
 fi
 
-state=$(cat "$__object/parameter/state")
+state=$(cat "${__object:?}/parameter/state")
 
 started="true"
 # If the user wants the jail gone, it implies it shouldn't be started.
-{ [ -f "$__object/parameter/stopped" ] || [ "$state" = "absent" ]; } && started="false"
+{ [ -f "${__object:?}/parameter/stopped" ] || [ "${state}" = "absent" ]; } && started="false"
 
-if [ -f "$__object/parameter/ip" ]; then
-   ip=$(cat "$__object/parameter/ip")
+if [ -f "${__object:?}/parameter/ip" ]; then
+   ip=$(cat "${__object:?}/parameter/ip")
 else
 # IP is an optional param when $state=absent, but
 #    when $state=present, it's required. Enforce this.
-   if [ "$state" = "present" ]; then
+   if [ "${state}" = "present" ]; then
       exec >&2
       printf 'If --state is "present", --ip must be given\!\n'
       exit 1
    fi
 fi
 
-if [ -f "$__object/parameter/hostname" ]; then
-   hostname=$(cat "$__object/parameter/hostname")
+if [ -f "${__object:?}/parameter/hostname" ]; then
+   hostname=$(cat "${__object:?}/parameter/hostname")
 else
-   hostname=$name
+   hostname=${name}
 fi
 
-if [ -f "$__object/parameter/interface" ]; then
-   interface=$(cat "$__object/parameter/interface")
+if [ -f "${__object:?}/parameter/interface" ]; then
+   interface=$(cat "${__object:?}/parameter/interface")
 fi
 
-if [ -f "$__object/parameter/devfs-disable" ]; then
+if [ -f "${__object:?}/parameter/devfs-disable" ]; then
    devfsenable="false"
 else
    devfsenable="true"
 fi
 
-devfsruleset=$(cat "$__object/parameter/devfs-ruleset")
+devfsruleset=$(cat "${__object:?}/parameter/devfs-ruleset")
 
 # devfs_ruleset being defined without devfs_enable being true
 #     is pointless. Treat this as an error.
-if [ -n "$devfsruleset" ] && [ "$devfsenable" = "false" ]; then
+if [ -n "${devfsruleset}" ] && [ "${devfsenable}" = "false" ]; then
    exec >&2
    echo "Can't have --devfs-ruleset defined with --devfs-disable"
    exit 1
 fi
 
-if [ -f "$__object/parameter/onboot" ]; then
+if [ -f "${__object:?}/parameter/onboot" ]; then
    onboot="true"
 fi
 
-jaildir=$(cat "$__object/parameter/jaildir")
+jaildir=$(cat "${__object:?}/parameter/jaildir")
 
-present=$(cat "$__object/explorer/present")
-status=$(cat "$__object/explorer/status")
+present=$(cat "${__object:?}/explorer/present")
+status=$(cat "${__object:?}/explorer/status")
 
 # Handle ip="iface|addr, iface|addr" format
 if [ "$(expr "${ip}" : ".*|.*")" -gt "0" ]; then
    # If we have multiple IPs defined, $interface doesn't make sense because ip="iface|addr, iface|addr" implies it
    interface=""
-   SAVE_IFS=$IFS
+   SAVE_IFS=${IFS}
    IFS=", "
    for cur_ip in ${ip}; do
       # Just get the last IP address for SSH to listen on
       mgmt_ip=$(echo "${cur_ip}" | sed -E -e 's/^.*\|(.*)\/[0-9]+$/\1/')
    done
-   IFS=$SAVE_IFS
+   IFS=${SAVE_IFS}
 else
    mgmt_ip=$(echo "${ip}" | cut '-d ' -f1)
 fi
 
 stopJail() {
 # Check $status before issuing command
-   if [ "$status" = "STARTED" ]; then
+   if [ "${status}" = "STARTED" ]; then
       echo "/etc/rc.d/jail stop ${name}"
-      echo "stop" >> "$__messages_out"
+      echo "stop" >> "${__messages_out:?}"
    fi
 }
 
 startJail() {
 # Check $status before issuing command
-   if [ "$status" = "NOTSTART" ]; then
+   if [ "${status}" = "NOTSTART" ]; then
       echo "/etc/rc.d/jail start ${name}"
-      echo "start" >> "$__messages_out"
+      echo "start" >> "${__messages_out:?}"
    fi
 }
 
@@ -160,7 +160,7 @@ EOF
          rm -f /etc/rc.conf.bak
       fi
 EOF
-   echo "delete" >> "$__messages_out"
+   echo "delete" >> "${__messages_out:?}"
 }
 
 createJail() {
@@ -179,9 +179,9 @@ cat <<EOF
       fi
       if [ ! -d "${jaildir}/base/home" ]; then
           if [ ! -L "${jaildir}/base/home" ]; then
-             SAVE=\$PWD; cd ${jaildir}/base
+             SAVE=\${PWD}; cd ${jaildir}/base
              ln -s usr/home home
-             cd \$SAVE; unset SAVE
+             cd \${SAVE}; unset SAVE
           fi
       fi
    fi
@@ -214,7 +214,7 @@ cat <<EOF
    fi
 
 EOF
-   echo "create" >> "$__messages_out"
+   echo "create" >> "${__messages_out:?}"
 
 # Create the ro+rw mountpoint entries in fstab
 cat <<EOF
@@ -234,9 +234,9 @@ cat <<EOF
    #   if necessary
 
    jail_enable="\$(grep '^jail_enable=' /etc/rc.conf | cut -d= -f2)"
-   if [ -z "\$jail_enable" ]; then	# no jail_enable line in rc.conf at all
+   if [ -z "\${jail_enable}" ]; then	# no jail_enable line in rc.conf at all
       echo "jail_enable=\"YES\"" >>/etc/rc.conf
-   elif [ ! "\$(echo \$jail_enable | tr '[a-z]' '[A-Z]')" = "YES" ]; then	# jail_enable="NO"
+   elif [ ! "\$(echo \${jail_enable} | tr '[a-z]' '[A-Z]')" = "YES" ]; then	# jail_enable="NO"
       sed -i '.bak' 's/^jail_enable=.*$/jail_enable="YES"/g' /etc/rc.conf	# fix this -^
       rm -f /etc/rc.conf.bak
    fi
@@ -251,7 +251,7 @@ jail_${name}_flags="-n ${name} \\\${jail_flags}"
 END
 EOF
 
-if [ -n "$interface" ]; then
+if [ -n "${interface}" ]; then
    cat <<EOF
    cat >>/etc/rc.conf <<END
 jail_${name}_interface=${interface}
@@ -266,7 +266,7 @@ END
 EOF
 fi
 
-if [ "$devfsenable" = "true" ]; then
+if [ "${devfsenable}" = "true" ]; then
    cat <<EOF
    cat >>/etc/rc.conf <<END
 jail_${name}_devfs_ruleset=${devfsruleset}
@@ -294,14 +294,14 @@ EOF
 fi
 
 # Add $name to jail_list if $onboot=yes
-if [ "$onboot" = "yes" ]; then
+if [ "${onboot}" = "yes" ]; then
 
    # first check to see whether jail_enable="YES" exists in rc.conf or not and add it
    #   if necessary
 
    cat <<EOF
       eval "\$(grep '^jail_list=' /etc/rc.conf)"
-      if [ -z "\$jail_list" ]; then	# no jail_list line in rc.conf at all
+      if [ -z "\${jail_list}" ]; then	# no jail_list line in rc.conf at all
          echo "jail_list=\"${name}\"" >>/etc/rc.conf
       else
          jail_list="\${jail_list} ${name}"
@@ -310,7 +310,7 @@ if [ "$onboot" = "yes" ]; then
       fi
       unset jail_list
 EOF
-   echo "onboot" >> "$__messages_out"
+   echo "onboot" >> "${__messages_out:?}"
 fi
 
 # Add the normal entries into the jail's rc.conf
@@ -328,9 +328,9 @@ sed -E -i '.bak' -e "s/#?ListenAddress 0.0.0.0/ListenAddress ${mgmt_ip}/" "${jai
 EOF
 }
 
-if [ "$present" = "EXISTS" ]; then   # The jail currently exists
-   if [ "$state" = "present" ]; then   # The jail is supposed to exist
-      if [ "$started" = "true" ]; then   # The jail is supposed to be started
+if [ "${present}" = "EXISTS" ]; then   # The jail currently exists
+   if [ "${state}" = "present" ]; then   # The jail is supposed to exist
+      if [ "${started}" = "true" ]; then   # The jail is supposed to be started
          startJail
       else   # The jail is not supposed to be started
          stopJail
@@ -342,11 +342,11 @@ if [ "$present" = "EXISTS" ]; then   # The jail currently exists
       exit 0
    fi
 else   # The jail does not currently exist
-   if [ "$state" = "absent" ]; then   # The jail is not supposed to be present
+   if [ "${state}" = "absent" ]; then   # The jail is not supposed to be present
       exit 0
    else   # The jail is supposed to exist
       createJail
-      [ "$started" = "true" ] && startJail
+      [ "${started}" = "true" ] && startJail
       exit 0
    fi
 fi

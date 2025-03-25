@@ -68,7 +68,7 @@ fi
 if [ ! -f "\${PASSWORD_STORE_DIR}/${__object_id:?}.gpg" ];
 then
 	# shellcheck disable=SC2086
-	pass generate \$NOSYMB "${__object_id:?}" $LENGTH >/dev/null
+	pass generate \${NOSYMB} "${__object_id:?}" ${LENGTH} >/dev/null
 fi
 
 # Send it out to the messages.

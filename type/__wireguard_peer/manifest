@@ -22,12 +22,12 @@
 
 os=$(cat "${__global:?}"/explorer/os)
 
-case "$os" in
+case "${os}" in
 	alpine)
 		:
 		;;
 	*)
-		echo "This type has no implementation for $os. Aborting." >&2;
+		echo "This type has no implementation for ${os}. Aborting." >&2;
 		exit 1;
 esac
 
@@ -71,9 +71,9 @@ fi
 
 
 mkdir -p "${__object:?}/files"
-"${__type:?}/files/wg-peer.sh" "$presharedkey" > "${__object:?}/files/wg-peer"
+"${__type:?}/files/wg-peer.sh" "${presharedkey}" > "${__object:?}/files/wg-peer"
 
-required="__file/etc/wireguard/$iface.conf" \
-	__block "${__object_id:?}" --file "/etc/wireguard/$iface.conf" \
+required="__file/etc/wireguard/${iface}.conf" \
+	__block "${__object_id:?}" --file "/etc/wireguard/${iface}.conf" \
 		--text - <"${__object:?}/files/wg-peer" \
-		--state "$state"
+		--state "${state}"

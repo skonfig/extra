@@ -21,4 +21,4 @@
 #
 
 version_path="/opt/netbox/cdist/version"
-if [ -f "$version_path" ]; then cat "$version_path"; fi
+if [ -f "${version_path}" ]; then cat "${version_path}"; fi

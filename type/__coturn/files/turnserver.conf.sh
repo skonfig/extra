@@ -79,8 +79,8 @@ cat << EOF
 
 EOF
 
-for ip in $LISTENING_IPS; do
-    echo "listening-ip=$ip"
+for ip in ${LISTENING_IPS}; do
+    echo "listening-ip=${ip}"
 done
 
 cat << EOF
@@ -178,8 +178,8 @@ cat << EOF
 # Lower and upper bounds of the UDP relay endpoints:
 # (default values are 49152 and 65535)
 #
-min-port=$MIN_PORT
-max-port=$MAX_PORT
+min-port=${MIN_PORT}
+max-port=${MAX_PORT}
 
 # Uncomment to run TURN server in 'normal' 'moderate' verbose mode.
 # By default the verbose mode is off.
@@ -247,7 +247,7 @@ max-port=$MAX_PORT
 # to avoid any confusion.
 EOF
 
-if [ "$USE_AUTH_SECRET" ]; then
+if [ "${USE_AUTH_SECRET}" ]; then
     echo 'use-auth-secret'
 else
     echo '#use-auth-secret'
@@ -263,8 +263,8 @@ cat << EOF
 #
 EOF
 
-if [ "$STATIC_AUTH_SECRET" != "" ]; then
-    echo "static-auth-secret=$STATIC_AUTH_SECRET"
+if [ "${STATIC_AUTH_SECRET}" != "" ]; then
+    echo "static-auth-secret=${STATIC_AUTH_SECRET}"
 else
     echo "#static-auth-secret=north"
 fi
@@ -385,8 +385,8 @@ cat << EOF
 #
 EOF
 
-if [ "$REALM" != "" ]; then
-  echo "realm=$REALM"
+if [ "${REALM}" != "" ]; then
+  echo "realm=${REALM}"
 else
   echo "#realm=mycompany.org"
 fi
@@ -442,7 +442,7 @@ cat << EOF
 #
 EOF
 
-if [ "$NO_TLS" ]; then
+if [ "${NO_TLS}" ]; then
     echo "no-tls"
 else
     echo "#no-tls"
@@ -460,7 +460,7 @@ cat << EOF
 #
 EOF
 
-if [ "$NO_UDP_RELAY" ]; then
+if [ "${NO_UDP_RELAY}" ]; then
     echo 'no-udp-relay'
 else
     echo '#no-udp-relay'
@@ -473,7 +473,7 @@ cat << EOF
 #
 EOF
 
-if [ "$NO_TCP_RELAY" ]; then
+if [ "${NO_TCP_RELAY}" ]; then
     echo 'no-tcp-relay'
 else
     echo '#no-tcp-relay'
@@ -516,8 +516,8 @@ cat << EOF
 # configuration file.
 EOF
 
-if [ "$CERT" != "" ]; then
-    echo "cert=$CERT"
+if [ "${CERT}" != "" ]; then
+    echo "cert=${CERT}"
 else
     echo "#cert=/usr/local/etc/turn_server_cert.pem"
 fi
@@ -530,8 +530,8 @@ cat << EOF
 # Use PEM file format.
 EOF
 
-if [ "$PKEY" != "" ]; then
-    echo "pkey=$PKEY"
+if [ "${PKEY}" != "" ]; then
+    echo "pkey=${PKEY}"
 else
     echo "#pkey=/usr/local/etc/turn_server_pkey.pem"
 fi
@@ -698,12 +698,12 @@ syslog
 # allowed-peer-ip=83.166.68.45
 EOF
 
-for peer in $DENIED_PEERS; do
-    echo "denied-peer=$peer"
+for peer in ${DENIED_PEERS}; do
+    echo "denied-peer=${peer}"
 done
 
-for peer in $ALLOWED_PEERS; do
-    echo "allowed-peer=$peer"
+for peer in ${ALLOWED_PEERS}; do
+    echo "allowed-peer=${peer}"
 done
 
 cat << EOF
@@ -811,9 +811,9 @@ cat << EOF
 #no-tlsv1_2
 EOF
 
-if [ -n "$EXTRA_CONFIG" ]; then
+if [ -n "${EXTRA_CONFIG}" ]; then
     cat <<EOF
 # Extra configuration (overrides any previous settings)
-$EXTRA_CONFIG
+${EXTRA_CONFIG}
 EOF
 fi

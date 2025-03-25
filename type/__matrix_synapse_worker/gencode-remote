@@ -20,11 +20,11 @@
 
 # Designed for Debian/systemd - make sure to adapt when you add support for other
 # distributions/OSs.
-name=$__object_id
+name=${__object_id:?}
 synapse_conf_dir='/etc/matrix-synapse'
-synapse_workers_conf_dir="$synapse_conf_dir/workers"
-systemd_worker_service="matrix-synapse-worker@$name"
+synapse_workers_conf_dir="${synapse_conf_dir}/workers"
+systemd_worker_service="matrix-synapse-worker@${name}"
 
-if grep -qE "^__file$synapse_workers_conf_dir/$name" "${__messages_in}"; then
-	echo "systemctl restart $systemd_worker_service"
+if grep -qE "^__file${synapse_workers_conf_dir}/${name}" "${__messages_in:?}"; then
+	echo "systemctl restart ${systemd_worker_service}"
 fi

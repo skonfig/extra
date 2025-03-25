@@ -35,9 +35,9 @@ ssl:
   enabled: ${SSL}
 EOF
 
-if [ "$SSL" = "true" ]; then
+if [ "${SSL}" = "true" ]; then
 	cat << EOF
-  port: $HTTPS_PORT
+  port: ${HTTPS_PORT}
   provider: letsencrypt
   domain: ${__target_host:?}
   subscriberEmail: ${LE_EMAIL:?}
@@ -46,7 +46,7 @@ EOF
 }
 
 cat << EOF
-port: $HTTP_PORT
+port: ${HTTP_PORT}
 db:
   type: postgres
   host: localhost

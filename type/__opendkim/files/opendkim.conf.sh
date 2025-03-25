@@ -21,15 +21,15 @@
 #
 
 # Optional chdir(2)
-if [ "$BASEDIR" ];
+if [ "${BASEDIR}" ];
 then
-	printf "BaseDirectory %s\n" "$BASEDIR"
+	printf "BaseDirectory %s\n" "${BASEDIR}"
 fi
 
 # Optional canonicalization settings
-if [ "$CANON" ];
+if [ "${CANON}" ];
 then
-	case "$CANON" in
+	case "${CANON}" in
 		"simple/simple")
 			:
 			;;
@@ -47,7 +47,7 @@ then
 			exit 1
 			;;
 	esac
-	printf "Canonicalization %s\n" "$CANON"
+	printf "Canonicalization %s\n" "${CANON}"
 fi
 
 # Key and Domain tables
@@ -58,25 +58,25 @@ echo 'SigningTable /etc/opendkim/SigningTable'
 printf "Socket %s\n" "${SOCKET:?}"
 
 # Optional subdomain signing settings
-if [ "$SUBDOMAINS" ];
+if [ "${SUBDOMAINS}" ];
 then
-	printf "SubDomains %s\n" "$SUBDOMAINS"
+	printf "SubDomains %s\n" "${SUBDOMAINS}"
 fi
 
 # Optional request logging to syslog
-if [ "$SYSLOG" ];
+if [ "${SYSLOG}" ];
 then
 	echo "Syslog yes"
 fi
 
 # Optional UMask specification
-if [ "$UMASK" ];
+if [ "${UMASK}" ];
 then
-	printf "UMask %s\n" "$UMASK"
+	printf "UMask %s\n" "${UMASK}"
 fi
 
 # Optional UserID to change to
-if [ "$USERID" ];
+if [ "${USERID}" ];
 then
-	printf "UserID %s\n" "$USERID"
+	printf "UserID %s\n" "${USERID}"
 fi

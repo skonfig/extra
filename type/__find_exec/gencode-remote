@@ -18,49 +18,49 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-if [ ! -s "$__object/explorer/find" ]
+if [ ! -s "${__object:?}/explorer/find" ]
 then
     exit 0
 fi
 
-if [ ! -f "$__object/parameter/exec" ] \
-    && [ ! -f "$__object/parameter/execdir" ]
+if [ ! -f "${__object:?}/parameter/exec" ] \
+    && [ ! -f "${__object:?}/parameter/execdir" ]
 then
     echo '-exec or -execdir must be used' >&2
     exit 1
 fi
 
-if [ -f "$__object/parameter/path" ]
+if [ -f "${__object:?}/parameter/path" ]
 then
-    path=$(cat "$__object/parameter/path")
+    path=$(cat "${__object:?}/parameter/path")
 else
-    path="/$__object_id"
+    path="/${__object_id:?}"
 fi
 
-set -- find "$path"
+set -- find "${path}"
 
 while read -r l
 do
-    set -- "$@" "$l"
+    set -- "$@" "${l}"
 done \
-    < "$__object/parameter/exp"
+    < "${__object:?}/parameter/exp"
 
 for p in exec execdir
 do
-    if [ -f "$__object/parameter/$p" ]
+    if [ -f "${__object:?}/parameter/${p}" ]
     then
         while read -r l
         do
-            set -- "$@" "-$p $l"
-            echo "$p: $l" >> "$__messages_out"
+            set -- "$@" "-${p} ${l}"
+            echo "${p}: ${l}" >> "${__messages_out:?}"
         done \
-            < "$__object/parameter/$p"
+            < "${__object:?}/parameter/${p}"
     fi
 done
 
 echo "$@"
 
-if [ -f "$__object/parameter/onchange" ]
+if [ -f "${__object:?}/parameter/onchange" ]
 then
-    cat "$__object/parameter/onchange"
+    cat "${__object:?}/parameter/onchange"
 fi

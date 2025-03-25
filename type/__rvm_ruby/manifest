@@ -20,5 +20,5 @@
 
 # Required packages for building ruby
 for package in bzip2 gcc make; do
-    __package "$package" --state present
+    __package "${package}" --state present
 done

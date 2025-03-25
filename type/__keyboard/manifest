@@ -19,10 +19,10 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os=$(cat "$__global/explorer/os")
-keyboard_type=$(cat "$__object/parameter/type")
+os=$(cat "${__global:?}/explorer/os")
+keyboard_type=$(cat "${__object:?}/parameter/type")
 
-case "$os" in
+case "${os}" in
     centos)
         __file /etc/sysconfig/keyboard \
             --owner root --group root --mode 644 \
@@ -32,13 +32,13 @@ case "$os" in
             __key_value KEYTABLE \
                 --file /etc/sysconfig/keyboard \
                 --delimiter '=' \
-                --value "\"$keyboard_type\""
+                --value "\"${keyboard_type}\""
 
         require="__file/etc/sysconfig/keyboard" \
             __key_value LAYOUT \
                 --file /etc/sysconfig/keyboard \
                 --delimiter '=' \
-                --value "\"$keyboard_type\""
+                --value "\"${keyboard_type}\""
     ;;
     crux)
         __key_value /etc/rc.conf:KEYMAP \
@@ -48,7 +48,7 @@ case "$os" in
             --value "${keyboard_type}"
     ;;
     *)
-      echo "Your operating system ($os) is currently not supported by this type (${__type##*/})." >&2
+      echo "Your operating system (${os}) is currently not supported by this type (${__type##*/})." >&2
       echo "Please contribute an implementation for it if you can." >&2
       exit 1
     ;;

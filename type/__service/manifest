@@ -19,18 +19,18 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-manager=$(cat "$__object/explorer/service-manager")
+manager=$(cat "${__object:?}/explorer/service-manager")
 
-name=$__object_id
-action=$(cat "$__object/parameter/action")
+name=${__object_id:?}
+action=$(cat "${__object:?}/parameter/action")
 
-case "$manager" in
+case "${manager}" in
 	systemd)
-		test "$action" = "start" && action="running"
-		test "$action" = "stop"  && action="stopped"
-		__systemd_service "$name" --state "$action"
+		test "${action}" = "start" && action="running"
+		test "${action}" = "stop"  && action="stopped"
+		__systemd_service "${name}" --state "${action}"
 	;;
 	*)
-		# Unknown: handled by `service $NAME $action` in gencode-remote.
+		# Unknown: handled by `service ${NAME} ${action}` in gencode-remote.
 	;;
 esac

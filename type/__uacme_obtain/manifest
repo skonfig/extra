@@ -20,7 +20,7 @@
 #
 
 os=$(cat "${__global:?}"/explorer/os)
-case "$os" in
+case "${os}" in
 	alpine|ubuntu|debian)
 		__package uacme
 
@@ -29,7 +29,7 @@ case "$os" in
 		default_confdir=/etc/ssl/uacme
 	;;
 	*)
-		echo "__uacme_obtain currently has no implementation for $os. Aborting." >&2;
+		echo "__uacme_obtain currently has no implementation for ${os}. Aborting." >&2;
 		exit 1;
 	;;
 esac
@@ -56,13 +56,13 @@ fi
 export DISABLE_OCSP
 
 MAIN_DOMAIN=${__object_id:?}
-DOMAIN=$MAIN_DOMAIN
+DOMAIN=${MAIN_DOMAIN}
 if [ -f "${__object:?}/parameter/altdomains" ];
 then
 	# shellcheck disable=SC2013
 	for altdomain in $(cat "${__object:?}/parameter/altdomains");
 	do
-		DOMAIN="$DOMAIN $altdomain"
+		DOMAIN="${DOMAIN} ${altdomain}"
 	done
 fi
 export MAIN_DOMAIN DOMAIN
@@ -116,25 +116,25 @@ then
 fi
 export RENEW_HOOK
 
-if [ -n "$KEY_TARGET" ] && [ -z "$CERT_TARGET" ]; then
+if [ -n "${KEY_TARGET}" ] && [ -z "${CERT_TARGET}" ]; then
 	echo "You cannot specify --install-key-to without --install-cert-to." >&2
 	exit 1
-elif [ -z "$KEY_TARGET" ] && [ -n "$CERT_TARGET" ]; then
+elif [ -z "${KEY_TARGET}" ] && [ -n "${CERT_TARGET}" ]; then
 	echo "You cannot specify --install-cert-to without --install-key-to." >&2
 	exit 1
 fi
 
 # Make sure challengedir exist.
-__directory "$CHALLENGEDIR" --parents
+__directory "${CHALLENGEDIR}" --parents
 
 # Generate and deploy renew script.
 mkdir -p "${__object:?}/files"
 "${__type:?}/files/renew.sh.sh" > "${__object:?}/files/uacme-renew.sh"
 
-__directory "$CONFDIR/$MAIN_DOMAIN"
-require="__directory/$CONFDIR/$MAIN_DOMAIN" __file "$CONFDIR/$MAIN_DOMAIN/renew.sh" \
+__directory "${CONFDIR}/${MAIN_DOMAIN}"
+require="__directory/${CONFDIR}/${MAIN_DOMAIN}" __file "${CONFDIR}/${MAIN_DOMAIN}/renew.sh" \
 	--mode 0755 --source "${__object:?}/files/uacme-renew.sh"
 
 # Set up renew cronjob - initial issue done in gencode-remote.
-__cron "uacme-$MAIN_DOMAIN" --user root --hour 2 --minute 0 \
-	--command "$CONFDIR/$MAIN_DOMAIN/renew.sh"
+__cron "uacme-${MAIN_DOMAIN}" --user root --hour 2 --minute 0 \
+	--command "${CONFDIR}/${MAIN_DOMAIN}/renew.sh"

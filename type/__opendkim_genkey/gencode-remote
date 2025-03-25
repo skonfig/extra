@@ -45,6 +45,6 @@ if [ -f "${__object:?}/parameters/unrestricted" ]; then
 fi
 
 if ! [ -f "${DIRECTORY}${SELECTOR}.private" ]; then
-	echo "opendkim-genkey $BITS --domain=$DOMAIN --directory=$DIRECTORY $RESTRICTED --selector=$SELECTOR $SUBDOMAINS"
+	echo "opendkim-genkey ${BITS} --domain=${DOMAIN} --directory=${DIRECTORY} ${RESTRICTED} --selector=${SELECTOR} ${SUBDOMAINS}"
 	echo "chown opendkim:opendkim ${DIRECTORY}${SELECTOR}.private"
 fi

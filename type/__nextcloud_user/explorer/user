@@ -24,37 +24,37 @@
 #
 
 # Parameters
-user="$__object/parameter/user"
-if [ -f "$user" ]; then
-    user=$(cat "$user")
+user="${__object:?}/parameter/user"
+if [ -f "${user}" ]; then
+    user=$(cat "${user}")
 else
-    user=$__object_id
+    user=${__object_id:?}
 fi
-cloud=$(cat "$__object/parameter/cloud")
-www_user=$(cat "$__object/parameter/www-user")
+cloud=$(cat "${__object:?}/parameter/cloud")
+www_user=$(cat "${__object:?}/parameter/www-user")
 
 
 # Check if there exists the installation
-if [ -d "$cloud" ]; then
+if [ -d "${cloud}" ]; then
     # if those files exist, everything should be good
-    if [ -f "$cloud/occ" ] && [ -f "$cloud/config/config.php" ]; then
+    if [ -f "${cloud}/occ" ] && [ -f "${cloud}/config/config.php" ]; then
         # Content could be gathered through php code directly, too. This can
         # be done if more parameters are required than user:info will output
         # or if there will be too much fuzz in the output.
 
         # Output the information of the user
         # type will abort if explorer is empty, not if occ aborts
-        su -s /bin/sh -l "$www_user" -- -e <<SU
-cd '$cloud'
+        su -s /bin/sh -l "${www_user}" -- -e <<SU
+cd '${cloud}'
 
 # Check if the user exists before the later command will produce an error
 if php -r 'define("OC_CONSOLE",1); require_once(__DIR__."/lib/base.php");
            exit(\\OC::\$server->getUserSession()->getManager()->userExists("$user") ? 0 : 1);'
 then
-    php occ --no-warnings --no-interaction --no-ansi --output=plain user:info '$user'
+    php occ --no-warnings --no-interaction --no-ansi --output=plain user:info '${user}'
     # also output the quota parameter
     printf "  - quota_param: %s\n" \
-        "\$(php occ --no-warnings --no-interaction --no-ansi user:setting '$user' files quota)"
+        "\$(php occ --no-warnings --no-interaction --no-ansi user:setting '${user}' files quota)"
 fi
 SU
     fi

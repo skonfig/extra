@@ -21,12 +21,12 @@
 # Check states
 state=""
 unit_state=""
-param_state=$(cat "$__object/parameter/state")
+param_state=$(cat "${__object:?}/parameter/state")
 
-case "$param_state" in
+case "${param_state}" in
     enabled|disabled)
         state="present"
-        unit_state=$param_state
+        unit_state=${param_state}
         ;;
 
     absent)
@@ -36,22 +36,22 @@ case "$param_state" in
 
     *)
         # does not exist
-        printf "The state '%s' does not exist, can't continue!\n" "$param_state" >&2
+        printf "The state '%s' does not exist, can't continue!\n" "${param_state}" >&2
         exit 2
         ;;
 esac
 
 
-mkdir "$__object/files"
+mkdir "${__object:?}/files"
 
-if [ "$state" = "present" ]; then
+if [ "${state}" = "present" ]; then
     # process template
-    "$__type/files/gunicorn.py.sh" > "$__object/files/gunicorn.py"
+    "${__type:?}/files/gunicorn.py.sh" > "${__object:?}/files/gunicorn.py"
 
     # gunicorn config file
     __file /opt/netbox/gunicorn.py \
         --mode 644 --owner netbox \
-        --source "$__object/files/gunicorn.py"
+        --source "${__object:?}/files/gunicorn.py"
 
 else
     # absent config file
@@ -62,13 +62,13 @@ fi
 TYPE="Gunicorn"
 export TYPE
 
-"$__type/files/netbox.socket.sh" "$__object/parameter/bind-to" \
-    > "$__object/files/netbox.socket"
+"${__type:?}/files/netbox.socket.sh" "${__object:?}/parameter/bind-to" \
+    > "${__object:?}/files/netbox.socket"
 
 # install systemd files
 __systemd_unit gunicorn-netbox.socket \
-    --state "$state" --enablement-state "$unit_state" \
-    --source "$__object/files/netbox.socket" --restart
+    --state "${state}" --enablement-state "${unit_state}" \
+    --source "${__object:?}/files/netbox.socket" --restart
 __systemd_unit gunicorn-netbox.service \
-    --state "$state" --enablement-state "$unit_state" \
-    --source "$__type/files/netbox.service" --restart
+    --state "${state}" --enablement-state "${unit_state}" \
+    --source "${__type:?}/files/netbox.service" --restart

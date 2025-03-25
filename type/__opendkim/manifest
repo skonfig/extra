@@ -20,12 +20,12 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
+case "${os}" in
 'alpine')
 	:
 	;;
 *)
-	printf "__opendkim does not yet support %s.\n" "$os" >&2
+	printf "__opendkim does not yet support %s.\n" "${os}" >&2
 	printf "Please contribute an implementation if you can.\n" >&2
 	exit 1
 	;;
@@ -72,16 +72,16 @@ target_file="/etc/opendkim/opendkim.conf"
 
 mkdir -p "${__object:?}/files"
 
-"${__type:?}/files/opendkim.conf.sh" >"$source_file"
+"${__type:?}/files/opendkim.conf.sh" >"${source_file}"
 
 # Add user custom config
 if [ -f "${__object:?}/parameter/custom-config" ]; then
-	echo "# Custom user config" >>"$source_file"
-	cat "${__object:?}/parameter/custom-config" >>"$source_file"
+	echo "# Custom user config" >>"${source_file}"
+	cat "${__object:?}/parameter/custom-config" >>"${source_file}"
 fi
 
-require="__package/opendkim" __file "$target_file" \
-	--source "$source_file" --mode 0644
+require="__package/opendkim" __file "${target_file}" \
+	--source "${source_file}" --mode 0644
 
 require="__package/opendkim" __start_on_boot opendkim
 

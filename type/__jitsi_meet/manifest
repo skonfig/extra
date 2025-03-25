@@ -20,8 +20,8 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os=$(cat "${__global}/explorer/os")
-init=$(cat "${__global}/explorer/init")
+os=$(cat "${__global:?}/explorer/os")
+init=$(cat "${__global:?}/explorer/init")
 case "${os}" in
 	devuan|debian)
 	;;
@@ -32,17 +32,17 @@ case "${os}" in
 esac
 
 
-JITSI_HOST=${__target_host}
+JITSI_HOST=${__target_host:?}
 # Currently unused, see below
-# JITSI_VERSION=$(cat "${__object}/parameter/jitsi-version")
-TURN_SERVER=$(cat "${__object}/parameter/turn-server")
-TURN_SECRET=$(cat "${__object}/parameter/turn-secret")
+# JITSI_VERSION=$(cat "${__object:?}/parameter/jitsi-version")
+TURN_SERVER=$(cat "${__object:?}/parameter/turn-server")
+TURN_SECRET=$(cat "${__object:?}/parameter/turn-secret")
 
 if [ -z "${TURN_SERVER}" ]; then
 	TURN_SERVER=${JITSI_HOST}
 fi
 
-PROMETHEUS_JITSI_EXPORTER_IS_VERSION=$(cat "${__object}/explorer/prometheus-jitsi-meet-explorer-version")
+PROMETHEUS_JITSI_EXPORTER_IS_VERSION=$(cat "${__object:?}/explorer/prometheus-jitsi-meet-explorer-version")
 
 # The rest is loosely based on Jitsi's documentation
 # https://jitsi.github.io/handbook/docs/devops-guide/devops-guide-quickstart
@@ -56,7 +56,7 @@ __apt_key "jitsi_meet_2016" \
 	--state "absent"
 ### Add new signing key
 require="__apt_key/jitsi_meet_2016" __apt_key jitsi_meet_2021 \
-	--source "${__type}/files/apt_2021.gpg" \
+	--source "${__type:?}/files/apt_2021.gpg" \
 	--state "present"
 ## Now the repositories (they are a tad weird, so distribution is 'stable/')
 require="__apt_key/jitsi_meet_2021" __apt_source jitsi_meet \
@@ -70,7 +70,7 @@ export require="${require} __apt_source/jitsi_meet __apt_update_index"
 
 # Pre-feed debconf settings, so Jitsi's installation has a good config
 # shellcheck source=type/__jitsi_meet/files/debconf_settings.sh
-. "${__type}/files/debconf_settings.sh"  # This defines DEBCONF_SETTINGS
+. "${__type:?}/files/debconf_settings.sh"  # This defines DEBCONF_SETTINGS
 __debconf_set_selections jitsi_meet --file - <<EOF
 ${DEBCONF_SETTINGS}
 EOF
@@ -168,7 +168,7 @@ server {
 }
 EOF
 
-if [ -f "${__object}/parameter/secured-domains" ]; then
+if [ -f "${__object:?}/parameter/secured-domains" ]; then
   SECURED_DOMAINS_STATE='present'
   SECURED_DOMAINS_STATE_JICOFO='replace'
 else
@@ -206,7 +206,7 @@ PROMETHEUS_JITSI_EXPORTER_SHOULD_VERSION="1.1.5"
 PROMETHEUS_JITSI_EXPORTER_CHECKSUM="sha256:3ddf43a48d9a2f62be1bc6db9e7ba75d61994f9423e5c5b28be019f41f06f745"
 PROMETHEUS_JITSI_EXPORTER_URL="https://github.com/systemli/prometheus-jitsi-meet-exporter/releases/download/${PROMETHEUS_JITSI_EXPORTER_SHOULD_VERSION}/prometheus-jitsi-meet-exporter-linux-amd64"
 PROMETHEUS_JITSI_EXPORTER_VERSION_FILE="/usr/local/bin/.prometheus-jitsi-meet-exporter.skonfig.version"
-if [ ! -f "${__object}/parameter/disable-prometheus-exporter" ]; then
+if [ ! -f "${__object:?}/parameter/disable-prometheus-exporter" ]; then
 	case "${init}" in
 		init|sysvinit)
 			__runit

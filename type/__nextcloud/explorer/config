@@ -21,11 +21,11 @@
 #
 
 # Get the installdir
-installdir="/$__object_id"
+installdir="/${__object_id:?}"
 
 # Check if the tools are available
-if [ -d "$installdir" ]; then
-    cd "$installdir"
+if [ -d "${installdir}" ]; then
+    cd "${installdir}"
 
     # if those files exist, everything should be good
     if [ -f "occ" ] && [ -f "config/config.php" ]; then

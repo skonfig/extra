@@ -19,7 +19,7 @@
 #
 
 os=$(cat "${__global:?}"/explorer/os)
-case "$os" in
+case "${os}" in
 	alpine)
 		nginx_user=nginx
 		nginx_certdir=/etc/nginx/ssl
@@ -29,7 +29,7 @@ case "$os" in
 		nginx_certdir=/etc/nginx/ssl
 		;;
 	*)
-		echo "This type does not support $os yet. Aborting." >&2;
+		echo "This type does not support ${os} yet. Aborting." >&2;
 		exit 1;
 		;;
 esac
@@ -51,28 +51,28 @@ set_custom_uacme_hookscript=
 if [ -f "${__object:?}/parameter/uacme-hookscript" ];
 then
 	uacme_hookscript=$(cat "${__object:?}/parameter/uacme-hookscript")
-	set_custom_uacme_hookscript="--hookscript $uacme_hookscript"
+	set_custom_uacme_hookscript="--hookscript ${uacme_hookscript}"
 fi
 
 # Deploy simple HTTP vhost, allowing to serve ACME challenges.
-__nginx_vhost "301-to-https-$domain" \
-	--domain "$domain" --altdomains "$altdomains" --to-https
+__nginx_vhost "301-to-https-${domain}" \
+	--domain "${domain}" --altdomains "${altdomains}" --to-https
 
 # Obtaining TLS cert.
-cert_ownership=$nginx_user
+cert_ownership=${nginx_user}
 if [ -f "${__object:?}/parameter/force-cert-ownership-to" ]; then
 	cert_ownership=$(cat "${__object:?}/parameter/force-cert-ownership-to")
 fi
 
 __uacme_account
 # shellcheck disable=SC2086
-require="__nginx_vhost/301-to-https-$domain __uacme_account" \
-	__uacme_obtain "$domain" \
-		--altdomains "$altdomains" \
-		$set_custom_uacme_hookscript \
-		--owner "$cert_ownership" \
-		--install-key-to "$nginx_certdir/$domain/privkey.pem" \
-		--install-cert-to "/$nginx_certdir/$domain/fullchain.pem" \
+require="__nginx_vhost/301-to-https-${domain} __uacme_account" \
+	__uacme_obtain "${domain}" \
+		--altdomains "${altdomains}" \
+		${set_custom_uacme_hookscript} \
+		--owner "${cert_ownership}" \
+		--install-key-to "${nginx_certdir}/${domain}/privkey.pem" \
+		--install-cert-to "/${nginx_certdir}/${domain}/fullchain.pem" \
 		--renew-hook "service nginx reload"
 
 # Deploy HTTPS nginx vhost.
@@ -84,11 +84,11 @@ if [ -f "${__object:?}/parameter/config" ]; then
 	fi
 
 	mkdir -p "${__object:?}/files"
-	cat "$nginx_logic" > "${__object:?}/files/config"
+	cat "${nginx_logic}" > "${__object:?}/files/config"
 
-	require="__uacme_obtain/$domain" __nginx_vhost "$domain" \
-		--altdomains "$altdomains" --config "${__object:?}/files/config"
+	require="__uacme_obtain/${domain}" __nginx_vhost "${domain}" \
+		--altdomains "${altdomains}" --config "${__object:?}/files/config"
 else
-	require="__uacme_obtain/$domain" __nginx_vhost "$domain" \
-		--altdomains "$altdomains"
+	require="__uacme_obtain/${domain}" __nginx_vhost "${domain}" \
+		--altdomains "${altdomains}"
 fi

@@ -20,12 +20,12 @@
 
 cdist_type=${__type##*/}
 watch_type=${cdist_type##*_}
-conf_dir=$(cat "$__object/explorer/conf-dir")
-conf_file="watch_${watch_type}_${__object_id}.json"
-state=$(cat "$__object/parameter/state")
+conf_dir=$(cat "${__object:?}/explorer/conf-dir")
+conf_file="watch_${watch_type}_${__object_id:?}.json"
+state=$(cat "${__object:?}/parameter/state")
 
 # Sanity checks
-if [ -f "$__object/parameter/filter-service" ] && [ -f "$__object/parameter/filter-state" ]; then
+if [ -f "${__object:?}/parameter/filter-service" ] && [ -f "${__object:?}/parameter/filter-state" ]; then
    echo "Use either --filter-service or --filter-state but not both." >&2
    exit 1
 fi
@@ -34,18 +34,18 @@ fi
 (
 echo "{"
 printf '   "watches": [{\n'
-printf '      "type": "%s"\n' "$watch_type"
-cd "$__object/parameter/"
+printf '      "type": "%s"\n' "${watch_type}"
+cd "${__object:?}/parameter/"
 for param in *; do
-   case "$param" in
+   case "${param}" in
       state) continue ;;
       filter-*)
          key="${param##*-}"
-         printf '      ,"%s": "%s"\n' "$key" "$(cat "$__object/parameter/$param")"
+         printf '      ,"%s": "%s"\n' "${key}" "$(cat "${__object:?}/parameter/${param}")"
       ;;
       *)
-         key=$(echo "$param" | tr '-' '_')
-         printf '      ,"%s": "%s"\n' "$key" "$(cat "$__object/parameter/$param")"
+         key=$(echo "${param}" | tr '-' '_')
+         printf '      ,"%s": "%s"\n' "${key}" "$(cat "${__object:?}/parameter/${param}")"
       ;;
    esac
 done
@@ -57,6 +57,6 @@ echo "}"
 require="__directory${conf_dir}" \
    __config_file "${conf_dir}/${conf_file}" \
       --owner root --group consul --mode 640 \
-      --state "$state" \
+      --state "${state}" \
       --onchange 'service consul status >/dev/null && service consul reload || true' \
       --source -

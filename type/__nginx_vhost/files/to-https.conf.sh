@@ -29,7 +29,7 @@ cat <<- EOF
 EOF
 
 # Name
-echo "server_name ${DOMAIN:?} $ALTDOMAINS;"
+echo "server_name ${DOMAIN:?} ${ALTDOMAINS};"
 
 # ACME challenges.
 cat << EOF

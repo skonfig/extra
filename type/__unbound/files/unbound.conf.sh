@@ -28,30 +28,30 @@ server:
 EOF
 
 # Server logging
-[ "$VERBOSITY" ] && printf "verbosity: %u\n" "$VERBOSITY"
+[ "${VERBOSITY}" ] && printf "verbosity: %u\n" "${VERBOSITY}"
 
 # IP version
-[ "$DISABLE_IPV4" ] && echo "do-ip4: no"
-[ "$DISABLE_IPV6" ] && echo "do-ip6: no"
+[ "${DISABLE_IPV4}" ] && echo "do-ip4: no"
+[ "${DISABLE_IPV6}" ] && echo "do-ip6: no"
 
 # Interfaces to bind to
-[ "$PORT" ] && printf "port: %u\n" "$PORT"
+[ "${PORT}" ] && printf "port: %u\n" "${PORT}"
 if [ -f "${__object:?}/parameter/interface" ];
 then
 	while read -r intf;
 	do
-		printf "interface: %s\n" "$intf"
+		printf "interface: %s\n" "${intf}"
 	done < "${__object:?}/parameter/interface"
 fi
 
-[ "$IP_TRANSPARENT" ] && printf "ip-transparent: yes\n"
+[ "${IP_TRANSPARENT}" ] && printf "ip-transparent: yes\n"
 
 # Access control
 if [ -f "${__object:?}/parameter/access-control" ];
 then
 	while read -r acl;
 	do
-		printf "access-control: %s\n" "$acl"
+		printf "access-control: %s\n" "${acl}"
 	done < "${__object:?}/parameter/access-control"
 fi
 
@@ -60,20 +60,20 @@ if [ -f "${__object:?}/parameter/local-data" ];
 then
 	while read -r data;
 	do
-		printf "local-data: \"%s\"\n" "$data"
+		printf "local-data: \"%s\"\n" "${data}"
 	done < "${__object:?}/parameter/local-data"
 fi
 
 # DNS64
 printf "module-config: \"%svalidator iterator\"\n" "${DNS64:+dns64 }"
-[ "$PREFIX64" ] && printf "dns64-prefix: %s\n" "$PREFIX64"
+[ "${PREFIX64}" ] && printf "dns64-prefix: %s\n" "${PREFIX64}"
 
 # Remote control
 echo "remote-control:"
-[ "$ENABLE_RC" ] && echo "control-enable: yes"
-[ "$CONTROL_PORT" ] && printf "control-port: %u\n" "$CONTROL_PORT"
+[ "${ENABLE_RC}" ] && echo "control-enable: yes"
+[ "${CONTROL_PORT}" ] && printf "control-port: %u\n" "${CONTROL_PORT}"
 
-if [ "$CONTROL_USE_CERTS" ];
+if [ "${CONTROL_USE_CERTS}" ];
 then
 	printf "server-key-file: %s\n"   "${RC_SERVER_KEY_FILE:?}"
 	printf "server-cert-file: %s\n"  "${RC_SERVER_CERT_FILE:?}"
@@ -85,7 +85,7 @@ if [ -f "${__object:?}/parameter/control-interface" ];
 then
 	while read -r acl;
 	do
-		printf "control-interface: %s\n" "$acl"
+		printf "control-interface: %s\n" "${acl}"
 	done < "${__object:?}/parameter/control-interface"
 fi
 
@@ -95,10 +95,10 @@ then
 	while read -r fdzne
 	do
 		printf "forward-zone:\n"
-		printf "name: %s\n" "$(echo "$fdzne" | cut -f1 -d',')"
-		echo "$fdzne" | cut -f 2- -d',' | tr ',' '\n' | while read -r addr;
+		printf "name: %s\n" "$(echo "${fdzne}" | cut -f1 -d',')"
+		echo "${fdzne}" | cut -f 2- -d',' | tr ',' '\n' | while read -r addr;
 		do
-			printf "forward-addr: %s\n" "$addr"
+			printf "forward-addr: %s\n" "${addr}"
 		done
 	done < "${__object:?}/parameter/forward-zone";
 fi

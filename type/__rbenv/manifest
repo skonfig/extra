@@ -18,20 +18,20 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-homedir=$__object_id
+homedir=${__object_id:?}
 
-state_should=$(cat "$__object/parameter/state")
-owner=$(cat "$__object/parameter/owner")
+state_should=$(cat "${__object:?}/parameter/state")
+owner=$(cat "${__object:?}/parameter/owner")
 
-rbenvdir="$homedir/.rbenv"
-rubybuilddir="$rbenvdir/plugins/ruby-build"
+rbenvdir="${homedir}/.rbenv"
+rubybuilddir="${rbenvdir}/plugins/ruby-build"
 
-__git "$rbenvdir" \
+__git "${rbenvdir}" \
     --source git://github.com/sstephenson/rbenv.git \
-    --owner "$owner" \
-    --state "$state_should"
+    --owner "${owner}" \
+    --state "${state_should}"
 
-require="__git/$rbenvdir" __git "$rubybuilddir" \
+require="__git/${rbenvdir}" __git "${rubybuilddir}" \
     --source git://github.com/sstephenson/ruby-build.git \
-    --owner "$owner" \
-    --state "$state_should"
+    --owner "${owner}" \
+    --state "${state_should}"

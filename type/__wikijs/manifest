@@ -21,12 +21,12 @@
 
 os=$(cat "${__global:?}"/explorer/os)
 
-case "$os" in
+case "${os}" in
 	alpine)
 		:
 		;;
 	*)
-		echo "This type has no implementation for $os. Aborting." >&2;
+		echo "This type has no implementation for ${os}. Aborting." >&2;
 		exit 1;
 esac
 
@@ -51,7 +51,7 @@ then
 fi
 export SSL
 
-if [ "$SSL" = "true" ];
+if [ "${SSL}" = "true" ];
 then
 	if [ -f "${__object:?}/parameter/letsencrypt-mail" ];
 	then
@@ -79,11 +79,11 @@ __file /etc/init.d/wikijs \
 	--mode 0755
 __package nghttp2-dev  # Required for some reason, else a symbol is missing
 for logfile in wikijs.log wikijs.err; do
-	require="__user/wikijs" __file /var/log/$logfile --owner wikijs
+	require="__user/wikijs" __file /var/log/${logfile} --owner wikijs
 done
 
 mkdir -p "${__object:?}/files"
-"${__type:?}/files/config.yml.sh" "$db_pass" > "${__object:?}/files/config.yml"
+"${__type:?}/files/config.yml.sh" "${db_pass}" > "${__object:?}/files/config.yml"
 require='__user/wikijs' \
 	__file /var/wiki/config.yml \
 	--source "${__object:?}/files/config.yml" \

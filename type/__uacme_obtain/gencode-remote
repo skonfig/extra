@@ -22,12 +22,12 @@
 # FIXME: this code is duplicated from the manifest -> let's share it somehow.
 
 os=$(cat "${__global:?}"/explorer/os)
-case "$os" in
+case "${os}" in
 	alpine|ubuntu|debian)
 		default_confdir=/etc/ssl/uacme
 	;;
 	*)
-		echo "__uacme_obtain currently has no implementation for $os. Aborting." >&2;
+		echo "__uacme_obtain currently has no implementation for ${os}. Aborting." >&2;
 		exit 1;
 	;;
 esac
@@ -40,4 +40,4 @@ fi
 
 # Run renew script 'by hand' for intial issue - renews will be handled by the
 # cronjob.
-echo "$confdir/${__object_id:?}/renew.sh"
+echo "${confdir}/${__object_id:?}/renew.sh"

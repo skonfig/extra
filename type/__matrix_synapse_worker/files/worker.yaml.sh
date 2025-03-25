@@ -21,10 +21,10 @@
 #
 
 generate_bind_addresses () {
-	if [ -n "$WORKER_BIND_ADDRESSES" ]; then
+	if [ -n "${WORKER_BIND_ADDRESSES}" ]; then
 		echo "bind_addresses:"
-		for addr in $WORKER_BIND_ADDRESSES; do
-			echo "    - '$addr'"
+		for addr in ${WORKER_BIND_ADDRESSES}; do
+			echo "    - '${addr}'"
 		done
 	else
 		echo "bind_addresses: []"
@@ -49,7 +49,7 @@ worker_listeners:
 EOF
 
 for resource in ${WORKER_RESOURCES:?}; do
-echo "       - $resource"
+echo "       - ${resource}"
 done
 
 cat << EOF

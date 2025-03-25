@@ -20,16 +20,16 @@
 
 os=$(cat "${__global:?}"/explorer/os)
 
-case "$os" in
+case "${os}" in
 	"alpine")
 		borg_package=borgbackup
 		;;
 	*)
-		echo "__borg_repo is not yet implemented for os $os. Aborting." >&2;
+		echo "__borg_repo is not yet implemented for os ${os}. Aborting." >&2;
 		exit 1;
 esac
 
-__package "$borg_package"
+__package "${borg_package}"
 
 if [ -f "${__object:?}/parameter/owner" ];
 then

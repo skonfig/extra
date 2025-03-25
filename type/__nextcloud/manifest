@@ -64,9 +64,9 @@ version_majdiff() {
 
 
 # Check support status
-os=$(cat "$__global/explorer/os")
+os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
+case "${os}" in
     debian|ubuntu)
         # PHP main
         __package php-cli
@@ -79,11 +79,11 @@ case "$os" in
         for package in php-gd php-json php-mysql php-curl php-mbstring php-intl \
                         php-imagick php-xml php-zip php-bz2 php-bcmath php-gmp
         do
-            require="__package/php-cli" __package $package
+            require="__package/php-cli" __package ${package}
         done
 
         # check support database additions (but don't remove junk of old ones)
-        case "$(cat "$__object/parameter/database-type")" in
+        case "$(cat "${__object:?}/parameter/database-type")" in
             sqlite|sqlite3)
                 __package php-sqlite3
                 ;;
@@ -98,7 +98,7 @@ case "$os" in
 
     # unkown distro - what to install?
     *)
-        printf "unkown %s, don't know what to install ..\n" "$os" >&2
+        printf "unkown %s, don't know what to install ..\n" "${os}" >&2
         echo "checkout the __nextcloud/manifest to contribute a working package list" >&2
         exit 1
         ;;
@@ -106,23 +106,23 @@ esac
 
 
 # Get the user and group
-mode=$(cat "$__object/parameter/mode")
-user=$(cat "$__object/parameter/user")
-group=$(cat "$__object/parameter/group")
+mode=$(cat "${__object:?}/parameter/mode")
+user=$(cat "${__object:?}/parameter/user")
+group=$(cat "${__object:?}/parameter/group")
 
 # Get the installation directory
-installdir="/$__object_id"
+installdir="/${__object_id:?}"
 
 # Set permissions after the nextcloud installation/upgrade is done
 # FIXME maybe less strict if some parameter is not given by the user?
 #       permissions also partily set via the gencode-remote
-require="__nextcloud/$__object_id" __directory "$installdir" \
-    --mode "$mode" --owner "$user" --group "$group"
+require="__nextcloud/${__object_id:?}" __directory "${installdir}" \
+    --mode "${mode}" --owner "${user}" --group "${group}"
 
 
 # Get version information
-version_is=$(cat "$__object/explorer/version")
-version_should=$(cat "$__object/parameter/version")
+version_is=$(cat "${__object:?}/explorer/version")
+version_should=$(cat "${__object:?}/parameter/version")
 # The version URI
 nextcloud_uri="https://download.nextcloud.com/server/releases/nextcloud-${version_should}.tar.bz2"
 nextcloud_sum="${nextcloud_uri}.sha256"
@@ -130,26 +130,26 @@ nextcloud_sum="${nextcloud_uri}.sha256"
 
 # Check if there is a current installation. It depends where the upstream
 # tarball should be unpacked (directly or moved in a later stage).
-if [ "$version_is" ]; then
+if [ "${version_is}" ]; then
     # Only set and check the version if a upgrade is allowed.
     #  if this block will be skipped, no upgrade will be done
-    if ! [ -f "$__object/parameter/install-only" ]; then
+    if ! [ -f "${__object:?}/parameter/install-only" ]; then
         # Block downgrades as there are may caused from the automatic upgrader
         # if the current version is higher than the version that should be installed
-        if version_ge "$version_is" "$version_should"; then
+        if version_ge "${version_is}" "${version_should}"; then
             # it's an error if the current version is higher than the one that should be installed
             printf "The current Nextcloud version '%s' is higher than the version that should be installed (%s)\n" \
-               "$version_is" "$version_should" >&2
-            printf "Please bump the nextcloud version to '%s' or higher!\n" "$version_is" >&2
+               "${version_is}" "${version_should}" >&2
+            printf "Please bump the nextcloud version to '%s' or higher!\n" "${version_is}" >&2
             exit 2
         fi
 
         # Block upgrades for too great Nextcloud upgrades
-        if ! [ -f "$__object/parameter/disable-version-check" ]; then
-            if version_majdiff "$version_is" "$version_should"; then
+        if ! [ -f "${__object:?}/parameter/disable-version-check" ]; then
+            if version_majdiff "${version_is}" "${version_should}"; then
                 # error for your safety
                 printf "The new Nextcloud version '%s' is bigger than the next major release from the current release '%s'!\n" \
-                   "$version_should" "$version_is" >&2
+                   "${version_should}" "${version_is}" >&2
                 printf "Skipping major releases is discoraged from upstream as this can seriously break your instance. If you really want, use --disable-version-check (dangerous)\n" >&2
                 printf "Instead, upgrade your instance to the latest point release in the current major and then upgrade to the next latest major version.\n" >&2
                 printf "for more information, see type manual parameter --version\n" >&2
@@ -158,25 +158,25 @@ if [ "$version_is" ]; then
         fi
 
         # Set destination to a temporary directory
-        destination=$(dirname "$installdir")/.$(basename "$installdir")
+        destination=$(dirname "${installdir}")/.$(basename "${installdir}")
     fi
 else
     # Set destination to the real destination
-    destination=$installdir
+    destination=${installdir}
 fi
 
 # Install/Upgrade the nextcloud version if there is a destination set.
 #  it checks if it is necessary and intended to upgrade
-if [ "$destination" ] && [ "$version_is" != "$version_should" ]; then
+if [ "${destination}" ] && [ "${version_is}" != "${version_should}" ]; then
     # download it to the tmp directory
     # FIXME --sum is currently rather a hack, see cdist#844
     __download "/tmp/nextcloud-${version_should}.tar.bz2" \
-       --url "$nextcloud_uri" \
-       --sum "sha256:$(curl -sS -L "$nextcloud_sum" | awk '{print $1}')"
+       --url "${nextcloud_uri}" \
+       --sum "sha256:$(curl -sS -L "${nextcloud_sum}" | awk '{print $1}')"
 
-    # after this, unpack it from /tmp to $destination
+    # after this, unpack it from /tmp to ${destination}
     require="__download/tmp/nextcloud-${version_should}.tar.bz2" \
         __unpack "/tmp/nextcloud-${version_should}.tar.bz2" \
             --tar-strip 1 \
-            --destination "$destination"
+            --destination "${destination}"
 fi

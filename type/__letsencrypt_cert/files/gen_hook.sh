@@ -23,7 +23,7 @@
 # It is expected that this defines hook_contents
 
 # Reasonable defaults
-hook_source="${__object}/parameter/${hook}-hook"
+hook_source="${__object:?}/parameter/${hook}-hook"
 hook_state="absent"
 hook_contents_head="#!/bin/sh -e"
 hook_contents_logic=""
@@ -33,7 +33,7 @@ hook_contents_tail=""
 # Remove this when renew-hook is removed
 # Falling back to renew-hook if deploy-hook is not passed
 if [ "${hook}" = "deploy" ] && [ ! -f "${hook_source}" ]; then
-	hook_source="${__object}/parameter/renew-hook"
+	hook_source="${__object:?}/parameter/renew-hook"
 fi
 if [ "${state}" = "present" ] && \
 	[ -f "${hook_source}" ]; then
@@ -49,7 +49,7 @@ if [ "${state}" = "present" ] && \
 # Managed remotely with https://cdi.st
 #
 # Domains for which this hook is supposed to apply
-lineage="${LE_DIR}/live/${__object_id}"
+lineage="${LE_DIR}/live/${__object_id:?}"
 domains="\$(cat <<eof
 ${domains}
 eof

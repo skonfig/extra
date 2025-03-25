@@ -36,7 +36,7 @@ case "$(cat "${__object:?}/parameter/encryption")" in
 		fi
 		;;
 	*)
-		echo "$enc is not a known encryption mode for __borg_repo. Aborting." >&2
+		echo "${enc} is not a known encryption mode for __borg_repo. Aborting." >&2
 		exit 1;
 esac
 
@@ -53,6 +53,6 @@ fi
 cat <<- EOF
 	set -x
 	if [ ! -d "/${__object_id:?}" ]; then
-		$doas BORG_NEW_PASSPHRASE=$passphrase borg init -e ${enc:?} $appendonly /${__object_id:?}
+		${doas} BORG_NEW_PASSPHRASE=${passphrase} borg init -e ${enc:?} ${appendonly} /${__object_id:?}
 	fi
 EOF

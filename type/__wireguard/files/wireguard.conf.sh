@@ -32,7 +32,7 @@ cat <<- EOF
 	PrivateKey = ${1:?}
 EOF
 
-if [ -n "$WG_PORT" ];
+if [ -n "${WG_PORT}" ];
 then
 	echo "ListenPort = ${WG_PORT:?}"
 fi

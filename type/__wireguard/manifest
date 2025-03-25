@@ -20,12 +20,12 @@
 
 os=$(cat "${__global:?}"/explorer/os)
 
-case $os in
+case ${os} in
 	'alpine')
 		:
 		;;
 	*)
-		echo "This type has no implementation for $os. Aborting." >&2
+		echo "This type has no implementation for ${os}. Aborting." >&2
 		exit 1;
 		;;
 esac
@@ -49,7 +49,7 @@ fi
 export WG_PORT
 
 mkdir -p "${__object:?}/files/"
-"${__type:?}/files/wireguard.conf.sh" "$private_key" > "${__object:?}/files/wg-${__object_id:?}.conf"
+"${__type:?}/files/wireguard.conf.sh" "${private_key}" > "${__object:?}/files/wg-${__object_id:?}.conf"
 
 # Wireguard configuration. Configured using a block as it is also edited by
 # cdist-type__wireguard_peer(7).

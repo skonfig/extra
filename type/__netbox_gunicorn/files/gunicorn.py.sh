@@ -21,12 +21,12 @@
 # see https://docs.gunicorn.org/en/stable/settings.html
 #
 
-# fix missing $__explorer
+# fix missing ${__explorer:?}
 # see https://code.ungleich.ch/ungleich-public/cdist/-/issues/834
-__explorer="$__global/explorer"
+__explorer="${__global:?}/explorer"
 
 # size workes by cpu
-cores=$(cat "$__explorer/cpu_cores")
+cores=$(cat "${__explorer:?}/cpu_cores")
 
 
 cat << EOF

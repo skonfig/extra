@@ -19,7 +19,7 @@
 #
 
 state=$(cat "${__object:?}/parameter/state")
-swarm_state=$(cat "${__object}/explorer/swarm-state")
+swarm_state=$(cat "${__object:?}/explorer/swarm-state")
 
 if [ -z "${swarm_state}" ]; then
     echo "Unable to determine Swarm state. Is compatible version of Docker installed?" >&2

@@ -18,40 +18,40 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-state=$(cat "$__object/parameter/state")
+state=$(cat "${__object:?}/parameter/state")
 
-os=$(cat "$__global/explorer/os")
-case "$os" in
+os=$(cat "${__global:?}/explorer/os")
+case "${os}" in
 	debian|ubuntu)
 		:
 	;;
 	*)
-		echo "Your operating system ($os) is currently not supported by this type (${__type##*/})." >&2
+		echo "Your operating system (${os}) is currently not supported by this type (${__type##*/})." >&2
 		echo "Please contribute an implementation for it if you can." >&2
 		exit 1
 	;;
 esac
 
-if [ "$state" = "present"  ]; then
-	if ! grep -q ^rewrite "$__object/explorer/active-modules"; then
+if [ "${state}" = "present"  ]; then
+	if ! grep -q ^rewrite "${__object:?}/explorer/active-modules"; then
 		echo "a2enmod rewrite >/dev/null"
-		echo "mod:rewrite enabled" >> "$__messages_out"
+		echo "mod:rewrite enabled" >> "${__messages_out:?}"
 	fi
-	if ! grep -q "^cgi$" "$__object/explorer/active-modules"; then
+	if ! grep -q "^cgi$" "${__object:?}/explorer/active-modules"; then
 		echo "a2enmod cgi >/dev/null"
-		echo "mod:cgi enabled" >> "$__messages_out"
+		echo "mod:cgi enabled" >> "${__messages_out:?}"
 	fi
 
-	if ! grep -q ^xymon.conf "$__object/explorer/active-conf"; then
+	if ! grep -q ^xymon.conf "${__object:?}/explorer/active-conf"; then
 		echo "a2enconf xymon >/dev/null"
-		echo "conf:xymon enabled" >> "$__messages_out"
+		echo "conf:xymon enabled" >> "${__messages_out:?}"
 	fi
 fi
 
-if grep -q "^mod:.* enabled" "$__messages_out"; then
+if grep -q "^mod:.* enabled" "${__messages_out:?}"; then
 	echo "systemctl restart apache2.service"
-	echo "apache restarted" >> "$__messages_out"
-elif grep -q "^conf:xymon enabled" "$__messages_out"; then
+	echo "apache restarted" >> "${__messages_out:?}"
+elif grep -q "^conf:xymon enabled" "${__messages_out:?}"; then
 	echo "systemctl reload apache2.service"
-	echo "apache reloaded" >> "$__messages_out"
+	echo "apache reloaded" >> "${__messages_out:?}"
 fi

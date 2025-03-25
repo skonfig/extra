@@ -21,40 +21,40 @@
 #
 
 
-os=$(cat "$__global/explorer/os")
+os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
+case "${os}" in
    alpine|scientific|centos|redhat|ubuntu|debian|devuan|archlinux|gentoo)
       # any linux should work
       :
    ;;
    *)
-      echo "Your operating system ($os) is currently not supported by this type (${__type##*/})." >&2
+      echo "Your operating system (${os}) is currently not supported by this type (${__type##*/})." >&2
       echo "Please contribute an implementation for it if you can." >&2
       exit 1
    ;;
 esac
 
-versions_dir="$__type/files/versions"
-version=$(cat "$__object/parameter/version")
-version_dir="$versions_dir/$version"
+versions_dir="${__type:?}/files/versions"
+version=$(cat "${__object:?}/parameter/version")
+version_dir="${versions_dir}/${version}"
 
-if [ ! -d "$version_dir" ]; then
-   echo "Unknown consul version '$version'. Expected one of:" >&2
-   ls "$versions_dir" >&2
+if [ ! -d "${version_dir}" ]; then
+   echo "Unknown consul version '${version}'. Expected one of:" >&2
+   ls "${versions_dir}" >&2
    exit 1
 fi
 
-if [ -f "$__object/parameter/direct" ]; then
+if [ -f "${__object:?}/parameter/direct" ]; then
     __package unzip
     __package curl
 else
     __staged_file /usr/local/bin/consul \
-       --source "$(cat "$version_dir/source")" \
-       --cksum "$(cat "$version_dir/cksum")" \
+       --source "$(cat "${version_dir}/source")" \
+       --cksum "$(cat "${version_dir}/cksum")" \
        --fetch-command 'curl -s -L "%s"' \
        --prepare-command 'unzip -p "%s"' \
-       --state "$(cat "$__object/parameter/state")" \
+       --state "$(cat "${__object:?}/parameter/state")" \
        --group root \
        --owner root \
        --mode 755

@@ -24,27 +24,27 @@ shquot() {
 	EOF
 }
 
-jaildir=$(cat "$__object/parameter/jaildir")
-jailbase=$(cat "$__object/parameter/jailbase")
-state=$(cat "$__object/parameter/state")
+jaildir=$(cat "${__object:?}/parameter/jaildir")
+jailbase=$(cat "${__object:?}/parameter/jailbase")
+state=$(cat "${__object:?}/parameter/state")
 
-if [ "$state" = "present" ] && [ -z "$jailbase" ]; then
+if [ "${state}" = "present" ] && [ -z "${jailbase}" ]; then
    exec >&2
    echo "jailbase is a REQUIRED parameter when state=present!"
    exit 1
 fi
 
 remotebase="${jaildir}/jailbase.tgz"
-basepresent=$(cat "$__object/explorer/basepresent")
+basepresent=$(cat "${__object:?}/explorer/basepresent")
 
-if [ "$state" = "present" ]; then
-   if [ "$basepresent" = "NONE" ]; then
+if [ "${state}" = "present" ]; then
+   if [ "${basepresent}" = "NONE" ]; then
       # IPv6 fix
-      if echo "${__target_host}" | grep -q -E '^[0-9a-fA-F:]+$'
+      if echo "${__target_host:?}" | grep -q -E '^[0-9a-fA-F:]+$'
       then
-         my_target_host="[${__target_host}]"
+         my_target_host="[${__target_host:?}]"
       else
-         my_target_host=${__target_host}
+         my_target_host=${__target_host:?}
       fi
 
       printf '%s %s %s <%s\n' \

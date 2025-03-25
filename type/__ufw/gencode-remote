@@ -18,9 +18,9 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-state=$(cat "$__object/parameter/state")
+state=$(cat "${__object:?}/parameter/state")
 
-case "$state" in
+case "${state}" in
     enabled)
         echo 'ufw --force enable'
         ;;
@@ -31,12 +31,12 @@ case "$state" in
     # absent will be uninstalled in manifest
 esac
 
-if [ "$state" != absent ]; then
-    if [ -f "$__object/parameter/logging" ]; then
-        logging=$(cat "$__object/parameter/logging")
-        case "$logging" in
+if [ "${state}" != absent ]; then
+    if [ -f "${__object:?}/parameter/logging" ]; then
+        logging=$(cat "${__object:?}/parameter/logging")
+        case "${logging}" in
             off|low|medium|high|full)
-                echo "ufw --force logging $logging"
+                echo "ufw --force logging ${logging}"
                 ;;
             *)
                 echo 'Logging parameter must be off, low, medium, high, or full!' >&2
@@ -46,11 +46,11 @@ if [ "$state" != absent ]; then
     fi
 
     for direction in incoming outgoing routed; do
-        if [ -f "$__object/parameter/default_$direction" ]; then
-            treatment=$(cat "$__object/parameter/default_$direction")
-            case "$treatment" in
+        if [ -f "${__object:?}/parameter/default_${direction}" ]; then
+            treatment=$(cat "${__object:?}/parameter/default_${direction}")
+            case "${treatment}" in
                 allow|deny|reject)
-                    echo "ufw --force default $treatment $direction"
+                    echo "ufw --force default ${treatment} ${direction}"
                     ;;
                 *)
                     echo 'UFW default policies must be either "allow", "deny", or "reject".' >&2

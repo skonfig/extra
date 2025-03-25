@@ -20,7 +20,7 @@
 # Prints a sorted list of the packages currently installed.
 #
 
-os=$("${__explorer}/os")
+os=$("${__explorer:?}/os")
 
 case "${os}" in
     (debian|ubuntu|devuan)

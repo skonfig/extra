@@ -19,22 +19,22 @@
 #
 
 
-os=$(cat "$__global/explorer/os")
-state=$(cat "$__object/parameter/state")
-version=$(cat "$__object/parameter/version")
+os=$(cat "${__global:?}/explorer/os")
+state=$(cat "${__object:?}/parameter/state")
+version=$(cat "${__object:?}/parameter/version")
 
-case "$os" in
+case "${os}" in
     centos)
         # shellcheck source=/dev/null
-        if (. "$__global/explorer/os_release" && [ "${VERSION_ID}" = "7" ]); then
+        if (. "${__global:?}/explorer/os_release" && [ "${VERSION_ID}" = "7" ]); then
           __yum_repo docker-ce-stable \
             --name 'Docker CE Stable' \
-            --baseurl "https://download.docker.com/linux/centos/7/\$basearch/stable" \
+            --baseurl "https://download.docker.com/linux/centos/7/\${basearch}/stable" \
             --enabled \
             --gpgcheck 1 \
             --gpgkey 'https://download.docker.com/linux/centos/gpg' \
             --state "${state}"
-          if [ "$version" != "latest" ]; then
+          if [ "${version}" != "latest" ]; then
             require="__yum_repo/docker-ce-stable" __package docker-ce --version "${version}" --state "${state}"
           else
             require="__yum_repo/docker-ce-stable" __package docker-ce --state "${state}"
@@ -55,19 +55,19 @@ case "$os" in
 
       require="__apt_key/docker" __apt_source docker \
          --uri "https://download.docker.com/linux/${os}" \
-         --distribution "$(cat "$__global/explorer/lsb_codename")" \
+         --distribution "$(cat "${__global:?}/explorer/lsb_codename")" \
          --state "${state}" \
          --component "stable"
-      if [ "$version" != "latest" ]; then
+      if [ "${version}" != "latest" ]; then
         require="__apt_source/docker" __package docker-ce --version "${version}" --state "${state}"
       else
         require="__apt_source/docker" __package docker-ce --state "${state}"
       fi
    ;;
    devuan)
-      os_version=$(cat "$__global/explorer/os_version")
+      os_version=$(cat "${__global:?}/explorer/os_version")
 
-      case "$os_version" in
+      case "${os_version}" in
         ascii)
           distribution="stretch"
         ;;
@@ -75,7 +75,7 @@ case "$os" in
           distribution="jessie"
         ;;
         *)
-          echo "Your devuan release ($os_version) is currently not supported by this type (${__type##*/}).">&2
+          echo "Your devuan release (${os_version}) is currently not supported by this type (${__type##*/}).">&2
           echo "Please contribute an implementation for it if you can." >&2
           exit 1
         ;;
@@ -94,7 +94,7 @@ case "$os" in
          --distribution "${distribution}" \
          --state "${state}" \
          --component "stable"
-      if [ "$version" != "latest" ]; then
+      if [ "${version}" != "latest" ]; then
         require="__apt_source/docker" __package docker-ce --version "${version}" --state "${state}"
       else
         require="__apt_source/docker" __package docker-ce --state "${state}"
@@ -102,7 +102,7 @@ case "$os" in
 
    ;;
    *)
-      echo "Your operating system ($os) is currently not supported by this type (${__type##*/})." >&2
+      echo "Your operating system (${os}) is currently not supported by this type (${__type##*/})." >&2
       echo "Please contribute an implementation for it if you can." >&2
       exit 1
    ;;

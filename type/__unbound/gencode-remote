@@ -27,8 +27,8 @@ fi
 UNBOUND_CERTS_DIR=/etc/unbound
 
 if [ -f "${__object:?}/parameter/enable-rc" ]; then
-	echo "unbound-control-setup -d $UNBOUND_CERTS_DIR"
-	echo "chown unbound:unbound $UNBOUND_CERTS_DIR/*.pem $UNBOUND_CERTS_DIR/*.key"
+	echo "unbound-control-setup -d ${UNBOUND_CERTS_DIR}"
+	echo "chown unbound:unbound ${UNBOUND_CERTS_DIR}/*.pem ${UNBOUND_CERTS_DIR}/*.key"
 fi
 
 cat << EOF

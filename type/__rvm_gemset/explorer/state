@@ -20,17 +20,17 @@
 # Prints "present" if the gemset exists, "absent" otherwise.
 #
 
-user=$(cat "$__object/parameter/user")
+user=$(cat "${__object:?}/parameter/user")
 
-if [ ! -e "~$user/.rvm/scripts/rvm" ] ; then
+if [ ! -e "~${user}/.rvm/scripts/rvm" ] ; then
    echo "absent"
    exit 0
 fi
 
 # shellcheck disable=SC2016
-if su - "$user" -c 'source ~/.rvm/scripts/rvm; rvm list strings | grep -q "^$ruby\$"'; then
+if su - "${user}" -c 'source ~/.rvm/scripts/rvm; rvm list strings | grep -q "^${ruby}\$"'; then
     # shellcheck disable=SC2016
-    if su - "$user" -c 'source ~/.rvm/scripts/rvm; rvm use "$ruby" > /dev/null; rvm gemset list strings | cut -f 1 -d " " | grep -q "^$gemsetname\$"'; then
+    if su - "${user}" -c 'source ~/.rvm/scripts/rvm; rvm use "${ruby}" > /dev/null; rvm gemset list strings | cut -f 1 -d " " | grep -q "^${gemsetname}\$"'; then
       echo "present"
       exit 0
   fi

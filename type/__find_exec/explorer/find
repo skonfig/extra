@@ -20,24 +20,24 @@
 # Prints the first line of find output (i.e. there is something to exec on).
 #
 
-if [ -f "$__object/parameter/path" ]
+if [ -f "${__object:?}/parameter/path" ]
 then
-    path=$(cat "$__object/parameter/path")
+    path=$(cat "${__object:?}/parameter/path")
 else
-    path="/$__object_id"
+    path="/${__object_id:?}"
 fi
 
-if [ ! -e "$path" ]
+if [ ! -e "${path}" ]
 then
     exit 0
 fi
 
-set -- find "$path"
+set -- find "${path}"
 
 while read -r l
 do
-    set -- "$@" "$l"
+    set -- "$@" "${l}"
 done \
-    < "$__object/parameter/exp"
+    < "${__object:?}/parameter/exp"
 
 eval "$* | sed 1q"

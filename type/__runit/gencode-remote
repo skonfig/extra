@@ -20,15 +20,15 @@
 #
 
 
-os=$(cat "${__global}/explorer/os")
+os=$(cat "${__global:?}/explorer/os")
 if [ "${os}" != "freebsd" ]; then
 	exit
 fi
 
 # FreeBSD-specific
 svdir="/var/service"
-svdir_exists=$(cat "${__object}/explorer/svdir-exists")
-runit_etc=$(cat "${__object}/explorer/runit-etc")
+svdir_exists=$(cat "${__object:?}/explorer/svdir-exists")
+runit_etc=$(cat "${__object:?}/explorer/runit-etc")
 
 if [ -z "${svdir_exists}" ]; then
 	echo "mkdir '${svdir}'"
@@ -38,7 +38,7 @@ if [ -z "${runit_etc}" ]; then
 	echo "cp -R '/usr/local/etc/runit' '/etc/runit'"
 	sv_restart="YES"
 fi
-if grep -q "^__key_value/runsvdir_enable" "${__messages_in}"; then
+if grep -q "^__key_value/runsvdir_enable" "${__messages_in:?}"; then
 	sv_restart="YES"
 fi
 

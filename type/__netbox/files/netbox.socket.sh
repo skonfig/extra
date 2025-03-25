@@ -33,14 +33,14 @@ fi
 
 cat << UNIT
 [Unit]
-Description=Socket for NetBox via $TYPE
+Description=Socket for NetBox via ${TYPE}
 
 [Socket]
 UNIT
 
 # read all sockets to listen to
 while read -r line; do
-    printf "ListenStream=%s\n" "$line"
+    printf "ListenStream=%s\n" "${line}"
 done < "$1"
 
 cat << UNIT

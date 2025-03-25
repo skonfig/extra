@@ -18,6 +18,6 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-if grep -q "^__file/etc/iptables.d/" "$__messages_in"; then
+if grep -q "^__file/etc/iptables\.d/" "${__messages_in:?}"; then
     echo /etc/init.d/iptables restart
 fi

@@ -24,12 +24,12 @@ echo 'server {'
 
 # Listen
 cat <<- EOF
-	listen ${LPORT:?} $TLS;
-	listen [::]:${LPORT:?} $TLS;
+	listen ${LPORT:?} ${TLS};
+	listen [::]:${LPORT:?} ${TLS};
 EOF
 
 # Name
-echo "server_name ${DOMAIN:?} $ALTDOMAINS;"
+echo "server_name ${DOMAIN:?} ${ALTDOMAINS};"
 
 # ACME challenges.
 cat << EOF
@@ -38,9 +38,9 @@ location /.well-known/acme-challenge/ {
 }
 EOF
 
-if [ -n "$TLS" ];
+if [ -n "${TLS}" ];
 then
-	if [ -n "$HSTS" ];
+	if [ -n "${HSTS}" ];
 	then
 		echo 'include snippets/hsts;'
 	fi

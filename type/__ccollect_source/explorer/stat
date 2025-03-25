@@ -20,13 +20,13 @@
 # Prints stat information.
 #
 
-destination="/$__object_id"
+destination="/${__object_id:?}"
 
 # nothing to work with, nothing we could do
-[ -e "$destination" ] || exit 0
+[ -e "${destination}" ] || exit 0
 
-os=$("$__explorer/os")
-case "$os" in
+os=$("${__explorer:?}/os")
+case "${os}" in
    "freebsd"|"netbsd"|"openbsd")
       # FIXME: should be something like this based on man page, but can not test
       stat -f "type: %ST
@@ -35,7 +35,7 @@ group: %Dg %Sg
 mode: %Op %Sp
 size: %Dz
 links: %Dl
-" "$destination"
+" "${destination}"
    ;;
     "macosx")
        stat -f "type: %HT
@@ -44,7 +44,7 @@ links: %Dl
  mode: %Lp %Sp
  size: %Dz
  links: %Dl
- " "$destination"
+ " "${destination}"
     ;;
    *)
       stat --printf="type: %F
@@ -53,6 +53,6 @@ group: %g %G
 mode: %a %A
 size: %s
 links: %h
-" "$destination"
+" "${destination}"
    ;;
 esac

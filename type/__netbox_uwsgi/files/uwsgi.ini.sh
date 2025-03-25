@@ -30,16 +30,16 @@
 
 multi_options() {
     while read -r line; do
-        printf "%s = %s\n" "$1" "$line"
+        printf "%s = %s\n" "$1" "${line}"
     done < "$2"
 }
 
-# fix missing $__explorer
+# fix missing ${__explorer:?}
 # see https://code.ungleich.ch/ungleich-public/cdist/-/issues/834
-__explorer="$__global/explorer"
+__explorer="${__global:?}/explorer"
 
 # size workes by cpu
-cores=$(cat "$__explorer/cpu_cores")
+cores=$(cat "${__explorer:?}/cpu_cores")
 
 
 cat << EOF
@@ -47,16 +47,16 @@ cat << EOF
 ; socket(s) to bind
 EOF
 
-if [ "$SYSTEMD_SOCKET" != "yes" ]; then
+if [ "${SYSTEMD_SOCKET}" != "yes" ]; then
     # special protocol to bind
-    find "$__object/parameter/" -maxdepth 1 -name "*-bind" -print \
+    find "${__object:?}/parameter/" -maxdepth 1 -name "*-bind" -print \
      | while read -r param; do
-        multi_options "$(basename "$param" | awk -F'-' '{print $1}')-socket" "$param"
+        multi_options "$(basename "${param}" | awk -F'-' '{print $1}')-socket" "${param}"
     done
 else
     # else, systemd will offer socket
     echo "; sockets managed via 'uwsgi-netbox.socket'"
-    printf "protocol = %s\n" "$PROTOCOL"
+    printf "protocol = %s\n" "${PROTOCOL}"
 fi
 
 
@@ -70,7 +70,7 @@ EOF
 
 
 # optional mapping of static content
-if [ "$STATIC_MAP" != "" ]; then
+if [ "${STATIC_MAP}" != "" ]; then
     cat << EOF
 
 ; map static content

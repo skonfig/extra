@@ -25,10 +25,10 @@
 
 ufw='ufw --force rule'
 
-case "$(cat "$__object/parameter/state")" in
+case "$(cat "${__object:?}/parameter/state")" in
     present) ;;
     absent)
-        ufw="$ufw delete"
+        ufw="${ufw} delete"
         ;;
     *)
         echo 'State must be "present" or "absent".' >&2
@@ -36,10 +36,10 @@ case "$(cat "$__object/parameter/state")" in
         ;;
 esac
 
-if [ -f "$__object/parameter/rule" ]; then
-    ufw="$ufw $(cat "$__object/parameter/rule")"
+if [ -f "${__object:?}/parameter/rule" ]; then
+    ufw="${ufw} $(cat "${__object:?}/parameter/rule")"
 else
-    ufw="$ufw allow $__object_id"
+    ufw="${ufw} allow ${__object_id:?}"
 fi
 
-echo "$ufw"
+echo "${ufw}"

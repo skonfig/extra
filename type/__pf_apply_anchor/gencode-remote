@@ -20,10 +20,10 @@
 
 ANCHORS_DIR="/etc/pf.d"
 
-if [ -f "${__object}/parameter/anchor_name" ]; then
-    anchor_name=$(cat "${__object}/parameter/anchor_name")
+if [ -f "${__object:?}/parameter/anchor_name" ]; then
+    anchor_name=$(cat "${__object:?}/parameter/anchor_name")
 else
-    anchor_name=${__object_id}
+    anchor_name=${__object_id:?}
 fi
 anchor_file="${ANCHORS_DIR}/${anchor_name}"
 

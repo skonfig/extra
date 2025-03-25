@@ -20,16 +20,16 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os=$(cat "$__global/explorer/os")
+os=$(cat "${__global:?}/explorer/os")
 
 ###
 # Type parameters.
 
-state=$(cat "$__object/parameter/state")
-user=$(cat "$__object/parameter/user")
-group=$(cat "$__object/parameter/group")
-release=$(cat "$__global/explorer/lsb_release")
-if [ -f "$__object/parameter/use-distribution-package" ]; then
+state=$(cat "${__object:?}/parameter/state")
+user=$(cat "${__object:?}/parameter/user")
+group=$(cat "${__object:?}/parameter/group")
+release=$(cat "${__global:?}/explorer/lsb_release")
+if [ -f "${__object:?}/parameter/use-distribution-package" ]; then
   use_distribution_package=1
 fi
 
@@ -40,9 +40,9 @@ data_dir="/var/lib/consul"
 
 
 
-tls_dir="$conf_dir/tls"
+tls_dir="${conf_dir}/tls"
 
-case "$os" in
+case "${os}" in
     alpine)
         conf_dir="/etc/consul"
         conf_file="server.json"
@@ -57,11 +57,11 @@ esac
 # Sane deployment, based on distribution package when available.
 
 distribution_setup () {
-  case "$os" in
+  case "${os}" in
      debian)
        # consul is only available starting Debian 10 (buster).
        # See https://packages.debian.org/buster/consul
-       if [ "$release" -lt 10 ]; then
+       if [ "${release}" -lt 10 ]; then
          echo "Consul is not available for your debian release." >&2
          echo "Please use the 'manual' (i.e. non-package) installation or \
            upgrade the target system." >&2
@@ -85,7 +85,7 @@ distribution_setup () {
        group='consul'
      ;;
      *)
-        echo "Your operating system ($os) is currently not supported with the \
+        echo "Your operating system (${os}) is currently not supported with the \
           --use-distribution-package flag (${__type##*/})." >&2
         echo "Please use non-package installation or contribute an \
           implementation for if you can." >&2
@@ -94,7 +94,7 @@ distribution_setup () {
   esac
 
   # Install consul package.
-  __package consul --state "$state"
+  __package consul --state "${state}"
 
   export config_deployment_requires="__package/consul"
 }
@@ -106,8 +106,8 @@ init_sysvinit()
 {
     __file /etc/init.d/consul \
         --owner root --group root --mode 0755 \
-        --state "$state" \
-        --source "$__type/files/consul.sysv-$1"
+        --state "${state}" \
+        --source "${__type:?}/files/consul.sysv-$1"
     require="__file/etc/init.d/consul" __start_on_boot consul
 }
 
@@ -115,8 +115,8 @@ init_systemd()
 {
     __file /lib/systemd/system/consul.service \
         --owner root --group root --mode 0644 \
-        --state "$state" \
-        --source "$__type/files/consul.systemd"
+        --state "${state}" \
+        --source "${__type:?}/files/consul.systemd"
         require="__file/lib/systemd/system/consul.service" __start_on_boot consul
 }
 
@@ -124,24 +124,24 @@ init_upstart()
 {
     __file /etc/init/consul-prepare.conf \
         --owner root --group root --mode 0644 \
-        --state "$state" \
-        --source "$__type/files/consul-prepare.upstart"
+        --state "${state}" \
+        --source "${__type:?}/files/consul-prepare.upstart"
     require="__file/etc/init/consul-prepare.conf" \
         __file /etc/init/consul.conf \
             --owner root --group root --mode 0644 \
-            --state "$state" \
-            --source "$__type/files/consul.upstart"
+            --state "${state}" \
+            --source "${__type:?}/files/consul.upstart"
     require="__file/etc/init/consul.conf" __start_on_boot consul
 }
 
 manual_setup () {
-  case "$os" in
+  case "${os}" in
      alpine|scientific|centos|debian|devuan|redhat|ubuntu)
         # whitelist safeguard
         :
      ;;
      *)
-        echo "Your operating system ($os) is currently not supported by this \
+        echo "Your operating system (${os}) is currently not supported by this \
           type (${__type##*/})." >&2
         echo "Please contribute an implementation for it if you can." >&2
         exit 1
@@ -149,35 +149,35 @@ manual_setup () {
   esac
 
   # FIXME: there has got to be a better way to handle the dependencies in this case
-  case "$state" in
+  case "${state}" in
      present)
-        __group "$group" --system --state "$state"
-        require="__group/$group" __user "$user" \
-          --system --gid "$group" --home "$data_dir" --state "$state"
+        __group "${group}" --system --state "${state}"
+        require="__group/${group}" __user "${user}" \
+          --system --gid "${group}" --home "${data_dir}" --state "${state}"
      ;;
      *)
-        echo "The $state state is not (yet?) supported by this type." >&2
+        echo "The ${state} state is not (yet?) supported by this type." >&2
         exit 1
      ;;
   esac
 
   # Create data directory.
-  require="__user/consul" __directory "$data_dir" \
-    --owner "$user" --group "$group" --mode 770 --state "$state"
+  require="__user/consul" __directory "${data_dir}" \
+    --owner "${user}" --group "${group}" --mode 770 --state "${state}"
 
   # Create config directory.
-  require="__user/consul" __directory "$conf_dir" \
-    --parents --owner root --group "$group" --mode 750 --state "$state"
+  require="__user/consul" __directory "${conf_dir}" \
+    --parents --owner root --group "${group}" --mode 750 --state "${state}"
 
   # Install init script to start on boot
-  case "$os" in
+  case "${os}" in
       devuan)
           init_sysvinit debian
           ;;
       centos|redhat)
-          os_version=$(sed 's/[^0-9.]//g' "$__global/explorer/os_version")
+          os_version=$(sed 's/[^0-9.]//g' "${__global:?}/explorer/os_version")
           major_version=${os_version%%.*}
-          case "$major_version" in
+          case "${major_version}" in
               [456])
                   init_sysvinit redhat
                   ;;
@@ -185,17 +185,17 @@ manual_setup () {
                   init_systemd
                   ;;
               *)
-                  echo "Unsupported CentOS/Redhat version: $os_version" >&2
+                  echo "Unsupported CentOS/Redhat version: ${os_version}" >&2
                   exit 1
                   ;;
           esac
           ;;
 
       debian)
-          os_version=$(cat "$__global/explorer/os_version")
+          os_version=$(cat "${__global:?}/explorer/os_version")
           major_version=${os_version%%.*}
 
-          case "$major_version" in
+          case "${major_version}" in
               [567])
                   init_sysvinit debian
               ;;
@@ -203,7 +203,7 @@ manual_setup () {
                   init_systemd
               ;;
               *)
-                  echo "Unsupported Debian version $os_version" >&2
+                  echo "Unsupported Debian version ${os_version}" >&2
                   exit 1
               ;;
           esac
@@ -214,12 +214,12 @@ manual_setup () {
           ;;
   esac
 
-  config_deployment_requires="__user/consul __directory/$conf_dir"
+  config_deployment_requires="__user/consul __directory/${conf_dir}"
 }
 
 ###
 # Trigger requested installation method.
-if [ $use_distribution_package ]; then
+if [ ${use_distribution_package} ]; then
   distribution_setup
 else
   manual_setup
@@ -228,15 +228,15 @@ fi
 ###
 # Install TLS certificates.
 
-if [ -f "$__object/parameter/ca-file-source" ] || \
-   [ -f "$__object/parameter/cert-file-source" ] || \
-   [ -f "$__object/parameter/key-file-source" ]; then
+if [ -f "${__object:?}/parameter/ca-file-source" ] || \
+   [ -f "${__object:?}/parameter/cert-file-source" ] || \
+   [ -f "${__object:?}/parameter/key-file-source" ]; then
 
-   requires=$config_deployment_requires __directory "$tls_dir" \
-     --owner root --group "$group" --mode 750 --state "$state"
+   requires=${config_deployment_requires} __directory "${tls_dir}" \
+     --owner root --group "${group}" --mode 750 --state "${state}"
 
    # Append to service restart requirements.
-   restart_requires="$restart_requires __directory/$conf_dir/tls"
+   restart_requires="${restart_requires} __directory/${conf_dir}/tls"
 fi
 
 ###
@@ -246,74 +246,74 @@ json_configuration=$(
   echo "{"
 
   # parameters we define ourself
-  printf '   "data_dir": "%s"\n' "$data_dir"
+  printf '   "data_dir": "%s"\n' "${data_dir}"
 
-  cd "$__object/parameter/"
+  cd "${__object:?}/parameter/"
   for param in *; do
-     case "$param" in
+     case "${param}" in
         state|user|group|json-config|use-distribution-package) continue ;;
         ca-file-source|cert-file-source|key-file-source)
-           source=$(cat "$__object/parameter/$param")
-           destination="$tls_dir/${source##*/}"
-           require="__directory/$tls_dir" \
-              __file "$destination" \
+           source=$(cat "${__object:?}/parameter/${param}")
+           destination="${tls_dir}/${source##*/}"
+           require="__directory/${tls_dir}" \
+              __file "${destination}" \
                  --owner root --group consul --mode 640 \
-                 --source "$source" \
-                 --state "$state"
+                 --source "${source}" \
+                 --state "${state}"
            key=$(echo "${param%-*}" | tr '-' '_')
-           printf '   ,"%s": "%s"\n' "$key" "$destination"
+           printf '   ,"%s": "%s"\n' "${key}" "${destination}"
         ;;
         disable-remote-exec|disable-update-check|leave-on-terminate\
           |rejoin-after-leave|server|enable-syslog|verify-incoming|verify-outgoing)
            # handle boolean parameters
-           key=$(echo "$param" | tr '-' '_')
-           printf '   ,"%s": true\n' "$key"
+           key=$(echo "${param}" | tr '-' '_')
+           printf '   ,"%s": true\n' "${key}"
         ;;
         retry-join)
            # join multiple parameters into json array
-           retry_join=$(awk '{printf "\""$1"\","}' "$__object/parameter/retry-join")
+           retry_join=$(awk '{printf "\""$1"\","}' "${__object:?}/parameter/retry-join")
            # remove trailing ,
            printf '   ,"retry_join": [%s]\n' "${retry_join%*,}"
         ;;
         retry-join-wan)
            # join multiple parameters into json array over wan
-           retry_join_wan=$(awk '{printf "\""$1"\","}' "$__object/parameter/retry-join-wan")
+           retry_join_wan=$(awk '{printf "\""$1"\","}' "${__object:?}/parameter/retry-join-wan")
            # remove trailing ,
            printf '   ,"retry_join_wan": [%s]\n' "${retry_join_wan%*,}"
         ;;
         bootstrap-expect)
            # integer key=value parameters
-           key=$(echo "$param" | tr '-' '_')
-           printf '   ,"%s": %s\n' "$key" "$(cat "$__object/parameter/$param")"
+           key=$(echo "${param}" | tr '-' '_')
+           printf '   ,"%s": %s\n' "${key}" "$(cat "${__object:?}/parameter/${param}")"
         ;;
         *)
            # string key=value parameters
-           key=$(echo "$param" | tr '-' '_')
-           printf '   ,"%s": "%s"\n' "$key" "$(cat "$__object/parameter/$param")"
+           key=$(echo "${param}" | tr '-' '_')
+           printf '   ,"%s": "%s"\n' "${key}" "$(cat "${__object:?}/parameter/${param}")"
         ;;
      esac
   done
-  if [ -f "$__object/parameter/json-config" ]; then
-     json_config=$(cat "$__object/parameter/json-config")
-     if [ "$json_config" = "-" ]; then
-        json_config="$__object/stdin"
+  if [ -f "${__object:?}/parameter/json-config" ]; then
+     json_config=$(cat "${__object:?}/parameter/json-config")
+     if [ "${json_config}" = "-" ]; then
+        json_config="${__object:?}/stdin"
      fi
      # remove leading and trailing whitespace and commas from first and last line
      # indent each line with 3 spaces for consistency
-     json=$(sed -e 's/^[ \t]*/   /' -e '1s/^[ \t,]*//' -e '$s/[ \t,]*$//' "$json_config")
-     printf '   ,%s\n' "$json"
+     json=$(sed -e 's/^[ \t]*/   /' -e '1s/^[ \t,]*//' -e '${s}/[ \t,]*$//' "${json_config}")
+     printf '   ,%s\n' "${json}"
   fi
   echo "}"
 )
-echo "$json_configuration" | require=$config_deployment_requires \
-  __file "$conf_dir/$conf_file" \
-      --owner root --group "$group" --mode 640 \
-      --state "$state" \
+echo "${json_configuration}" | require=${config_deployment_requires} \
+  __file "${conf_dir}/${conf_file}" \
+      --owner root --group "${group}" --mode 640 \
+      --state "${state}" \
       --source -
 
 # Set configuration deployment as requirement for service restart.
-restart_requires="__file/$conf_dir/$conf_file"
+restart_requires="__file/${conf_dir}/${conf_file}"
 
 ###
 # Restart consul agent after everything else.
-require=$restart_requires __service consul --action restart
+require=${restart_requires} __service consul --action restart

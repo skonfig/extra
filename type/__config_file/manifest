@@ -18,19 +18,19 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-set -- "/${__object_id}"
-cd "$__object/parameter/"
+set -- "/${__object_id:?}"
+cd "${__object:?}/parameter/"
 for param in *; do
-   case "$param" in
+   case "${param}" in
       source)
-         source=$(cat "$__object/parameter/source")
-         if [ "$source" = "-" ]; then
-            source="$__object/stdin"
+         source=$(cat "${__object:?}/parameter/source")
+         if [ "${source}" = "-" ]; then
+            source="${__object:?}/stdin"
          fi
-         set -- "$@" --source "$source"
+         set -- "$@" --source "${source}"
       ;;
       owner|group|mode|state)
-         set -- "$@" "--${param}" "$(cat "$__object/parameter/$param")"
+         set -- "$@" "--${param}" "$(cat "${__object:?}/parameter/${param}")"
       ;;
       *)
          # ignore unknown parameters

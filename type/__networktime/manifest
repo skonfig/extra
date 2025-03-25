@@ -20,7 +20,7 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
+case "${os}" in
 'alpine')
 	backend=busybox-openrc
 	;;
@@ -28,18 +28,18 @@ case "$os" in
 	backend=systemd-timesyncd
 	;;
 *)
-	printf "__networktime is not yet implemented for %s.\n" "$os" >&2
+	printf "__networktime is not yet implemented for %s.\n" "${os}" >&2
 	printf "Please contribute an implementation for it if you can.\n" >&2
 	exit 1
 	;;
 esac
 
-case "$backend" in
+case "${backend}" in
 'busybox-openrc')
 	argstring="-N"
 	while read -r peer;
 	do
-		argstring="$argstring -p $peer"
+		argstring="${argstring} -p ${peer}"
 	done < "${__object:?}/parameter/peer"
 
 	__start_on_boot ntpd
@@ -48,7 +48,7 @@ case "$backend" in
 		--mode 0644 --onchange "service ntpd restart"\
 		--source - <<- EOF
 		# NTPd OpenRC configuration file. Managed by cdist.
-		NTPD_OPTS=$argstring
+		NTPD_OPTS=${argstring}
 		EOF
 	;;
 
@@ -64,7 +64,7 @@ case "$backend" in
 		--source - <<- EOF
 		# timesyncd(8) configuration file. Managed by cdist.
 		[Time]
-		NTP=$peers
+		NTP=${peers}
 		EOF
 	;;
 *)

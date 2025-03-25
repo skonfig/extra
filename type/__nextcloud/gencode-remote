@@ -21,7 +21,7 @@
 # Install if not installed
 
 # Legacy:
-# curl -sS -L '$nextcloud_uri' | tar xj --strip-components=1 nextcloud/
+# curl -sS -L '${nextcloud_uri}' | tar xj --strip-components=1 nextcloud/
 
 
 # Call the nextcloud occ script as the designed user. Maybe this can be a bit
@@ -33,8 +33,8 @@ occ() {
     # su creates a new shell, so it does not affect the current session
     #  will not use -q as it supresses errors, too
     cat << SHELL
-su -s /bin/sh -l "$user" -- -e <<'SU'
-cd '$installdir' && php occ --no-warnings --no-interaction --no-ansi $@
+su -s /bin/sh -l "${user}" -- -e <<'SU'
+cd '${installdir}' && php occ --no-warnings --no-interaction --no-ansi $@
 SU
 SHELL
 }
@@ -44,7 +44,7 @@ SHELL
 # No arguments.
 occ_maintainer_mode_on() {
     # Check if this was not already done
-    if [ "$_maintainer_mode_on" != "yes" ]; then
+    if [ "${_maintainer_mode_on}" != "yes" ]; then
         occ maintenance:mode --on
         _maintainer_mode_on="yes"
     fi
@@ -58,32 +58,32 @@ getparam() {
     awk -v FS=" = " -v name="$1" '
              function ntostring(n) { ret=""; for(i=n; i<=NF; i++) ret=ret $i (i<NF ? OFS : ""); return ret }
              $1 == name { print ntostring(2); }
-             ' "$__object/explorer/config"
+             ' "${__object:?}/explorer/config"
 }
 
 # Get existing versions
-version_is=$(cat "$__object/explorer/version")
-version_should=$(cat "$__object/parameter/version")
+version_is=$(cat "${__object:?}/explorer/version")
+version_should=$(cat "${__object:?}/parameter/version")
 
 # the install directory
-installdir="/$__object_id"
-tarballdir=$(dirname "$installdir")/.$(basename "$installdir")
+installdir="/${__object_id:?}"
+tarballdir=$(dirname "${installdir}")/.$(basename "${installdir}")
 
 # get used user and group
-user=$(cat "$__object/parameter/user")
-group=$(cat "$__object/parameter/group")
+user=$(cat "${__object:?}/parameter/user")
+group=$(cat "${__object:?}/parameter/group")
 
 
 
 # Detect if we can install or upgrade.
 # Check if this will be a new installation.
-if [ -z "$version_is" ]; then
+if [ -z "${version_is}" ]; then
     install="yes"
 
 # Check if upgrades are available. Not do this if it's not wanted by the user.
-elif ! [ -f "$__object/parameter/install-only" ]; then
+elif ! [ -f "${__object:?}/parameter/install-only" ]; then
     # installation upgrade
-    if [ "$version_is" != "$version_should" ]; then
+    if [ "${version_is}" != "${version_should}" ]; then
         upgrade="yes"
     fi
 fi
@@ -91,9 +91,9 @@ fi
 
 # Check if the installation will be upgraded.
 # Remove the old folder and replace it with the new one.
-if [ "$upgrade" ]; then
+if [ "${upgrade}" ]; then
     cat << REMOTE
-chown '$user':'$group' -R '$tarballdir'
+chown '${user}':'${group}' -R '${tarballdir}'
 REMOTE
 
     # no more changes from the user
@@ -103,11 +103,11 @@ REMOTE
     # do the real update work
     cat << REMOTE
 
-cp -pf '$installdir/config/config.php' '$tarballdir/config/config.php'
-mv '$installdir/data' '$tarballdir'
+cp -pf '${installdir}/config/config.php' '${tarballdir}/config/config.php'
+mv '${installdir}/data' '${tarballdir}'
 
-rm -rf '$installdir'
-mv '$tarballdir' '$installdir'
+rm -rf '${installdir}'
+mv '${tarballdir}' '${installdir}'
 
 REMOTE
 
@@ -120,15 +120,15 @@ REMOTE
     occ db:convert-filecache-bigint
 
     # send upgrade message
-    printf "upgraded %s to %s\n" "$version_is" "$version_should" >> "$__messages_out"
+    printf "upgraded %s to %s\n" "${version_is}" "${version_should}" >> "${__messages_out:?}"
 
 # Apply some misc to the installation folder.
-elif [ "$install" ]; then
+elif [ "${install}" ]; then
     # Maintainer mode is not available before installation
 
     # Correct all file permissions of the new installation
     cat << REMOTE
-chown '$user':'$group' -R '$installdir'
+chown '${user}':'${group}' -R '${installdir}'
 REMOTE
 fi
 
@@ -137,7 +137,7 @@ fi
 # This checks the state of the configuration, not of the directory.
 #
 # shellcheck disable=SC2089  # disabled to write args string
-if ! grep -q -F "installed = 1" "$__object/explorer/config"; then
+if ! grep -q -F "installed = 1" "${__object:?}/explorer/config"; then
     # argument construction
     occ_install_args=""
 
@@ -149,22 +149,22 @@ if ! grep -q -F "installed = 1" "$__object/explorer/config"; then
     # Database setup for mysql and pgsql
     db_setup() {
         # add type and other database values
-        occ_install_args="$occ_install_args --database '$1'"
-        occ_install_args="$occ_install_args --database-host '$(cat "$__object/parameter/database-host" || die_err)'"
-        occ_install_args="$occ_install_args --database-name '$(cat "$__object/parameter/database-name" || die_err)'"
-        occ_install_args="$occ_install_args --database-user '$(cat "$__object/parameter/database-user" || die_err)'"
-        occ_install_args="$occ_install_args --database-pass '$(cat "$__object/parameter/database-password" || die_err)'"
+        occ_install_args="${occ_install_args} --database '$1'"
+        occ_install_args="${occ_install_args} --database-host '$(cat "${__object:?}/parameter/database-host" || die_err)'"
+        occ_install_args="${occ_install_args} --database-name '$(cat "${__object:?}/parameter/database-name" || die_err)'"
+        occ_install_args="${occ_install_args} --database-user '$(cat "${__object:?}/parameter/database-user" || die_err)'"
+        occ_install_args="${occ_install_args} --database-pass '$(cat "${__object:?}/parameter/database-password" || die_err)'"
 
-        db_prefix="$__object/parameter/database-prefix"
-        if [ -f "$db_prefix" ]; then
-            occ_install_args="$occ_install_args --database-table-prefix '$(cat "$db_prefix")'"
+        db_prefix="${__object:?}/parameter/database-prefix"
+        if [ -f "${db_prefix}" ]; then
+            occ_install_args="${occ_install_args} --database-table-prefix '$(cat "${db_prefix}")'"
         fi
     }
 
-    database_type=$(cat "$__object/parameter/database-type")
-    case "$database_type" in
+    database_type=$(cat "${__object:?}/parameter/database-type")
+    case "${database_type}" in
         sqlite3)
-            occ_install_args="$occ_install_args --database sqlite"
+            occ_install_args="${occ_install_args} --database sqlite"
             ;;
         mysql)
             db_setup mysql
@@ -174,64 +174,64 @@ if ! grep -q -F "installed = 1" "$__object/explorer/config"; then
             ;;
 
         *)
-            printf "Database type '%s' is unkown!\n" "$database_type" >&2
+            printf "Database type '%s' is unkown!\n" "${database_type}" >&2
             exit 3
             ;;
     esac
 
     # Admin stuff
-    occ_install_args="$occ_install_args --admin-pass '$(cat "$__object/parameter/admin-password")'"
+    occ_install_args="${occ_install_args} --admin-pass '$(cat "${__object:?}/parameter/admin-password")'"
 
-    admin_user="$__object/parameter/admin-user"
-    if [ -f "$admin_user" ]; then
-        occ_install_args="$occ_install_args --admin-user '$(cat "$admin_user")'"
+    admin_user="${__object:?}/parameter/admin-user"
+    if [ -f "${admin_user}" ]; then
+        occ_install_args="${occ_install_args} --admin-user '$(cat "${admin_user}")'"
     fi
-    admin_email="$__object/parameter/admin-email"
-    if [ -f "$admin_email" ]; then
-        occ_install_args="$occ_install_args --admin-email '$(cat "$admin_email")'"
+    admin_email="${__object:?}/parameter/admin-email"
+    if [ -f "${admin_email}" ]; then
+        occ_install_args="${occ_install_args} --admin-email '$(cat "${admin_email}")'"
     fi
 
     # Data directory
-    datadir="$__object/parameter/data-directory"
-    if [ -f "$datadir" ]; then
-        occ_install_args="$occ_install_args --data-dir '$(cat "$datadir")'"
+    datadir="${__object:?}/parameter/data-directory"
+    if [ -f "${datadir}" ]; then
+        occ_install_args="${occ_install_args} --data-dir '$(cat "${datadir}")'"
     fi
 
 
     # Execute the install command.
     # generated parameters will be splited in the remote shell
-    occ maintenance:install "$occ_install_args"
+    occ maintenance:install "${occ_install_args}"
 
     # send install message
-    echo installed >> "$__messages_out"
+    echo installed >> "${__messages_out:?}"
 fi
 
 
 # Handle the config
-mkdir "$__object/files"
-"$__type/map-conf-changes.sh" > "$__object/files/conf-cmds"
+mkdir "${__object:?}/files"
+"${__type:?}/map-conf-changes.sh" > "${__object:?}/files/conf-cmds"
 
 # only print if there are changes listed
-if [ -s "$__object/files/conf-cmds" ]; then
+if [ -s "${__object:?}/files/conf-cmds" ]; then
     # save that we did changes
     changes="yes"
     occ_maintainer_mode_on
 
     # print change commands incl. the switch of user context
     #  using -e to abort if the commands failed
-    printf "su -s /bin/sh -l '%s' -- -e << 'SU'\n" "$user"
-    printf "cd '%s'\n" "$installdir"
-    cat "$__object/files/conf-cmds"
+    printf "su -s /bin/sh -l '%s' -- -e << 'SU'\n" "${user}"
+    printf "cd '%s'\n" "${installdir}"
+    cat "${__object:?}/files/conf-cmds"
     printf "SU\n"
 fi
 
 
 # Get the current and future data directory
 data_old=$(getparam datadirectory)
-data_new=$(cat "$__object/parameter/data-directory" 2>/dev/null || printf "%s/data" "$installdir")
+data_new=$(cat "${__object:?}/parameter/data-directory" 2>/dev/null || printf "%s/data" "${installdir}")
 
 # Move if they should be moved. Avoid false positives if $data_old is empty
-if [ "$data_old" ] && [ "$data_old" != "$data_new" ]; then
+if [ "${data_old}" ] && [ "${data_old}" != "${data_new}" ]; then
     # save that we did changes
     changes="yes"
     occ_maintainer_mode_on
@@ -239,29 +239,29 @@ if [ "$data_old" ] && [ "$data_old" != "$data_new" ]; then
     # Change the configuration variable and then move the folder. This order is
     # important if SQLite is used, but the config already corrupted if it can
     # not be moved.
-    occ config:system:set datadirectory --type=string --value "'$data_new'"
+    occ config:system:set datadirectory --type=string --value "'${data_new}'"
     cat << REMOTE
-cd '$installdir'  # only for the users safety
+cd '${installdir}'  # only for the users safety
 
-rm -rf '$data_new'
-mkdir -p '$(dirname "$data_new")'  # if the parent not exists
-mv -T '$data_old' '$data_new'
+rm -rf '${data_new}'
+mkdir -p '$(dirname "${data_new}")'  # if the parent not exists
+mv -T '${data_old}' '${data_new}'
 
 REMOTE
 fi
 
 # Print configured message if changes where done to the configuration
-if [ "$changes" ]; then
-    echo configured >> "$__messages_out"
+if [ "${changes}" ]; then
+    echo configured >> "${__messages_out:?}"
 fi
 
 
 # Check if this is the fist install
-if [ "$install" ]; then
+if [ "${install}" ]; then
     # do some convert stuff etc.
 
-    # variable accessible from the last $install if-clause
-    case "$database_type" in
+    # variable accessible from the last ${install} if-clause
+    case "${database_type}" in
         mysql)
             # only available for mysql
             occ db:convert-mysql-charset
@@ -272,6 +272,6 @@ if [ "$install" ]; then
 fi
 
 # Disable maintainer mode
-if [ "$_maintainer_mode_on" = "yes" ]; then
+if [ "${_maintainer_mode_on}" = "yes" ]; then
     occ maintenance:mode --off
 fi

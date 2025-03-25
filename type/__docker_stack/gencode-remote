@@ -32,14 +32,14 @@ case "${state}" in
 		echo "docker stack rm ${stack}"
 	;;
 	present)
-		compose_file=$(cat "${__object}/parameter/compose-file")
+		compose_file=$(cat "${__object:?}/parameter/compose-file")
 
 		if [ -z "${compose_file}" ]; then
 			exit 0
 		fi
 
 		if [ "${compose_file}" = "-" ]; then
-			compose_file="${__object}/stdin"
+			compose_file="${__object:?}/stdin"
 		fi
 
 		cat <<-EOF

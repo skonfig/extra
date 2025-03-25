@@ -37,13 +37,13 @@ uacme -c ${CONFDIR:?} -h ${HOOKSCRIPT:?} ${DISABLE_OCSP?} ${MUST_STAPLE?} ${KEYT
 status=\$?
 
 # All is well: we can stop now.
-if [ \$status -eq 1 ];
+if [ \${status} -eq 1 ];
 then
 	exit 0
 fi
 
 # An error occured.
-if [ \$status -eq 2 ]; then
+if [ \${status} -eq 2 ]; then
 	echo "Failed to renew certificate - exiting." >&2
 	exit 1
 fi

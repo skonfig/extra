@@ -20,7 +20,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os=$(cat "${__global}/explorer/os")
+os=$(cat "${__global:?}/explorer/os")
 case "${os}" in
 	devuan|debian)
 	;;
@@ -30,37 +30,37 @@ case "${os}" in
 	;;
 esac
 
-DOMAIN=${__object_id}
-ADMIN_EMAIL=$(cat "${__object}/parameter/admin-email")
-CHANNEL_LAST_N=$(cat "${__object}/parameter/channel-last-n")
-DEFAULT_LANGUAGE=$(cat "${__object}/parameter/default-language")
-NOTICE_MESSAGE=$(cat "${__object}/parameter/notice-message")
-START_VIDEO_MUTED=$(cat "${__object}/parameter/start-video-muted")
-TURN_SERVER=$(cat "${__object}/parameter/turn-server")
-VIDEO_CONSTRAINTS=$(cat "${__object}/parameter/video-constraints")
-BRANDING_INDEX=$(cat "${__object}/parameter/branding-index")
-BRANDING_JSON=$(cat "${__object}/parameter/branding-json")
-BRANDING_WATERMARK=$(cat "${__object}/parameter/branding-watermark")
+DOMAIN=${__object_id:?}
+ADMIN_EMAIL=$(cat "${__object:?}/parameter/admin-email")
+CHANNEL_LAST_N=$(cat "${__object:?}/parameter/channel-last-n")
+DEFAULT_LANGUAGE=$(cat "${__object:?}/parameter/default-language")
+NOTICE_MESSAGE=$(cat "${__object:?}/parameter/notice-message")
+START_VIDEO_MUTED=$(cat "${__object:?}/parameter/start-video-muted")
+TURN_SERVER=$(cat "${__object:?}/parameter/turn-server")
+VIDEO_CONSTRAINTS=$(cat "${__object:?}/parameter/video-constraints")
+BRANDING_INDEX=$(cat "${__object:?}/parameter/branding-index")
+BRANDING_JSON=$(cat "${__object:?}/parameter/branding-json")
+BRANDING_WATERMARK=$(cat "${__object:?}/parameter/branding-watermark")
 
 if [ "${BRANDING_INDEX}" = "-" ]; then
-	BRANDING_INDEX="${__object}/stdin"
+	BRANDING_INDEX="${__object:?}/stdin"
 fi
 
-if [ -f "${__object}/parameter/enable-third-party-requests" ]; then
+if [ -f "${__object:?}/parameter/enable-third-party-requests" ]; then
 	ENABLE_THIRD_PARTY_REQUESTS="YES"
 fi
-if [ -f "${__object}/parameter/disable-audio-levels" ]; then
+if [ -f "${__object:?}/parameter/disable-audio-levels" ]; then
 	DISABLE_AUDIO_LEVELS="YES"
 fi
-if [ -f "${__object}/parameter/secured-domains" ]; then
+if [ -f "${__object:?}/parameter/secured-domains" ]; then
 	SECURED_DOMAINS="YES"
 fi
 
 if [ -z "${TURN_SERVER}" ]; then
-	TURN_SERVER=${__target_host}
+	TURN_SERVER=${__target_host:?}
 fi
 if [ -z "${JITSI_HOST}" ]; then
-	JITSI_HOST=${__target_host}
+	JITSI_HOST=${__target_host:?}
 fi
 
 if [ -n "${BRANDING_JSON}" ]; then
@@ -78,7 +78,7 @@ __letsencrypt_cert "${DOMAIN}" \
 
 # Create virtualhost for nginx
 # shellcheck source=type/__jitsi_meet_domain/files/nginx.sh
-. "${__type}/files/nginx.sh"  # This defines JITSI_NGINX_CONFIG
+. "${__type:?}/files/nginx.sh"  # This defines JITSI_NGINX_CONFIG
 require="__letsencrypt_cert/${DOMAIN}" __file \
 	"/etc/nginx/sites-enabled/${DOMAIN}.conf" \
 	--mode 0644 --source "-" <<EOF
@@ -87,7 +87,7 @@ EOF
 
 # Setup jitsi config
 # shellcheck source=type/__jitsi_meet_domain/files/config.js.sh
-. "${__type}/files/config.js.sh"  # This defines JITSI_CONFIG_JS
+. "${__type:?}/files/config.js.sh"  # This defines JITSI_CONFIG_JS
 __file "/etc/jitsi/meet/${DOMAIN}-config.js" \
 	--mode 0644 --source "-" <<EOF
 ${JITSI_CONFIG_JS}
@@ -95,7 +95,7 @@ EOF
 
 # Setup jitsi interface config
 # shellcheck source=type/__jitsi_meet_domain/files/interface_config.js.sh
-. "${__type}/files/interface_config.js.sh"  # This defines JITSI_CONFIG_JS
+. "${__type:?}/files/interface_config.js.sh"  # This defines JITSI_CONFIG_JS
 __file "/etc/jitsi/meet/${DOMAIN}-interface_config.js" \
 	--mode 0644 --source "-" <<EOF
 ${JITSI_INTERFACE_CONFIG_JS}

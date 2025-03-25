@@ -32,7 +32,7 @@ command -v pass >/dev/null 2>&1 ||
 set --
 while read -r id;
 do
-	set -- "$@" "$id"
+	set -- "$@" "${id}"
 done < "${__object:?}/parameter/gpgid"
 
 # Load required password store location parameter.

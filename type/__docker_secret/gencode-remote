@@ -35,14 +35,14 @@ case "${state}" in
 			exit 0
 		fi
 
-		source=$(cat "${__object}/parameter/source")
+		source=$(cat "${__object:?}/parameter/source")
 
 		if [ -z "${source}" ]; then
 			exit 0
 		fi
 
 		if [ "${source}" = "-" ]; then
-			source="${__object}/stdin"
+			source="${__object:?}/stdin"
 		fi
 
 		cat <<-EOF

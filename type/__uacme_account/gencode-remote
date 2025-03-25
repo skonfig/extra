@@ -20,12 +20,12 @@
 
 os=$(cat "${__global:?}"/explorer/os)
 
-case "$os" in
+case "${os}" in
 	alpine|ubuntu|debian)
 		default_confdir=/etc/ssl/uacme
 		;;
 	*)
-		echo "This type currently has no implementation for $os. Aborting." >&2;
+		echo "This type currently has no implementation for ${os}. Aborting." >&2;
 		exit 1
 		;;
 esac

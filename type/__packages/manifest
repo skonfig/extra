@@ -18,7 +18,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os=$(cat "${__global}/explorer/os")
+os=$(cat "${__global:?}/explorer/os")
 
 process_package() {
     case "${os}"
@@ -37,9 +37,9 @@ process_package() {
     esac
 }
 
-is_present="${__object}/explorer/present"
-should_present="${__object}/parameter/present"
-should_absent="${__object}/parameter/absent"
+is_present="${__object:?}/explorer/present"
+should_present="${__object:?}/parameter/present"
+should_absent="${__object:?}/parameter/absent"
 
 for packages_list in "${should_present}" "${should_absent}"
 do

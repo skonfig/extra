@@ -18,10 +18,10 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os=$(cat "$__global/explorer/os")
-init=$(cat "$__global/explorer/init")
+os=$(cat "${__global:?}/explorer/os")
+init=$(cat "${__global:?}/explorer/init")
 
-case "$os" in
+case "${os}" in
 	alpine)
 		synapse_conf_dir=/etc/synapse
 		synapse_service=synapse
@@ -31,22 +31,22 @@ case "$os" in
 		synapse_service=matrix-synapse
 		;;
 	*)
-		echo "Unknown OS $os." >&2
+		echo "Unknown OS ${os}." >&2
 		exit 1
 	;;
 esac
 
-if grep -qE "^__file$synapse_conf_dir" "${__messages_in}"; then
-	case "$init" in
+if grep -qE "^__file${synapse_conf_dir}" "${__messages_in:?}"; then
+	case "${init}" in
 		systemd)
-			echo "systemctl restart $synapse_service"
+			echo "systemctl restart ${synapse_service}"
 			;;
 		initd)
-			echo "service --ifstopped $synapse_service start"
-			echo "service --ifstarted $synapse_service restart"
+			echo "service --ifstopped ${synapse_service} start"
+			echo "service --ifstarted ${synapse_service} restart"
 			;;
 		*)
-			echo "Unknown init $init." >&2
+			echo "Unknown init ${init}." >&2
 			exit 1
 			;;
 	esac
