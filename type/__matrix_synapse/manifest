@@ -22,7 +22,7 @@
 os=$(cat "${__global:?}/explorer/os")
 distribution=$(cat "${__global:?}/explorer/lsb_codename")
 
-case "${os}" in
+case ${os} in
 	debian)
 		synapse_user=matrix-synapse
 		synapse_pkg=matrix-synapse
@@ -33,7 +33,7 @@ case "${os}" in
 
 		# See https://packages.debian.org/bullseye/matrix-synapse for state of
 		# synapse packaging in debian.
-		case "${distribution}" in
+		case ${distribution} in
 			stretch)
 				echo "The matrix-synapse package in debian stretch is outdated and unusable." >&2
 				exit 1
@@ -293,7 +293,7 @@ export ENABLE_REPLICATION ENABLE_REDIS_SUPPORT WORKER_REPLICATION_SECRET \
 	BACKGROUND_TASKS_WORKER
 
 # Error out on invalid parameter combination.
-case "${DATABASE_ENGINE}" in
+case ${DATABASE_ENGINE} in
 	sqlite3)
 		:
 	;;

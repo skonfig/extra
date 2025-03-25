@@ -29,7 +29,7 @@ certificate_exists=$(_explorer_var certificate_exists)
 name="${__object_id:?}"
 state=$(cat "${__object:?}/parameter/state")
 
-case "${state}" in
+case ${state} in
 	absent)
 		if [ "${certificate_exists}" = "no" ]; then
 			exit 0

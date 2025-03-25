@@ -37,7 +37,7 @@ os=$(cat "${__global:?}/explorer/os")
 # Setup OS-dependent vars
 CONF_OWNER="root"
 CONF_GROUP="root"
-case "${os}" in
+case ${os} in
     freebsd)
         PKGS="openldap-server"
         ETC="/usr/local/etc"
@@ -167,7 +167,7 @@ done
 require="__package/${PKG_MAIN}" __start_on_boot slapd
 
 # Setup -h flag for the listeners. See man slapd (-h flag).
-case "${os}" in
+case ${os} in
     freebsd)
         require="__start_on_boot/slapd" __key_value \
                --file "/etc/rc.conf" \

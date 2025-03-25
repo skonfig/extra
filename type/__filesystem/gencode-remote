@@ -75,7 +75,7 @@ if [ -n "${label}" ]; then
     opts="${opts} -L '${label}'"
 fi
 
-case "${fstype}" in
+case ${fstype} in
     ext2|ext3|ext4)
         if [ "${forcefs}" = "true" ]; then
             opts="${opts} -F"

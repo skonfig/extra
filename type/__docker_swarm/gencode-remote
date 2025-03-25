@@ -27,7 +27,7 @@ if [ -z "${swarm_state}" ]; then
     exit 1
 fi
 
-case "${state}" in
+case ${state} in
     absent)
         if [ "${swarm_state}" = "active" ]; then
             echo "docker swarm leave --force"

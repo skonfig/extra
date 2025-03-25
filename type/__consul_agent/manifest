@@ -42,7 +42,7 @@ data_dir="/var/lib/consul"
 
 tls_dir="${conf_dir}/tls"
 
-case "${os}" in
+case ${os} in
     alpine)
         conf_dir="/etc/consul"
         conf_file="server.json"
@@ -57,7 +57,7 @@ esac
 # Sane deployment, based on distribution package when available.
 
 distribution_setup () {
-  case "${os}" in
+  case ${os} in
      debian)
        # consul is only available starting Debian 10 (buster).
        # See https://packages.debian.org/buster/consul
@@ -135,7 +135,7 @@ init_upstart()
 }
 
 manual_setup () {
-  case "${os}" in
+  case ${os} in
      alpine|scientific|centos|debian|devuan|redhat|ubuntu)
         # whitelist safeguard
         :
@@ -149,7 +149,7 @@ manual_setup () {
   esac
 
   # FIXME: there has got to be a better way to handle the dependencies in this case
-  case "${state}" in
+  case ${state} in
      present)
         __group "${group}" --system --state "${state}"
         require="__group/${group}" __user "${user}" \
@@ -170,14 +170,14 @@ manual_setup () {
     --parents --owner root --group "${group}" --mode 750 --state "${state}"
 
   # Install init script to start on boot
-  case "${os}" in
+  case ${os} in
       devuan)
           init_sysvinit debian
           ;;
       centos|redhat)
           os_version=$(sed 's/[^0-9.]//g' "${__global:?}/explorer/os_version")
           major_version=${os_version%%.*}
-          case "${major_version}" in
+          case ${major_version} in
               [456])
                   init_sysvinit redhat
                   ;;
@@ -195,7 +195,7 @@ manual_setup () {
           os_version=$(cat "${__global:?}/explorer/os_version")
           major_version=${os_version%%.*}
 
-          case "${major_version}" in
+          case ${major_version} in
               [567])
                   init_sysvinit debian
               ;;
@@ -250,7 +250,7 @@ json_configuration=$(
 
   cd "${__object:?}/parameter/"
   for param in *; do
-     case "${param}" in
+     case ${param} in
         state|user|group|json-config|use-distribution-package) continue ;;
         ca-file-source|cert-file-source|key-file-source)
            source=$(cat "${__object:?}/parameter/${param}")

@@ -56,7 +56,7 @@ eof
 )"
 EOF
 )
-	case "${hook}" in
+	case ${hook} in
 		pre|post)
 			# Certbot is kind of terrible, we have
 			# no way of knowing what domain/lineage the

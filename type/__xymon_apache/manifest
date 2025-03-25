@@ -21,7 +21,7 @@
 state=$(cat "${__object:?}/parameter/state")
 
 os=$(cat "${__global:?}/explorer/os")
-case "${os}" in
+case ${os} in
 	debian|ubuntu)
 		:
 	;;

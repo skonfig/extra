@@ -834,7 +834,7 @@ caches:
 #
 EOF
 
-case "${DATABASE_ENGINE:?}" in
+case ${DATABASE_ENGINE:?} in
 	sqlite3)
 		cat << EOF
 database:

@@ -22,7 +22,7 @@
 
 os=$(cat "${__global:?}/explorer/os")
 init=$(cat "${__global:?}/explorer/init")
-case "${os}" in
+case ${os} in
 	devuan|debian)
 	;;
 	*)
@@ -207,7 +207,7 @@ PROMETHEUS_JITSI_EXPORTER_CHECKSUM="sha256:3ddf43a48d9a2f62be1bc6db9e7ba75d61994
 PROMETHEUS_JITSI_EXPORTER_URL="https://github.com/systemli/prometheus-jitsi-meet-exporter/releases/download/${PROMETHEUS_JITSI_EXPORTER_SHOULD_VERSION}/prometheus-jitsi-meet-exporter-linux-amd64"
 PROMETHEUS_JITSI_EXPORTER_VERSION_FILE="/usr/local/bin/.prometheus-jitsi-meet-exporter.skonfig.version"
 if [ ! -f "${__object:?}/parameter/disable-prometheus-exporter" ]; then
-	case "${init}" in
+	case ${init} in
 		init|sysvinit)
 			__runit
 			require="__runit" __runit_service \

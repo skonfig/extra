@@ -47,7 +47,7 @@ stop() {
    return "$retcode"
 }
 
-case "$1" in
+case $1 in
    start)
       if status -p "$PID_FILE" "$NAME" >/dev/null; then
          echo "$NAME already running"

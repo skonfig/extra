@@ -19,7 +19,7 @@
 #
 
 os=$(cat "${__global:?}/explorer/os")
-case "${os}" in
+case ${os} in
    debian)
      # This type assume systemd for service installation.
    ;;

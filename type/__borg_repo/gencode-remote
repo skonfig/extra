@@ -21,7 +21,7 @@
 passphrase=
 appendonly=
 
-case "$(cat "${__object:?}/parameter/encryption")" in
+case $(cat "${__object:?}/parameter/encryption") in
 	none)
 		enc=none
 		;;

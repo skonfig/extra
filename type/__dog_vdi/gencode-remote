@@ -31,7 +31,7 @@ fi
 
 [ "${state_is}" = "${state_should}" ] && exit 0
 
-case "${state_should}" in
+case ${state_should} in
     present)
         size=$(cat "${__object:?}/parameter/size")
         echo "dog vdi create '${name}' '${size}'"

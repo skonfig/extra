@@ -44,7 +44,7 @@ printf '   "service": {\n'
 printf '      "name": "%s"\n' "${name}"
 cd "${__object:?}/parameter/"
 for param in *; do
-   case "${param}" in
+   case ${param} in
       state|name|check-interval|conf-dir) continue ;;
       check-script)
          printf '     ,"check": {\n'

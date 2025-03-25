@@ -52,7 +52,7 @@ key_type=$(cat "${__object:?}/parameter/key-type")
 
 key_type_arg=$(echo "${key_type}" | cut -d : -f 2)
 
-case "${key_type}" in
+case ${key_type} in
     rsa:*)
         echo "openssl genrsa -out '${key_path}' ${key_type_arg}"
     ;;

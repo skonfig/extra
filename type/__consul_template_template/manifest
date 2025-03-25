@@ -45,7 +45,7 @@ fi
 printf 'template {\n'
 cd "${__object:?}/parameter/"
 for param in *; do
-   case "${param}" in
+   case ${param} in
       source-file)
          source=$(cat "${__object:?}/parameter/${param}")
          if [ "${source}" = "-" ]; then

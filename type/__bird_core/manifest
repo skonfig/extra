@@ -24,7 +24,7 @@ os=$(cat "${__global:?}/explorer/os")
 package=
 conffile=
 confdir=
-case "${os}" in
+case ${os} in
 	"alpine")
 		package=bird
 		conffile=/etc/bird.conf

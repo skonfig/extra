@@ -230,7 +230,7 @@ migrate_db() {
     else
         # set default port because the tool can not do this for pgsql
         # it looks like mysql get struggles, too
-        case "$database_type" in
+        case $database_type in
             mysql)
                 database_port=3306
                 ;;
@@ -278,7 +278,7 @@ if [ -z "$install" ]; then
     database_type=$(cat "$__object/parameter/database-type")
     old_db_type=$(getparam dbtype || printf "%s" "$database_type")
 
-    case "$database_type" in
+    case $database_type in
         sqlite3)
             if [ "$old_db_type" != "sqlite3" ]; then
                 echo "Migrating to a SQLite database is not supported by upstream!" >&2

@@ -29,7 +29,7 @@ chain=$(cat "${__object:?}/parameter/chain")
 priority=$(cat "${__object:?}/parameter/priority")
 rule=$(cat "${__object:?}/parameter/rule")
 
-case "${state_should}" in
+case ${state_should} in
     present)
         echo "firewall-cmd --quiet --permanent --direct --add-rule '${protocol}' '${table}' '${chain}' '${priority}' ${rule}"
         echo "firewall-cmd --quiet --direct --add-rule '${protocol}' '${table}' '${chain}' '${priority}' ${rule}"

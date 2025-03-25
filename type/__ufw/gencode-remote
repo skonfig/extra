@@ -20,7 +20,7 @@
 
 state=$(cat "${__object:?}/parameter/state")
 
-case "${state}" in
+case ${state} in
     enabled)
         echo 'ufw --force enable'
         ;;
@@ -34,7 +34,7 @@ esac
 if [ "${state}" != absent ]; then
     if [ -f "${__object:?}/parameter/logging" ]; then
         logging=$(cat "${__object:?}/parameter/logging")
-        case "${logging}" in
+        case ${logging} in
             off|low|medium|high|full)
                 echo "ufw --force logging ${logging}"
                 ;;
@@ -48,7 +48,7 @@ if [ "${state}" != absent ]; then
     for direction in incoming outgoing routed; do
         if [ -f "${__object:?}/parameter/default_${direction}" ]; then
             treatment=$(cat "${__object:?}/parameter/default_${direction}")
-            case "${treatment}" in
+            case ${treatment} in
                 allow|deny|reject)
                     echo "ufw --force default ${treatment} ${direction}"
                     ;;

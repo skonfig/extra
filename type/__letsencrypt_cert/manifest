@@ -34,7 +34,7 @@ if [ -z "${certbot_fullpath}" ]; then
 	os_version=$(cat "${__global:?}/explorer/os_version")
 	# Use this, very common value, as a default. It is OS-dependent
 	certbot_fullpath="/usr/bin/certbot"
-	case "${os}" in
+	case ${os} in
 		archlinux)
 			__package certbot
 		;;
@@ -42,7 +42,7 @@ if [ -z "${certbot_fullpath}" ]; then
 			__package certbot
 		;;
 		debian)
-			case "${os_version}" in
+			case ${os_version} in
 				8*)
 					__apt_source jessie-backports \
 						--uri http://http.debian.net/debian \
@@ -78,7 +78,7 @@ if [ -z "${certbot_fullpath}" ]; then
 			esac
 		;;
 		devuan)
-			case "${os_version}" in
+			case ${os_version} in
 				jessie)
 					__apt_source jessie-backports \
 								 --uri http://auto.mirror.devuan.org/merged \
@@ -127,7 +127,7 @@ fi
 # Other OS-dependent values that we want to set every time
 LE_DIR="/etc/letsencrypt"
 certbot_cronjob_state="absent"
-case "${os}" in
+case ${os} in
 	archlinux|alpine)
 		certbot_cronjob_state="present"
 	;;

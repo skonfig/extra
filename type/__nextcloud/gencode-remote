@@ -162,7 +162,7 @@ if ! grep -q -F "installed = 1" "${__object:?}/explorer/config"; then
     }
 
     database_type=$(cat "${__object:?}/parameter/database-type")
-    case "${database_type}" in
+    case ${database_type} in
         sqlite3)
             occ_install_args="${occ_install_args} --database sqlite"
             ;;
@@ -261,7 +261,7 @@ if [ "${install}" ]; then
     # do some convert stuff etc.
 
     # variable accessible from the last ${install} if-clause
-    case "${database_type}" in
+    case ${database_type} in
         mysql)
             # only available for mysql
             occ db:convert-mysql-charset

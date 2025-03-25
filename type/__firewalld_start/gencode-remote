@@ -25,7 +25,7 @@ os=$(cat "${__global:?}/explorer/os")
 os_version=$(cat "${__global:?}/explorer/os_version")
 name="firewalld"
 
-case "${startstate}" in
+case ${startstate} in
     present)
         cmd="start"
         ;;
@@ -43,9 +43,9 @@ if [ "${init}" = 'systemd' ]; then
     # e.g. archlinux, gentoo in some cases, new RHEL and SLES versions
     echo "systemctl \"${cmd}\" \"${name}\""
 else
-    case "${os}" in
+    case ${os} in
         debian)
-            case "${os_version}" in
+            case ${os_version} in
                 [1-7]*)
                     echo "service \"${name}\" \"${cmd}\""
                 ;;

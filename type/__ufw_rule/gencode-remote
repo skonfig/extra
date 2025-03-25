@@ -25,7 +25,7 @@
 
 ufw='ufw --force rule'
 
-case "$(cat "${__object:?}/parameter/state")" in
+case $(cat "${__object:?}/parameter/state") in
     present) ;;
     absent)
         ufw="${ufw} delete"
