@@ -8,7 +8,7 @@ cdist-type__xymon_apache - Configure apache2-webserver for Xymon
 
 DESCRIPTION
 -----------
-This cdist type installs and configures apache2 to be used "exclusively" (in
+This type installs and configures apache2 to be used "exclusively" (in
 the sense that no other use is taken care of) with Xymon (the systems and
 network monitor).
 

@@ -8,7 +8,7 @@ cdist-type__xymon_server - Install a Xymon server
 
 DESCRIPTION
 -----------
-This cdist type installs a Xymon (https://www.xymon.com/) server and (optional)
+This type installs a Xymon (https://www.xymon.com/) server and (optional)
 required helper packages.
 
 This includes the Xymon client as a dependency, so NO NEED to install

@@ -8,7 +8,7 @@ cdist-type__issue - Manage issue
 
 DESCRIPTION
 -----------
-This cdist type allows you to easily setup /etc/issue.
+This type allows you to easily setup /etc/issue.
 
 
 REQUIRED PARAMETERS

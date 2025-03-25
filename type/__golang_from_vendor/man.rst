@@ -8,7 +8,7 @@ cdist-type__golang_from_vendor - Install any version of golang from golang.org
 
 DESCRIPTION
 -----------
-This cdist type allows you to install golang from archives provided by https://golang.org/dl/.
+This type allows you to install golang from archives provided by https://golang.org/dl/.
 
 See https://golang.org/dl/ for the list of supported versions, operating systems and architectures.
 

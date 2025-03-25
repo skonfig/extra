@@ -8,7 +8,7 @@ cdist-type__xymon_config - Deploy a Xymon configuration-directory
 
 DESCRIPTION
 -----------
-This cdist type deploys a full Xymon configuration directory from the files-dir
+This type deploys a full Xymon configuration directory from the files-dir
 to the host.  This type requires an installed Xymon server, e.g. deployed by
 `__xymon_server`.
 

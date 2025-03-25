@@ -8,7 +8,7 @@ cdist-type__go_get - Install go packages with go get
 
 DESCRIPTION
 -----------
-This cdist type allows you to install golang packages with go get.
+This type allows you to install golang packages with go get.
 A sufficiently recent version of go must be present on the system.
 
 The object ID is the go package to be installed.

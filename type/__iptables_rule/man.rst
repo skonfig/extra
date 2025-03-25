@@ -8,8 +8,8 @@ cdist-type__iptables_rule - Deploy iptable rulesets
 
 DESCRIPTION
 -----------
-This cdist type allows you to manage iptable rules
-in a distribution independent manner.
+This type allows you to manage iptable rules in a distribution independent
+manner.
 
 See :strong:`cdist-type__iptables_apply`\ (7) for the
 execution order of these rules. It will be executed

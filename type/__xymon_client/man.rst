@@ -8,7 +8,7 @@ cdist-type__xymon_client - Install the Xymon client
 
 DESCRIPTION
 -----------
-This cdist type installs the Xymon client and configures it to report with
+This type installs the Xymon client and configures it to report with
 FQDN.
 
 

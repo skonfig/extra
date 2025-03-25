@@ -8,7 +8,8 @@ cdist-type__grafana_dashboard - Install Grafana (https://grafana.com)
 
 DESCRIPTION
 -----------
-This cdist type adds the Grafana repository, installs the grafana package, and sets the server to start on boot.
+This type adds the Grafana repository, installs the grafana package, and sets
+the server to start on boot.
 
 This is a singleton type.
 

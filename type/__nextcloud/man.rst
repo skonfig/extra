@@ -225,7 +225,7 @@ EXAMPLES
 
 NOTES
 -----
-This cdist type does not cover all configuration options that nextcloud offer.
+This type does not cover all configuration options that nextcloud offer.
 If you need more configuration options for nextcloud, you are welcome to extend
 this type and contribute it upstream!
 

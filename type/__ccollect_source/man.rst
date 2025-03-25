@@ -8,7 +8,7 @@ cdist-type__ccollect_source - Manage ccollect sources
 
 DESCRIPTION
 -----------
-This cdist type allows you to create or delete ccollect sources.
+This type allows you to create or delete ccollect sources.
 
 
 REQUIRED PARAMETERS
