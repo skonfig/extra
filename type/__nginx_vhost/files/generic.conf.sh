@@ -23,7 +23,7 @@
 echo 'server {'
 
 # Listen
-cat <<- EOF
+cat <<-EOF
 	listen ${LPORT:?} ${TLS};
 	listen [::]:${LPORT:?} ${TLS};
 EOF
@@ -32,7 +32,7 @@ EOF
 echo "server_name ${DOMAIN:?} ${ALTDOMAINS};"
 
 # ACME challenges.
-cat << EOF
+cat <<EOF
 location /.well-known/acme-challenge/ {
 	alias ${ACME_CHALLENGE_DIR:?};
 }
@@ -45,7 +45,7 @@ then
 		echo 'include snippets/hsts;'
 	fi
 
-	cat <<- EOF
+	cat <<-EOF
 		ssl_certificate ${NGINX_CERTDIR:?}/${DOMAIN:?}/fullchain.pem;
 		ssl_certificate_key ${NGINX_CERTDIR:?}/${DOMAIN:?}/privkey.pem;
 	EOF

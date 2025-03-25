@@ -32,7 +32,7 @@ then
 	echo "chown unbound:unbound ${UNBOUND_CERTS_DIR}/*.pem ${UNBOUND_CERTS_DIR}/*.key"
 fi
 
-cat << EOF
+cat <<EOF
 if pgrep unbound >/dev/null
 then
 	service ${__object_id:?} reload

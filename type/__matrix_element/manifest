@@ -86,7 +86,7 @@ __package tar --state present
 
 # Generate and deploy configuration file.
 mkdir -p "${__object:?}/files"
-"${__type:?}/files/config.json.sh" > "${__object:?}/files/config.json"
+"${__type:?}/files/config.json.sh" >"${__object:?}/files/config.json"
 
 # Install the config.json configuration file. The application's sources are
 # downloaded and deployed by gencode-remote.

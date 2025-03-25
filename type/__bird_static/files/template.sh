@@ -38,7 +38,7 @@ printf "\t%s;\n" "$(cat "${__object:?}/parameter/channel")"
 while read -r route
 do
 	printf "\troute %s;\n" "${route?}"
-done < "${__object:?}/parameter/route"
+done <"${__object:?}/parameter/route"
 
 # Header close
 printf "}\n"

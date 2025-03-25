@@ -83,7 +83,7 @@ EOF
 )
 		;;
 		*)
-			echo "Unknown hook '${hook}'" >> /dev/stderr
+			echo "Unknown hook '${hook}'" >&2
 			exit 1
 		;;
 	esac

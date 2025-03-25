@@ -33,7 +33,7 @@ generate_bind_addresses () {
 	fi
 }
 
-cat << EOF
+cat <<EOF
 worker_app: "${WORKER_APP:?}"
 worker_name: "${WORKER_NAME:?}"
 
@@ -55,7 +55,7 @@ do
 echo "       - ${resource}"
 done
 
-cat << EOF
+cat <<EOF
 
 worker_log_config: "${WORKER_LOG_CONFIG:?}"
 EOF

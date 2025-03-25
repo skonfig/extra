@@ -25,7 +25,7 @@
 if [ -z "${USE_LDAP}" ]
 then
     # skip
-    cat << EOF
+    cat <<EOF
 ##############################
 # LDAP-backed authentication #
 ##############################
@@ -36,7 +36,7 @@ EOF
 fi
 
 
-cat << EOF
+cat <<EOF
 ##############################
 # LDAP-backed authentication #
 ##############################
@@ -66,7 +66,7 @@ EOF
 
 if [ "${LDAP_GROUP_BASE}" != "" ]
 then
-    cat << EOF
+    cat <<EOF
 
 # This search ought to return all groups to which the user belongs. django_auth_ldap uses this to determine group
 # hierarchy.
@@ -82,14 +82,14 @@ EOF
 
     if [ "${LDAP_REQUIRE_GROUP}" != "" ]
     then
-        cat << EOF
+        cat <<EOF
 
 # Define a group required to login.
 AUTH_LDAP_REQUIRE_GROUP = "${LDAP_REQUIRE_GROUP}"
 EOF
     fi
 
-    cat << EOF
+    cat <<EOF
 
 # Define special user types using groups. Exercise great caution when assigning superuser status.
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {

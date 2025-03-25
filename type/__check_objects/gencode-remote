@@ -46,7 +46,7 @@ __check()
         case ${check_file}
         in
             code-*)
-                echo "${object}/${check_file}" >> "${__messages_out:?}"
+                echo "${object}/${check_file}" >>"${__messages_out:?}"
                 break
             ;;
             children)
@@ -60,7 +60,7 @@ __objects()
 {
     while read -r object
     do __check "${object}"
-    done < "$1"
+    done <"$1"
 }
 
 __objects "${__object:?}/require"

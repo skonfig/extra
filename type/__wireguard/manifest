@@ -50,7 +50,7 @@ fi
 export WG_PORT
 
 mkdir -p "${__object:?}/files/"
-"${__type:?}/files/wireguard.conf.sh" "${private_key}" > "${__object:?}/files/wg-${__object_id:?}.conf"
+"${__type:?}/files/wireguard.conf.sh" "${private_key}" >"${__object:?}/files/wg-${__object_id:?}.conf"
 
 # Wireguard configuration. Configured using a block as it is also edited by
 # cdist-type__wireguard_peer(7).
@@ -68,7 +68,7 @@ __line source-interfaces \
 	--line 'source-directory /etc/network/interfaces.d/' \
 	--file '/etc/network/interfaces'
 
-"${__type:?}/files/interface.conf.sh" > "${__object:?}/files/iif-${__object_id:?}.conf"
+"${__type:?}/files/interface.conf.sh" >"${__object:?}/files/iif-${__object_id:?}.conf"
 require="__directory/etc/network/interfaces.d __line/source-interfaces __block/${__object_id:?}" \
 	__file "/etc/network/interfaces.d/${__object_id:?}.conf" \
 	--source "${__object:?}/files/iif-${__object_id:?}.conf" \

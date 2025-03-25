@@ -32,7 +32,7 @@ multi_options() {
     while read -r line
     do
         printf "%s = %s\n" "$1" "${line}"
-    done < "$2"
+    done <"$2"
 }
 
 # fix missing ${__explorer:?}
@@ -43,7 +43,7 @@ __explorer="${__global:?}/explorer"
 cores=$(cat "${__explorer:?}/cpu_cores")
 
 
-cat << EOF
+cat <<EOF
 [uwsgi]
 ; socket(s) to bind
 EOF
@@ -63,7 +63,7 @@ fi
 
 
 # multi-process settings
-cat << EOF
+cat <<EOF
 
 ; processes and threads
 processes = $(( 2*cores + 1 ))
@@ -74,7 +74,7 @@ EOF
 # optional mapping of static content
 if [ "${STATIC_MAP}" != "" ]
 then
-    cat << EOF
+    cat <<EOF
 
 ; map static content
 static-map = /static=/opt/netbox/netbox/static

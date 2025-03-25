@@ -26,7 +26,7 @@
 occ() {
     # su creates a new shell, so it does not affect the current session
     #  will not use -q as it supresses errors, too
-    cat << SHELL
+    cat <<SHELL
 su -s /bin/sh -l "${www_user}" -- -e <<'SU'
 cd '${cloud}' && php occ --no-warnings --no-interaction --no-ansi $@
 SU
@@ -71,10 +71,10 @@ then
             if [ "${state_is}" = "disabled" ]
             then
                 occ app:enable "'${appid}'"
-                echo enabled >> "${__messages_out:?}"
+                echo enabled >>"${__messages_out:?}"
             else
                 occ app:install "'${appid}'"
-                echo installed >> "${__messages_out:?}"
+                echo installed >>"${__messages_out:?}"
             fi
             ;;
 
@@ -82,10 +82,10 @@ then
             if [ "${state_is}" = "absent" ]
             then
                 occ app:install --keep-disabled "'${appid}'"
-                echo installed >> "${__messages_out:?}"
+                echo installed >>"${__messages_out:?}"
             else
                 occ app:disable "'${appid}'"
-                echo disabled >> "${__messages_out:?}"
+                echo disabled >>"${__messages_out:?}"
             fi
             ;;
 
@@ -93,14 +93,14 @@ then
             if [ "${state_is}" = "absent" ]
             then
                 occ app:install "'${appid}'"
-                echo installed >> "${__messages_out:?}"
+                echo installed >>"${__messages_out:?}"
             fi
             # else, everything is ok
             ;;
 
         absent)
             occ app:remove "'${appid}'"
-            echo removed >> "${__messages_out:?}"
+            echo removed >>"${__messages_out:?}"
             ;;
     esac
 fi

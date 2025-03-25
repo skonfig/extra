@@ -27,7 +27,7 @@ serverid=$(cat "${__object:?}/parameter/serverid")
 suffix=$(cat "${__object:?}/parameter/suffix")
 slapd_modules=$(cat "${__object:?}/parameter/module" 2>/dev/null || true)
 schemas=$(cat "${__object:?}/parameter/schema")
-slapd_urls=$(tr '\n' ' ' < "${__object:?}/parameter/slapd-url")
+slapd_urls=$(tr '\n' ' ' <"${__object:?}/parameter/slapd-url")
 tls_cipher_suite=$(cat "${__object:?}/parameter/tls-cipher-suite" 2>/dev/null || true)
 extra_config=$(cat "${__object:?}/parameter/extra-config" || true)
 
@@ -258,7 +258,7 @@ else
 fi
 
 # Start slapd.conf
-cat << EOF > "${ldapconf}"
+cat <<EOF >"${ldapconf}"
 pidfile ${SLAPD_RUN_DIR}/slapd.pid
 argsfile ${SLAPD_RUN_DIR}/slapd.args
 
@@ -275,18 +275,18 @@ EOF
 # Add specified schemas
 for schema in ${schemas}
 do
-    echo "include ${SLAPD_DIR}/schema/${schema}.schema" >> "${ldapconf}"
+    echo "include ${SLAPD_DIR}/schema/${schema}.schema" >>"${ldapconf}"
 done
 
 # Add specified modules
-echo "modulepath ${SLAPD_MODULE_PATH}" >> "${ldapconf}"
+echo "modulepath ${SLAPD_MODULE_PATH}" >>"${ldapconf}"
 for module in ${slapd_modules}
 do
-    echo "moduleload ${module}.${SLAPD_MODULE_TYPE}" >> "${ldapconf}"
+    echo "moduleload ${module}.${SLAPD_MODULE_TYPE}" >>"${ldapconf}"
 done
 
 # Rest of the config
-cat << EOF >> "${ldapconf}"
+cat <<EOF >>"${ldapconf}"
 loglevel 1024
 
 database mdb

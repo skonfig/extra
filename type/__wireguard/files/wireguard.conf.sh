@@ -27,7 +27,7 @@ then
 	exit 1;
 fi
 
-cat <<- EOF
+cat <<-EOF
 	[Interface]
 	PrivateKey = ${1:?}
 EOF

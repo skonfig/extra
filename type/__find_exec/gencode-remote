@@ -43,7 +43,7 @@ while read -r l
 do
     set -- "$@" "${l}"
 done \
-    < "${__object:?}/parameter/exp"
+    <"${__object:?}/parameter/exp"
 
 for p in exec execdir
 do
@@ -52,9 +52,9 @@ do
         while read -r l
         do
             set -- "$@" "-${p} ${l}"
-            echo "${p}: ${l}" >> "${__messages_out:?}"
+            echo "${p}: ${l}" >>"${__messages_out:?}"
         done \
-            < "${__object:?}/parameter/${p}"
+            <"${__object:?}/parameter/${p}"
     fi
 done
 

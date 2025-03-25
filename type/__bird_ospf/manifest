@@ -47,7 +47,7 @@ fi
 
 __file "${confdir:?}/ospf-${__object_id:?}.conf" \
 	--mode 0640 --owner root --group bird \
-	--source - << EOF
+	--source - <<EOF
 protocol ospf v3 ${__object_id:?} {
 $([ -n "${description?}" ] && printf "\tdescription \"%s\";\n" "${description?}")
 $([ -n "${instance_id?}" ] && printf "\tinstance id %s;\n" "${instance_id?}")

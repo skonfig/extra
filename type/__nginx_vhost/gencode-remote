@@ -44,7 +44,7 @@ then
 			;;
 	esac
 
-	cat <<- EOF
+	cat <<-EOF
 	if nginx -t
 	then
 	  ${reload_hook}

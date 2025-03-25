@@ -111,4 +111,4 @@ in
         exit 1
     ;;
 esac
-echo "filesystem ${fstype} on ${mydev} : /dev/${blkdev_devname} created" >> "${__messages_out:?}"
+echo "filesystem ${fstype} on ${mydev} : /dev/${blkdev_devname} created" >>"${__messages_out:?}"

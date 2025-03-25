@@ -56,7 +56,7 @@ export require="__package/${package}"
 __directory "${confdir}"
 __file "${conffile}" \
 	--mode 0640 --owner root --group bird \
-	--source - << EOF
+	--source - <<EOF
 # ${conffile} - bird(1) configuration file.
 # Managed by cdist. Do not edit by hand.
 

@@ -119,7 +119,7 @@ export MAX_PORT
 
 # Generate and deploy configuration file.
 mkdir -p "${__object:?}/files"
-"${__type:?}/files/turnserver.conf.sh" > "${__object:?}/files/turnserver.conf"
+"${__type:?}/files/turnserver.conf.sh" >"${__object:?}/files/turnserver.conf"
 
 require="__package/coturn" __file ${coturn_config} \
   --source "${__object:?}/files/turnserver.conf" \

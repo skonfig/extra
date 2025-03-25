@@ -72,7 +72,7 @@ fi
 
 
 mkdir -p "${__object:?}/files"
-"${__type:?}/files/wg-peer.sh" "${presharedkey}" > "${__object:?}/files/wg-peer"
+"${__type:?}/files/wg-peer.sh" "${presharedkey}" >"${__object:?}/files/wg-peer"
 
 required="__file/etc/wireguard/${iface}.conf" \
 	__block "${__object_id:?}" --file "/etc/wireguard/${iface}.conf" \

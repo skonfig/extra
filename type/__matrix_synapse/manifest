@@ -359,8 +359,8 @@ fi
 
 # Generate and deploy configuration files.
 mkdir -p "${__object:?}/files"
-"${__type:?}/files/homeserver.yaml.sh" > "${__object:?}/files/homeserver.yaml"
-"${__type:?}/files/log.config.sh" > "${__object:?}/files/log.config"
+"${__type:?}/files/homeserver.yaml.sh" >"${__object:?}/files/homeserver.yaml"
+"${__type:?}/files/log.config.sh" >"${__object:?}/files/log.config"
 
 require=${synapse_req} __file "${synapse_conf_dir}/homeserver.yaml" \
   --owner "${synapse_user}" \
@@ -383,13 +383,13 @@ if [ "${os}" = "debian" ]
 then
 	require=${synapse_req} __file "${synapse_conf_dir}/conf.d/server_name.yaml" \
 		--owner ${synapse_user} \
-		--source - <<- EOF
+		--source - <<-EOF
 		server_name: "${SERVER_NAME}"
 		EOF
 
 	require=${synapse_req} __file "${synapse_conf_dir}/conf.d/report_stats.yaml" \
 		--owner "${synapse_user}" \
-		--source - <<- EOF
+		--source - <<-EOF
 		report_stats: ${REPORT_STATS}
 		EOF
 fi

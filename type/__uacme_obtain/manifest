@@ -132,7 +132,7 @@ __directory "${CHALLENGEDIR}" --parents
 
 # Generate and deploy renew script.
 mkdir -p "${__object:?}/files"
-"${__type:?}/files/renew.sh.sh" > "${__object:?}/files/uacme-renew.sh"
+"${__type:?}/files/renew.sh.sh" >"${__object:?}/files/uacme-renew.sh"
 
 __directory "${CONFDIR}/${MAIN_DOMAIN}"
 require="__directory/${CONFDIR}/${MAIN_DOMAIN}" __file "${CONFDIR}/${MAIN_DOMAIN}/renew.sh" \

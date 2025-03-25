@@ -23,7 +23,7 @@
 # We expect the pre-shared key, if it exists, as an argument because we do not
 # consider the environment to be secure.
 
-cat << EOF
+cat <<EOF
 [Peer]
 PublicKey = ${PKEY:?}
 EOF

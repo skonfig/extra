@@ -38,7 +38,7 @@ then
 	do
 		# shellcheck disable=SC2089
 		set -- "$@" "--rsync-opts '${opts}'"
-	done < "${__object:?}/parameter/rsync-opts"
+	done <"${__object:?}/parameter/rsync-opts"
 fi
 
 # shellcheck disable=SC2068,SC2090

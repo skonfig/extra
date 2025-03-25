@@ -32,7 +32,7 @@ echo "protocol bgp ${__object_id:?} {"
 [ -n "${description?}" ] && printf "\tdescription \"%s\";\n" "${description?}"
 
 # Mandatory session information
-cat << EOF
+cat <<EOF
 	local ${local_ip?} as ${local_as:?};
 	neighbor ${neighbor_ip:?} as ${neighbor_as:?};
 EOF

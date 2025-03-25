@@ -54,7 +54,7 @@ __file "${verbose_file}" --state "${verbosestate}"
 if [ -f "${__object:?}/parameter/exclude" ]
 then
     __file "${exclude_file}" --source - --state "${state}" \
-        < "${__object:?}/parameter/exclude"
+        <"${__object:?}/parameter/exclude"
 fi
 
 if [ -f "${__object:?}/parameter/create-destination" ]

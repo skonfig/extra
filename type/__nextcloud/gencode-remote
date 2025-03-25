@@ -32,7 +32,7 @@
 occ() {
     # su creates a new shell, so it does not affect the current session
     #  will not use -q as it supresses errors, too
-    cat << SHELL
+    cat <<SHELL
 su -s /bin/sh -l "${user}" -- -e <<'SU'
 cd '${installdir}' && php occ --no-warnings --no-interaction --no-ansi $@
 SU
@@ -97,7 +97,7 @@ fi
 # Remove the old folder and replace it with the new one.
 if [ "${upgrade}" ]
 then
-    cat << REMOTE
+    cat <<REMOTE
 chown '${user}':'${group}' -R '${tarballdir}'
 REMOTE
 
@@ -106,7 +106,7 @@ REMOTE
     # updater will care about required app updates
 
     # do the real update work
-    cat << REMOTE
+    cat <<REMOTE
 
 cp -pf '${installdir}/config/config.php' '${tarballdir}/config/config.php'
 mv '${installdir}/data' '${tarballdir}'
@@ -125,7 +125,7 @@ REMOTE
     occ db:convert-filecache-bigint
 
     # send upgrade message
-    printf "upgraded %s to %s\n" "${version_is}" "${version_should}" >> "${__messages_out:?}"
+    printf "upgraded %s to %s\n" "${version_is}" "${version_should}" >>"${__messages_out:?}"
 
 # Apply some misc to the installation folder.
 elif [ "${install}" ]
@@ -133,7 +133,7 @@ then
     # Maintainer mode is not available before installation
 
     # Correct all file permissions of the new installation
-    cat << REMOTE
+    cat <<REMOTE
 chown '${user}':'${group}' -R '${installdir}'
 REMOTE
 fi
@@ -215,13 +215,13 @@ then
     occ maintenance:install "${occ_install_args}"
 
     # send install message
-    echo installed >> "${__messages_out:?}"
+    echo installed >>"${__messages_out:?}"
 fi
 
 
 # Handle the config
 mkdir "${__object:?}/files"
-"${__type:?}/map-conf-changes.sh" > "${__object:?}/files/conf-cmds"
+"${__type:?}/map-conf-changes.sh" >"${__object:?}/files/conf-cmds"
 
 # only print if there are changes listed
 if [ -s "${__object:?}/files/conf-cmds" ]
@@ -232,7 +232,7 @@ then
 
     # print change commands incl. the switch of user context
     #  using -e to abort if the commands failed
-    printf "su -s /bin/sh -l '%s' -- -e << 'SU'\n" "${user}"
+    printf "su -s /bin/sh -l '%s' -- -e <<'SU'\n" "${user}"
     printf "cd '%s'\n" "${installdir}"
     cat "${__object:?}/files/conf-cmds"
     printf "SU\n"
@@ -254,7 +254,7 @@ then
     # important if SQLite is used, but the config already corrupted if it can
     # not be moved.
     occ config:system:set datadirectory --type=string --value "'${data_new}'"
-    cat << REMOTE
+    cat <<REMOTE
 cd '${installdir}'  # only for the users safety
 
 rm -rf '${data_new}'
@@ -267,7 +267,7 @@ fi
 # Print configured message if changes where done to the configuration
 if [ "${changes}" ]
 then
-    echo configured >> "${__messages_out:?}"
+    echo configured >>"${__messages_out:?}"
 fi
 
 

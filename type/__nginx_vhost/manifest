@@ -117,7 +117,7 @@ export LPORT
 if [ -n "${TO_HTTPS}" ];
 then
 	# Ignore configuration, simply serve ACME challenge and redirect to HTTPS.
-	"${__type:?}/files/to-https.conf.sh" > "${__object:?}/files/vhost.conf"
+	"${__type:?}/files/to-https.conf.sh" >"${__object:?}/files/vhost.conf"
 	vhost_conf="${__object:?}/files/vhost.conf"
 elif [ -f "${__object:?}/parameter/config" ];
 then
@@ -135,13 +135,13 @@ then
 		vhost_conf=${vhost_partial}
 	else
 		NGINX_LOGIC=$(cat "${vhost_partial}") "${__type:?}/files/generic.conf.sh" \
-			> "${__object:?}/files/vhost.conf"
+			>"${__object:?}/files/vhost.conf"
 
 		vhost_conf="${__object:?}/files/vhost.conf"
 	fi
 else
 	# Default to simple static configuration.
-	"${__type:?}/files/static.conf.sh" > "${__object:?}/files/vhost.conf"
+	"${__type:?}/files/static.conf.sh" >"${__object:?}/files/vhost.conf"
 	vhost_conf="${__object:?}/files/vhost.conf"
 
 	require=${install_reqs} __directory "${NGINX_WEBROOT}/${DOMAIN}"

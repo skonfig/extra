@@ -22,7 +22,7 @@ upstream=https://github.com/wish/unbound_exporter/archive
 version=$(cat "${__object:?}/parameter/version")
 release="unbound_exporter-${version}"
 
-cat << EOF
+cat <<EOF
 if command -v unbound_exporter
 then
     # already installed - ignoring.

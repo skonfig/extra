@@ -23,24 +23,24 @@ VERSION_FILE=/var/wiki/version
 version=$(cat "${__object:?}/parameter/version")
 
 # Check for installation
-cat << EOF
+cat <<EOF
 if [ -f ${VERSION_FILE} ] && [ "\$(cat ${VERSION_FILE})" = "${version}" ];
 then
 	# Assume everything is done already.
 	exit 0;
 else
-	echo "${version}" > ${VERSION_FILE}
+	echo "${version}" >${VERSION_FILE}
 fi
 EOF
 
 # Download and copy source
-cat << EOF
+cat <<EOF
 wget -O - https://github.com/Requarks/wiki/releases/download/${version}/wiki-js.tar.gz | tar xz -C /var/wiki
 chown -R wikijs:wikijs /var/wiki
 EOF
 
 # Install deps and launch
-cat << EOF
+cat <<EOF
 cd /var/wiki || exit 1
 service wikijs restart
 EOF

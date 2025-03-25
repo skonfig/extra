@@ -54,7 +54,7 @@ if find "${__object:?}/parameter/" -maxdepth 1 -name "*-bind" -print -quit | gre
 then
     SYSTEMD_SOCKET="no"
 fi
-echo "${SYSTEMD_SOCKET}" > "${__object:?}/files/systemd_socket"
+echo "${SYSTEMD_SOCKET}" >"${__object:?}/files/systemd_socket"
 
 if [ "${state}" = "present" ]
 then
@@ -71,7 +71,7 @@ then
     fi
 
     # process template
-    "${__type:?}/files/uwsgi.ini.sh" > "${__object:?}/files/uwsgi.ini"
+    "${__type:?}/files/uwsgi.ini.sh" >"${__object:?}/files/uwsgi.ini"
 
     # uwsgi config file
     # TODO maybe patching with __key_value cause of .ini ?
@@ -93,7 +93,7 @@ then
 
     # generate and set the socket unit
     "${__type:?}/files/netbox.socket.sh" "${__object:?}/parameter/bind-to" \
-        > "${__object:?}/files/netbox.socket"
+        >"${__object:?}/files/netbox.socket"
     __systemd_unit uwsgi-netbox.socket \
         --state "${state}" --enablement-state "${unit_state}" \
         --source "${__object:?}/files/netbox.socket" --restart
@@ -103,7 +103,7 @@ else
 fi
 
 # install service file
-"${__type:?}/files/netbox.service.sh" > "${__object:?}/files/netbox.service"
+"${__type:?}/files/netbox.service.sh" >"${__object:?}/files/netbox.service"
 __systemd_unit uwsgi-netbox.service \
     --state "${state}" --enablement-state "${unit_state}" \
     --source "${__object:?}/files/netbox.service" --restart

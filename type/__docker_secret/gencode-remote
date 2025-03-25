@@ -53,7 +53,7 @@ in
 		cat <<-EOF
 		source_file="\$(mktemp cdist.XXXXXXXXXX)"
 
-		base64 -d > "\${source_file}" << eof
+		base64 -d >"\${source_file}" <<eof
 		$(base64 "${source}")
 		eof
 

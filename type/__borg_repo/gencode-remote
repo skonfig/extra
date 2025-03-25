@@ -51,7 +51,7 @@ then
 	doas="sudo -u '$(cat "${__object:?}/parameter/owner")'"
 fi
 
-cat <<- EOF
+cat <<-EOF
 	set -x
 	if [ ! -d "/${__object_id:?}" ]
 	then

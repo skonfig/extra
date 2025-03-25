@@ -26,7 +26,7 @@
 occ() {
     # su creates a new shell, so it does not affect the current session
     #  will not use -q as it supresses errors, too
-    cat << SHELL
+    cat <<SHELL
 su -s /bin/sh -l "${www_user}" -- -e <<'SU'
 cd '${cloud}' && php occ --no-warnings --no-interaction --no-ansi $@
 SU
@@ -58,7 +58,7 @@ SHELL
         while read -r GROUP
         do
             create_args="${create_args} --group '${GROUP}'"
-        done < "${__object:?}/parameter/group"
+        done <"${__object:?}/parameter/group"
     fi
 
     cat <<SHELL
@@ -135,10 +135,10 @@ then
             if [ "${state_is}" = "disabled" ]
             then
                 occ user:enable "'${user}'"
-                echo enabled >> "${__messages_out:?}"
+                echo enabled >>"${__messages_out:?}"
             else
                 occ_create
-                echo created >> "${__messages_out:?}"
+                echo created >>"${__messages_out:?}"
             fi
             ;;
 
@@ -146,25 +146,25 @@ then
             if [ "${state_is}" = "absent" ]
             then
                 occ_create
-                echo created >> "${__messages_out:?}"
+                echo created >>"${__messages_out:?}"
             fi
 
             occ user:disable "'${user}'"
-            echo disabled >> "${__messages_out:?}"
+            echo disabled >>"${__messages_out:?}"
             ;;
 
         present)
             if [ "${state_is}" = "absent" ]
             then
                 occ_create
-                echo created >> "${__messages_out:?}"
+                echo created >>"${__messages_out:?}"
             fi
             # else, everything is ok
             ;;
 
         absent)
             occ user:delete "'${user}'"
-            echo removed >> "${__messages_out:?}"
+            echo removed >>"${__messages_out:?}"
             ;;
     esac
 fi
@@ -255,17 +255,17 @@ SHELL
         mkdir -p "${__object:?}/files"
         # check the spaces before the value to match all sub-categories
         awk '/^  -/{start=0} start{print $2} $0 == "  - groups:"{start=1}' \
-            "${__object:?}/explorer/user" > "${__object:?}/files/explorer_groups"
+            "${__object:?}/explorer/user" >"${__object:?}/files/explorer_groups"
 
         # Add/Remove groups not set via the parameter
         if [ -s "${__object:?}/parameter/group" ]
         then
             # Get all groups to remove
             grep -Fxv -f "${__object:?}/parameter/group" \
-                "${__object:?}/files/explorer_groups" > "${__object:?}/files/group.del" || true
+                "${__object:?}/files/explorer_groups" >"${__object:?}/files/group.del" || true
             # Get all groups to add
             grep -Fxv -f "${__object:?}/files/explorer_groups" \
-                "${__object:?}/parameter/group" > "${__object:?}/files/group.add" || true
+                "${__object:?}/parameter/group" >"${__object:?}/files/group.add" || true
 
         # No user groups at all if nothing wanted by the user
         else
@@ -279,7 +279,7 @@ SHELL
             while read -r GROUP
             do
                 occ group:removeuser "'${GROUP}'" "'${user}'"
-            done < "${__object:?}/files/group.del"
+            done <"${__object:?}/files/group.del"
         fi
 
         # Add all existing groups
@@ -288,7 +288,7 @@ SHELL
             while read -r GROUP
             do
                 occ group:adduser "'${GROUP}'" "'${user}'"
-            done < "${__object:?}/files/group.add"
+            done <"${__object:?}/files/group.add"
         fi
     fi
 

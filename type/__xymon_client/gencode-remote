@@ -24,7 +24,7 @@ if grep -q ^__key_value/CLIENTHOSTNAME "${__messages_in:?}" \
 	|| grep -q ^__key_value/XYMONSERVERS "${__messages_in:?}"
 then
 	echo "systemctl restart xymon-client"
-	echo "restarted" >> "${__messages_out:?}"
+	echo "restarted" >>"${__messages_out:?}"
 	cat <<-EOT
 		echo "xymon-client xymon-client/XYMONSERVERS string ${servers}" | debconf-set-selections
 	EOT

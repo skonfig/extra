@@ -44,7 +44,7 @@ fi
 export description
 
 # Run template
-"${__type:?}"/files/template.sh > "${__files:?}/static-${__object_id:?}.conf"
+"${__type:?}"/files/template.sh >"${__files:?}/static-${__object_id:?}.conf"
 
 # Install resulting configuration
 __file "${confdir:?}"/static-"${__object_id:?}".conf \

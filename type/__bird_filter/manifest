@@ -38,7 +38,7 @@ esac
 # functions.
 __file "${confdir}/1-filter-${__object_id:?}.conf" \
 	--owner root --group bird --mode 0640 \
-	--source - << EOF
+	--source - <<EOF
 filter ${__object_id:?} {
 $(cat "${__object:?}"/stdin)
 }

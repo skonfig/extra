@@ -63,7 +63,7 @@ while read -r hostname
 do
     # shellcheck disable=SC2089
     ALLOWED_HOSTS="${ALLOWED_HOSTS} '${hostname}',"
-done < "${__object:?}/parameter/host"
+done <"${__object:?}/parameter/host"
 # shellcheck disable=SC2090
 export ALLOWED_HOSTS
 
@@ -80,7 +80,7 @@ else
     # this type to execute it now).
     # Generates a 50-character long key with the same character set like
     # the helper script. Must escape the '-' to be no character range.
-    SECRET_KEY=$(tr -cd '!@#$%^&*(\-_=+)[:alnum:]' < /dev/urandom | head -c50)
+    SECRET_KEY=$(tr -cd '!@#$%^&*(\-_=+)[:alnum:]' </dev/urandom | head -c50)
 fi
 export SECRET_KEY
 
@@ -236,8 +236,8 @@ require="__user/netbox" __pyvenv /opt/netbox/venv/
 
 # Generate and upload netbox configuration.
 mkdir -p "${__object:?}/files"
-"${__type:?}/files/configuration.py.sh" > "${__object:?}/files/configuration.py"
-"${__type:?}/files/ldap_config.py.sh" > "${__object:?}/files/ldap_config.py"
+"${__type:?}/files/configuration.py.sh" >"${__object:?}/files/configuration.py"
+"${__type:?}/files/ldap_config.py.sh" >"${__object:?}/files/ldap_config.py"
 
 require="__user/netbox" __directory /opt/netbox/cdist
 require="__directory/opt/netbox/cdist" __file \
@@ -256,7 +256,7 @@ fi
 
 # save secret
 require="__directory/opt/netbox/cdist" __file /opt/netbox/cdist/secretkey \
-    --mode 400 --owner netbox --source - << SECRET
+    --mode 400 --owner netbox --source - <<SECRET
 ${SECRET_KEY}
 SECRET
 

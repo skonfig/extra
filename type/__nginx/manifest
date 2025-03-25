@@ -88,7 +88,7 @@ then
 	fi
 
 	mkdir -p "${__object:?}/files"
-	cat "${nginx_logic}" > "${__object:?}/files/config"
+	cat "${nginx_logic}" >"${__object:?}/files/config"
 
 	require="__uacme_obtain/${domain}" __nginx_vhost "${domain}" \
 		--altdomains "${altdomains}" --config "${__object:?}/files/config"

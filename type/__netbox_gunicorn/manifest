@@ -48,7 +48,7 @@ mkdir "${__object:?}/files"
 if [ "${state}" = "present" ]
 then
     # process template
-    "${__type:?}/files/gunicorn.py.sh" > "${__object:?}/files/gunicorn.py"
+    "${__type:?}/files/gunicorn.py.sh" >"${__object:?}/files/gunicorn.py"
 
     # gunicorn config file
     __file /opt/netbox/gunicorn.py \
@@ -65,7 +65,7 @@ TYPE="Gunicorn"
 export TYPE
 
 "${__type:?}/files/netbox.socket.sh" "${__object:?}/parameter/bind-to" \
-    > "${__object:?}/files/netbox.socket"
+    >"${__object:?}/files/netbox.socket"
 
 # install systemd files
 __systemd_unit gunicorn-netbox.socket \

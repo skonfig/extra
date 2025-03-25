@@ -26,7 +26,7 @@
 generate_embedded_pages () {
     if [ "${EMBED_HOMEPAGE}" != "" ]
     then
-        cat << EOF
+        cat <<EOF
     "embeddedPages": {
         "homeUrl": "home.html"
     },
@@ -37,7 +37,7 @@ EOF
 generate_jitsi_config () {
     if [ "${JITSI_DOMAIN}" != "" ]
     then
-        cat << EOF
+        cat <<EOF
     "jitsi": {
         "preferredDomain": "${JITSI_DOMAIN}"
      },
@@ -50,25 +50,25 @@ generate_branding () {
 
     if [ "${BRANDING_AUTH_HEADER_LOGO_URL}" != "" ]
     then
-        cat << EOF
+        cat <<EOF
         "authHeaderLogoUrl": "${BRANDING_AUTH_HEADER_LOGO_URL}",
 EOF
     fi
 
     if [ "${BRANDING_AUTH_FOOTER_LINKS}" != "" ]
     then
-        cat << EOF
+        cat <<EOF
         "authFooterLinks": "${BRANDING_AUTH_FOOTER_LINKS}",
 EOF
     fi
 
-    cat << EOF
+    cat <<EOF
     "welcomeBackgroundUrl": "themes/element/img/backgrounds/lake.jpg"
 EOF
     echo '},'
 }
 
-cat << EOF
+cat <<EOF
 {
     "default_server_config": {
         "m.homeserver": {

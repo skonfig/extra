@@ -29,7 +29,7 @@ install_dir=/opt/netbox/netbox
 
 if [ "${VERSION}" != "${old_version}" ]
 then
-    cat << EOF
+    cat <<EOF
 # Ensure that coreutils is installed.
 if [ ! -x \$(which mktemp) ]
 then
@@ -42,7 +42,7 @@ tmpdir=\$(mktemp -d)
 cd "\${tmpdir}"
 
 # Download and extract sources.
-curl -sS -L '${url}' > '${archive}'
+curl -sS -L '${url}' >'${archive}'
 tar xf '${archive}'
 
 
@@ -61,9 +61,9 @@ cp '${src}/requirements.txt' /opt/netbox/
 # Uninstall packages not required anymore
 # if versions not be shortend, they will be ignored by pip, but not by comm
 # all of this could be done with grep, too, but it's still must be shortend with awk
-awk -F== '{print \$1}' '/opt/netbox/requirements.txt' | sort > "\${tmpdir}/curr-reqs.txt"
-awk -F== '{print \$1}' '/opt/netbox/old-requirements.txt' | sort > "\${tmpdir}/old-reqs.txt"
-comm -23 "\${tmpdir}/old-reqs.txt" "\${tmpdir}/curr-reqs.txt" > "\${tmpdir}/pip-uninstall.txt"
+awk -F== '{print \$1}' '/opt/netbox/requirements.txt' | sort >"\${tmpdir}/curr-reqs.txt"
+awk -F== '{print \$1}' '/opt/netbox/old-requirements.txt' | sort >"\${tmpdir}/old-reqs.txt"
+comm -23 "\${tmpdir}/old-reqs.txt" "\${tmpdir}/curr-reqs.txt" >"\${tmpdir}/pip-uninstall.txt"
 
 # only uninstall if something is available (to avoid errors cause of this)
 if [ -s "\${tmpdir}/pip-uninstall.txt" ]
@@ -74,7 +74,7 @@ fi
 # Install python dependencies.
 #  avoid gunicorn, because it will be done in an other type
 grep -v "^gunicorn==" "\${tmpdir}/${src}/requirements.txt" \
-    > "\${tmpdir}/${src}/requirements.txt.new"
+    >"\${tmpdir}/${src}/requirements.txt.new"
 /opt/netbox/venv/bin/pip3 install -q -r "\${tmpdir}/${src}/requirements.txt.new"
 
 EOF
@@ -86,7 +86,7 @@ EOF
         echo "/opt/netbox/venv/bin/pip3 uninstall -qy django-auth-ldap"
     fi
 
-    cat << EOF
+    cat <<EOF
 
 # Deploy sources and restore configuration.
 rm -rf '${install_dir}'
@@ -114,12 +114,12 @@ cd /
 rm -rf "\${tmpdir}"
 
 # Save version after successful installation
-printf "%s\\n" "${VERSION}" > /opt/netbox/cdist/version
+printf "%s\\n" "${VERSION}" >/opt/netbox/cdist/version
 
 EOF
 
     # meta
-    printf "installed %s\n" "${VERSION}" >> "${__messages_out:?}"
+    printf "installed %s\n" "${VERSION}" >>"${__messages_out:?}"
     changes=yes
 fi
 
@@ -127,7 +127,7 @@ fi
 if grep -q "^__file/opt/netbox/" "${__messages_in:?}"
 then
     # meta
-    printf "configured\n" >> "${__messages_out:?}"
+    printf "configured\n" >>"${__messages_out:?}"
     changes=yes
 fi
 
@@ -139,7 +139,7 @@ then
     # application is running ;)
 
     # restarting after changes
-    cat << EOF
+    cat <<EOF
 # Restart service. All required services are included with netbox.service.
 systemctl restart netbox
 EOF

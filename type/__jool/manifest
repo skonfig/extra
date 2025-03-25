@@ -56,7 +56,7 @@ then
 fi
 
 require='__package/jool-tools' __file /etc/jool/jool.conf \
-	--source - <<- EOF
+	--source - <<-EOF
 	{
 	  "instance": "${instance}",
 	  "framework": "${framework}",

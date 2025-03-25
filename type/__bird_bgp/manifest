@@ -116,7 +116,7 @@ fi
 export ipv6_export
 
 # Run template
-"${__type:?}"/files/template.sh > "${__files:?}/bgp-${__object_id:?}.conf"
+"${__type:?}"/files/template.sh >"${__files:?}/bgp-${__object_id:?}.conf"
 
 # Install resulting configuration
 __file "${confdir:?}"/bgp-"${__object_id:?}".conf \

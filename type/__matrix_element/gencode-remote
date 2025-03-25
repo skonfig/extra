@@ -55,7 +55,7 @@ url="https://github.com/vector-im/riot-web/releases/download/v${VERSION}/${archi
 
 # tar and curl are installed by the __matrix-riot manifest. mktemp is usually
 # provided by coreutils and assumed installed.
-cat << EOF
+cat <<EOF
 set -e
 
 # Ensure that coreutils is installed.
@@ -71,7 +71,7 @@ custom_files_dir="\${tmpdir}/custom_files"
 cd \${tmpdir}
 
 # Download and extract sources.
-curl -L '${url}' > ${archive}
+curl -L '${url}' >${archive}
 tar xf ${archive}
 
 # Backup files deployed by __matrix_element.

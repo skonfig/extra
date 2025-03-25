@@ -37,9 +37,9 @@ in
             if [ "${curr_installed}" != "" ]
             then
                 printf "updated %s to %s\n" "${curr_installed}" "${should_installed}" \
-                    >> "${__messages_out:?}"
+                    >>"${__messages_out:?}"
             else
-                printf "installed\n" >> "${__messages_out:?}"
+                printf "installed\n" >>"${__messages_out:?}"
             fi
             do_restart=yes
         fi
@@ -48,14 +48,14 @@ in
         if grep -q "^__file/opt/netbox/gunicorn.py:" "${__messages_in:?}"
         then
             do_restart=yes
-            printf "configured\n" >> "${__messages_out:?}"
+            printf "configured\n" >>"${__messages_out:?}"
         fi
 
 
         # restart gunicorn
         if [ "${do_restart}" ] && [ "${state}" != "disabled" ]
         then
-            cat << EOF
+            cat <<EOF
 # Restart service
 systemctl restart gunicorn-netbox
 EOF
@@ -69,6 +69,6 @@ EOF
         then
             # service already disabled
             echo "/opt/netbox/venv/bin/pip3 uninstall -y gunicorn"
-            printf "uninstalled\n" >> "${__messages_out:?}"
+            printf "uninstalled\n" >>"${__messages_out:?}"
         fi
 esac

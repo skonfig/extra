@@ -27,7 +27,7 @@ in
 	:
 ;;
 *)
-	cat <<- EOF >&2
+	cat <<-EOF >&2
 	__opendkim_genkey currently only supports Alpine Linux. Please
 	contribute an implementation for ${os} if you can.
 	EOF

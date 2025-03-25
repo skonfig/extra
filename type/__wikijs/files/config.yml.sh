@@ -30,14 +30,14 @@ fi
 
 generate_ssl_section () {
 
-	cat << EOF
+	cat <<EOF
 ssl:
   enabled: ${SSL}
 EOF
 
 if [ "${SSL}" = "true" ]
 then
-	cat << EOF
+	cat <<EOF
   port: ${HTTPS_PORT}
   provider: letsencrypt
   domain: ${__target_host:?}
@@ -46,7 +46,7 @@ EOF
 	fi
 }
 
-cat << EOF
+cat <<EOF
 port: ${HTTP_PORT}
 db:
   type: postgres

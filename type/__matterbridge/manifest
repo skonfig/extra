@@ -69,7 +69,7 @@ mkdir -p "${__object:?}/files"
 
 # Download and check matterbridge binary.
 curl -L "${binary_url}" -o "${__object:?}/files/${artefact}"
-curl -Ls "${checksum_file_url}" | grep "${artefact}" > "${__object:?}/files/${checksum_file}"
+curl -Ls "${checksum_file_url}" | grep "${artefact}" >"${__object:?}/files/${checksum_file}"
 if ! (cd "${__object:?}/files"; sha256sum --check ${checksum_file})
 then
     echo "Matterbridge binary checksum failed." >&2
@@ -85,7 +85,7 @@ require="__user/${USER}" __file "${BINARY_PATH}" \
   --owner "${USER}" --mode 755
 
 # Generate and deploy configuration file.
-"${__type:?}/files/matterbridge.service.sh" > "${__object:?}/files/matterbridge.service"
+"${__type:?}/files/matterbridge.service.sh" >"${__object:?}/files/matterbridge.service"
 
 require="__user/${USER}" __directory "${config_dir}" \
   --owner "${USER}" --mode 0755 --parents \

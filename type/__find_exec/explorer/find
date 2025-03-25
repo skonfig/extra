@@ -38,6 +38,6 @@ while read -r l
 do
     set -- "$@" "${l}"
 done \
-    < "${__object:?}/parameter/exp"
+    <"${__object:?}/parameter/exp"
 
 eval "$* | sed 1q"

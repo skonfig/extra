@@ -26,7 +26,7 @@ in
 	devuan|debian)
 	;;
 	*)
-		echo "Your OS '${os}' is currently not supported." > /dev/stderr
+		echo "Your OS '${os}' is currently not supported." >&2
 		exit 1
 	;;
 esac

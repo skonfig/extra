@@ -111,7 +111,7 @@ stopJail() {
    if [ "${status}" = "STARTED" ]
    then
       echo "/etc/rc.d/jail stop ${name}"
-      echo "stop" >> "${__messages_out:?}"
+      echo "stop" >>"${__messages_out:?}"
    fi
 }
 
@@ -120,7 +120,7 @@ startJail() {
    if [ "${status}" = "NOTSTART" ]
    then
       echo "/etc/rc.d/jail start ${name}"
-      echo "start" >> "${__messages_out:?}"
+      echo "start" >>"${__messages_out:?}"
    fi
 }
 
@@ -177,7 +177,7 @@ EOF
          rm -f /etc/rc.conf.bak
       fi
 EOF
-   echo "delete" >> "${__messages_out:?}"
+   echo "delete" >>"${__messages_out:?}"
 }
 
 createJail() {
@@ -242,7 +242,7 @@ cat <<EOF
    fi
 
 EOF
-   echo "create" >> "${__messages_out:?}"
+   echo "create" >>"${__messages_out:?}"
 
 # Create the ro+rw mountpoint entries in fstab
 cat <<EOF
@@ -343,7 +343,7 @@ then
       fi
       unset jail_list
 EOF
-   echo "onboot" >> "${__messages_out:?}"
+   echo "onboot" >>"${__messages_out:?}"
 fi
 
 # Add the normal entries into the jail's rc.conf

@@ -22,7 +22,7 @@ iface=$(cat "${__object:?}/parameter/iface")
 
 if grep -q "^__block/${__object_id:?}" "${__messages_in:?}";
 then
-	cat <<- EOF
+	cat <<-EOF
 	wg syncconf ${iface:?} /etc/wireguard/${iface:?}.conf
 	EOF
 fi

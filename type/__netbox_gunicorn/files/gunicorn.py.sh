@@ -29,7 +29,7 @@ __explorer="${__global:?}/explorer"
 cores=$(cat "${__explorer:?}/cpu_cores")
 
 
-cat << EOF
+cat <<EOF
 # The IP address (typically localhost) and port that the Netbox WSGI process should listen on
 #bind = done via systemd socket 'gunicorn-netbox.socket'
 

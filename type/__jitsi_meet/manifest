@@ -27,7 +27,7 @@ in
 	devuan|debian)
 	;;
 	*)
-		echo "Your OS '${os}' is currently not supported." > /dev/stderr
+		echo "Your OS '${os}' is currently not supported." >&2
 		exit 1
 	;;
 esac
@@ -99,7 +99,7 @@ NGINX_ETC="/etc/nginx"
 __directory "${NGINX_ETC}/snippets" --state present
 require="__directory${NGINX_ETC}/snippets" __file "${NGINX_ETC}/snippets/acme-challenge.conf" \
   --mode 644 \
-  --source - << EOF
+  --source - <<EOF
 # This file is managed remotely, all changes will be lost
 
 # This was heavily inspired by debops.org.
@@ -142,7 +142,7 @@ EOF
 __directory "${NGINX_ETC}/sites-available" --state present
 require="__directory${NGINX_ETC}/sites-available" __file "${NGINX_ETC}/sites-available/default" \
   --mode 644 \
-  --source - << EOF
+  --source - <<EOF
 # This file is managed remotely, all changes will be lost
 
 server_names_hash_bucket_size 64;

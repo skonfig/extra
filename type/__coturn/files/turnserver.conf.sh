@@ -21,7 +21,7 @@
 # Generates the turnserver.conf contents.
 #
 
-cat << EOF
+cat <<EOF
 # Coturn TURN SERVER configuration file
 #
 # Boolean values note: where boolean value is supposed to be used,
@@ -84,7 +84,7 @@ do
     echo "listening-ip=${ip}"
 done
 
-cat << EOF
+cat <<EOF
 
 # Auxiliary STUN/TURN server listening endpoint.
 # Aux servers have almost full TURN and STUN functionality.
@@ -255,7 +255,7 @@ else
     echo '#use-auth-secret'
 fi
 
-cat << EOF
+cat <<EOF
 
 # 'Static' authentication secret value (a string) for TURN REST API only.
 # If not set, then the turn server
@@ -272,7 +272,7 @@ else
     echo "#static-auth-secret=north"
 fi
 
-cat << EOF
+cat <<EOF
 
 # Server name used for
 # the oAuth authentication purposes.
@@ -395,7 +395,7 @@ else
   echo "#realm=mycompany.org"
 fi
 
-cat << EOF
+cat <<EOF
 
 # The flag that sets the origin consistency
 # check: across the session, all requests must have the same
@@ -453,7 +453,7 @@ else
     echo "#no-tls"
 fi
 
-cat << EOF
+cat <<EOF
 
 # Uncomment if no DTLS client listener is desired.
 # By default DTLS client listener is always started.
@@ -472,7 +472,7 @@ else
     echo '#no-udp-relay'
 fi
 
-cat << EOF
+cat <<EOF
 
 # Uncomment if no TCP relay endpoints are allowed.
 # By default TCP relay endpoints are enabled (like in RFC 6062).
@@ -486,7 +486,7 @@ else
     echo '#no-tcp-relay'
 fi
 
-cat << EOF
+cat <<EOF
 
 # Uncomment if extra security is desired,
 # with nonce value having limited lifetime.
@@ -530,7 +530,7 @@ else
     echo "#cert=/usr/local/etc/turn_server_cert.pem"
 fi
 
-cat << EOF
+cat <<EOF
 
 # Private key file.
 # Use an absolute path or path relative to the
@@ -545,7 +545,7 @@ else
     echo "#pkey=/usr/local/etc/turn_server_pkey.pem"
 fi
 
-cat << EOF
+cat <<EOF
 
 # Private key file password, if it is in encoded format.
 # This option has no default value.
@@ -717,7 +717,7 @@ do
     echo "allowed-peer=${peer}"
 done
 
-cat << EOF
+cat <<EOF
 # File name to store the pid of the process.
 # Default is /var/run/turnserver.pid (if superuser account is used) or
 # /var/tmp/turnserver.pid .

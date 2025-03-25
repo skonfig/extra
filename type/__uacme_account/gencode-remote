@@ -43,7 +43,7 @@ then
 	confdir=$(cat "${__object:?}/parameter/confdir")
 fi
 
-cat << EOF
+cat <<EOF
 if ! [ -f "${confdir}/private/key.pem" ];
 then
 	uacme -y new ${admin_mail}

@@ -21,7 +21,7 @@
 # Check pass is installed.
 command -v pass >/dev/null 2>&1 ||
 	{
-		cat <<- EOF >&2
+		cat <<-EOF >&2
 		__pass_init: this type requires pass installed.
 		See https://www.passwordstore.org/.
 		EOF
@@ -33,7 +33,7 @@ set --
 while read -r id;
 do
 	set -- "$@" "${id}"
-done < "${__object:?}/parameter/gpgid"
+done <"${__object:?}/parameter/gpgid"
 
 # Load required password store location parameter.
 PASSWORD_STORE_DIR=$(cat "${__object:?}/parameter/storedir")

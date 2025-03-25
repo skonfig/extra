@@ -23,7 +23,7 @@
 echo 'server {'
 
 # Listen
-cat <<- EOF
+cat <<-EOF
 	listen ${LPORT:?};
 	listen [::]:${LPORT:?};
 EOF
@@ -32,7 +32,7 @@ EOF
 echo "server_name ${DOMAIN:?} ${ALTDOMAINS};"
 
 # ACME challenges.
-cat << EOF
+cat <<EOF
 location /.well-known/acme-challenge/ {
 	alias ${ACME_CHALLENGE_DIR:?};
 }

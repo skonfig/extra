@@ -21,7 +21,7 @@
 # Generate contents of configuration.py.
 #
 
-cat << EOF
+cat <<EOF
 #########################
 #                       #
 #   Required settings   #
@@ -158,28 +158,28 @@ EOF
 
 if [ "${HTTP_PROXY}" != "" ] || [ "${HTTPS_PROXY}" != "" ]
 then
-    cat << EOF
+    cat <<EOF
 # HTTP proxies NetBox should use when sending outbound HTTP requests (e.g. for webhooks).
 HTTP_PROXIES = {
 EOF
     if [ "${HTTP_PROXY}" != "" ]
     then
-        cat << EOF
+        cat <<EOF
     'http': '${HTTP_PROXY}',
 EOF
     fi
     if [ "${HTTPS_PROXY}" != "" ]
     then
-        cat << EOF
+        cat <<EOF
     'https': '${HTTPS_PROXY}',
 EOF
     fi
-    cat << EOF
+    cat <<EOF
 }
 EOF
 fi
 
-cat << EOF
+cat <<EOF
 # IP addresses recognized as internal to the system. The debugging toolbar will be available only to clients accessing
 # NetBox from an internal IP.
 INTERNAL_IPS = ('127.0.0.1', '::1')
@@ -208,7 +208,7 @@ EOF
 
 if [ "${MEDIA_ROOT}" != "" ]
 then
-    cat << EOF
+    cat <<EOF
 # The file path where uploaded media such as image attachments are stored. A trailing slash is not needed. Note that
 # the default value of this setting is derived from the installed location.
 MEDIA_ROOT = '${MEDIA_ROOT}'
@@ -216,7 +216,7 @@ MEDIA_ROOT = '${MEDIA_ROOT}'
 EOF
 fi
 
-cat << EOF
+cat <<EOF
 # By default uploaded media is stored on the local filesystem. Using Django-storages is also supported. Provide the
 # class path of the storage driver in STORAGE_BACKEND and any configuration options in STORAGE_CONFIG. For example:
 # STORAGE_BACKEND = 'storages.backends.s3boto3.S3Boto3Storage'
@@ -268,20 +268,20 @@ EOF
 
 if [ "${USE_LDAP}" ]
 then
-    cat << EOF
+    cat <<EOF
 # Remote authentication support with ldap
 REMOTE_AUTH_ENABLED = True
 REMOTE_AUTH_BACKEND = 'netbox.authentication.LDAPBackend'
 EOF
 else
-    cat << EOF
+    cat <<EOF
 # Remote authentication support
 REMOTE_AUTH_ENABLED = False
 REMOTE_AUTH_BACKEND = 'netbox.authentication.RemoteUserBackend'
 EOF
 fi
 
-cat << EOF
+cat <<EOF
 REMOTE_AUTH_HEADER = 'HTTP_REMOTE_USER'
 REMOTE_AUTH_AUTO_CREATE_USER = True
 REMOTE_AUTH_DEFAULT_GROUPS = []
@@ -297,12 +297,12 @@ EOF
 
 if [ "${UPDATE_CHECK}" != "" ]
 then
-    cat << EOF
+    cat <<EOF
 RELEASE_CHECK_URL = 'https://api.github.com/repos/netbox-community/netbox/releases'
 
 EOF
 else
-    cat << EOF
+    cat <<EOF
 RELEASE_CHECK_URL = None
 
 EOF
@@ -310,7 +310,7 @@ fi
 
 if [ "${REPORTS_ROOT}" != "" ]
 then
-    cat << EOF
+    cat <<EOF
 # The file path where custom reports will be stored. A trailing slash is not needed. Note that the default value of
 # this setting is derived from the installed location.
 REPORTS_ROOT = '${REPORTS_ROOT}'
@@ -320,7 +320,7 @@ fi
 
 if [ "${SCRIPTS_ROOT}" != "" ]
 then
-    cat << EOF
+    cat <<EOF
 # The file path where custom scripts will be stored. A trailing slash is not needed. Note that the default value of
 # this setting is derived from the installed location.
 SCRIPTS_ROOT = '${SCRIPTS_ROOT}'
@@ -328,7 +328,7 @@ SCRIPTS_ROOT = '${SCRIPTS_ROOT}'
 EOF
 fi
 
-cat << EOF
+cat <<EOF
 # By default, NetBox will store session data in the database. Alternatively, a file path can be specified here to use
 # local file storage instead. (This can be useful for enabling authentication on a standby instance with read-only
 # database access.) Note that the user as which NetBox runs must have read and write permissions to this path.

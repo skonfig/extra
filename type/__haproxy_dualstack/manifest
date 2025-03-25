@@ -124,12 +124,12 @@ do
 	for proto in ${PROTOCOLS}
 	do
 		# Add protocol "header"
-		printf "\n# %s %s \n" "${bind}" "${proto}" >> "${configtmp}"
+		printf "\n# %s %s \n" "${bind}" "${proto}" >>"${configtmp}"
 
 		sed -e "s/BIND/${bind}/" \
 			-e "s/\(frontend[[:space:]].*\)/\1${bind}/" \
 			-e "s/\(backend[[:space:]].*\)/\\1${bind}/" \
-			"${__type:?}/files/${proto}" >> "${configtmp}"
+			"${__type:?}/files/${proto}" >>"${configtmp}"
 
 		while read -r hostdefinition
 		do
@@ -164,17 +164,17 @@ do
 			# Treat protocols without TLS+SNI specially
 			if [ "${proto}" = http ]
 			then
-				echo "	use-server ${servername} if { hdr(host) -i ${host} }" >> "${configtmp}"
+				echo "	use-server ${servername} if { hdr(host) -i ${host} }" >>"${configtmp}"
 			else
-				echo "	use-server ${servername} if { req_ssl_sni -i ${host} }" >> "${configtmp}"
+				echo "	use-server ${servername} if { req_ssl_sni -i ${host} }" >>"${configtmp}"
 			fi
 
 			# Create the "server" itself.
 			# Note that port and send_proxy will be empty unless
 			# they were requested by the type user
-			echo "	server ${servername} ${backendproto}@${host}${port}${send_proxy}" >> "${configtmp}"
+			echo "	server ${servername} ${backendproto}@${host}${port}${send_proxy}" >>"${configtmp}"
 
-		done < "${param}"
+		done <"${param}"
 	done
 done
 

@@ -26,7 +26,7 @@ if [ -e "${destination}" ]
 then
     if [ -f "${destination}" ]
     then
-        cksum < "${destination}"
+        cksum <"${destination}"
     else
         echo "NO REGULAR FILE"
     fi

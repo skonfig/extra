@@ -21,7 +21,7 @@
 # Generate contents for renew.sh.
 #
 
-cat << EOF
+cat <<EOF
 #!/bin/sh
 
 UACME_CHALLENGE_PATH=${CHALLENGEDIR:?}
@@ -53,7 +53,7 @@ EOF
 # Re-deploy, if needed.
 if [ -n "${KEY_TARGET?}" ] && [ -n "${CERT_TARGET?}" ];
 then
-cat << EOF
+cat <<EOF
 
 # Deploy newly issued certificate.
 set -e

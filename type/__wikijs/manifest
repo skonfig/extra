@@ -85,7 +85,7 @@ do
 done
 
 mkdir -p "${__object:?}/files"
-"${__type:?}/files/config.yml.sh" "${db_pass}" > "${__object:?}/files/config.yml"
+"${__type:?}/files/config.yml.sh" "${db_pass}" >"${__object:?}/files/config.yml"
 require='__user/wikijs' \
 	__file /var/wiki/config.yml \
 	--source "${__object:?}/files/config.yml" \

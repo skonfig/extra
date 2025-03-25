@@ -49,7 +49,7 @@ in
 		cat <<-EOF
 		compose_file="\$(mktemp cdist.XXXXXXXXXX)"
 
-		base64 -d > "\${compose_file}" << eof
+		base64 -d >"\${compose_file}" <<eof
 		$(base64 "${compose_file}")
 		eof
 

@@ -43,10 +43,10 @@ source=$(cat "${version_dir}/source")
 source_file_name="${source##*/}"
 cksum_should=$(cut -d' ' -f1,2 "${version_dir}/cksum")
 
-cat << eof
+cat <<eof
     tmpdir=\$(mktemp -d -p /tmp "${__type##*/}.XXXXXXXXXX")
-    curl -s -L "${source}" > "\${tmpdir}/${source_file_name}"
-    unzip -p "\${tmpdir}/${source_file_name}" > "${destination}.tmp"
+    curl -s -L "${source}" >"\${tmpdir}/${source_file_name}"
+    unzip -p "\${tmpdir}/${source_file_name}" >"${destination}.tmp"
     rm -rf "\${tmpdir}"
 
     cksum_is=\$(cksum "${destination}.tmp" | cut -d' ' -f1,2)
@@ -63,4 +63,4 @@ cat << eof
     fi
 eof
 
-echo "/usr/local/bin/consul created" >> "${__messages_out:?}"
+echo "/usr/local/bin/consul created" >>"${__messages_out:?}"

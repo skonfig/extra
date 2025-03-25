@@ -37,6 +37,6 @@ esac
 # and we need them to be defined to be used in the rest of the stuff.
 __file "${confdir}/0-function-${__object_id:?}.conf" \
 	--owner root --group bird --mode 0640 \
-	--source - << EOF
+	--source - <<EOF
 $(cat "${__object:?}"/stdin)
 EOF

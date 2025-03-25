@@ -32,7 +32,7 @@ then
 fi
 
 
-cat << UNIT
+cat <<UNIT
 [Unit]
 Description=Socket for NetBox via ${TYPE}
 
@@ -43,9 +43,9 @@ UNIT
 while read -r line
 do
     printf "ListenStream=%s\n" "${line}"
-done < "$1"
+done <"$1"
 
-cat << UNIT
+cat <<UNIT
 SocketUser=netbox
 SocketGroup=www-data
 

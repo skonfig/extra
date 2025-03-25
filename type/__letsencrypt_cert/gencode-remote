@@ -39,7 +39,7 @@ in
 
 		echo "certbot delete --cert-name '${name}' --quiet"
 
-		echo remove >> "${__messages_out:?}"
+		echo remove >>"${__messages_out:?}"
 	;;
 	present)
 		mkdir "${__global:?}/tmp"
@@ -50,7 +50,7 @@ in
 		then
 			cp "${domain_param_file}" "${requested_domains}"
 		else
-			echo "${__object_id:?}" >> "${requested_domains}"
+			echo "${__object_id:?}" >>"${requested_domains}"
 		fi
 
 		staging=no
@@ -98,15 +98,15 @@ in
 			fi) \
 			$(while read -r domain; do
 				echo "--domain '${domain}' \\"
-			done < "${requested_domains}")
+			done <"${requested_domains}")
 		EOF
 		rm -f "${requested_domains}"
 
 		if [ "${certificate_exists}" = "no" ]
 		then
-			echo create >> "${__messages_out:?}"
+			echo create >>"${__messages_out:?}"
 		else
-			echo change >> "${__messages_out:?}"
+			echo change >>"${__messages_out:?}"
 		fi
 	;;
 	*)

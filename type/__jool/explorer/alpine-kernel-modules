@@ -31,7 +31,7 @@ in
 	printf "jool-modules-lts"
 	;;
 *)
-	cat <<- EOF >&2
+	cat <<-EOF >&2
 	Incompatible kernel version found - could not install jool kernel
 	modules. Please use one of linux-lts or linux-virt.
 	EOF

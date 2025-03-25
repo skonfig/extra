@@ -34,8 +34,8 @@ fi
 if su - "${user}" -c ". \"\${HOME}/.rvm/scripts/rvm\"
 rvm list | grep -q ${ruby}"; then
    if su - "${user}" -c ". \"\${HOME}/.rvm/scripts/rvm\"
-rvm use ${ruby} > /dev/null 2>&1; rvm gemset list | grep -q ${gemsetname} &&
-rvm use ${gemset} > /dev/null 2>&1 && gem list | grep -q ${gem}"; then
+rvm use ${ruby} >/dev/null 2>&1; rvm gemset list | grep -q ${gemsetname} &&
+rvm use ${gemset} >/dev/null 2>&1 && gem list | grep -q ${gem}"; then
       echo "present"
       exit 0
   fi
