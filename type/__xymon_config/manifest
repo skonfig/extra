@@ -34,7 +34,8 @@ fi
 ## pass `--rsync-opts` as-is to `__rsync`:
 if [ -f "${__object:?}/parameter/rsync-opts" ]
 then
-	while read -r opts; do
+	while read -r opts
+	do
 		# shellcheck disable=SC2089
 		set -- "$@" "--rsync-opts '${opts}'"
 	done < "${__object:?}/parameter/rsync-opts"

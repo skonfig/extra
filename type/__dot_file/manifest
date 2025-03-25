@@ -38,14 +38,16 @@ fi
 # it should be fixed in '__directory'?
 set --
 subpath=${file}
-while subpath=$(dirname "${subpath}") ; do
+while subpath=$(dirname "${subpath}")
+do
 	[ "${subpath}" = . ] && break
 	set -- "${subpath}" "$@"
 done
 unset subpath
 
 export CDIST_ORDER_DEPENDENCY
-for dir ; do
+for dir
+do
 	__directory "${home}/${dir}"   \
 	    --group "${primary_group}" \
             --mode "${dirmode}" \
@@ -56,7 +58,8 @@ done
 # present, since it have been given default.
 
 set --
-for p in state mode source ; do
+for p in state mode source
+do
 	if [ -f "${__object:?}/parameter/${p}" ]
 	then
 		value=$(cat "${__object:?}/parameter/${p}")

@@ -99,7 +99,8 @@ get_ip() {
 
 PROTOCOLS=$(cat "${__object:?}/parameter/protocol")
 
-for proxy in v4proxy v6proxy; do
+for proxy in v4proxy v6proxy
+do
 	param=${__object:?}/parameter/${proxy}
 	# no backend? skip generating code
 	if [ ! -f "${param}" ]
@@ -120,7 +121,8 @@ for proxy in v4proxy v6proxy; do
 			;;
 	esac
 
-	for proto in ${PROTOCOLS}; do
+	for proto in ${PROTOCOLS}
+	do
 		# Add protocol "header"
 		printf "\n# %s %s \n" "${bind}" "${proto}" >> "${configtmp}"
 
@@ -129,7 +131,8 @@ for proxy in v4proxy v6proxy; do
 			-e "s/\(backend[[:space:]].*\)/\\1${bind}/" \
 			"${__type:?}/files/${proto}" >> "${configtmp}"
 
-		while read -r hostdefinition; do
+		while read -r hostdefinition
+		do
 			if echo "${hostdefinition}" | grep -qE '^proxy:'
 			then
 				# Proxy protocol was requested

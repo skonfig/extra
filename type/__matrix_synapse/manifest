@@ -371,7 +371,8 @@ require=${synapse_req} __file "${LOG_CONFIG_PATH}" \
   --mode 600 \
   --source "${__object:?}/files/log.config"
 
-for directory in "${DATA_DIR}" "${LOG_DIR}"; do
+for directory in "${DATA_DIR}" "${LOG_DIR}"
+do
 	require=${synapse_req} __directory "${directory}" \
 		--state present \
 		--owner "${synapse_user}"

@@ -85,7 +85,8 @@ __config_file ${CONF} \
 	--group prometheus --mode 640 \
 	--onchange "promtool check config ${CONF} && service prometheus restart"
 
-for file in ${rule_files}; do
+for file in ${rule_files}
+do
 	dest=${CONF_DIR}/$(basename "${file}")
 	require="${require} ${require_pkg}" \
 	__config_file "${dest}" \

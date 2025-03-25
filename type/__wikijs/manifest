@@ -79,7 +79,8 @@ __file /etc/init.d/wikijs \
 	--source "${__type:?}/files/wikijs-openrc" \
 	--mode 0755
 __package nghttp2-dev  # Required for some reason, else a symbol is missing
-for logfile in wikijs.log wikijs.err; do
+for logfile in wikijs.log wikijs.err
+do
 	require="__user/wikijs" __file /var/log/${logfile} --owner wikijs
 done
 

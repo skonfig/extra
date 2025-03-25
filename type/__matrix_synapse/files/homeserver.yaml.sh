@@ -29,7 +29,8 @@ generate_bind_addresses () {
 	if [ -n "${BIND_ADDRESSES}" ]
 	then
 		echo "bind_addresses:"
-		for addr in ${BIND_ADDRESSES}; do
+		for addr in ${BIND_ADDRESSES}
+		do
 			echo "    - '${addr}'"
 		done
 	else
@@ -1194,7 +1195,8 @@ EOF
 if [ -n "${TURN_URIS}" ]
 then
 	echo "turn_uris:"
-	for uri in ${TURN_URIS}; do
+	for uri in ${TURN_URIS}
+	do
 		echo "  - '${uri}'"
 	done
 else
@@ -1342,7 +1344,8 @@ EOF
 if [ -n "${RESGISTRATION_ALLOWS_EMAIL_PATTERN}" ]
 then
 	echo "allowed_local_3pids:"
-	for pattern in ${RESGISTRATION_ALLOWS_EMAIL_PATTERN}; do
+	for pattern in ${RESGISTRATION_ALLOWS_EMAIL_PATTERN}
+	do
 		cat << EOF
   - medium: email
     pattern: ${pattern}
@@ -1448,7 +1451,8 @@ EOF
 if [ -n "${AUTO_JOIN_ROOMS}" ]
 then
 	echo "auto_join_rooms:"
-	for room in ${AUTO_JOIN_ROOMS}; do
+	for room in ${AUTO_JOIN_ROOMS}
+	do
 		cat << EOF
   - "${room}"
 EOF
@@ -1582,7 +1586,8 @@ EOF
 if [ -n "${APP_SERVICE_CONFIG_FILES}" ]
 then
 	echo "app_service_config_files:"
-	for file in ${APP_SERVICE_CONFIG_FILES}; do
+	for file in ${APP_SERVICE_CONFIG_FILES}
+	do
 		echo "  - ${file}"
 	done
 fi
@@ -2864,7 +2869,8 @@ EOF
 if [ -n "${FEDERATION_SENDER_INSTANCES}" ]
 then
 	echo "federation_sender_instances:"
-	for instance in ${FEDERATION_SENDER_INSTANCES}; do
+	for instance in ${FEDERATION_SENDER_INSTANCES}
+	do
 		echo "  - ${instance}"
 	done
 fi

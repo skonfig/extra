@@ -49,7 +49,8 @@ then
         esac
     fi
 
-    for direction in incoming outgoing routed; do
+    for direction in incoming outgoing routed
+    do
         if [ -f "${__object:?}/parameter/default_${direction}" ]
         then
             treatment=$(cat "${__object:?}/parameter/default_${direction}")

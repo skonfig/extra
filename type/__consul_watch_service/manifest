@@ -30,7 +30,8 @@ echo "{"
 printf '   "watches": [{\n'
 printf '      "type": "%s"\n' "${watch_type}"
 cd "${__object:?}/parameter/"
-for param in *; do
+for param in *
+do
    case ${param}
    in
       state) continue ;;

@@ -55,7 +55,8 @@ SHELL
     # groups
     if [ -f "${__object:?}/parameter/group" ]
     then
-        while read -r GROUP; do
+        while read -r GROUP
+        do
             create_args="${create_args} --group '${GROUP}'"
         done < "${__object:?}/parameter/group"
     fi
@@ -275,7 +276,8 @@ SHELL
         # Remove all groups not exist anymore
         if [ -s "${__object:?}/files/group.del" ]
         then
-            while read -r GROUP; do
+            while read -r GROUP
+            do
                 occ group:removeuser "'${GROUP}'" "'${user}'"
             done < "${__object:?}/files/group.del"
         fi
@@ -283,7 +285,8 @@ SHELL
         # Add all existing groups
         if [ -s "${__object:?}/files/group.add" ]
         then
-            while read -r GROUP; do
+            while read -r GROUP
+            do
                 occ group:adduser "'${GROUP}'" "'${user}'"
             done < "${__object:?}/files/group.add"
         fi

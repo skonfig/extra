@@ -36,7 +36,8 @@ out=""
 
 save_IFS=${IFS}
 IFS=":"
-for cur in ${name}; do
+for cur in ${name}
+do
     if [ -e "${jaildir}/${cur}" ]
     then
         out="${out}:${cur}"

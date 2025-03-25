@@ -79,7 +79,8 @@ cat << EOF
 
 EOF
 
-for ip in ${LISTENING_IPS}; do
+for ip in ${LISTENING_IPS}
+do
     echo "listening-ip=${ip}"
 done
 
@@ -706,11 +707,13 @@ syslog
 # allowed-peer-ip=83.166.68.45
 EOF
 
-for peer in ${DENIED_PEERS}; do
+for peer in ${DENIED_PEERS}
+do
     echo "denied-peer=${peer}"
 done
 
-for peer in ${ALLOWED_PEERS}; do
+for peer in ${ALLOWED_PEERS}
+do
     echo "allowed-peer=${peer}"
 done
 

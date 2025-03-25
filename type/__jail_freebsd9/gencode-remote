@@ -96,7 +96,8 @@ then
    interface=""
    SAVE_IFS=${IFS}
    IFS=", "
-   for cur_ip in ${ip}; do
+   for cur_ip in ${ip}
+   do
       # Just get the last IP address for SSH to listen on
       mgmt_ip=$(echo "${cur_ip}" | sed -E -e 's/^.*\|(.*)\/[0-9]+$/\1/')
    done
@@ -132,7 +133,8 @@ deleteJail() {
       fi
       output="\$(mount | grep "\\/rw\\/${name}\\/")" || true
       if [ -n "\${output}" ]; then # >=1 rw mount is mounted still
-         for DIR in "\${output}"; do
+         for DIR in "\${output}"
+         do
             umount -F "/etc/fstab.${name}" "\$(echo "${DIR}" | awk '{print \$3}')"
          done
       fi
@@ -159,7 +161,8 @@ EOF
    cat <<EOF
       eval \$(grep '^jail_list=' /etc/rc.conf)
 
-      for JAIL in \${jail_list}; do
+      for JAIL in \${jail_list}
+      do
          if [ ! "\${JAIL}" = "${name}" ]
          then
             new_list="\${new_list} \${JAIL}"

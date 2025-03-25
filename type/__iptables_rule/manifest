@@ -64,7 +64,8 @@ require=${__object_name:?} __iptables_apply
 # The rule
 #
 
-for dir in "${base_dir}" "${base_dir}/v6" "${base_dir}/all"; do
+for dir in "${base_dir}" "${base_dir}/v6" "${base_dir}/all"
+do
     # defaults to absent except the directory that should contain the file
     if [ "${rule_dir}" = "${dir}" ]
     then

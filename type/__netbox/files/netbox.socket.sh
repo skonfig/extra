@@ -40,7 +40,8 @@ Description=Socket for NetBox via ${TYPE}
 UNIT
 
 # read all sockets to listen to
-while read -r line; do
+while read -r line
+do
     printf "ListenStream=%s\n" "${line}"
 done < "$1"
 

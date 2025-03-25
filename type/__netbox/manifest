@@ -32,7 +32,8 @@ in
 
         if [ -f "${__object:?}/parameter/ldap-server" ]
         then
-            for pkg in libldap2-dev libsasl2-dev libssl-dev; do
+            for pkg in libldap2-dev libsasl2-dev libssl-dev
+            do
                 __package ${pkg}
             done
         fi
@@ -58,7 +59,8 @@ export DATABASE_PORT
 
 # list of hosts
 ALLOWED_HOSTS=""
-while read -r hostname; do
+while read -r hostname
+do
     # shellcheck disable=SC2089
     ALLOWED_HOSTS="${ALLOWED_HOSTS} '${hostname}',"
 done < "${__object:?}/parameter/host"

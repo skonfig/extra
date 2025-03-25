@@ -78,7 +78,8 @@ require="__directory/etc/consul-template" \
 # Generate hcl config file
 (
 cd "${__object:?}/parameter/"
-for param in *; do
+for param in *
+do
    case ${param}
    in
       auth-password|state|ssl-*|syslog-*|version|vault-token|vault-ssl*) continue ;;

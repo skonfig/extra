@@ -29,7 +29,8 @@
 #
 
 multi_options() {
-    while read -r line; do
+    while read -r line
+    do
         printf "%s = %s\n" "$1" "${line}"
     done < "$2"
 }

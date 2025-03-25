@@ -76,7 +76,8 @@ tar xf ${archive}
 
 # Backup files deployed by __matrix_element.
 mkdir -p \${custom_files_dir}
-for file in ${INSTALL_DIR}/cdist/*; do
+for file in ${INSTALL_DIR}/cdist/*
+do
   cp "\${file}" "\${custom_files_dir}"
 done
 
@@ -84,7 +85,8 @@ done
 rm -r '${INSTALL_DIR}'
 mv '${src}' '${INSTALL_DIR}'
 
-for file in \${custom_files_dir}/*; do
+for file in \${custom_files_dir}/*
+do
     cp "\${file}" '${INSTALL_DIR}'
 done
 

@@ -170,7 +170,8 @@ else
 fi
 
 # Install hooks as needed
-for hook in deploy pre post; do
+for hook in deploy pre post
+do
 	# remove old hook file
 	__file "${HOOKS_DIR}/${hook}/${__object_id:?}.cdist.sh" --state absent
 

@@ -174,7 +174,8 @@ then
 fi
 
 # Install required packages
-for pkg in ${PKGS}; do
+for pkg in ${PKGS}
+do
     __package "${pkg}"
 done
 
@@ -272,13 +273,15 @@ security tls=1
 EOF
 
 # Add specified schemas
-for schema in ${schemas}; do
+for schema in ${schemas}
+do
     echo "include ${SLAPD_DIR}/schema/${schema}.schema" >> "${ldapconf}"
 done
 
 # Add specified modules
 echo "modulepath ${SLAPD_MODULE_PATH}" >> "${ldapconf}"
-for module in ${slapd_modules}; do
+for module in ${slapd_modules}
+do
     echo "moduleload ${module}.${SLAPD_MODULE_TYPE}" >> "${ldapconf}"
 done
 
@@ -310,7 +313,8 @@ EOF
 if [ "${replication}" ]
 then
     rid=1;
-    for syncrepl in ${syncrepl_hosts}; do
+    for syncrepl in ${syncrepl_hosts}
+    do
     cat <<EOF >> "${ldapconf}"
 syncrepl rid=${rid}
  provider=ldap://${syncrepl}

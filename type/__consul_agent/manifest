@@ -259,7 +259,8 @@ json_configuration=$(
   printf '   "data_dir": "%s"\n' "${data_dir}"
 
   cd "${__object:?}/parameter/"
-  for param in *; do
+  for param in *
+  do
      case ${param}
      in
         state|user|group|json-config|use-distribution-package) continue ;;

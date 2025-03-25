@@ -153,7 +153,8 @@ fi
 
 # Install snippets.
 require=${install_reqs} __directory "${NGINX_SNIPPETSDIR}"
-for snippet in hsts 301-to-https; do
+for snippet in hsts 301-to-https
+do
 	require="__directory/${NGINX_SNIPPETSDIR}" __file \
 		"${NGINX_SNIPPETSDIR}/${snippet}" --source "${__type:?}/files/${snippet}"
 done

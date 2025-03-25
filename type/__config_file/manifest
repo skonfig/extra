@@ -20,7 +20,8 @@
 
 set -- "/${__object_id:?}"
 cd "${__object:?}/parameter/"
-for param in *; do
+for param in *
+do
    case ${param}
    in
       source)
