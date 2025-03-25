@@ -29,7 +29,8 @@ in
         in
             centos)
                 # shellcheck source=/dev/null
-                if (. "${__global:?}/explorer/os_release" && [ "${VERSION_ID}" = "7" ]); then
+                if (. "${__global:?}/explorer/os_release" && [ "${VERSION_ID}" = "7" ])
+                then
                     __package epel-release
                     require='__package/epel-release' __package ufw
                 else

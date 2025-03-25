@@ -247,7 +247,8 @@ max-port=${MAX_PORT}
 # to avoid any confusion.
 EOF
 
-if [ "${USE_AUTH_SECRET}" ]; then
+if [ "${USE_AUTH_SECRET}" ]
+then
     echo 'use-auth-secret'
 else
     echo '#use-auth-secret'
@@ -263,7 +264,8 @@ cat << EOF
 #
 EOF
 
-if [ "${STATIC_AUTH_SECRET}" != "" ]; then
+if [ "${STATIC_AUTH_SECRET}" != "" ]
+then
     echo "static-auth-secret=${STATIC_AUTH_SECRET}"
 else
     echo "#static-auth-secret=north"
@@ -385,7 +387,8 @@ cat << EOF
 #
 EOF
 
-if [ "${REALM}" != "" ]; then
+if [ "${REALM}" != "" ]
+then
   echo "realm=${REALM}"
 else
   echo "#realm=mycompany.org"
@@ -442,7 +445,8 @@ cat << EOF
 #
 EOF
 
-if [ "${NO_TLS}" ]; then
+if [ "${NO_TLS}" ]
+then
     echo "no-tls"
 else
     echo "#no-tls"
@@ -460,7 +464,8 @@ cat << EOF
 #
 EOF
 
-if [ "${NO_UDP_RELAY}" ]; then
+if [ "${NO_UDP_RELAY}" ]
+then
     echo 'no-udp-relay'
 else
     echo '#no-udp-relay'
@@ -473,7 +478,8 @@ cat << EOF
 #
 EOF
 
-if [ "${NO_TCP_RELAY}" ]; then
+if [ "${NO_TCP_RELAY}" ]
+then
     echo 'no-tcp-relay'
 else
     echo '#no-tcp-relay'
@@ -516,7 +522,8 @@ cat << EOF
 # configuration file.
 EOF
 
-if [ "${CERT}" != "" ]; then
+if [ "${CERT}" != "" ]
+then
     echo "cert=${CERT}"
 else
     echo "#cert=/usr/local/etc/turn_server_cert.pem"
@@ -530,7 +537,8 @@ cat << EOF
 # Use PEM file format.
 EOF
 
-if [ "${PKEY}" != "" ]; then
+if [ "${PKEY}" != "" ]
+then
     echo "pkey=${PKEY}"
 else
     echo "#pkey=/usr/local/etc/turn_server_pkey.pem"
@@ -811,7 +819,8 @@ cat << EOF
 #no-tlsv1_2
 EOF
 
-if [ -n "${EXTRA_CONFIG}" ]; then
+if [ -n "${EXTRA_CONFIG}" ]
+then
     cat <<EOF
 # Extra configuration (overrides any previous settings)
 ${EXTRA_CONFIG}

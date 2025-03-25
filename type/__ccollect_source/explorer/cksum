@@ -22,8 +22,10 @@
 
 destination="/${__object_id:?}"
 
-if [ -e "${destination}" ]; then
-    if [ -f  "${destination}" ]; then
+if [ -e "${destination}" ]
+then
+    if [ -f "${destination}" ]
+    then
         cksum < "${destination}"
     else
         echo "NO REGULAR FILE"

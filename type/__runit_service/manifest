@@ -38,7 +38,8 @@ state=$(cat "${__object:?}/parameter/state")
 run_file="${svdir}/${sv}/run"
 
 source=$(cat "${__object:?}/parameter/source")
-if [ "${source}" = "-" ]; then
+if [ "${source}" = "-" ]
+then
 	source="${__object:?}/stdin"
 fi
 
@@ -47,12 +48,14 @@ __directory --state "${state}" "${svdir}/${sv}"
 
 export require="__directory${svdir}/${sv}"
 
-if [ "${state}" != "present" ]; then
+if [ "${state}" != "present" ]
+then
 	# We are done here, the service gets removed
 	exit
 fi
 
-if [ -f "${__object:?}/parameter/log" ]; then
+if [ -f "${__object:?}/parameter/log" ]
+then
 	# Setup logger if requested
 	__directory --parents "${svdir}/${sv}/log/main"
 	export require="${require} __directory${svdir}/${sv}/log/main"

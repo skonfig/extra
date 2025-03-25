@@ -61,7 +61,8 @@ __nginx_vhost "301-to-https-${domain}" \
 
 # Obtaining TLS cert.
 cert_ownership=${nginx_user}
-if [ -f "${__object:?}/parameter/force-cert-ownership-to" ]; then
+if [ -f "${__object:?}/parameter/force-cert-ownership-to" ]
+then
 	cert_ownership=$(cat "${__object:?}/parameter/force-cert-ownership-to")
 fi
 
@@ -77,8 +78,10 @@ require="__nginx_vhost/301-to-https-${domain} __uacme_account" \
 		--renew-hook "service nginx reload"
 
 # Deploy HTTPS nginx vhost.
-if [ -f "${__object:?}/parameter/config" ]; then
-	if [ "$(cat "${__object:?}/parameter/config")" = "-" ]; then
+if [ -f "${__object:?}/parameter/config" ]
+then
+	if [ "$(cat "${__object:?}/parameter/config")" = "-" ]
+	then
 		nginx_logic="${__object:?}/stdin"
 	else
 		nginx_logic="${__object:?}/parameter/config"

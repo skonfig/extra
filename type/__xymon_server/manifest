@@ -19,7 +19,8 @@
 #
 
 state=$(cat "${__object:?}/parameter/state")
-if [ -f "${__object:?}/parameter/install_helpers" ]; then
+if [ -f "${__object:?}/parameter/install_helpers" ]
+then
 	install_helpers=1
 else
 	install_helpers=0
@@ -41,7 +42,8 @@ esac
 __package xymon --state "${state}"
 
 ## install helper-packages/tools used by the xymon server if requested:
-if [ "${install_helpers}" = "1" ]; then
+if [ "${install_helpers}" = "1" ]
+then
 	__package fping --state "${state}"
 	__package heirloom-mailx --state "${state}"
 	__package traceroute --state "${state}"

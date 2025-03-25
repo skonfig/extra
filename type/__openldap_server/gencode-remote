@@ -32,7 +32,8 @@ service slapd restart
 # It can sometimes take a tiny bit to bind
 sleep 1
 # Create or update base object
-if ldapsearch -xZ -D "${manager_dn}" -w "${manager_password}" -H '${SLAPD_IPC}' -b '${suffix}' -s base 2>&1 > /dev/null; then
+if ldapsearch -xZ -D "${manager_dn}" -w "${manager_password}" -H '${SLAPD_IPC}' -b '${suffix}' -s base 2>&1 > /dev/null
+then
     # Already exists, use ldapmodify
     ldapmodify -xZ -D "${manager_dn}" -w "${manager_password}" -H '${SLAPD_IPC}' <<EOF
 dn: ${suffix}

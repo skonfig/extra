@@ -22,7 +22,8 @@
 
 os=$("${__explorer:?}/os")
 
-if [ -f "${__object:?}/parameter/device" ]; then
+if [ -f "${__object:?}/parameter/device" ]
+then
     blkdev=$(cat "${__object:?}/parameter/device")
 else
     blkdev=${__object_id:?}
@@ -31,7 +32,8 @@ fi
 case ${os}
 in
     alpine|centos|fedora|gentoo|redhat|suse|ubuntu)
-        if [ ! -x "$(command -v lsblk)" ]; then
+        if [ ! -x "$(command -v lsblk)" ]
+        then
             echo "lsblk is required for __filesystem type" >&2
             exit 1
         else

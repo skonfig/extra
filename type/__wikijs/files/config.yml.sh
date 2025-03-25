@@ -35,7 +35,8 @@ ssl:
   enabled: ${SSL}
 EOF
 
-if [ "${SSL}" = "true" ]; then
+if [ "${SSL}" = "true" ]
+then
 	cat << EOF
   port: ${HTTPS_PORT}
   provider: letsencrypt

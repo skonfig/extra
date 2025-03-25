@@ -26,13 +26,15 @@ basic_urlencode() {
 PASSWD=$(cat "${__object:?}/parameter/password" 2>/dev/null || true)
 STATE=$(cat "${__object:?}/parameter/state")
 
-if [ -z "${PASSWD}" ] && [ "${STATE}" != "absent" ]; then
+if [ -z "${PASSWD}" ] && [ "${STATE}" != "absent" ]
+then
   printf "A password is required unless you are removing the user '%s'.\n" >&2 \
     "${__object_id:?}"
 fi
 
 JITSI_USER_RAW=${__object_id:?}
-if echo "${JITSI_USER_RAW}" | grep -q ".*[A-Z\"&'/:<>@]"; then
+if echo "${JITSI_USER_RAW}" | grep -q ".*[A-Z\"&'/:<>@]"
+then
   cat >&2 <<EOF
 Username (XMPP's localpart) ${JITSI_USER_RAW} has uppercase characters or
 contains invalid symbols ("&'/:<>@) according to RFC6122.

@@ -39,7 +39,8 @@ JITSI_HOST=${__target_host:?}
 TURN_SERVER=$(cat "${__object:?}/parameter/turn-server")
 TURN_SECRET=$(cat "${__object:?}/parameter/turn-secret")
 
-if [ -z "${TURN_SERVER}" ]; then
+if [ -z "${TURN_SERVER}" ]
+then
 	TURN_SERVER=${JITSI_HOST}
 fi
 
@@ -169,7 +170,8 @@ server {
 }
 EOF
 
-if [ -f "${__object:?}/parameter/secured-domains" ]; then
+if [ -f "${__object:?}/parameter/secured-domains" ]
+then
   SECURED_DOMAINS_STATE='present'
   SECURED_DOMAINS_STATE_JICOFO='replace'
 else
@@ -207,7 +209,8 @@ PROMETHEUS_JITSI_EXPORTER_SHOULD_VERSION="1.1.5"
 PROMETHEUS_JITSI_EXPORTER_CHECKSUM="sha256:3ddf43a48d9a2f62be1bc6db9e7ba75d61994f9423e5c5b28be019f41f06f745"
 PROMETHEUS_JITSI_EXPORTER_URL="https://github.com/systemli/prometheus-jitsi-meet-exporter/releases/download/${PROMETHEUS_JITSI_EXPORTER_SHOULD_VERSION}/prometheus-jitsi-meet-exporter-linux-amd64"
 PROMETHEUS_JITSI_EXPORTER_VERSION_FILE="/usr/local/bin/.prometheus-jitsi-meet-exporter.skonfig.version"
-if [ ! -f "${__object:?}/parameter/disable-prometheus-exporter" ]; then
+if [ ! -f "${__object:?}/parameter/disable-prometheus-exporter" ]
+then
 	case ${init}
 	in
 		init|sysvinit)

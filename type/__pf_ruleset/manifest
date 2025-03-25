@@ -20,11 +20,13 @@
 
 rcvar=$(cat "${__object:?}/explorer/rcvar")
 state=$(cat "${__object:?}/parameter/state")
-if [ -f "${__object:?}/parameter/source" ]; then
+if [ -f "${__object:?}/parameter/source" ]
+then
     source=$(cat "${__object:?}/parameter/source")
 fi
 
-if [ "${state}" = "absent" ]; then
+if [ "${state}" = "absent" ]
+then
     action="/etc/rc.d/pf stop"
 else
     action="/etc/rc.d/pf reload || /etc/rc.d/pf start"

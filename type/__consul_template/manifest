@@ -41,7 +41,8 @@ versions_dir="${__type:?}/files/versions"
 version=$(cat "${__object:?}/parameter/version")
 version_dir="${versions_dir}/${version}"
 
-if [ ! -d "${version_dir}" ]; then
+if [ ! -d "${version_dir}" ]
+then
    echo "Unknown consul-template version '${version}'. Expected one of:" >&2
    ls "${versions_dir}" >&2
    exit 1
@@ -85,7 +86,8 @@ for param in *; do
          printf 'auth {\n'
          printf '  enabled = true\n'
          printf '  username = "%s"\n' "$(cat "${__object:?}/parameter/auth-username")"
-         if [ -f "${__object:?}/parameter/auth-password" ]; then
+         if [ -f "${__object:?}/parameter/auth-password" ]
+         then
             printf '  password = %s\n' "$(cat "${__object:?}/parameter/auth-password")"
          fi
          printf '}\n'
@@ -93,13 +95,16 @@ for param in *; do
       ssl)
          printf 'ssl {\n'
          printf '  enabled = true\n'
-         if [ -f "${__object:?}/parameter/ssl-no-verify" ]; then
+         if [ -f "${__object:?}/parameter/ssl-no-verify" ]
+         then
             printf '  verify = false\n'
          fi
-         if [ -f "${__object:?}/parameter/ssl-cert" ]; then
+         if [ -f "${__object:?}/parameter/ssl-cert" ]
+         then
             printf '  cert = "%s"\n' "$(cat "${__object:?}/parameter/ssl-cert")"
          fi
-         if [ -f "${__object:?}/parameter/ssl-ca-cert" ]; then
+         if [ -f "${__object:?}/parameter/ssl-ca-cert" ]
+         then
             printf '  ca_cert = "%s"\n' "$(cat "${__object:?}/parameter/ssl-ca-cert")"
          fi
          printf '}\n'
@@ -107,7 +112,8 @@ for param in *; do
       syslog)
          printf 'syslog {\n'
          printf '  enabled = true\n'
-         if [ -f "${__object:?}/parameter/syslog-facility" ]; then
+         if [ -f "${__object:?}/parameter/syslog-facility" ]
+         then
             printf '  facility = "%s"\n' "$(cat "${__object:?}/parameter/syslog-facility")"
          fi
          printf '}\n'
@@ -115,19 +121,24 @@ for param in *; do
       vault-address)
          printf 'vault {\n'
          printf '  address = "%s"\n' "$(cat "${__object:?}/parameter/vault-address")"
-         if [ -f "${__object:?}/parameter/vault-token" ]; then
+         if [ -f "${__object:?}/parameter/vault-token" ]
+         then
             printf '  token = "%s"\n' "$(cat "${__object:?}/parameter/vault-token")"
          fi
-         if [ -f "${__object:?}/parameter/vault-ssl" ]; then
+         if [ -f "${__object:?}/parameter/vault-ssl" ]
+         then
          printf '  ssl {\n'
          printf '    enabled = true\n'
-         if [ -f "${__object:?}/parameter/vault-ssl-no-verify" ]; then
+         if [ -f "${__object:?}/parameter/vault-ssl-no-verify" ]
+         then
             printf '    verify = false\n'
          fi
-         if [ -f "${__object:?}/parameter/vault-ssl-cert" ]; then
+         if [ -f "${__object:?}/parameter/vault-ssl-cert" ]
+         then
             printf '    cert = "%s"\n' "$(cat "${__object:?}/parameter/vault-ssl-cert")"
          fi
-         if [ -f "${__object:?}/parameter/vault-ssl-ca-cert" ]; then
+         if [ -f "${__object:?}/parameter/vault-ssl-ca-cert" ]
+         then
             printf '    ca_cert = "%s"\n' "$(cat "${__object:?}/parameter/vault-ssl-ca-cert")"
          fi
          printf '  }\n'

@@ -24,7 +24,8 @@
 #exec >&2
 #set -x
 
-if [ -f "${__object:?}/parameter/jaildir" ]; then
+if [ -f "${__object:?}/parameter/jaildir" ]
+then
    jaildir=$(cat "${__object:?}/parameter/jaildir")
 else
    jaildir="/usr/jail"
@@ -36,13 +37,15 @@ out=""
 save_IFS=${IFS}
 IFS=":"
 for cur in ${name}; do
-    if [ -e "${jaildir}/${cur}" ]; then
+    if [ -e "${jaildir}/${cur}" ]
+    then
         out="${out}:${cur}"
     fi
 done
 IFS=${save_IFS}
 
-if [ -z "${out}" ]; then
+if [ -z "${out}" ]
+then
     echo "NONE"
 else
     echo "${out}"

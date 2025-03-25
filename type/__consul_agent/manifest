@@ -29,7 +29,8 @@ state=$(cat "${__object:?}/parameter/state")
 user=$(cat "${__object:?}/parameter/user")
 group=$(cat "${__object:?}/parameter/group")
 release=$(cat "${__global:?}/explorer/lsb_release")
-if [ -f "${__object:?}/parameter/use-distribution-package" ]; then
+if [ -f "${__object:?}/parameter/use-distribution-package" ]
+then
   use_distribution_package=1
 fi
 
@@ -63,7 +64,8 @@ distribution_setup () {
      debian)
        # consul is only available starting Debian 10 (buster).
        # See https://packages.debian.org/buster/consul
-       if [ "${release}" -lt 10 ]; then
+       if [ "${release}" -lt 10 ]
+       then
          echo "Consul is not available for your debian release." >&2
          echo "Please use the 'manual' (i.e. non-package) installation or \
            upgrade the target system." >&2
@@ -226,7 +228,8 @@ manual_setup () {
 
 ###
 # Trigger requested installation method.
-if [ ${use_distribution_package} ]; then
+if [ ${use_distribution_package} ]
+then
   distribution_setup
 else
   manual_setup
@@ -301,9 +304,11 @@ json_configuration=$(
         ;;
      esac
   done
-  if [ -f "${__object:?}/parameter/json-config" ]; then
+  if [ -f "${__object:?}/parameter/json-config" ]
+  then
      json_config=$(cat "${__object:?}/parameter/json-config")
-     if [ "${json_config}" = "-" ]; then
+     if [ "${json_config}" = "-" ]
+     then
         json_config="${__object:?}/stdin"
      fi
      # remove leading and trailing whitespace and commas from first and last line

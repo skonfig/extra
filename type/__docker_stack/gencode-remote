@@ -26,7 +26,8 @@ in
 	absent)
 		stack_exists=$(cat "${__object:?}/explorer/stack-exists")
 
-		if [ "${stack_exists}" -ne 1 ]; then
+		if [ "${stack_exists}" -ne 1 ]
+		then
 			exit 0
 		fi
 
@@ -35,11 +36,13 @@ in
 	present)
 		compose_file=$(cat "${__object:?}/parameter/compose-file")
 
-		if [ -z "${compose_file}" ]; then
+		if [ -z "${compose_file}" ]
+		then
 			exit 0
 		fi
 
-		if [ "${compose_file}" = "-" ]; then
+		if [ "${compose_file}" = "-" ]
+		then
 			compose_file="${__object:?}/stdin"
 		fi
 

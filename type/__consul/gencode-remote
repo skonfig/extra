@@ -20,7 +20,8 @@
 
 #set -x
 
-if [ ! -f "${__object:?}/parameter/direct" ]; then
+if [ ! -f "${__object:?}/parameter/direct" ]
+then
     # Nothing here, staged file is used.
     exit 0
 fi
@@ -28,7 +29,8 @@ fi
 state=$(cat "${__object:?}/parameter/state")
 destination="/usr/local/bin/consul"
 
-if [ "${state}" = "absent" ]; then
+if [ "${state}" = "absent" ]
+then
     printf 'rm -f "%s"' "${destination}"
     exit 0
 fi
@@ -48,7 +50,8 @@ cat << eof
     rm -rf "\${tmpdir}"
 
     cksum_is=\$(cksum "${destination}.tmp" | cut -d' ' -f1,2)
-    if [ "\${cksum_is}" = "${cksum_should}" ]; then
+    if [ "\${cksum_is}" = "${cksum_should}" ]
+    then
         rm -f "${destination}"
         mv "${destination}.tmp" "${destination}"
         chown root:root "${destination}"

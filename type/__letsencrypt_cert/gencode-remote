@@ -32,7 +32,8 @@ state=$(cat "${__object:?}/parameter/state")
 case ${state}
 in
 	absent)
-		if [ "${certificate_exists}" = "no" ]; then
+		if [ "${certificate_exists}" = "no" ]
+		then
 			exit 0
 		fi
 
@@ -45,18 +46,21 @@ in
 
 		domain_param_file="${__object:?}/parameter/domain"
 		requested_domains=$(mktemp "${__global:?}/tmp/domain.skonfig.XXXXXX")
-		if [ -f "${domain_param_file}" ]; then
+		if [ -f "${domain_param_file}" ]
+		then
 			cp "${domain_param_file}" "${requested_domains}"
 		else
 			echo "${__object_id:?}" >> "${requested_domains}"
 		fi
 
 		staging=no
-		if [ -f "${__object:?}/parameter/staging" ]; then
+		if [ -f "${__object:?}/parameter/staging" ]
+		then
 			staging=yes
 		fi
 
-		if [ "${certificate_exists}" = "yes" ]; then
+		if [ "${certificate_exists}" = "yes" ]
+		then
 			existing_domains=$(mktemp "${__global:?}/tmp/existing_domains.skonfig.XXXXXX")
 			sed -e '1,3d' -e '/^$/d' <"${__object:?}/explorer/certificate-data" >"${existing_domains}"
 			certificate_is_test=$(_explorer_var certificate_is_test)
@@ -83,7 +87,8 @@ in
 			--quiet \
 			$(if [ "${staging}" = "yes" ]; then
 				echo "--staging"
-			elif [ "${certificate_is_test}" != "${staging}" ]; then
+			elif [ "${certificate_is_test}" != "${staging}" ]
+			then
 				echo "--force-renewal"
 			fi) \
 			$(if [ -z "${webroot}" ]; then
@@ -97,7 +102,8 @@ in
 		EOF
 		rm -f "${requested_domains}"
 
-		if [ "${certificate_exists}" = "no" ]; then
+		if [ "${certificate_exists}" = "no" ]
+		then
 			echo create >> "${__messages_out:?}"
 		else
 			echo change >> "${__messages_out:?}"

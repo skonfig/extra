@@ -117,10 +117,12 @@ then
 fi
 export RENEW_HOOK
 
-if [ -n "${KEY_TARGET}" ] && [ -z "${CERT_TARGET}" ]; then
+if [ -n "${KEY_TARGET}" ] && [ -z "${CERT_TARGET}" ]
+then
 	echo "You cannot specify --install-key-to without --install-cert-to." >&2
 	exit 1
-elif [ -z "${KEY_TARGET}" ] && [ -n "${CERT_TARGET}" ]; then
+elif [ -z "${KEY_TARGET}" ] && [ -n "${CERT_TARGET}" ]
+then
 	echo "You cannot specify --install-cert-to without --install-key-to." >&2
 	exit 1
 fi

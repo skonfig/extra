@@ -63,7 +63,8 @@ in
 esac
 
 require="${require} __daemontools" __daemontools_service "${exporter}-exporter" --run "${run}"
-if [ -f "${__object:?}/parameter/add-consul-service" ]; then
+if [ -f "${__object:?}/parameter/add-consul-service" ]
+then
 	__consul_service "${exporter}-exporter" --port "${port}" --check-http "http://localhost:${port}/metrics" --check-interval 10s
 fi
 

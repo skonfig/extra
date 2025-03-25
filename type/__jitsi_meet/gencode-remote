@@ -19,12 +19,17 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-if grep -qE "^__file/etc/nginx" "${__messages_in:?}"; then
+if grep -q "^__file/etc/nginx" "${__messages_in:?}"
+then
 	echo "service nginx reload"
 fi
 
 JITSI_HOST=${__object_id:?}
-if grep -qE "^(__line/jitsi_jicofo_secured_domains|__file/etc/prosody/conf.d/${JITSI_HOST}.zauth.cfg.lua)" "${__messages_in:?}"; then
+if grep -q \
+  -e '^__line/jitsi_jicofo_secured_domains' \
+  -e "^__file/etc/prosody/conf\.d/${JITSI_HOST}\.zauth\.cfg\.lua" \
+  "${__messages_in:?}"
+then
   echo "systemctl restart prosody"
   echo "systemctl restart jicofo"
   echo "systemctl restart jitsi-videobridge2"

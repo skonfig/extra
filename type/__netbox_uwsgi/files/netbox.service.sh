@@ -29,7 +29,8 @@ Requires=netbox-rq.service
 EOF
 
 # Add dependency to own socket
-if [ "$(cat "${__object:?}/files/systemd_socket")" = "yes" ]; then
+if [ "$(cat "${__object:?}/files/systemd_socket")" = "yes" ]
+then
     echo "Requires=uwsgi-netbox.socket"
 fi
 

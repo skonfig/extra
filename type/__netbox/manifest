@@ -30,7 +30,8 @@ in
             __package ${pkg}
         done
 
-        if [ -f "${__object:?}/parameter/ldap-server" ]; then
+        if [ -f "${__object:?}/parameter/ldap-server" ]
+        then
             for pkg in libldap2-dev libsasl2-dev libssl-dev; do
                 __package ${pkg}
             done
@@ -64,9 +65,11 @@ done < "${__object:?}/parameter/host"
 # shellcheck disable=SC2090
 export ALLOWED_HOSTS
 
-if [ -f "${__object:?}/parameter/secret-key" ]; then
+if [ -f "${__object:?}/parameter/secret-key" ]
+then
     SECRET_KEY=$(cat "${__object:?}/parameter/secret-key")
-elif [ -s "${__object:?}/explorer/secretkey" ]; then
+elif [ -s "${__object:?}/explorer/secretkey" ]
+then
     # take the key that is already used
     SECRET_KEY=$(cat "${__object:?}/explorer/secretkey")
 else
@@ -79,39 +82,47 @@ else
 fi
 export SECRET_KEY
 
-if [ -f "${__object:?}/parameter/ldap-server" ]; then
+if [ -f "${__object:?}/parameter/ldap-server" ]
+then
     LDAP_SERVER=$(cat "${__object:?}/parameter/ldap-server")
     USE_LDAP=yes
     export LDAP_SERVER
 fi
-if [ -f "${__object:?}/parameter/ldap-bind-dn" ]; then
+if [ -f "${__object:?}/parameter/ldap-bind-dn" ]
+then
     LDAP_BIND_DN=$(cat "${__object:?}/parameter/ldap-bind-dn")
     USE_LDAP=yes
     export LDAP_BIND_DN
 fi
-if [ -f "${__object:?}/parameter/ldap-bind-password" ]; then
+if [ -f "${__object:?}/parameter/ldap-bind-password" ]
+then
     LDAP_BIND_PASSWORD=$(cat "${__object:?}/parameter/ldap-bind-password")
     USE_LDAP=yes
     export LDAP_BIND_PASSWORD
 fi
-if [ -f "${__object:?}/parameter/ldap-user-base" ]; then
+if [ -f "${__object:?}/parameter/ldap-user-base" ]
+then
     LDAP_USER_BASE=$(cat "${__object:?}/parameter/ldap-user-base")
     USE_LDAP=yes
     export LDAP_USER_BASE
 fi
-if [ -f "${__object:?}/parameter/ldap-group-base" ]; then
+if [ -f "${__object:?}/parameter/ldap-group-base" ]
+then
     LDAP_GROUP_BASE=$(cat "${__object:?}/parameter/ldap-group-base")
     export LDAP_GROUP_BASE
 fi
-if [ -f "${__object:?}/parameter/ldap-require-group" ]; then
+if [ -f "${__object:?}/parameter/ldap-require-group" ]
+then
     LDAP_REQUIRE_GROUP=$(cat "${__object:?}/parameter/ldap-require-group")
     export LDAP_REQUIRE_GROUP
 fi
-if [ -f "${__object:?}/parameter/ldap-superuser-group" ]; then
+if [ -f "${__object:?}/parameter/ldap-superuser-group" ]
+then
     LDAP_SUPERUSER_GROUP=$(cat "${__object:?}/parameter/ldap-superuser-group")
     export LDAP_SUPERUSER_GROUP
 fi
-if [ -f "${__object:?}/parameter/ldap-staff-group" ]; then
+if [ -f "${__object:?}/parameter/ldap-staff-group" ]
+then
     LDAP_STAFF_GROUP=$(cat "${__object:?}/parameter/ldap-staff-group")
     export LDAP_STAFF_GROUP
 fi
@@ -127,7 +138,8 @@ REDIS_PASSWORD=$(cat "${__object:?}/parameter/redis-password")
 export REDIS_PASSWORD
 REDIS_DBID_OFFSET=$(cat "${__object:?}/parameter/redis-dbid-offset")
 export REDIS_DBID_OFFSET
-if [ -f "${__object:?}/parameter/redis-ssl" ]; then
+if [ -f "${__object:?}/parameter/redis-ssl" ]
+then
     REDIS_SSL="True"
 else
     REDIS_SSL="False"
@@ -145,14 +157,17 @@ export SMTP_PASSWORD
 SMTP_FROM_EMAIL=$(cat "${__object:?}/parameter/smtp-from-email")
 export SMTP_FROM_EMAIL
 
-if [ -f "${__object:?}/parameter/smtp-use-ssl" ]; then
+if [ -f "${__object:?}/parameter/smtp-use-ssl" ]
+then
     SMTP_USE_SSL="True"
 else
     SMTP_USE_SSL="False"
 fi
 export SMTP_USE_SSL
-if [ -f "${__object:?}/parameter/smtp-use-tls" ]; then
-    if [ "${SMTP_USE_SSL}" = "True" ]; then
+if [ -f "${__object:?}/parameter/smtp-use-tls" ]
+then
+    if [ "${SMTP_USE_SSL}" = "True" ]
+    then
         echo "options --smtp-use-ssl and --smtp-use-tls are not compatible" >&2
         exit 2
     fi
@@ -165,16 +180,19 @@ export SMTP_USE_TLS
 BASEPATH=$(cat "${__object:?}/parameter/basepath")
 export BASEPATH
 
-if [ -f "${__object:?}/parameter/http-proxy" ]; then
+if [ -f "${__object:?}/parameter/http-proxy" ]
+then
     HTTP_PROXY=$(cat "${__object:?}/parameter/http-proxy")
     export HTTP_PROXY
 fi
-if [ -f "${__object:?}/parameter/https-proxy" ]; then
+if [ -f "${__object:?}/parameter/https-proxy" ]
+then
     HTTPS_PROXY=$(cat "${__object:?}/parameter/https-proxy")
     export HTTPS_PROXY
 fi
 
-if [ -f "${__object:?}/parameter/login-required" ]; then
+if [ -f "${__object:?}/parameter/login-required" ]
+then
     LOGIN_REQUIRED="True"
 else
     LOGIN_REQUIRED="False"
@@ -186,20 +204,24 @@ MEDIA_ROOT="${data_root}/media"
 REPORTS_ROOT="${data_root}/reports"
 SCRIPTS_ROOT="${data_root}/scripts"
 
-if [ -f "${__object:?}/parameter/media-root" ]; then
+if [ -f "${__object:?}/parameter/media-root" ]
+then
     MEDIA_ROOT=$(cat "${__object:?}/parameter/media-root")
 fi
 export MEDIA_ROOT
-if [ -f "${__object:?}/parameter/reports-root" ]; then
+if [ -f "${__object:?}/parameter/reports-root" ]
+then
     REPORTS_ROOT=$(cat "${__object:?}/parameter/reports-root")
 fi
 export REPORTS_ROOT
-if [ -f "${__object:?}/parameter/scripts-root" ]; then
+if [ -f "${__object:?}/parameter/scripts-root" ]
+then
     SCRIPTS_ROOT=$(cat "${__object:?}/parameter/scripts-root")
 fi
 export SCRIPTS_ROOT
 
-if [ -f "${__object:?}/parameter/update-notify" ]; then
+if [ -f "${__object:?}/parameter/update-notify" ]
+then
     UPDATE_CHECK="yes"
     export UPDATE_CHECK
 fi
@@ -220,7 +242,8 @@ require="__directory/opt/netbox/cdist" __file \
     /opt/netbox/cdist/configuration.py --mode 640 --owner netbox \
     --source "${__object:?}/files/configuration.py"
 
-if [ -f "${__object:?}/parameter/ldap-server" ]; then
+if [ -f "${__object:?}/parameter/ldap-server" ]
+then
     require="__directory/opt/netbox/cdist" __file \
         /opt/netbox/cdist/ldap_config.py --mode 640 --owner netbox \
         --source "${__object:?}/files/ldap_config.py"

@@ -26,7 +26,8 @@
 set -e
 
 generate_bind_addresses () {
-	if [ -n "${BIND_ADDRESSES}" ]; then
+	if [ -n "${BIND_ADDRESSES}" ]
+	then
 		echo "bind_addresses:"
 		for addr in ${BIND_ADDRESSES}; do
 			echo "    - '${addr}'"
@@ -85,7 +86,8 @@ pid_file: "${PIDFILE:?}"
 #
 EOF
 
-if [ -n "${WEB_CLIENT_URL}" ]; then
+if [ -n "${WEB_CLIENT_URL}" ]
+then
 	echo "web_client_location: \"${WEB_CLIENT_URL}\""
 fi
 
@@ -303,7 +305,8 @@ listeners:
         compress: false
 EOF
 
-if [ -n "${ENABLE_REPLICATION}" ]; then
+if [ -n "${ENABLE_REPLICATION}" ]
+then
 	cat << EOF
   - port: 9093
     $(generate_bind_addresses)
@@ -561,7 +564,8 @@ retention:
 # not \`cert.pem\`).
 EOF
 
-if [ -n "${TLS_CERTIFICATE_PATH}" ] && [ -n "${TLS_PRIVATE_KEY_PATH}" ]; then
+if [ -n "${TLS_CERTIFICATE_PATH}" ] && [ -n "${TLS_PRIVATE_KEY_PATH}" ]
+then
 	cat << EOF
 tls_certificate_path: "${TLS_CERTIFICATE_PATH}}"
 
@@ -731,7 +735,8 @@ acme:
 #  - syd.example.com
 EOF
 
-if [ -n "${DISABLE_FEDERATION}" ]; then
+if [ -n "${DISABLE_FEDERATION}" ]
+then
 	echo "federation_domain_whitelist: []"
 fi
 
@@ -1186,7 +1191,8 @@ url_preview_accept_language:
 
 EOF
 
-if [ -n "${TURN_URIS}" ]; then
+if [ -n "${TURN_URIS}" ]
+then
 	echo "turn_uris:"
 	for uri in ${TURN_URIS}; do
 		echo "  - '${uri}'"
@@ -1310,7 +1316,8 @@ account_validity:
 #  - msisdn
 EOF
 
-if [ -n "${REGISTRATION_REQUIRES_EMAIL}" ]; then
+if [ -n "${REGISTRATION_REQUIRES_EMAIL}" ]
+then
 	echo "registrations_require_3pid: [email]"
 fi
 
@@ -1332,7 +1339,8 @@ cat << EOF
 #    pattern: '\+44'
 EOF
 
-if [ -n "${RESGISTRATION_ALLOWS_EMAIL_PATTERN}" ]; then
+if [ -n "${RESGISTRATION_ALLOWS_EMAIL_PATTERN}" ]
+then
 	echo "allowed_local_3pids:"
 	for pattern in ${RESGISTRATION_ALLOWS_EMAIL_PATTERN}; do
 		cat << EOF
@@ -1351,7 +1359,8 @@ cat << EOF
 # has the shared secret, even if registration is otherwise disabled.
 EOF
 
-if [ -n "${REGISTRATION_SHARED_SECRET}" ]; then
+if [ -n "${REGISTRATION_SHARED_SECRET}" ]
+then
 	echo "registration_shared_secret: '${REGISTRATION_SHARED_SECRET}'"
 fi
 
@@ -1436,7 +1445,8 @@ account_threepid_delegates:
 #  - "#example:example.com"
 EOF
 
-if [ -n "${AUTO_JOIN_ROOMS}" ]; then
+if [ -n "${AUTO_JOIN_ROOMS}" ]
+then
 	echo "auto_join_rooms:"
 	for room in ${AUTO_JOIN_ROOMS}; do
 		cat << EOF
@@ -1569,7 +1579,8 @@ report_stats: ${REPORT_STATS:?}
 #  - app_service_2.yaml
 EOF
 
-if [ -n "${APP_SERVICE_CONFIG_FILES}" ]; then
+if [ -n "${APP_SERVICE_CONFIG_FILES}" ]
+then
 	echo "app_service_config_files:"
 	for file in ${APP_SERVICE_CONFIG_FILES}; do
 		echo "  - ${file}"
@@ -2341,7 +2352,8 @@ email:
   # supported for backwards-compatibility but is now deprecated.)
 EOF
 
-if [ -n "${WEB_CLIENT_URL}" ]; then
+if [ -n "${WEB_CLIENT_URL}" ]
+then
 	echo "  client_base_url: \"${WEB_CLIENT_URL}\""
 fi
 
@@ -2496,7 +2508,8 @@ password_providers:
 #        #filter: "(objectClass=posixAccount)"
 EOF
 
-if [ -n "${ENABLE_LDAP_AUTH}" ]; then
+if [ -n "${ENABLE_LDAP_AUTH}" ]
+then
 	cat <<EOF
   - module: "ldap_auth_provider.LdapAuthProvider"
     config:
@@ -2510,7 +2523,8 @@ if [ -n "${ENABLE_LDAP_AUTH}" ]; then
          name: "${LDAP_NAME_ATTRIBUTE:?}"
       filter: "${LDAP_FILTER:?}"
 EOF
-	if [ -n "${LDAP_BIND_DN}" ] && [ -n "${LDAP_BIND_PASSWORD}" ]; then
+	if [ -n "${LDAP_BIND_DN}" ] && [ -n "${LDAP_BIND_PASSWORD}" ]
+	then
 			cat <<EOF
       mode: "search"
       bind_dn: "${LDAP_BIND_DN:?}"
@@ -2699,7 +2713,8 @@ user_directory:
 #  room_name: "Server Notices"
 EOF
 
-if [ -n "${ENABLE_SERVER_NOTICES}" ]; then
+if [ -n "${ENABLE_SERVER_NOTICES}" ]
+then
 	cat << EOF
 server_notices:
   system_mxid_localpart: notices
@@ -2846,7 +2861,8 @@ send_federation: ${SEND_FEDERATION_FROM_MAIN_PROCESS:?}
 #  - federation_sender1
 EOF
 
-if [ -n "${FEDERATION_SENDER_INSTANCES}" ]; then
+if [ -n "${FEDERATION_SENDER_INSTANCES}" ]
+then
 	echo "federation_sender_instances:"
 	for instance in ${FEDERATION_SENDER_INSTANCES}; do
 		echo "  - ${instance}"
@@ -2875,7 +2891,8 @@ cat << EOF
 #
 EOF
 
-if [ -n "${BACKGROUND_TASKS_WORKER}" ]; then
+if [ -n "${BACKGROUND_TASKS_WORKER}" ]
+then
 	echo "run_background_tasks_on: ${BACKGROUND_TASKS_WORKER:?}"
 fi
 

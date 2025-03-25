@@ -130,7 +130,8 @@ then
 	fi
 
 	# Either use config as-in or template it in generic vhost structure.
-	if [ -f "${__object:?}/parameter/standalone-config" ]; then
+	if [ -f "${__object:?}/parameter/standalone-config" ]
+	then
 		vhost_conf=${vhost_partial}
 	else
 		NGINX_LOGIC=$(cat "${vhost_partial}") "${__type:?}/files/generic.conf.sh" \

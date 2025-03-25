@@ -46,22 +46,26 @@ esac
 mkdir "${__object:?}/files"
 
 # check if systemd sockets will be used
-if [ -f "${__object:?}/parameter/bind-to" ]; then
+if [ -f "${__object:?}/parameter/bind-to" ]
+then
     SYSTEMD_SOCKET="yes"
 fi
-if find "${__object:?}/parameter/" -maxdepth 1 -name "*-bind" -print -quit | grep -q .; then
+if find "${__object:?}/parameter/" -maxdepth 1 -name "*-bind" -print -quit | grep -q .
+then
     SYSTEMD_SOCKET="no"
 fi
 echo "${SYSTEMD_SOCKET}" > "${__object:?}/files/systemd_socket"
 
-if [ "${state}" = "present" ]; then
+if [ "${state}" = "present" ]
+then
     # already checked outside this if-clause
     export SYSTEMD_SOCKET
 
     PROTOCOL=$(cat "${__object:?}/parameter/protocol")
     export PROTOCOL
 
-    if [ -f "${__object:?}/parameter/serve-static" ]; then
+    if [ -f "${__object:?}/parameter/serve-static" ]
+    then
         STATIC_MAP="yes"
         export STATIC_MAP
     fi
@@ -82,7 +86,8 @@ fi
 
 
 # handle the systemd socket
-if [ "${SYSTEMD_SOCKET}" = "yes" ]; then
+if [ "${SYSTEMD_SOCKET}" = "yes" ]
+then
     TYPE="uWSGI"
     export TYPE
 

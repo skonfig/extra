@@ -39,27 +39,32 @@ SOCKET=$(cat "${__object:?}/parameter/socket")
 export SOCKET
 
 # Optional parameters
-if [ -f "${__object:?}/parameter/basedir" ]; then
+if [ -f "${__object:?}/parameter/basedir" ]
+then
 	BASEDIR=$(cat "${__object:?}/parameter/basedir")
 	export BASEDIR
 fi
 
-if [ -f "${__object:?}/parameter/canonicalization" ]; then
+if [ -f "${__object:?}/parameter/canonicalization" ]
+then
 	CANON=$(cat "${__object:?}/parameter/canonicalization")
 	export CANON
 fi
 
-if [ -f "${__object:?}/parameter/subdomains" ]; then
+if [ -f "${__object:?}/parameter/subdomains" ]
+then
 	SUBDOMAINS=$(cat "${__object:?}/parameter/subdomains")
 	export SUBDOMAINS
 fi
 
-if [ -f "${__object:?}/parameter/umask" ]; then
+if [ -f "${__object:?}/parameter/umask" ]
+then
 	UMASK=$(cat "${__object:?}/parameter/umask")
 	export UMASK
 fi
 
-if [ -f "${__object:?}/parameter/userid" ]; then
+if [ -f "${__object:?}/parameter/userid" ]
+then
 	USERID=$(cat "${__object:?}/parameter/userid")
 	export USERID
 fi
@@ -76,7 +81,8 @@ mkdir -p "${__object:?}/files"
 "${__type:?}/files/opendkim.conf.sh" >"${source_file}"
 
 # Add user custom config
-if [ -f "${__object:?}/parameter/custom-config" ]; then
+if [ -f "${__object:?}/parameter/custom-config" ]
+then
 	echo "# Custom user config" >>"${source_file}"
 	cat "${__object:?}/parameter/custom-config" >>"${source_file}"
 fi

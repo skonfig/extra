@@ -33,9 +33,11 @@ esac
 
 # Required parameters.
 VERSION=$(cat "${__object:?}/parameter/version")
-if [ -f "${__object:?}/parameter/config" ]; then
+if [ -f "${__object:?}/parameter/config" ]
+then
     CONFIG=$(cat "${__object:?}/parameter/config")
-    if [ "${CONFIG}" = "-" ]; then
+    if [ "${CONFIG}" = "-" ]
+    then
         CONFIG=$(cat "${__object:?}/stdin")
     fi
 fi
@@ -56,7 +58,8 @@ config_dir=$(dirname ${CONFIG_PATH})
 systemd_unit_path='/etc/systemd/system/matterbridge.service'
 
 # Check if curl is available.
-if ! command -v curl; then
+if ! command -v curl >/dev/null 2>&1
+then
      echo "curl is required for this type, but could not be found. Exiting." >&2
      exit 1
 fi
@@ -67,7 +70,8 @@ mkdir -p "${__object:?}/files"
 # Download and check matterbridge binary.
 curl -L "${binary_url}" -o "${__object:?}/files/${artefact}"
 curl -Ls "${checksum_file_url}" | grep "${artefact}" > "${__object:?}/files/${checksum_file}"
-if ! (cd "${__object:?}/files"; sha256sum --check ${checksum_file}); then
+if ! (cd "${__object:?}/files"; sha256sum --check ${checksum_file})
+then
     echo "Matterbridge binary checksum failed." >&2
     exit 1
 fi

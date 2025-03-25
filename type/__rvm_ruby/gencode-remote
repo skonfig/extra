@@ -30,7 +30,8 @@ in
     present)
         echo "su - \"${user}\" -c \"source \\\${HOME}/.rvm/scripts/rvm;"\
             "rvm install ${ruby}\""
-        if [ -f "${__object:?}/parameter/default" ]; then
+        if [ -f "${__object:?}/parameter/default" ]
+        then
             echo "su - \"${user}\" -c \"source \\\${HOME}/.rvm/scripts/rvm;"\
                 "rvm use --default ${ruby}\""
         fi

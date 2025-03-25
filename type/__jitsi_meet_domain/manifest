@@ -43,28 +43,35 @@ BRANDING_INDEX=$(cat "${__object:?}/parameter/branding-index")
 BRANDING_JSON=$(cat "${__object:?}/parameter/branding-json")
 BRANDING_WATERMARK=$(cat "${__object:?}/parameter/branding-watermark")
 
-if [ "${BRANDING_INDEX}" = "-" ]; then
+if [ "${BRANDING_INDEX}" = "-" ]
+then
 	BRANDING_INDEX="${__object:?}/stdin"
 fi
 
-if [ -f "${__object:?}/parameter/enable-third-party-requests" ]; then
+if [ -f "${__object:?}/parameter/enable-third-party-requests" ]
+then
 	ENABLE_THIRD_PARTY_REQUESTS="YES"
 fi
-if [ -f "${__object:?}/parameter/disable-audio-levels" ]; then
+if [ -f "${__object:?}/parameter/disable-audio-levels" ]
+then
 	DISABLE_AUDIO_LEVELS="YES"
 fi
-if [ -f "${__object:?}/parameter/secured-domains" ]; then
+if [ -f "${__object:?}/parameter/secured-domains" ]
+then
 	SECURED_DOMAINS="YES"
 fi
 
-if [ -z "${TURN_SERVER}" ]; then
+if [ -z "${TURN_SERVER}" ]
+then
 	TURN_SERVER=${__target_host:?}
 fi
-if [ -z "${JITSI_HOST}" ]; then
+if [ -z "${JITSI_HOST}" ]
+then
 	JITSI_HOST=${__target_host:?}
 fi
 
-if [ -n "${BRANDING_JSON}" ]; then
+if [ -n "${BRANDING_JSON}" ]
+then
 	DYNAMIC_BRANDING_URL="/branding.json"
 fi
 
@@ -108,7 +115,8 @@ EOF
 #
 # Helper function to manage the state of the target branding file
 _var_state() {
-	if [ -n "${1}" ]; then
+	if [ -n "${1}" ]
+	then
 		echo "present"
 	else
 		echo "absent"

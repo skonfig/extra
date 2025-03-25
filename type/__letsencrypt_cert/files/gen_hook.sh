@@ -32,7 +32,8 @@ hook_contents_tail=""
 # Backwards compatibility
 # Remove this when renew-hook is removed
 # Falling back to renew-hook if deploy-hook is not passed
-if [ "${hook}" = "deploy" ] && [ ! -f "${hook_source}" ]; then
+if [ "${hook}" = "deploy" ] && [ ! -f "${hook_source}" ]
+then
 	hook_source="${__object:?}/parameter/renew-hook"
 fi
 if [ "${state}" = "present" ] && \
@@ -74,7 +75,8 @@ EOF
 # RENEWED_DOMAINS="DOMAIN1 DOMAIN2"
 # RENEWED_LINEAGE="/etc/letsencrypt/live/__object_id"
 # It feels more stable to use RENEWED_LINEAGE
-if [ "\${lineage}" = "\${RENEWED_LINEAGE}" ]; then
+if [ "\${lineage}" = "\${RENEWED_LINEAGE}" ]
+then
 	APPLY_HOOK="YES"
 fi
 EOF
@@ -87,7 +89,8 @@ EOF
 	esac
 
 	hook_contents_tail=$(cat <<EOF
-if [ -n "\${APPLY_HOOK}" ]; then
+if [ -n "\${APPLY_HOOK}" ]
+then
 	# Messing with indentation can eff up the users' scripts, let's not
 $(cat "${hook_source}")
 fi

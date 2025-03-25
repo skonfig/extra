@@ -22,7 +22,8 @@
 #exec >&2
 #set -x
 
-if [ -f "${__object:?}/parameter/name" ]; then
+if [ -f "${__object:?}/parameter/name" ]
+then
    name=$(cat "${__object:?}/parameter/name")
 else
    name=${__object_id:?}
@@ -34,25 +35,29 @@ started="true"
 # If the user wants the jail gone, it implies it shouldn't be started.
 { [ -f "${__object:?}/parameter/stopped" ] || [ "${state}" = "absent" ]; } && started="false"
 
-if [ -f "${__object:?}/parameter/ip" ]; then
+if [ -f "${__object:?}/parameter/ip" ]
+then
    ip=$(cat "${__object:?}/parameter/ip")
 else
 # IP is an optional param when $state=absent, but
 #    when $state=present, it's required. Enforce this.
-   if [ "${state}" = "present" ]; then
+   if [ "${state}" = "present" ]
+   then
       exec >&2
       printf 'If --state is "present", --ip must be given\!\n'
       exit 1
    fi
 fi
 
-if [ -f "${__object:?}/parameter/hostname" ]; then
+if [ -f "${__object:?}/parameter/hostname" ]
+then
    hostname=$(cat "${__object:?}/parameter/hostname")
 else
    hostname=${name}
 fi
 
-if [ -f "${__object:?}/parameter/devfs-disable" ]; then
+if [ -f "${__object:?}/parameter/devfs-disable" ]
+then
    devfsenable="false"
 else
    devfsenable="true"
@@ -62,13 +67,15 @@ devfsruleset=$(cat "${__object:?}/parameter/devfs-ruleset")
 
 # devfs_ruleset being defined without devfs_enable being true
 #     is pointless. Treat this as an error.
-if [ -n "${devfsruleset}" ] && [ "${devfsenable}" = "false" ]; then
+if [ -n "${devfsruleset}" ] && [ "${devfsenable}" = "false" ]
+then
    exec >&2
    echo "Can't have --devfs-ruleset defined with --devfs-disable"
    exit 1
 fi
 
-if [ -f "${__object:?}/parameter/onboot" ]; then
+if [ -f "${__object:?}/parameter/onboot" ]
+then
    onboot="true"
 fi
 
@@ -78,7 +85,8 @@ present=$(cat "${__object:?}/explorer/present")
 status=$(cat "${__object:?}/explorer/status")
 
 # Handle ip="addr, addr" format
-if [ "$(expr "${ip}" : ".*, .*")" -gt "0" ]; then
+if [ "$(expr "${ip}" : ".*, .*")" -gt "0" ]
+then
    SAVE_IFS=${IFS}
    IFS=", "
    for cur_ip in ${ip}; do
@@ -92,7 +100,8 @@ fi
 
 stopJail() {
 # Check ${status} before issuing command
-   if [ "${status}" = "STARTED" ]; then
+   if [ "${status}" = "STARTED" ]
+   then
       echo "/etc/rc.d/jail stop ${name}"
       echo "stop" >> "${__messages_out:?}"
    fi
@@ -100,7 +109,8 @@ stopJail() {
 
 startJail() {
 # Check ${status} before issuing command
-   if [ "${status}" = "NOTSTART" ]; then
+   if [ "${status}" = "NOTSTART" ]
+   then
       echo "/etc/rc.d/jail start ${name}"
       echo "start" >> "${__messages_out:?}"
    fi
@@ -133,7 +143,8 @@ EOF
 # Remove jail entry from jail.conf
    cat <<EOF
       sed -i .bak -E -e "/^${name} {\$/,/^}\\\$/d" /etc/jail.conf
-      if [ -f "/etc/jail.conf.bak" ]; then
+      if [ -f "/etc/jail.conf.bak" ]
+      then
          rm -f "/etc/jail.conf.bak"
       fi
 EOF
@@ -142,7 +153,8 @@ EOF
       eval \$(grep '^jail_list=' /etc/rc.conf)
 
       for JAIL in \${jail_list}; do
-         if [ ! "\${JAIL}" = "${name}" ]; then
+         if [ ! "\${JAIL}" = "${name}" ]
+         then
             new_list="\${new_list} \${JAIL}"
          fi
       done
@@ -150,7 +162,8 @@ EOF
 
       sed -i '.bak' "s/^jail_list=\".*\"/jail_list=\"\${jail_list}\"/" /etc/rc.conf
       unset jail_list
-      if [ -f "/etc/rc.conf.bak" ]; then
+      if [ -f "/etc/rc.conf.bak" ]
+      then
          rm -f /etc/rc.conf.bak
       fi
 EOF
@@ -162,51 +175,63 @@ createJail() {
 cat <<EOF
    umask 022
    mkdir -p ${jaildir}/${name}
-   if [ ! -d "${jaildir}/base" ]; then
+   if [ ! -d "${jaildir}/base" ]
+   then
       mkdir "${jaildir}/base"
       tar -xzf "${jaildir}/jailbase.tgz" -C "${jaildir}/base"
-      if [ ! -d "${jaildir}/base/usr/local" ]; then
+      if [ ! -d "${jaildir}/base/usr/local" ]
+      then
          mkdir -p "${jaildir}/base/usr/local"
       fi
-      if [ ! -d "${jaildir}/base/usr/home" ]; then
+      if [ ! -d "${jaildir}/base/usr/home" ]
+      then
          mkdir -p "${jaildir}/base/usr/home"
       fi
-      if [ ! -d "${jaildir}/base/home" ]; then
-          if [ ! -L "${jaildir}/base/home" ]; then
+      if [ ! -d "${jaildir}/base/home" ]
+      then
+          if [ ! -L "${jaildir}/base/home" ]
+          then
              SAVE=\${PWD}; cd ${jaildir}/base
              ln -s usr/home home
              cd \${SAVE}; unset SAVE
           fi
       fi
    fi
-   if [ ! -d "${jaildir}/rw" ]; then
+   if [ ! -d "${jaildir}/rw" ]
+   then
       mkdir "${jaildir}/rw"
    fi
    mkdir -p "${jaildir}/rw/${name}/etc"
    cp -r ${jaildir}/base/etc/* "${jaildir}/rw/${name}/etc/"
-   if [ ! -f "${jaildir}/rw/${name}/etc/resolv.conf" ]; then
+   if [ ! -f "${jaildir}/rw/${name}/etc/resolv.conf" ]
+   then
       cp /etc/resolv.conf "${jaildir}/rw/${name}/etc/"
    fi
    mkdir "${jaildir}/rw/${name}/local"
    mkdir "${jaildir}/rw/${name}/var"
-   if [ -n "\$(ls ${jaildir}/base/var)" ]; then
+   if [ -n "\$(ls ${jaildir}/base/var)" ]
+   then
       cp -r ${jaildir}/base/var/* "${jaildir}/rw/${name}/var/"
    fi
    chmod 755 "${jaildir}/rw/${name}/var"
    chmod 755 "${jaildir}/base/var"
-   if [ ! -d "${jaildir}/base/var/db" ]; then
+   if [ ! -d "${jaildir}/base/var/db" ]
+   then
       mkdir -p "${jaildir}/base/var/db"
    fi
-   if [ -n "\$(ls ${jaildir}/base/var/db)" ]; then
+   if [ -n "\$(ls ${jaildir}/base/var/db)" ]
+   then
       chmod 755 "${jaildir}/rw/${name}/var/db"
       chmod 755 "${jaildir}/base/var/db"
    fi
    mkdir "${jaildir}/rw/${name}/home"
-   if [ -n "\$(ls ${jaildir}/base/usr/home)" ]; then
+   if [ -n "\$(ls ${jaildir}/base/usr/home)" ]
+   then
       cp -r ${jaildir}/base/usr/home/* "${jaildir}/rw/${name}/home/"
    fi
    mkdir "${jaildir}/rw/${name}/root"
-   if [ -n "\$(ls -A ${jaildir}/base/root)" ]; then
+   if [ -n "\$(ls -A ${jaildir}/base/root)" ]
+   then
       cp -r ${jaildir}/base/root/ "${jaildir}/rw/${name}/root/"
    fi
 
@@ -243,7 +268,8 @@ cat <<EOF
 
    jaildata="path=\"${jaildir}/${name}\";"
 
-   if [ "${devfsenable}" = "true" ]; then
+   if [ "${devfsenable}" = "true" ]
+   then
       jaildata="\${jaildata}
       mount.devfs;"
    else
@@ -267,7 +293,8 @@ cat <<EOF
    jailtrailer="}"
 
    if [ "${devfsenable}" = "true" ] && [ "${devfsruleset}" = "jailrules" ]; then   # The default ruleset is to be used
-      if [ ! -f /etc/devfs.rules ]; then
+      if [ ! -f /etc/devfs.rules ]
+      then
          touch /etc/devfs.rules
       fi
       if [ -z "\$(grep '\\[jailrules=' /etc/devfs.rules)" ]; then   # The default ruleset doesn't exist
@@ -286,7 +313,8 @@ add include \\\$devfsrules_unhide_login
 END
       fi
       devfsruleset_num=\$(grep "\\[${devfsruleset}=" /etc/devfs.rules | sed -n 's/\\[.*=\\([0-9]*\\)\\]/\\1/pg')
-      if [ -n "\${devfsruleset_num}" ]; then
+      if [ -n "\${devfsruleset_num}" ]
+      then
          jaildata="\${jaildata}
          devfs_ruleset=\"\${devfsruleset_num}\";"
       fi
@@ -297,7 +325,8 @@ EOF
    echo "printf \"%s\\n%s\\n%s\\n\" \"\${jailheader}\" \"\${jaildata}\" \"\${jailtrailer}\" >>\"\${jailfile}\""
 
 # Add $name to jail_list if $onboot=yes
-if [ "${onboot}" = "yes" ]; then
+if [ "${onboot}" = "yes" ]
+then
 
    # first check to see whether jail_enable="YES" exists in rc.conf or not and add it
    #   if necessary

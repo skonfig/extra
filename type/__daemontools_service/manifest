@@ -30,7 +30,8 @@ logrun=$(cat "${__object:?}/parameter/log-run")
 
 svc=$(cat "${__type:?}/explorer/svc")
 
-if [ -z "${svc}" ]; then
+if [ -z "${svc}" ]
+then
 	echo "svc not found! Install daemontools first: see __daemontools"
 	exit 1
 fi

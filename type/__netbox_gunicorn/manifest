@@ -45,7 +45,8 @@ esac
 
 mkdir "${__object:?}/files"
 
-if [ "${state}" = "present" ]; then
+if [ "${state}" = "present" ]
+then
     # process template
     "${__type:?}/files/gunicorn.py.sh" > "${__object:?}/files/gunicorn.py"
 

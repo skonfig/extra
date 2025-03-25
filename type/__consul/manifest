@@ -40,13 +40,15 @@ versions_dir="${__type:?}/files/versions"
 version=$(cat "${__object:?}/parameter/version")
 version_dir="${versions_dir}/${version}"
 
-if [ ! -d "${version_dir}" ]; then
+if [ ! -d "${version_dir}" ]
+then
    echo "Unknown consul version '${version}'. Expected one of:" >&2
    ls "${versions_dir}" >&2
    exit 1
 fi
 
-if [ -f "${__object:?}/parameter/direct" ]; then
+if [ -f "${__object:?}/parameter/direct" ]
+then
     __package unzip
     __package curl
 else

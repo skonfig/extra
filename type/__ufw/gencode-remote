@@ -32,8 +32,10 @@ in
     # absent will be uninstalled in manifest
 esac
 
-if [ "${state}" != absent ]; then
-    if [ -f "${__object:?}/parameter/logging" ]; then
+if [ "${state}" != absent ]
+then
+    if [ -f "${__object:?}/parameter/logging" ]
+    then
         logging=$(cat "${__object:?}/parameter/logging")
         case ${logging}
         in
@@ -48,7 +50,8 @@ if [ "${state}" != absent ]; then
     fi
 
     for direction in incoming outgoing routed; do
-        if [ -f "${__object:?}/parameter/default_${direction}" ]; then
+        if [ -f "${__object:?}/parameter/default_${direction}" ]
+        then
             treatment=$(cat "${__object:?}/parameter/default_${direction}")
             case ${treatment}
             in

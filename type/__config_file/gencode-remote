@@ -20,8 +20,10 @@
 
 destination=${__object_id:?}
 
-if [ -f "${__object:?}/parameter/onchange" ]; then
-   if grep -q "^__file/${destination}" "${__messages_in:?}"; then
+if [ -f "${__object:?}/parameter/onchange" ]
+then
+   if grep -q "^__file/${destination}" "${__messages_in:?}"
+   then
       cat "${__object:?}/parameter/onchange"
    fi
 fi

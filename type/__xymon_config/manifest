@@ -20,17 +20,20 @@
 
 confdir=$(cat "${__object:?}/parameter/confdir")
 set --
-if [ -f "${__object:?}/parameter/owner" ]; then
+if [ -f "${__object:?}/parameter/owner" ]
+then
 	owner=$(cat "${__object:?}/parameter/owner")
 	set -- "$@" "--owner ${owner}"
 fi
-if [ -f "${__object:?}/parameter/group" ]; then
+if [ -f "${__object:?}/parameter/group" ]
+then
 	group=$(cat "${__object:?}/parameter/group")
 	set -- "$@" "--group ${group}"
 fi
 
 ## pass `--rsync-opts` as-is to `__rsync`:
-if [ -f "${__object:?}/parameter/rsync-opts" ]; then
+if [ -f "${__object:?}/parameter/rsync-opts" ]
+then
 	while read -r opts; do
 		# shellcheck disable=SC2089
 		set -- "$@" "--rsync-opts '${opts}'"

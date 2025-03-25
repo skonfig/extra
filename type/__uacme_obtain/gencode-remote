@@ -34,7 +34,7 @@ in
 esac
 
 confdir="${default_confdir:?}"
-if [ -f "${__object:?}/parameter/confdir" ];
+if [ -f "${__object:?}/parameter/confdir" ]
 then
 	confdir=$(cat "${__object:?}/parameter/confdir")
 fi

@@ -25,7 +25,8 @@
 #  1: File which list all sockets to listen on (sepearated by \n)
 #
 
-if [ $# -ne 1 ]; then
+if [ $# -ne 1 ]
+then
     printf "netbox.socket.sh: argument \$1 missing or too much given!\n" >&2
     exit 1
 fi

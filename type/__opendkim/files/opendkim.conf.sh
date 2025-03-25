@@ -27,7 +27,7 @@ then
 fi
 
 # Optional canonicalization settings
-if [ "${CANON}" ];
+if [ -n "${CANON}" ]
 then
 	case ${CANON}
 	in
@@ -59,25 +59,25 @@ echo 'SigningTable /etc/opendkim/SigningTable'
 printf "Socket %s\n" "${SOCKET:?}"
 
 # Optional subdomain signing settings
-if [ "${SUBDOMAINS}" ];
+if [ "${SUBDOMAINS}" ]
 then
 	printf "SubDomains %s\n" "${SUBDOMAINS}"
 fi
 
 # Optional request logging to syslog
-if [ "${SYSLOG}" ];
+if [ "${SYSLOG}" ]
 then
 	echo "Syslog yes"
 fi
 
 # Optional UMask specification
-if [ "${UMASK}" ];
+if [ "${UMASK}" ]
 then
 	printf "UMask %s\n" "${UMASK}"
 fi
 
 # Optional UserID to change to
-if [ "${USERID}" ];
+if [ "${USERID}" ]
 then
 	printf "UserID %s\n" "${USERID}"
 fi

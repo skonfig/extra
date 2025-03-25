@@ -53,7 +53,8 @@ fi
 
 cat <<- EOF
 	set -x
-	if [ ! -d "/${__object_id:?}" ]; then
+	if [ ! -d "/${__object_id:?}" ]
+	then
 		${doas} BORG_NEW_PASSPHRASE=${passphrase} borg init -e ${enc:?} ${appendonly} /${__object_id:?}
 	fi
 EOF

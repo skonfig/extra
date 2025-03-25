@@ -36,7 +36,8 @@ esac
 __package apache2 --state "${state}"
 
 ## edit xymon.conf IP-ranges
-if [ -f "${__object:?}/parameter/ipacl" ]; then
+if [ -f "${__object:?}/parameter/ipacl" ]
+then
 	require="__package/xymon" __line /etc/apache2/conf-available/xymon.conf \
 		--line "        Require ip $(cat "${__object:?}/parameter/ipacl")" \
 		--after "^[[:space:]]*Require local" \

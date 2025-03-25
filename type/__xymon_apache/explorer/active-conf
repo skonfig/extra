@@ -20,6 +20,7 @@
 # Lists the files in the /etc/apache2/conf-enabled directory.
 #
 
-if [ -d /etc/apache2/mods-enabled ]; then
+if [ -d /etc/apache2/mods-enabled ]
+then
 	ls -1 /etc/apache2/conf-enabled/
 fi

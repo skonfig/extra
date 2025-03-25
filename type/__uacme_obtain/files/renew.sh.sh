@@ -43,7 +43,8 @@ then
 fi
 
 # An error occured.
-if [ \${status} -eq 2 ]; then
+if [ \${status} -eq 2 ]
+then
 	echo "Failed to renew certificate - exiting." >&2
 	exit 1
 fi
@@ -62,7 +63,8 @@ KEY_SOURCE=${CONFDIR:?}/private/${MAIN_DOMAIN:?}/key.pem
 
 mkdir -p -- $(dirname "${CERT_TARGET?}") $(dirname "${KEY_TARGET?}")
 
-if ! cmp \${CERT_SOURCE:?} ${CERT_TARGET?} >/dev/null 2>&1; then
+if ! cmp \${CERT_SOURCE:?} ${CERT_TARGET?} >/dev/null 2>&1
+then
 	install -m 0640 \${KEY_SOURCE:?} ${KEY_TARGET?}
 	install -m 0644 \${CERT_SOURCE:?} ${CERT_TARGET?}
 	chown ${OWNER?} ${KEY_TARGET?} ${CERT_TARGET?}

@@ -22,6 +22,7 @@ manager=$(cat "${__object:?}/explorer/service-manager")
 name=${__object_id:?}
 action=$(cat "${__object:?}/parameter/action")
 
-if [ "${manager}" = "unknown" ]; then
+if [ "${manager}" = "unknown" ]
+then
 	echo "service '${name}' '${action}'"
 fi

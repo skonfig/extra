@@ -21,7 +21,8 @@
 
 
 os=$(cat "${__global:?}/explorer/os")
-if [ "${os}" != "freebsd" ]; then
+if [ "${os}" != "freebsd" ]
+then
 	exit
 fi
 
@@ -30,18 +31,22 @@ svdir="/var/service"
 svdir_exists=$(cat "${__object:?}/explorer/svdir-exists")
 runit_etc=$(cat "${__object:?}/explorer/runit-etc")
 
-if [ -z "${svdir_exists}" ]; then
+if [ -z "${svdir_exists}" ]
+then
 	echo "mkdir '${svdir}'"
 	sv_restart="YES"
 fi
-if [ -z "${runit_etc}" ]; then
+if [ -z "${runit_etc}" ]
+then
 	echo "cp -R '/usr/local/etc/runit' '/etc/runit'"
 	sv_restart="YES"
 fi
-if grep -q "^__key_value/runsvdir_enable" "${__messages_in:?}"; then
+if grep -q "^__key_value/runsvdir_enable" "${__messages_in:?}"
+then
 	sv_restart="YES"
 fi
 
-if [ -n "${sv_restart}" ]; then
+if [ -n "${sv_restart}" ]
+then
 	echo "service runsvdir restart || service runsvdir start"
 fi

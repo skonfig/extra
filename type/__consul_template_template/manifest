@@ -26,18 +26,23 @@ template_dir="/etc/consul-template/template"
 require=""
 
 # Sanity checks
-if [ -f "${__object:?}/parameter/source" ] && [ -f "${__object:?}/parameter/source-file" ]; then
+if [ -f "${__object:?}/parameter/source" ] \
+   && [ -f "${__object:?}/parameter/source-file" ]
+then
    echo "Use either --source OR --source-file, but not both." >&2
    exit 1
 fi
-if [ ! -f "${__object:?}/parameter/source" ] && [ ! -f "${__object:?}/parameter/source-file" ]; then
+if [ ! -f "${__object:?}/parameter/source" ] \
+   && [ ! -f "${__object:?}/parameter/source-file" ]
+then
    echo "Either --source OR --source-file must be given." >&2
    exit 1
 fi
 
-if [ -f "${__object:?}/parameter/source-file" ]; then
-    destination="${template_dir}/${name}"
-    require="__file${destination}"
+if [ -f "${__object:?}/parameter/source-file" ]
+then
+   destination="${template_dir}/${name}"
+   require="__file${destination}"
 fi
 
 # Generate hcl config file
@@ -49,7 +54,8 @@ for param in *; do
    in
       source-file)
          source=$(cat "${__object:?}/parameter/${param}")
-         if [ "${source}" = "-" ]; then
+         if [ "${source}" = "-" ]
+         then
             source="${__object:?}/stdin"
          fi
          require="__directory${template_dir}" \

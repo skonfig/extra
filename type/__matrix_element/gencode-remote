@@ -44,7 +44,8 @@ INSTALL_DIR=$(cat "${__object:?}/parameter/install_dir")
 OWNER=$(cat "${__object:?}/parameter/owner")
 
 # tarball name changed due to application renaming
-if echo "${VERSION}" | version_ge 1.7.14; then
+if echo "${VERSION}" | version_ge 1.7.14
+then
     src="element-v${VERSION}"
 else
     src="riot-v${VERSION}"
@@ -58,7 +59,8 @@ cat << EOF
 set -e
 
 # Ensure that coreutils is installed.
-if [ ! -x \$(which mktemp) ]; then
+if [ ! -x \$(command -v mktemp) ]
+then
   echo "mktemp is not available on the remote host." >&2
   exit 1
 fi

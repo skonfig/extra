@@ -26,7 +26,8 @@
 
 # Get the app id
 appid="${__object:?}/parameter/appid"
-if [ -f "${appid}" ]; then
+if [ -f "${appid}" ]
+then
     appid=$(cat "${appid}")
 else
     appid=${__object_id:?}
@@ -38,9 +39,11 @@ www_user=$(cat "${__object:?}/parameter/www-user")
 
 
 # Check if the installation directory exists
-if [ -d "${cloud}" ]; then
+if [ -d "${cloud}" ]
+then
     # if those files exist, everything should be fine
-    if [ -f "${cloud}/occ" ] && [ -f "${cloud}/config/config.php" ]; then
+    if [ -f "${cloud}/occ" ] && [ -f "${cloud}/config/config.php" ]
+    then
         # Check if the app exists in the correct user context
         su -s /bin/sh -l "${www_user}" -- -e <<SU
 cd '${cloud}'

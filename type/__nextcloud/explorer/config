@@ -24,11 +24,13 @@
 installdir="/${__object_id:?}"
 
 # Check if the tools are available
-if [ -d "${installdir}" ]; then
+if [ -d "${installdir}" ]
+then
     cd "${installdir}"
 
     # if those files exist, everything should be good
-    if [ -f "occ" ] && [ -f "config/config.php" ]; then
+    if [ -f "occ" ] && [ -f "config/config.php" ]
+    then
         # Dump out config instead of fuzz every possible option through
         # `occ config:system:get`. Or parse through the whole json or
         # yaml-like output of `occ config:list system --private`.

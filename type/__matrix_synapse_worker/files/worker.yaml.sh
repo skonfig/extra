@@ -21,7 +21,8 @@
 #
 
 generate_bind_addresses () {
-	if [ -n "${WORKER_BIND_ADDRESSES}" ]; then
+	if [ -n "${WORKER_BIND_ADDRESSES}" ]
+	then
 		echo "bind_addresses:"
 		for addr in ${WORKER_BIND_ADDRESSES}; do
 			echo "    - '${addr}'"

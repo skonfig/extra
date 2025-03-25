@@ -22,7 +22,8 @@
 
 # This can be obtained with debconf-get-selections on a host with jitsi
 # (and also analysing the deb-src)
-if false; then
+if false
+then
 	# We are currently not using these, just here as documentation
 	DEBCONF_SETTINGS=$(cat <<EOF
 # Jicofo user password:
@@ -66,7 +67,8 @@ jitsi-meet-web-config	jitsi-meet/cert-choice	select	Generate a new self-signed c
 EOF
 )
 
-if [ -n "${TURN_SECRET}" ]; then
+if [ -n "${TURN_SECRET}" ]
+then
 	DEBCONF_SETTINGS=$(cat <<EOF
 ${DEBCONF_SETTINGS}
 # The turn server secret

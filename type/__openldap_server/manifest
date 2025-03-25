@@ -47,13 +47,15 @@ in
         SLAPD_RUN_DIR="/var/run/openldap"
         SLAPD_MODULE_PATH="/usr/local/libexec/openldap"
         SLAPD_MODULE_TYPE="la"
-        if [ -z "${slapd_modules}" ]; then
+        if [ -z "${slapd_modules}" ]
+        then
             # It looks like ppolicy and syncprov must be compiled
             slapd_modules="back_mdb back_monitor"
         fi
         CONF_OWNER="ldap"
         CONF_GROUP="ldap"
-        if [ -z "${tls_cipher_suite}" ]; then
+        if [ -z "${tls_cipher_suite}" ]
+        then
             # TODO: research default for FreeBSD. 'NORMAL' appears to not work
             tls_cipher_suite="HIGH:MEDIUM:+SSLv2"
         fi
@@ -66,12 +68,14 @@ in
         SLAPD_RUN_DIR="/var/run/slapd"
         SLAPD_MODULE_PATH="/usr/lib/ldap"
         SLAPD_MODULE_TYPE="la"
-        if [ -z "${slapd_modules}" ]; then
+        if [ -z "${slapd_modules}" ]
+        then
             slapd_modules="back_mdb ppolicy syncprov back_monitor"
         fi
         CONF_OWNER="openldap"
         CONF_GROUP="openldap"
-        if [ -z "${tls_cipher_suite}" ]; then
+        if [ -z "${tls_cipher_suite}" ]
+        then
             tls_cipher_suite="NORMAL"
         fi
         ;;
@@ -83,13 +87,15 @@ in
         SLAPD_RUN_DIR="/var/run/openldap"
         SLAPD_MODULE_PATH="/usr/lib/openldap"
         SLAPD_MODULE_TYPE="so"
-        if [ -z "${slapd_modules}" ]; then
+        if [ -z "${slapd_modules}" ]
+        then
             slapd_modules="back_mdb ppolicy syncprov back_monitor"
             PKGS="${PKGS} openldap-back-mdb openldap-back-monitor openldap-overlay-all"
         fi
         CONF_OWNER="ldap"
         CONF_GROUP=${SLAPD_USER}
-        if [ -z "${tls_cipher_suite}" ]; then
+        if [ -z "${tls_cipher_suite}" ]
+        then
             tls_cipher_suite="DEFAULT"
         fi
         ;;
@@ -103,16 +109,19 @@ PKG_MAIN=$(echo "${PKGS}" | awk '{print $1;}')
 
 
 # Determine if __letsencrypt_cert is to be used and setup vars accordingly
-if [ -f "${__object:?}/parameter/tls-cert" ]; then
+if [ -f "${__object:?}/parameter/tls-cert" ]
+then
     tls_cert=$(cat "${__object:?}/parameter/tls-cert")
 
-    if [ ! -f "${__object:?}/parameter/tls-privkey" ]; then
+    if [ ! -f "${__object:?}/parameter/tls-privkey" ]
+    then
         echo "When tls-cert is defined, tls-privkey is also required." >&2
         exit 1
     fi
     tls_privkey=$(cat "${__object:?}/parameter/tls-privkey")
 
-    if [ ! -f "${__object:?}/parameter/tls-ca" ]; then
+    if [ ! -f "${__object:?}/parameter/tls-ca" ]
+    then
         echo "When tls-cert is defined, tls-ca is also required." >&2
         exit 1
     fi
@@ -120,7 +129,8 @@ if [ -f "${__object:?}/parameter/tls-cert" ]; then
 
     _skip_letsencrypt_cert="YES"
 else
-    if [ ! -f "${__object:?}/parameter/admin-email" ]; then
+    if [ ! -f "${__object:?}/parameter/admin-email" ]
+    then
         echo "When using __letsencrypt_cert, admin-email is also required." >&2
         exit 1
     fi
@@ -135,23 +145,27 @@ mkdir "${__object:?}/files"
 ldapconf="${__object:?}/files/ldapconf"
 
 replication=""
-if [ -f "${__object:?}/parameter/replicate" ]; then
+if [ -f "${__object:?}/parameter/replicate" ]
+then
     replication=yes
 
-    if [ ! -f "${__object:?}/parameter/syncrepl-searchbase" ]; then
+    if [ ! -f "${__object:?}/parameter/syncrepl-searchbase" ]
+    then
         echo "Requiring the searchbase for replication" >&2
         exit 1
     fi
     syncrepl_searchbase=$(cat "${__object:?}/parameter/syncrepl-searchbase")
 
-    if [ ! -f "${__object:?}/parameter/syncrepl-credentials" ]; then
+    if [ ! -f "${__object:?}/parameter/syncrepl-credentials" ]
+    then
         echo "Requiring credentials for replication" >&2
         exit 1
     fi
 
     syncrepl_credentials=$(cat "${__object:?}/parameter/syncrepl-credentials")
 
-    if [ ! -f "${__object:?}/parameter/syncrepl-host" ]; then
+    if [ ! -f "${__object:?}/parameter/syncrepl-host" ]
+    then
         echo "Requiring host(s) for replication" >&2
         exit 1
     fi
@@ -212,8 +226,10 @@ in
 esac
 
 
-if [ -z "${_skip_letsencrypt_cert}" ]; then
-    if [ -f "${__object:?}/parameter/staging" ]; then
+if [ -z "${_skip_letsencrypt_cert}" ]
+then
+    if [ -f "${__object:?}/parameter/staging" ]
+    then
         staging="--staging"
     else
         staging=""
@@ -229,7 +245,8 @@ fi
 
 require="__package/${PKG_MAIN}" __directory ${SLAPD_DIR}/slapd.d --state absent
 
-if [ -z "${_skip_letsencrypt_cert}" ]; then
+if [ -z "${_skip_letsencrypt_cert}" ]
+then
     require="__package/${PKG_MAIN} __letsencrypt_cert/${name}" \
            __file "${SLAPD_DIR}/slapd.conf" --owner "${CONF_OWNER}" --group "${CONF_GROUP}" --mode 644 \
            --source "${ldapconf}"
@@ -290,7 +307,8 @@ serverid ${serverid}
 EOF
 
 # Setup replication
-if [ "${replication}" ]; then
+if [ "${replication}" ]
+then
     rid=1;
     for syncrepl in ${syncrepl_hosts}; do
     cat <<EOF >> "${ldapconf}"

@@ -23,7 +23,8 @@ num_vdi_lines=$(wc -l < "${__object:?}/explorer/list")
 name=${__object_id:?}
 
 
-if [ "${num_vdi_lines}" = 1 ]; then
+if [ "${num_vdi_lines}" = 1 ]
+then
     state_is=present
 else
     state_is=absent

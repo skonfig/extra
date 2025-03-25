@@ -25,7 +25,8 @@ stat_file="${__object:?}/explorer/stat"
 
 
 get_current_value() {
-    if [ -s "${stat_file}" ]; then
+    if [ -s "${stat_file}" ]
+    then
         _name=$1
         _value=$2
         case ${_value}
@@ -63,16 +64,19 @@ in
     # Note: Mode - needs to happen last as a chown/chgrp can alter mode by
     #  clearing S_ISUID and S_ISGID bits (see chown(2))
     for attribute in group owner mode; do
-        if [ -f "${__object:?}/parameter/${attribute}" ]; then
+        if [ -f "${__object:?}/parameter/${attribute}" ]
+        then
             value_should=$(cat "${__object:?}/parameter/${attribute}")
 
             # change 0xxx format to xxx format => same as stat returns
-            if [ "${attribute}" = mode ]; then
+            if [ "${attribute}" = mode ]
+            then
                 value_should=$(echo "${value_should}" | sed 's/^0\(...\)/\1/')
             fi
 
             value_is=$(get_current_value "${attribute}" "${value_should}")
-            if [ -f "${__object:?}/files/set-attributes" ] || [ "${value_should}" != "${value_is}" ]; then
+            if [ -f "${__object:?}/files/set-attributes" ] || [ "${value_should}" != "${value_is}" ]
+            then
                 "set_${attribute}" "${value_should}"
             fi
         fi
@@ -81,7 +85,8 @@ in
     ;;
 
     absent)
-        if [ "${type}" = "file" ]; then
+        if [ "${type}" = "file" ]
+        then
             echo "rm -f '${destination}'"
             echo remove >> "${__messages_out:?}"
         fi

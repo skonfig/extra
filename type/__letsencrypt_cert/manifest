@@ -30,7 +30,8 @@ certbot_fullpath=$(grep "^certbot_path:" "${__object:?}/explorer/certificate-dat
 state=$(cat "${__object:?}/parameter/state")
 os=$(cat "${__global:?}/explorer/os")
 
-if [ -z "${certbot_fullpath}" ]; then
+if [ -z "${certbot_fullpath}" ]
+then
 	os_version=$(cat "${__global:?}/explorer/os_version")
 	# Use this, very common value, as a default. It is OS-dependent
 	certbot_fullpath="/usr/bin/certbot"
@@ -161,7 +162,8 @@ HOOKS_DIR="${LE_DIR}/renewal-hooks"
 __directory "${LE_DIR}" --mode 0755
 require="__directory/${LE_DIR}" __directory "${HOOKS_DIR}" --mode 0755
 
-if [ -f "${__object:?}/parameter/domain" ]; then
+if [ -f "${__object:?}/parameter/domain" ]
+then
 	domains=$(sort "${__object:?}/parameter/domain")
 else
 	domains=${__object_id:?}

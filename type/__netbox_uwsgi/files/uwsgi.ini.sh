@@ -47,7 +47,8 @@ cat << EOF
 ; socket(s) to bind
 EOF
 
-if [ "${SYSTEMD_SOCKET}" != "yes" ]; then
+if [ "${SYSTEMD_SOCKET}" != "yes" ]
+then
     # special protocol to bind
     find "${__object:?}/parameter/" -maxdepth 1 -name "*-bind" -print \
      | while read -r param; do
@@ -70,7 +71,8 @@ EOF
 
 
 # optional mapping of static content
-if [ "${STATIC_MAP}" != "" ]; then
+if [ "${STATIC_MAP}" != "" ]
+then
     cat << EOF
 
 ; map static content

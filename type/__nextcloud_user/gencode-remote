@@ -42,16 +42,19 @@ cd '${cloud}'
 SHELL
     create_args=""
 
-    if [ -f "${__object:?}/parameter/password" ]; then
+    if [ -f "${__object:?}/parameter/password" ]
+    then
         printf "export OC_PASS='%s'\n" "$(cat "${__object:?}/parameter/password")"
         create_args="${create_args} --password-from-env"
     fi
-    if [ -f "${__object:?}/parameter/displayname" ]; then
+    if [ -f "${__object:?}/parameter/displayname" ]
+    then
         create_args="${create_args} --display-name '$(cat "${__object:?}/parameter/displayname")'"
     fi
 
     # groups
-    if [ -f "${__object:?}/parameter/group" ]; then
+    if [ -f "${__object:?}/parameter/group" ]
+    then
         while read -r GROUP; do
             create_args="${create_args} --group '${GROUP}'"
         done < "${__object:?}/parameter/group"
@@ -63,7 +66,8 @@ SU
 SHELL
 
     # add email if set - not doable via the create command
-    if [ -f "${__object:?}/parameter/email" ]; then
+    if [ -f "${__object:?}/parameter/email" ]
+    then
         occ user:setting -- "'${user}'" settings email "'$(cat "${__object:?}/parameter/email")'"
     fi
 
@@ -86,7 +90,8 @@ SHELL
 #  1: not matched
 match_param() {
     # first level intend two spaces
-    if grep -q -Fx "  - $1: $2" "${__object:?}/explorer/user"; then
+    if grep -q -Fx "  - $1: $2" "${__object:?}/explorer/user"
+    then
         return 0
     else
         return 1
@@ -96,13 +101,16 @@ match_param() {
 
 # Get parameters
 user="${__object:?}/parameter/user"
-if [ -f "${user}" ]; then
+if [ -f "${user}" ]
+then
     user=$(cat "${user}")
 else
     user=${__object_id:?}
 fi
-if [ -s "${__object:?}/explorer/user" ]; then
-    if match_param enabled true; then
+if [ -s "${__object:?}/explorer/user" ]
+then
+    if match_param enabled true
+    then
         state_is="enabled"
     else
         state_is="disabled"
@@ -117,12 +125,14 @@ www_user=$(cat "${__object:?}/parameter/www-user")
 
 
 # Check if the state changes
-if [ "${state_is}" != "${state_should}" ]; then
+if [ "${state_is}" != "${state_should}" ]
+then
     # check what to do
     case ${state_should}
     in
         enabled)
-            if [ "${state_is}" = "disabled" ]; then
+            if [ "${state_is}" = "disabled" ]
+            then
                 occ user:enable "'${user}'"
                 echo enabled >> "${__messages_out:?}"
             else
@@ -132,7 +142,8 @@ if [ "${state_is}" != "${state_should}" ]; then
             ;;
 
         disabled)
-            if [ "${state_is}" = "absent" ]; then
+            if [ "${state_is}" = "absent" ]
+            then
                 occ_create
                 echo created >> "${__messages_out:?}"
             fi
@@ -142,7 +153,8 @@ if [ "${state_is}" != "${state_should}" ]; then
             ;;
 
         present)
-            if [ "${state_is}" = "absent" ]; then
+            if [ "${state_is}" = "absent" ]
+            then
                 occ_create
                 echo created >> "${__messages_out:?}"
             fi
@@ -157,19 +169,24 @@ if [ "${state_is}" != "${state_should}" ]; then
 fi
 
 # Check if the user should not be modified further from the initial setup.
-if [ -f "${__object:?}/parameter/only-setup" ]; then
+if [ -f "${__object:?}/parameter/only-setup" ]
+then
     ignore_config="yes"
 fi
 
 
 # Check if some user configuration should be changed
 # do not run this code if the user will be created in the previous code
-if [ "${state_should}" != "absent" ] && [ "${ignore_config}" != "yes" ]; then
-    if ! [ -f "${__object:?}/parameter/keep-displayname" ]; then
+if [ "${state_should}" != "absent" ] && [ "${ignore_config}" != "yes" ]
+then
+    if ! [ -f "${__object:?}/parameter/keep-displayname" ]
+    then
         # Check if the display name is correct if someone is set
-        if [ -f "${__object:?}/parameter/displayname" ]; then
+        if [ -f "${__object:?}/parameter/displayname" ]
+        then
             displayname=$(cat "${__object:?}/parameter/displayname")
-            if ! match_param display_name "${displayname}"; then
+            if ! match_param display_name "${displayname}"
+            then
                 cat <<SHELL
 su -s /bin/sh -l "${www_user}" -- -e <<'SU'
 cd '${cloud}'
@@ -184,25 +201,31 @@ SHELL
         # the display name can not be unset
     fi
 
-    if ! [ -f "${__object:?}/paramter/keep-email" ]; then
+    if ! [ -f "${__object:?}/paramter/keep-email" ]
+    then
         # Check if the email address is correct
-        if [ -f "${__object:?}/parameter/email" ]; then
+        if [ -f "${__object:?}/parameter/email" ]
+        then
             email=$(cat "${__object:?}/parameter/email")
-            if ! match_param email "${email}"; then
+            if ! match_param email "${email}"
+            then
                 occ user:setting -- "'${user}'" settings email "'${email}'"
             fi
         else
             # remove if it doesn't exist
-            if ! match_param email ""; then
+            if ! match_param email ""
+            then
                 occ user:setting --delete -- "'${user}'" settings email
             fi
         fi
     fi
 
-    if ! [ -f "${__object:?}/parameter/keep-password" ]; then
+    if ! [ -f "${__object:?}/parameter/keep-password" ]
+    then
         # Check state of the password
         # explorer handles missing passwords already
-        if [ "$(cat "${__object:?}/explorer/password")" = "mismatched" ]; then
+        if [ "$(cat "${__object:?}/explorer/password")" = "mismatched" ]
+        then
             cat <<SHELL
 su -s /bin/sh -l "${www_user}" -- -e <<'SU'
 cd '${cloud}'
@@ -213,16 +236,19 @@ SHELL
         fi
     fi
 
-    if ! [ -f "${__object:?}/parameter/keep-quota" ]; then
+    if ! [ -f "${__object:?}/parameter/keep-quota" ]
+    then
         # Handle the qouta
         # the parameter is always set cause of the default value
         quota=$(cat "${__object:?}/parameter/quota")
-        if ! match_param quota_param "${quota}"; then
+        if ! match_param quota_param "${quota}"
+        then
             occ user:setting -- "'${user}'" files quota "'${quota}'"
         fi
     fi
 
-    if ! [ -f "${__object:?}/parameter/keep-groups" ]; then
+    if ! [ -f "${__object:?}/parameter/keep-groups" ]
+    then
         # Handle the user groups
         # extract all groups set by remote
         mkdir -p "${__object:?}/files"
@@ -231,7 +257,8 @@ SHELL
             "${__object:?}/explorer/user" > "${__object:?}/files/explorer_groups"
 
         # Add/Remove groups not set via the parameter
-        if [ -s "${__object:?}/parameter/group" ]; then
+        if [ -s "${__object:?}/parameter/group" ]
+        then
             # Get all groups to remove
             grep -Fxv -f "${__object:?}/parameter/group" \
                 "${__object:?}/files/explorer_groups" > "${__object:?}/files/group.del" || true
@@ -246,14 +273,16 @@ SHELL
         fi
 
         # Remove all groups not exist anymore
-        if [ -s "${__object:?}/files/group.del" ]; then
+        if [ -s "${__object:?}/files/group.del" ]
+        then
             while read -r GROUP; do
                 occ group:removeuser "'${GROUP}'" "'${user}'"
             done < "${__object:?}/files/group.del"
         fi
 
         # Add all existing groups
-        if [ -s "${__object:?}/files/group.add" ]; then
+        if [ -s "${__object:?}/files/group.add" ]
+        then
             while read -r GROUP; do
                 occ group:adduser "'${GROUP}'" "'${user}'"
             done < "${__object:?}/files/group.add"

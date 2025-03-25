@@ -24,7 +24,8 @@
 # default jitsi logo in svg
 BRANDING_WATERMARK_PATH='images/watermark.svg'
 # overrides default jitsi logo with the provided custom png logo
-if [ -n "${BRANDING_WATERMARK}" ]; then
+if [ -n "${BRANDING_WATERMARK}" ]
+then
   BRANDING_WATERMARK_PATH='images/watermark.png'
 fi
 

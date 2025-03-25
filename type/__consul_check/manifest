@@ -24,23 +24,29 @@ conf_file="check_${name}.json"
 state=$(cat "${__object:?}/parameter/state")
 
 # Sanity checks
-if [ -f "${__object:?}/parameter/ttl" ]; then
+if [ -f "${__object:?}/parameter/ttl" ]
+then
    for conflicts_ttl in 'docker-container-id' 'http' 'script' 'tcp' 'timeout'; do
-      if [ -f "${__object:?}/parameter/${conflicts_ttl}" ]; then
+      if [ -f "${__object:?}/parameter/${conflicts_ttl}" ]
+      then
          echo "Can not use --ttl together with --${conflicts_ttl}." >&2
          exit 1
       fi
    done
 fi
-if [ ! -f "${__object:?}/parameter/interval" ]; then
+if [ ! -f "${__object:?}/parameter/interval" ]
+then
    for requires_interval in 'docker-id' 'http' 'script' 'tcp'; do
-      if [ -f "${__object:?}/parameter/${requires_interval}" ]; then
+      if [ -f "${__object:?}/parameter/${requires_interval}" ]
+      then
          echo "When using --${requires_interval} you must also define --interval." >&2
          exit 1
       fi
    done
 fi
-if [ -f "${__object:?}/parameter/docker-container-id" ] && [ ! -f "${__object:?}/parameter/script" ]; then
+if [ -f "${__object:?}/parameter/docker-container-id" ] \
+   && [ ! -f "${__object:?}/parameter/script" ]
+then
    echo "When using --docker-container-id you must also define --script." >&2
    exit 1
 fi

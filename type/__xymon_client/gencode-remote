@@ -20,7 +20,9 @@
 
 servers=$(cat "${__object:?}/parameter/servers")
 
-if grep -q ^__key_value/CLIENTHOSTNAME "${__messages_in:?}" || grep -q ^__key_value/XYMONSERVERS "${__messages_in:?}" ; then
+if grep -q ^__key_value/CLIENTHOSTNAME "${__messages_in:?}" \
+	|| grep -q ^__key_value/XYMONSERVERS "${__messages_in:?}"
+then
 	echo "systemctl restart xymon-client"
 	echo "restarted" >> "${__messages_out:?}"
 	cat <<-EOT

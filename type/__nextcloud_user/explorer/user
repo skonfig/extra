@@ -25,7 +25,8 @@
 
 # Parameters
 user="${__object:?}/parameter/user"
-if [ -f "${user}" ]; then
+if [ -f "${user}" ]
+then
     user=$(cat "${user}")
 else
     user=${__object_id:?}
@@ -35,9 +36,11 @@ www_user=$(cat "${__object:?}/parameter/www-user")
 
 
 # Check if there exists the installation
-if [ -d "${cloud}" ]; then
+if [ -d "${cloud}" ]
+then
     # if those files exist, everything should be good
-    if [ -f "${cloud}/occ" ] && [ -f "${cloud}/config/config.php" ]; then
+    if [ -f "${cloud}/occ" ] && [ -f "${cloud}/config/config.php" ]
+    then
         # Content could be gathered through php code directly, too. This can
         # be done if more parameters are required than user:info will output
         # or if there will be too much fuzz in the output.

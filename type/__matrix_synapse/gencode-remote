@@ -37,7 +37,8 @@ in
 	;;
 esac
 
-if grep -qE "^__file${synapse_conf_dir}" "${__messages_in:?}"; then
+if grep -q "^__file${synapse_conf_dir}" "${__messages_in:?}"
+then
 	case ${init}
 	in
 		systemd)

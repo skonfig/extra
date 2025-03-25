@@ -156,17 +156,20 @@ EXEMPT_VIEW_PERMISSIONS = [
 
 EOF
 
-if [ "${HTTP_PROXY}" != "" ] || [ "${HTTPS_PROXY}" != "" ]; then
+if [ "${HTTP_PROXY}" != "" ] || [ "${HTTPS_PROXY}" != "" ]
+then
     cat << EOF
 # HTTP proxies NetBox should use when sending outbound HTTP requests (e.g. for webhooks).
 HTTP_PROXIES = {
 EOF
-    if [ "${HTTP_PROXY}" != "" ]; then
+    if [ "${HTTP_PROXY}" != "" ]
+    then
         cat << EOF
     'http': '${HTTP_PROXY}',
 EOF
     fi
-    if [ "${HTTPS_PROXY}" != "" ]; then
+    if [ "${HTTPS_PROXY}" != "" ]
+    then
         cat << EOF
     'https': '${HTTPS_PROXY}',
 EOF
@@ -203,7 +206,8 @@ MAX_PAGE_SIZE = 1000
 
 EOF
 
-if [ "${MEDIA_ROOT}" != "" ]; then
+if [ "${MEDIA_ROOT}" != "" ]
+then
     cat << EOF
 # The file path where uploaded media such as image attachments are stored. A trailing slash is not needed. Note that
 # the default value of this setting is derived from the installed location.
@@ -262,7 +266,8 @@ RACK_ELEVATION_DEFAULT_UNIT_WIDTH = 220
 
 EOF
 
-if [ "${USE_LDAP}" ]; then
+if [ "${USE_LDAP}" ]
+then
     cat << EOF
 # Remote authentication support with ldap
 REMOTE_AUTH_ENABLED = True
@@ -290,7 +295,8 @@ RELEASE_CHECK_TIMEOUT = 24 * 3600
 
 EOF
 
-if [ "${UPDATE_CHECK}" != "" ]; then
+if [ "${UPDATE_CHECK}" != "" ]
+then
     cat << EOF
 RELEASE_CHECK_URL = 'https://api.github.com/repos/netbox-community/netbox/releases'
 
@@ -302,7 +308,8 @@ RELEASE_CHECK_URL = None
 EOF
 fi
 
-if [ "${REPORTS_ROOT}" != "" ]; then
+if [ "${REPORTS_ROOT}" != "" ]
+then
     cat << EOF
 # The file path where custom reports will be stored. A trailing slash is not needed. Note that the default value of
 # this setting is derived from the installed location.
@@ -311,7 +318,8 @@ REPORTS_ROOT = '${REPORTS_ROOT}'
 EOF
 fi
 
-if [ "${SCRIPTS_ROOT}" != "" ]; then
+if [ "${SCRIPTS_ROOT}" != "" ]
+then
     cat << EOF
 # The file path where custom scripts will be stored. A trailing slash is not needed. Note that the default value of
 # this setting is derived from the installed location.

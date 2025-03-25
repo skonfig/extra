@@ -24,7 +24,8 @@
 #
 
 generate_embedded_pages () {
-    if [ "${EMBED_HOMEPAGE}" != "" ]; then
+    if [ "${EMBED_HOMEPAGE}" != "" ]
+    then
         cat << EOF
     "embeddedPages": {
         "homeUrl": "home.html"
@@ -34,7 +35,8 @@ EOF
 }
 
 generate_jitsi_config () {
-    if [ "${JITSI_DOMAIN}" != "" ]; then
+    if [ "${JITSI_DOMAIN}" != "" ]
+    then
         cat << EOF
     "jitsi": {
         "preferredDomain": "${JITSI_DOMAIN}"
@@ -46,13 +48,15 @@ EOF
 generate_branding () {
     echo '"branding": {'
 
-    if [ "${BRANDING_AUTH_HEADER_LOGO_URL}" != "" ]; then
+    if [ "${BRANDING_AUTH_HEADER_LOGO_URL}" != "" ]
+    then
         cat << EOF
         "authHeaderLogoUrl": "${BRANDING_AUTH_HEADER_LOGO_URL}",
 EOF
     fi
 
-    if [ "${BRANDING_AUTH_FOOTER_LINKS}" != "" ]; then
+    if [ "${BRANDING_AUTH_FOOTER_LINKS}" != "" ]
+    then
         cat << EOF
         "authFooterLinks": "${BRANDING_AUTH_FOOTER_LINKS}",
 EOF

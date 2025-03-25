@@ -39,7 +39,8 @@ in
     ;;
 esac
 
-if [ "${init}" = 'systemd' ]; then
+if [ "${init}" = 'systemd' ]
+then
     # this handles ALL linux distros with systemd
     # e.g. archlinux, gentoo in some cases, new RHEL and SLES versions
     echo "systemctl \"${cmd}\" \"${name}\""

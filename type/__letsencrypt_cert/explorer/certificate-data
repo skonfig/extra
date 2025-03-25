@@ -25,7 +25,8 @@ certbot_path=$(command -v certbot 2>/dev/null || true)
 certificate_exists="no"
 certificate_is_test="no"
 
-if [ -n "${certbot_path}" ]; then
+if [ -n "${certbot_path}" ]
+then
 	# Find python executable that has access to certbot's module
 	python_path=$(sed -n '1s/^#! *//p' "${certbot_path}")
 
@@ -58,7 +59,8 @@ EOF
 
 
 	_certificate_exists() {
-		if grep -q "  Certificate Name: ${__object_id:?}$"; then
+		if grep -q "  Certificate Name: ${__object_id:?}$"
+		then
 			echo yes
 		else
 			echo no
@@ -66,7 +68,8 @@ EOF
 	}
 
 	_certificate_is_test() {
-		if grep -q 'INVALID: TEST_CERT'; then
+		if grep -q 'INVALID: TEST_CERT'
+		then
 			echo yes
 		else
 			echo no

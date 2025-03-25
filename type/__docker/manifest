@@ -27,7 +27,8 @@ case ${os}
 in
     centos)
         # shellcheck source=/dev/null
-        if (. "${__global:?}/explorer/os_release" && [ "${VERSION_ID}" = "7" ]); then
+        if (. "${__global:?}/explorer/os_release" && [ "${VERSION_ID}" = "7" ])
+        then
           __yum_repo docker-ce-stable \
             --name 'Docker CE Stable' \
             --baseurl "https://download.docker.com/linux/centos/7/\${basearch}/stable" \
@@ -35,7 +36,8 @@ in
             --gpgcheck 1 \
             --gpgkey 'https://download.docker.com/linux/centos/gpg' \
             --state "${state}"
-          if [ "${version}" != "latest" ]; then
+          if [ "${version}" != "latest" ]
+          then
             require="__yum_repo/docker-ce-stable" __package docker-ce --version "${version}" --state "${state}"
           else
             require="__yum_repo/docker-ce-stable" __package docker-ce --state "${state}"
@@ -46,7 +48,8 @@ in
         fi
     ;;
     ubuntu|debian)
-      if [ "${state}" = "present" ]; then
+      if [ "${state}" = "present" ]
+      then
         __package apt-transport-https
         __package ca-certificates
         __package gnupg2
@@ -59,7 +62,8 @@ in
          --distribution "$(cat "${__global:?}/explorer/lsb_codename")" \
          --state "${state}" \
          --component "stable"
-      if [ "${version}" != "latest" ]; then
+      if [ "${version}" != "latest" ]
+      then
         require="__apt_source/docker" __package docker-ce --version "${version}" --state "${state}"
       else
         require="__apt_source/docker" __package docker-ce --state "${state}"
@@ -83,7 +87,8 @@ in
         ;;
       esac
 
-      if [ "${state}" = "present" ]; then
+      if [ "${state}" = "present" ]
+      then
         __package apt-transport-https
         __package ca-certificates
         __package gnupg2
@@ -96,7 +101,8 @@ in
          --distribution "${distribution}" \
          --state "${state}" \
          --component "stable"
-      if [ "${version}" != "latest" ]; then
+      if [ "${version}" != "latest" ]
+      then
         require="__apt_source/docker" __package docker-ce --version "${version}" --state "${state}"
       else
         require="__apt_source/docker" __package docker-ce --state "${state}"

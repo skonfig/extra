@@ -22,6 +22,7 @@
 
 EXPORTER_VERSION_FILE="/usr/local/bin/.prometheus-jitsi-meet-exporter.skonfig.version"
 
-if [ -f "${EXPORTER_VERSION_FILE}" ]; then
+if [ -f "${EXPORTER_VERSION_FILE}" ]
+then
 	cat "${EXPORTER_VERSION_FILE}"
 fi

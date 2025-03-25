@@ -32,29 +32,35 @@ export ROOM_DIRECTORY_SERVERS=$(cat "${__object:?}/parameter/room_directory_serv
 export PRIVACY_POLICY_URL=$(cat "${__object:?}/parameter/privacy_policy_url")
 export COOKIE_POLICY_URL=$(cat "${__object:?}/parameter/cookie_policy_url")
 
-if [ -f "${__object:?}/parameter/jitsi_domain" ]; then
+if [ -f "${__object:?}/parameter/jitsi_domain" ]
+then
     export JITSI_DOMAIN=$(cat "${__object:?}/parameter/jitsi_domain")
 fi
 
-if [ -f "${__object:?}/parameter/branding_auth_header_logo_url" ]; then
+if [ -f "${__object:?}/parameter/branding_auth_header_logo_url" ]
+then
     export BRANDING_AUTH_HEADER_LOGO_URL=$(cat "${__object:?}/parameter/branding_auth_header_logo_url")
 fi
 
-if [ -f "${__object:?}/parameter/branding_auth_footer_links" ]; then
+if [ -f "${__object:?}/parameter/branding_auth_footer_links" ]
+then
     export BRANDING_AUTH_FOOTER_LINKS=$(cat "${__object:?}/parameter/branding_auth_footer_links")
 fi
 
-if [ -f "${__object:?}/parameter/homepage" ]; then
+if [ -f "${__object:?}/parameter/homepage" ]
+then
     export EMBED_HOMEPAGE=1
     homepage=$(cat "${__object:?}/parameter/homepage")
 fi
 
-if [ -f "${__object:?}/parameter/welcomepage" ]; then
+if [ -f "${__object:?}/parameter/welcomepage" ]
+then
     export EMBED_WELCOMEPAGE=1
     welcomepage=$(cat "${__object:?}/parameter/welcomepage")
 fi
 
-if [ -f "${__object:?}/parameter/custom_asset" ]; then
+if [ -f "${__object:?}/parameter/custom_asset" ]
+then
    "${__object:?}/parameter/custom_asset" | while IFS= read -r file; do
        require="__directory/${INSTALL_DIR#/}/cdist" __file "${INSTALL_DIR}/cdist/$(basename "${file}")" \
            --source "${file}" \
@@ -63,7 +69,8 @@ if [ -f "${__object:?}/parameter/custom_asset" ]; then
    done
 fi
 
-if [ -f "${__object:?}/parameter/disable_custom_urls" ]; then
+if [ -f "${__object:?}/parameter/disable_custom_urls" ]
+then
     export DISABLE_CUSTOM_URLS='true'
 else
     export DISABLE_CUSTOM_URLS='false'
@@ -92,14 +99,16 @@ require="__directory/${INSTALL_DIR#/}/cdist" __file "${INSTALL_DIR}/cdist/config
   --mode 0664 \
   --state present
 
-if [ ${EMBED_HOMEPAGE} ]; then
+if [ ${EMBED_HOMEPAGE} ]
+then
     require="__directory/${INSTALL_DIR#/}/cdist" __file "${INSTALL_DIR}/cdist/home.html" \
       --source "${homepage}" \
       --mode 0664 \
       --state present
 fi
 
-if [ ${EMBED_WELCOMEPAGE} ]; then
+if [ ${EMBED_WELCOMEPAGE} ]
+then
     require="__directory/${INSTALL_DIR#/}/cdist" __file "${INSTALL_DIR}/cdist/welcome.html" \
       --source "${welcomepage}" \
       --mode 0664 \

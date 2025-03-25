@@ -37,7 +37,8 @@ in
         ;;
 esac
 
-if [ -f "${__object:?}/parameter/rule" ]; then
+if [ -f "${__object:?}/parameter/rule" ]
+then
     ufw="${ufw} $(cat "${__object:?}/parameter/rule")"
 else
     ufw="${ufw} allow ${__object_id:?}"

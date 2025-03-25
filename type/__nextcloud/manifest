@@ -132,13 +132,16 @@ nextcloud_sum="${nextcloud_uri}.sha256"
 
 # Check if there is a current installation. It depends where the upstream
 # tarball should be unpacked (directly or moved in a later stage).
-if [ "${version_is}" ]; then
+if [ "${version_is}" ]
+then
     # Only set and check the version if a upgrade is allowed.
     #  if this block will be skipped, no upgrade will be done
-    if ! [ -f "${__object:?}/parameter/install-only" ]; then
+    if ! [ -f "${__object:?}/parameter/install-only" ]
+    then
         # Block downgrades as there are may caused from the automatic upgrader
         # if the current version is higher than the version that should be installed
-        if version_ge "${version_is}" "${version_should}"; then
+        if version_ge "${version_is}" "${version_should}"
+        then
             # it's an error if the current version is higher than the one that should be installed
             printf "The current Nextcloud version '%s' is higher than the version that should be installed (%s)\n" \
                "${version_is}" "${version_should}" >&2
@@ -147,8 +150,10 @@ if [ "${version_is}" ]; then
         fi
 
         # Block upgrades for too great Nextcloud upgrades
-        if ! [ -f "${__object:?}/parameter/disable-version-check" ]; then
-            if version_majdiff "${version_is}" "${version_should}"; then
+        if ! [ -f "${__object:?}/parameter/disable-version-check" ]
+        then
+            if version_majdiff "${version_is}" "${version_should}"
+            then
                 # error for your safety
                 printf "The new Nextcloud version '%s' is bigger than the next major release from the current release '%s'!\n" \
                    "${version_should}" "${version_is}" >&2
@@ -169,7 +174,8 @@ fi
 
 # Install/Upgrade the nextcloud version if there is a destination set.
 #  it checks if it is necessary and intended to upgrade
-if [ "${destination}" ] && [ "${version_is}" != "${version_should}" ]; then
+if [ "${destination}" ] && [ "${version_is}" != "${version_should}" ]
+then
     # download it to the tmp directory
     # FIXME --sum is currently rather a hack, see cdist#844
     __download "/tmp/nextcloud-${version_should}.tar.bz2" \

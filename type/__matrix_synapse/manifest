@@ -76,7 +76,8 @@ esac
 # Small helper used to get boolean values which can be used as-is in the
 # configuration template.
 get_boolean_for () {
-	if [ -f "${__object:?}/parameter/${1:?}" ]; then
+	if [ -f "${__object:?}/parameter/${1:?}" ]
+	then
 		echo 'true'
 	else
 		echo 'false'
@@ -89,7 +90,8 @@ is_required_when () {
 	flag=$2
 	when=$3
 
-	if [ -z "${value}" ]; then
+	if [ -z "${value}" ]
+	then
 		echo "${flag} is required when ${when}." >&2
 		exit 1
 	fi
@@ -114,16 +116,19 @@ BIND_ADDRESSES=$(cat "${__object:?}/parameter/bind-address")
 export SERVER_NAME BASE_URL REPORT_STATS MAX_UPLOAD_SIZE EXPOSE_METRICS \
 	WEB_CLIENT_URL ROOM_ENCRYPTION_POLICY BIND_ADDRESSES
 
-if [ -f "${__object:?}/parameter/enable-server-notices" ]; then
+if [ -f "${__object:?}/parameter/enable-server-notices" ]
+then
     export ENABLE_SERVER_NOTICES=1
 fi
 
 # TLS.
-if [ -f "${__object:?}/parameter/tls-cert" ]; then
+if [ -f "${__object:?}/parameter/tls-cert" ]
+then
 	TLS_CERTIFICATE_PATH=$(cat "${__object:?}/parameter/tls-cert")
 	export TLS_CERTIFICATE_PATH
 fi
-if [ -f "${__object:?}/parameter/tls-private-key" ]; then
+if [ -f "${__object:?}/parameter/tls-private-key" ]
+then
 	TLS_PRIVATE_KEY_PATH=$(cat "${__object:?}/parameter/tls-private-key")
 	export TLS_PRIVATE_KEY_PATH
 fi
@@ -133,7 +138,8 @@ GLOBAL_CACHE_FACTOR=$(cat "${__object:?}/parameter/global-cache-factor")
 EVENT_CACHE_SIZE=$(cat "${__object:?}/parameter/event-cache-size")
 export GLOBAL_CACHE_FACTOR EVENT_CACHE_SIZE
 
-if [ -f "${__object:?}/parameter/disable-presence" ]; then
+if [ -f "${__object:?}/parameter/disable-presence" ]
+then
 	export USE_PRESENCE='false'
 else
 	export USE_PRESENCE='true'
@@ -151,7 +157,8 @@ export DATABASE_ENGINE DATABASE_NAME DATABASE_HOST DATABASE_USER \
 	DATABASE_PASSWORD DATABASE_CP_MIN DATABASE_CP_MAX
 
 # LDAP-based authentication.
-if [ -f "${__object:?}/parameter/enable-ldap-auth" ]; then
+if [ -f "${__object:?}/parameter/enable-ldap-auth" ]
+then
 	ENABLE_LDAP_AUTH=$(get_boolean_for 'enable-ldap-auth')
 	export ENABLE_LDAP_AUTH
 fi
@@ -178,7 +185,8 @@ SMTP_PASSWORD=$(cat "${__object:?}/parameter/smtp-password")
 export SMTP_HOST SMTP_PORT SMTP_USER SMTP_PASSWORD SMTP_USE_STARTTLS \
 	ENABLE_NOTIFICATIONS
 
-if [ -f "${__object:?}/parameter/notification-from" ]; then
+if [ -f "${__object:?}/parameter/notification-from" ]
+then
 	NOTIFICATION_FROM=$(cat "${__object:?}/parameter/notification-from")
 	export NOTIFICATION_FROM
 else
@@ -191,21 +199,25 @@ ENABLE_REGISTRATIONS=$(get_boolean_for 'enable-registrations')
 USER_DIRECTORY_SEARCH_ALL_USERS=$(get_boolean_for 'user-directory-search-all-users')
 export ALLOW_GUEST_ACCESS ENABLE_REGISTRATIONS USER_DIRECTORY_SEARCH_ALL_USERS
 
-if [ -f "${__object:?}/parameter/registration-shared-token" ]; then
+if [ -f "${__object:?}/parameter/registration-shared-token" ]
+then
 	REGISTRATION_SHARED_SECRET=$(cat "${__object:?}/parameter/registration-shared-secret")
 	export REGISTRATION_SHARED_SECRET
 fi
 
-if [ -f "${__object:?}/parameter/registration-requires-email" ]; then
+if [ -f "${__object:?}/parameter/registration-requires-email" ]
+then
     export REGISTRATION_REQUIRES_EMAIL=1
 fi
 
-if [ -f "${__object:?}/parameter/auto-join-room" ]; then
+if [ -f "${__object:?}/parameter/auto-join-room" ]
+then
     AUTO_JOIN_ROOMS=$(cat "${__object:?}/parameter/auto-join-room")
     export AUTO_JOIN_ROOMS
 fi
 
-if [ -f "${__object:?}/parameter/registration-allows-email-pattern" ]; then
+if [ -f "${__object:?}/parameter/registration-allows-email-pattern" ]
+then
     RESGISTRATION_ALLOWS_EMAIL_PATTERN=$(cat "${__object:?}/parameter/registration-allows-email-pattern")
     export RESGISTRATION_ALLOWS_EMAIL_PATTERN
 fi
@@ -218,7 +230,8 @@ REMOTE_ROOM_COMPLEXITY_THRESHOLD=$(cat "${__object:?}/parameter/remote-room-comp
 export ALLOW_PUBLIC_ROOMS_OVER_FEDERATION ALLOW_PUBLIC_ROOMS_WITHOUT_AUTH \
 	LIMIT_REMOTE_ROOM_COMPLEXITY REMOTE_ROOM_COMPLEXITY_THRESHOLD
 
-if [ -f "${__object:?}/parameter/disable-federation" ]; then
+if [ -f "${__object:?}/parameter/disable-federation" ]
+then
 	export DISABLE_FEDERATION=1
 fi
 
@@ -240,13 +253,15 @@ export RC_MESSAGE_PER_SECOND RC_MESSAGE_BURST RC_LOGIN_PER_SECOND \
 	RC_LOGIN_BURST
 
 # Application services.
-if [ -f "${__object:?}/parameter/app-service-config-file" ]; then
+if [ -f "${__object:?}/parameter/app-service-config-file" ]
+then
 	APP_SERVICE_CONFIG_FILES=$(cat "${__object:?}/parameter/app-service-config-file")
 	export APP_SERVICE_CONFIG_FILES
 fi
 
 # Anything that did not fit in this type's template.
-if [ -f "${__object:?}/parameter/extra-setting" ]; then
+if [ -f "${__object:?}/parameter/extra-setting" ]
+then
 	EXTRA_SETTINGS=$(cat "${__object:?}/parameter/extra-setting")
 	export EXTRA_SETTINGS
 fi
@@ -255,12 +270,14 @@ fi
 TURN_USER_LIFETIME=$(cat "${__object:?}/parameter/turn-user-lifetime")
 export TURN_USER_LIFETIME
 
-if [ -f "${__object:?}/parameter/turn-shared-secret" ]; then
+if [ -f "${__object:?}/parameter/turn-shared-secret" ]
+then
 	TURN_SHARED_SECRET=$(cat "${__object:?}/parameter/turn-shared-secret")
 	export TURN_SHARED_SECRET
 fi
 
-if [ -f "${__object:?}/parameter/turn-uri" ]; then
+if [ -f "${__object:?}/parameter/turn-uri" ]
+then
 	TURN_URIS=$(cat "${__object:?}/parameter/turn-uri")
 	export TURN_URIS
 fi
@@ -268,15 +285,18 @@ fi
 # Worker-mode configuration.
 export MAIN_LISTENER_PORT=8008
 export ENABLE_MEDIA_REPO='true'
-if [ -f "${__object:?}/parameter/outbound-federation-worker" ]; then
+if [ -f "${__object:?}/parameter/outbound-federation-worker" ]
+then
 	FEDERATION_SENDER_INSTANCES=$(cat "${__object:?}/parameter/outbound-federation-worker")
 	export FEDERATION_SENDER_INSTANCES
 fi
 MAIN_LISTENER_RESOURCES="[federation,client]"
-if [ "${EXPOSE_METRICS}" = "true" ]; then
+if [ "${EXPOSE_METRICS}" = "true" ]
+then
 	MAIN_LISTENER_RESOURCES="$(echo "${MAIN_LISTENER_RESOURCES}" | tr -d ']'),metrics]"
 fi
-if [ -n "${FEDERATION_SENDER_INSTANCES}" ]; then
+if [ -n "${FEDERATION_SENDER_INSTANCES}" ]
+then
 	export SEND_FEDERATION_FROM_MAIN_PROCESS='false'
 else
 	export SEND_FEDERATION_FROM_MAIN_PROCESS='true'
@@ -287,7 +307,8 @@ ENABLE_REPLICATION=
 ENABLE_REDIS_SUPPORT='false'
 WORKER_REPLICATION_SECRET=$(cat "${__object:?}/parameter/worker-replication-secret")
 BACKGROUND_TASKS_WORKER=$(cat "${__object:?}/parameter/background-tasks-worker")
-if [ -f "${__object:?}/parameter/worker-mode" ]; then
+if [ -f "${__object:?}/parameter/worker-mode" ]
+then
 	ENABLE_REPLICATION=1
 	ENABLE_REDIS_SUPPORT='true'
 fi
@@ -315,7 +336,8 @@ esac
 # Install OS packages. We have a bit of boilerplate to handle the debian
 # backports situation.
 synapse_req=
-if [ -n "${apt_target_release}" ]; then
+if [ -n "${apt_target_release}" ]
+then
 	require="__apt_backports" __package_apt "${synapse_pkg}" \
 		--target-release "${apt_target_release}"
 	synapse_req="__package_apt/${synapse_pkg}"
@@ -324,8 +346,10 @@ else
 	synapse_req="__package/${synapse_pkg}"
 fi
 
-if [ -n "${ENABLE_LDAP_AUTH}" ]; then
-	if [ -n "${apt_target_release}" ]; then
+if [ -n "${ENABLE_LDAP_AUTH}" ]
+then
+	if [ -n "${apt_target_release}" ]
+	then
 		require="__package_apt/${synapse_pkg}" __package_apt "${ldap_auth_provider_pkg}" \
 			--target-release "${apt_target_release}"
 		else
@@ -354,7 +378,8 @@ for directory in "${DATA_DIR}" "${LOG_DIR}"; do
 done
 
 # Make dpkg-reconfigure happy on debian systems.
-if [ "${os}" = "debian" ]; then
+if [ "${os}" = "debian" ]
+then
 	require=${synapse_req} __file "${synapse_conf_dir}/conf.d/server_name.yaml" \
 		--owner ${synapse_user} \
 		--source - <<- EOF

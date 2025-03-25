@@ -34,64 +34,78 @@ in
 esac
 
 # Type parameters.
-if [ -f "${__object:?}/parameter/use-auth-secret" ]; then
+if [ -f "${__object:?}/parameter/use-auth-secret" ]
+then
     export USE_AUTH_SECRET=1
 fi
 
-if [ -f "${__object:?}/parameter/no-tls" ]; then
+if [ -f "${__object:?}/parameter/no-tls" ]
+then
     export NO_TLS=1
 fi
 
-if [ -f "${__object:?}/parameter/no-dtls" ]; then
+if [ -f "${__object:?}/parameter/no-dtls" ]
+then
     export NO_DTLS=1
 fi
 
-if [ -f "${__object:?}/parameter/static-auth-secret" ]; then
+if [ -f "${__object:?}/parameter/static-auth-secret" ]
+then
     STATIC_AUTH_SECRET=$(cat "${__object:?}/parameter/static-auth-secret")
     export STATIC_AUTH_SECRET
 fi
 
-if [ -f "${__object:?}/parameter/realm" ]; then
+if [ -f "${__object:?}/parameter/realm" ]
+then
     REALM=$(cat "${__object:?}/parameter/realm")
     export REALM
 fi
 
-if [ -f "${__object:?}/parameter/no-tcp-relay" ]; then
+if [ -f "${__object:?}/parameter/no-tcp-relay" ]
+then
     export NO_TCP_RELAY=1
 fi
 
-if [ -f "${__object:?}/parameter/no-udp-relay" ]; then
+if [ -f "${__object:?}/parameter/no-udp-relay" ]
+then
     export NO_UDP_RELAY=1
 fi
 
-if [ -f "${__object:?}/parameter/allowed-peer" ]; then
+if [ -f "${__object:?}/parameter/allowed-peer" ]
+then
     ALLOWED_PEERS=$(cat "${__object:?}/parameter/allowed-peer")
     export ALLOWED_PEERS
 fi
 
-if [ -f "${__object:?}/parameter/denied-peer" ]; then
+if [ -f "${__object:?}/parameter/denied-peer" ]
+then
     DENIED_PEERS=$(cat "${__object:?}/parameter/denied-peer")
     export DENIED_PEERS
 fi
 
-if [ -f "${__object:?}/parameter/listening-ip" ]; then
+if [ -f "${__object:?}/parameter/listening-ip" ]
+then
     LISTENING_IPS=$(cat "${__object:?}/parameter/listening-ip")
     export LISTENING_IPS
 fi
 
-if [ -f "${__object:?}/parameter/cert" ]; then
+if [ -f "${__object:?}/parameter/cert" ]
+then
     CERT=$(cat "${__object:?}/parameter/cert")
     export CERT
 fi
 
-if [ -f "${__object:?}/parameter/pkey" ]; then
+if [ -f "${__object:?}/parameter/pkey" ]
+then
     PKEY=$(cat "${__object:?}/parameter/pkey")
     export PKEY
 fi
 
-if [ -f "${__object:?}/parameter/extra-config" ]; then
+if [ -f "${__object:?}/parameter/extra-config" ]
+then
     EXTRA_CONFIG=$(cat "${__object:?}/parameter/extra-config")
-    if [ "${EXTRA_CONFIG}" = "-" ]; then
+    if [ "${EXTRA_CONFIG}" = "-" ]
+    then
         EXTRA_CONFIG=$(cat "${__object:?}/stdin")
     fi
     export EXTRA_CONFIG

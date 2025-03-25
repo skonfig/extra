@@ -54,7 +54,8 @@ WORKER_RESOURCES=$(cat "${__object:?}/parameter/resource")
 WORKER_BIND_ADDRESSES=$(cat "${__object:?}/parameter/bind-address")
 export WORKER_APP WORKER_NAME WORKER_PORT WORKER_RESOURCES WORKER_BIND_ADDRESSES
 
-if [ -f "${__object:?}/parameter/log-config" ]; then
+if [ -f "${__object:?}/parameter/log-config" ]
+then
 	WORKER_LOG_CONFIG=$(cat "${__object:?}/parameter/log-config")
 fi
 export WORKER_LOG_CONFIG
@@ -80,7 +81,8 @@ __file "/etc/systemd/system/matrix-synapse-worker@.service" \
 
 # Start service, enable at boot.
 service_req=
-if [ "${systemd_worker_service_override}" ]; then
+if [ "${systemd_worker_service_override}" ]
+then
 	service_req="__file/etc/systemd/system/matrix-synapse-worker@.service"
 fi
 require="__file/${synapse_workers_conf_dir#/}/${name}.yaml ${service_req}" \
