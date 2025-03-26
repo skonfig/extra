@@ -19,10 +19,10 @@
 #
 
 upstream=https://github.com/wish/unbound_exporter/archive
-version=$(cat "$__object/parameter/version")
-release="unbound_exporter-$version"
+version=$(cat "${__object:?}/parameter/version")
+release="unbound_exporter-${version}"
 
-cat << EOF
+cat <<EOF
 if command -v unbound_exporter
 then
     # already installed - ignoring.
@@ -30,19 +30,19 @@ then
 else
     # Initialize working directory
     workdir=\$(mktemp -d)
-    cd \$workdir
+    cd \${workdir}
 
     # Download and extract sources for requested release.
-    curl -L $upstream/v$version.tar.gz --output $release.tar.gz
-    tar xf $release.tar.gz
+    curl -L ${upstream}/v${version}.tar.gz --output ${release}.tar.gz
+    tar xf ${release}.tar.gz
 
     # Build and install binary.
-    cd $release
+    cd ${release}
     go build
     install -m755 unbound_exporter /usr/local/bin/
 
     # Clean up!
-    rm -r \$workdir
+    rm -r \${workdir}
 
     # Start service.
     service unbound_exporter start

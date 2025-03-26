@@ -126,7 +126,7 @@ EXAMPLES
 .. code-block:: sh
 
     # configure as server, bootstrap and rejoin
-    hostname="$(cat "$__global/explorer/hostname")"
+    hostname=$(cat "$__global/explorer/hostname")
     __consul_agent \
        --datacenter dc1 \
        --node-name "${hostname%%.*}" \
@@ -139,7 +139,7 @@ EXAMPLES
        --retry-join consul-03
 
     # configure as server, bootstrap and rejoin with ssl support
-    hostname="$(cat "$__global/explorer/hostname")"
+    hostname=$(cat "$__global/explorer/hostname")
     __consul_agent \
        --datacenter dc1 \
        --node-name "${hostname%%.*}" \

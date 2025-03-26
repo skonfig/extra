@@ -18,66 +18,70 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-startstate="$(cat "$__object/parameter/startstate")"
-init=$(cat "$__global/explorer/init")
+startstate=$(cat "${__object:?}/parameter/startstate")
+init=$(cat "${__global:?}/explorer/init")
 
-os=$(cat "$__global/explorer/os")
-os_version=$(cat "$__global/explorer/os_version")
+os=$(cat "${__global:?}/explorer/os")
+os_version=$(cat "${__global:?}/explorer/os_version")
 name="firewalld"
 
-case "${startstate}" in
-    present)
+case ${startstate}
+in
+    (present)
         cmd="start"
         ;;
-    absent)
+    (absent)
         cmd="stop"
         ;;
-    *)
+    (*)
         echo "Unknown startstate: ${startstate}" >&2
         exit 1
     ;;
 esac
 
-if [ "$init" = 'systemd' ]; then
+if [ "${init}" = 'systemd' ]
+then
     # this handles ALL linux distros with systemd
     # e.g. archlinux, gentoo in some cases, new RHEL and SLES versions
-    echo "systemctl \"$cmd\" \"$name\""
+    echo "systemctl \"${cmd}\" \"${name}\""
 else
-    case "$os" in
-        debian)
-            case "$os_version" in
-                [1-7]*)
-                    echo "service \"$name\" \"$cmd\""
-                ;;
-                8*)
-                    echo "systemctl \"$cmd\" \"$name\""
-                ;;
-                *)
-                    echo "Unsupported version $os_version of $os" >&2
+    case ${os}
+    in
+        (debian)
+            case ${os_version}
+            in
+                ([1-7]*)
+                    echo "service \"${name}\" \"${cmd}\""
+                    ;;
+                (8*)
+                    echo "systemctl \"${cmd}\" \"${name}\""
+                    ;;
+                (*)
+                    echo "Unsupported version ${os_version} of ${os}" >&2
                     exit 1
-                ;;
+                    ;;
             esac
-        ;;
+            ;;
 
-        gentoo)
-            echo service \"$name\" \"$cmd\"
-        ;;
+        (gentoo)
+            echo service \"${name}\" \"${cmd}\"
+            ;;
 
-        amazon|scientific|centos|fedora|owl|redhat|suse)
-            echo service \"$name\" \"$cmd\"
-        ;;
+        (amazon|scientific|centos|fedora|owl|redhat|suse)
+            echo service \"${name}\" \"${cmd}\"
+            ;;
 
-        openwrt)
-            echo "/etc/init.d/\"$name\" \"$cmd\""
-        ;;
+        (openwrt)
+            echo "/etc/init.d/\"${name}\" \"${cmd}\""
+            ;;
 
-        ubuntu)
-            echo "service \"$name\" \"$cmd\""
-        ;;
+        (ubuntu)
+            echo "service \"${name}\" \"${cmd}\""
+            ;;
 
-        *)
-           echo "Unsupported os: $os" >&2
+        (*)
+           echo "Unsupported os: ${os}" >&2
            exit 1
-        ;;
+           ;;
     esac
 fi

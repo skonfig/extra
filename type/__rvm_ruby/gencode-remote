@@ -18,29 +18,30 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-ruby="$__object_id"
-state_is="$(cat "$__object/explorer/state")"
-user="$(cat "$__object/parameter/user")"
-state_should="$(cat "$__object/parameter/state")"
+ruby=${__object_id:?}
+state_is=$(cat "${__object:?}/explorer/state")
+user=$(cat "${__object:?}/parameter/user")
+state_should=$(cat "${__object:?}/parameter/state")
 
-[ "$state_is" = "$state_should" ] && exit 0
+[ "${state_is}" = "${state_should}" ] && exit 0
 
-case "$state_should" in
-    present)
-        echo "su - \"$user\" -c \"source \\\$HOME/.rvm/scripts/rvm;"\
-            "rvm install $ruby\""
-        if [ -f "$__object/parameter/default" ]; then
-            echo "su - \"$user\" -c \"source \\\$HOME/.rvm/scripts/rvm;"\
-                "rvm use --default $ruby\""
+case ${state_should}
+in
+    (present)
+        echo "su - \"${user}\" -c \"source \\\${HOME}/.rvm/scripts/rvm;"\
+            "rvm install ${ruby}\""
+        if [ -f "${__object:?}/parameter/default" ]
+        then
+            echo "su - \"${user}\" -c \"source \\\${HOME}/.rvm/scripts/rvm;"\
+                "rvm use --default ${ruby}\""
         fi
-    ;;
-    absent)
-        echo "su - \"$user\" -c \"source \\\$HOME/.rvm/scripts/rvm;"\
-            "rvm remove $ruby\""
-    ;;
-
-    *)
-        echo "Unknown state $state_should" >&2
+        ;;
+    (absent)
+        echo "su - \"${user}\" -c \"source \\\${HOME}/.rvm/scripts/rvm;"\
+            "rvm remove ${ruby}\""
+        ;;
+    (*)
+        echo "Unknown state ${state_should}" >&2
         exit 1
-    ;;
+        ;;
 esac

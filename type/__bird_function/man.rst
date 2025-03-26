@@ -11,7 +11,7 @@ DESCRIPTION
 
 This type writes a configuration file for the bird internet routing daemon. It
 is guaranteed that all functions defined through this type will be loaded
-before any other protocol defined using the cdist __bird_xxx types. However,
+before any other protocol defined using :strong:`cdist-type__bird_xxx`\ (7). However,
 note that if two functions have a dependency, they will be loaded in
 alphabetical order, so some care may need to be taken in the naming.
 

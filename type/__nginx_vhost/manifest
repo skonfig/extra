@@ -19,54 +19,56 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global:?}"/explorer/os)"
+os=$(cat "${__global:?}"/explorer/os)
 mkdir -p "${__object:?}/files"
 
-case "$os" in
-	alpine)
+case ${os}
+in
+	(alpine)
 		__package nginx
 
 		nginx_confdir="/etc/nginx"
 		install_reqs="__package/nginx"
 
-		require="$install_reqs" __start_on_boot nginx
+		require=${install_reqs} __start_on_boot nginx
 
-		export NGINX_SITEDIR="$nginx_confdir/conf.d"
-		export NGINX_CERTDIR="$nginx_confdir/ssl"
-		export NGINX_SNIPPETSDIR="$nginx_confdir/snippets"
+		export NGINX_SITEDIR="${nginx_confdir}/conf.d"
+		export NGINX_CERTDIR="${nginx_confdir}/ssl"
+		export NGINX_SNIPPETSDIR="${nginx_confdir}/snippets"
 		export NGINX_WEBROOT="/var/www"
-		export ACME_CHALLENGE_DIR="$NGINX_WEBROOT/.well-known/acme-challenge/"
+		export ACME_CHALLENGE_DIR="${NGINX_WEBROOT}/.well-known/acme-challenge/"
 		;;
-	debian|ubuntu)
+	(debian|ubuntu)
 		__package nginx
 
 		nginx_confdir="/etc/nginx"
 		install_reqs="__package/nginx"
 
-		export NGINX_SITEDIR="$nginx_confdir/sites-enabled"
-		export NGINX_CERTDIR="$nginx_confdir/ssl"
-		export NGINX_SNIPPETSDIR="$nginx_confdir/snippets"
+		export NGINX_SITEDIR="${nginx_confdir}/sites-enabled"
+		export NGINX_CERTDIR="${nginx_confdir}/ssl"
+		export NGINX_SNIPPETSDIR="${nginx_confdir}/snippets"
 		export NGINX_WEBROOT="/var/www"
-		export ACME_CHALLENGE_DIR="$NGINX_WEBROOT/.well-known/acme-challenge/"
+		export ACME_CHALLENGE_DIR="${NGINX_WEBROOT}/.well-known/acme-challenge/"
 		;;
-	*)
-		echo "This type does not support $os yet. Aborting." >&2;
-		exit 1;
+	(*)
+		echo "This type does not support ${os} yet. Aborting." >&2
+		exit 1
+		;;
 esac
 
 # Domain
 if [ -f "${__object:?}/parameter/domain" ];
 then
-	DOMAIN="$(cat "${__object:?}/parameter/domain")"
+	DOMAIN=$(cat "${__object:?}/parameter/domain")
 else
-	DOMAIN="${__object_id:?}"
+	DOMAIN=${__object_id:?}
 fi
 export DOMAIN
 
 ALTDOMAINS=
 if [ -f "${__object:?}/parameter/altdomains" ];
 then
-	ALTDOMAINS="$(cat "${__object:?}/parameter/altdomains")"
+	ALTDOMAINS=$(cat "${__object:?}/parameter/altdomains")
 fi
 export ALTDOMAINS
 
@@ -74,7 +76,7 @@ export ALTDOMAINS
 if [ -f "${__object:?}/parameter/no-tls" ];
 then
 	TLS=
-	echo "WARNING: you have disabled TLS for vhost $DOMAIN" >&2
+	echo "WARNING: you have disabled TLS for vhost ${DOMAIN}" >&2
 else
 	TLS=ssl
 fi
@@ -101,9 +103,9 @@ export HSTS
 # Port to listen on
 if [ -f "${__object:?}/parameter/lport" ];
 then
-	LPORT="$(cat "${__object:?}/parameter/lport")"
+	LPORT=$(cat "${__object:?}/parameter/lport")
 else
-	if [ -n "$TLS" ] && [ -z "$TO_HTTPS" ];
+	if [ -n "${TLS}" ] && [ -z "${TO_HTTPS}" ];
 	then
 		LPORT=443
 	else
@@ -113,10 +115,10 @@ fi
 export LPORT
 
 # Server definition
-if [ -n "$TO_HTTPS" ];
+if [ -n "${TO_HTTPS}" ];
 then
 	# Ignore configuration, simply serve ACME challenge and redirect to HTTPS.
-	"${__type:?}/files/to-https.conf.sh" > "${__object:?}/files/vhost.conf"
+	"${__type:?}/files/to-https.conf.sh" >"${__object:?}/files/vhost.conf"
 	vhost_conf="${__object:?}/files/vhost.conf"
 elif [ -f "${__object:?}/parameter/config" ];
 then
@@ -129,34 +131,36 @@ then
 	fi
 
 	# Either use config as-in or template it in generic vhost structure.
-	if [ -f "${__object:?}/parameter/standalone-config" ]; then
-		vhost_conf=$vhost_partial
+	if [ -f "${__object:?}/parameter/standalone-config" ]
+	then
+		vhost_conf=${vhost_partial}
 	else
-		NGINX_LOGIC=$(cat "$vhost_partial") "${__type:?}/files/generic.conf.sh" \
-			> "${__object:?}/files/vhost.conf"
+		NGINX_LOGIC=$(cat "${vhost_partial}") "${__type:?}/files/generic.conf.sh" \
+			>"${__object:?}/files/vhost.conf"
 
 		vhost_conf="${__object:?}/files/vhost.conf"
 	fi
 else
 	# Default to simple static configuration.
-	"${__type:?}/files/static.conf.sh" > "${__object:?}/files/vhost.conf"
+	"${__type:?}/files/static.conf.sh" >"${__object:?}/files/vhost.conf"
 	vhost_conf="${__object:?}/files/vhost.conf"
 
-	require="$install_reqs" __directory "$NGINX_WEBROOT/$DOMAIN"
-	require="__directory$NGINX_WEBROOT/$DOMAIN" \
-		__file "$NGINX_WEBROOT/$DOMAIN/index.html" --state exists \
+	require=${install_reqs} __directory "${NGINX_WEBROOT}/${DOMAIN}"
+	require="__directory${NGINX_WEBROOT}/${DOMAIN}" \
+		__file "${NGINX_WEBROOT}/${DOMAIN}/index.html" --state exists \
 		--source "${__type:?}/files/index.html" \
 		--mode 0644
 fi
 
 # Install snippets.
-require="$install_reqs" __directory "$NGINX_SNIPPETSDIR"
-for snippet in hsts 301-to-https; do
-	require="__directory/$NGINX_SNIPPETSDIR" __file \
-		"$NGINX_SNIPPETSDIR/$snippet" --source "${__type:?}/files/$snippet"
+require=${install_reqs} __directory "${NGINX_SNIPPETSDIR}"
+for snippet in hsts 301-to-https
+do
+	require="__directory/${NGINX_SNIPPETSDIR}" __file \
+		"${NGINX_SNIPPETSDIR}/${snippet}" --source "${__type:?}/files/${snippet}"
 done
 
 # Install vhost.
-require="$install_reqs" __file "$NGINX_SITEDIR/$__object_id.conf" \
-	--source "$vhost_conf" \
+require=${install_reqs} __file "${NGINX_SITEDIR}/${__object_id:?}.conf" \
+	--source "${vhost_conf}" \
 	--mode 0644

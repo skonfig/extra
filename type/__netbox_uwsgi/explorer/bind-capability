@@ -24,6 +24,7 @@
 
 binary="/opt/netbox/venv/bin/uwsgi"
 # -v verifies if capability is set
-if setcap -q -v CAP_NET_BIND_SERVICE+ep "$binary"; then
+if setcap -q -v CAP_NET_BIND_SERVICE+ep "${binary}"
+then
     echo set
 fi

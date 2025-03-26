@@ -24,17 +24,18 @@ os=$(cat "${__global:?}/explorer/os")
 package=
 conffile=
 confdir=
-case "$os" in
-	"alpine")
+case ${os}
+in
+	(alpine)
 		package=bird
 		conffile=/etc/bird.conf
 		confdir=/etc/bird.d
-	;;
-	*)
-		printf "Your operating system (%s) is currently not supported by __bird_core\n" "$os" >&2
+		;;
+	(*)
+		printf "Your operating system (%s) is currently not supported by __bird_core\n" "${os}" >&2
 		printf "Please contribute an implementation for it if you can.\n" >&2
 		exit 1
-	;;
+		;;
 esac
 
 router_id=
@@ -46,18 +47,18 @@ fi
 log_params="syslog all"
 if [ -f "${__object:?}/parameter/log-params" ];
 then
-	log_params="$(cat "${__object:?}"/parameter/log-params)"
+	log_params=$(cat "${__object:?}"/parameter/log-params)
 fi
 
-__package "$package"
+__package "${package}"
 
-export require="__package/$package"
-__directory "$confdir"
-__file "$conffile" \
+export require="__package/${package}"
+__directory "${confdir}"
+__file "${conffile}" \
 	--mode 0640 --owner root --group bird \
-	--source - << EOF
-# $conffile - bird(1) configuration file.
-# Managed by cdist. Do not edit by hand.
+	--source - <<EOF
+# ${conffile} - bird(1) configuration file.
+# Managed by skonfig. Do not edit by hand.
 
 ${router_id}
 log ${log_params};
@@ -68,5 +69,5 @@ protocol device {
 	description "Obtain a list of device interfaces.";
 }
 
-include "$confdir/*.conf";
+include "${confdir}/*.conf";
 EOF

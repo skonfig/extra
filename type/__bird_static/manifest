@@ -21,15 +21,16 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
-	'alpine'|'debian'|'ubuntu')
+case ${os}
+in
+	(alpine|debian|ubuntu)
 		confdir=/etc/bird.d
-	;;
-	*)
-		printf "Your operating system (%s) is currently not supported by __bird_static\n" "$os" >&2
+		;;
+	(*)
+		printf "Your operating system (%s) is currently not supported by __bird_static\n" "${os}" >&2
 		printf "Please contribute an implementation for it if you can.\n" >&2
 		exit 1
-	;;
+		;;
 esac
 
 # Required parameter route is directly accessed in template.
@@ -38,12 +39,12 @@ esac
 description=
 if [ -f "${__object:?}/parameter/description" ];
 then
-	description="$(cat "${__object:?}/parameter/description")"
+	description=$(cat "${__object:?}/parameter/description")
 fi
 export description
 
 # Run template
-"${__type:?}"/files/template.sh > "${__files:?}/static-${__object_id:?}.conf"
+"${__type:?}"/files/template.sh >"${__files:?}/static-${__object_id:?}.conf"
 
 # Install resulting configuration
 __file "${confdir:?}"/static-"${__object_id:?}".conf \

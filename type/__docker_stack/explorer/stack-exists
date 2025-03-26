@@ -20,7 +20,8 @@
 # Prints "1" if a stack with the given name exists, "0" otherwise.
 #
 
-if docker stack ls | grep -q "^${__object_id:?} "; then
+if docker stack ls | grep -q "^${__object_id:?} "
+then
 	echo 1
 else
 	echo 0

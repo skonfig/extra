@@ -21,14 +21,16 @@
 #
 
 # Get the install directory
-installdir="/$__object_id"
+installdir="/${__object_id:?}"
 
 # Check if the installation directory exists
-if [ -d "$installdir" ]; then
-    cd "$installdir"
+if [ -d "${installdir}" ]
+then
+    cd "${installdir}"
 
     # if those files exist, everything should be good
-    if [ -f "occ" ] && [ -f "version.php" ]; then
+    if [ -f "occ" ] && [ -f "version.php" ]
+    then
         # Detect php version with the version file.
         # shellcheck disable=SC2016  # cause of the php inline code
         php -r 'require("version.php"); print($OC_VersionString);'

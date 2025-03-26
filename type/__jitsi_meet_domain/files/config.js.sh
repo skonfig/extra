@@ -23,7 +23,7 @@
 #
 
 # shellcheck disable=SC2034  # This is intended to be included
-JITSI_CONFIG_JS="$(cat <<EOF
+JITSI_CONFIG_JS=$(cat <<EOF
 /* eslint-disable no-unused-vars, no-var */
 
 var config = {
@@ -864,4 +864,4 @@ $(if [ -n "${VIDEO_CONSTRAINTS}" ]; then echo "${VIDEO_CONSTRAINTS},"; fi)
 
 /* eslint-enable no-unused-vars, no-var */
 EOF
-)"
+)

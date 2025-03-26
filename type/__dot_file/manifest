@@ -20,14 +20,15 @@
 
 set -eu
 
-user="$(cat "${__object}/parameter/user")"
-home="$(cat "${__object}/explorer/home")"
-primary_group="$(cat "${__object}/explorer/primary_group")"
-dirmode="$(cat "${__object}/parameter/dirmode")"
-if [ -f "${__object}/parameter/file" ]; then
-    file="$(cat "${__object}/parameter/file")"
+user=$(cat "${__object:?}/parameter/user")
+home=$(cat "${__object:?}/explorer/home")
+primary_group=$(cat "${__object:?}/explorer/primary_group")
+dirmode=$(cat "${__object:?}/parameter/dirmode")
+if [ -f "${__object:?}/parameter/file" ]
+then
+    file=$(cat "${__object:?}/parameter/file")
 else
-    file="${__object_id}"
+    file=${__object_id:?}
 fi
 
 
@@ -37,14 +38,16 @@ fi
 # it should be fixed in '__directory'?
 set --
 subpath=${file}
-while subpath="$(dirname "${subpath}")" ; do
+while subpath=$(dirname "${subpath}")
+do
 	[ "${subpath}" = . ] && break
 	set -- "${subpath}" "$@"
 done
 unset subpath
 
 export CDIST_ORDER_DEPENDENCY
-for dir ; do
+for dir
+do
 	__directory "${home}/${dir}"   \
 	    --group "${primary_group}" \
             --mode "${dirmode}" \
@@ -55,9 +58,11 @@ done
 # present, since it have been given default.
 
 set --
-for p in state mode source ; do
-	if [ -f "${__object}/parameter/${p}" ] ; then
-		value="$(cat "${__object}/parameter/${p}")"
+for p in state mode source
+do
+	if [ -f "${__object:?}/parameter/${p}" ]
+	then
+		value=$(cat "${__object:?}/parameter/${p}")
 		set -- "$@" "--${p}" "${value}"
 		unset value
 	fi
@@ -68,10 +73,11 @@ done
 #
 # It means that it is possible for __file to receive --source
 # parameter twice, but, since latest wins, it is okay.
-source="$(cat "${__object}/parameter/source")"
-if [ "${source}" = "-" ] ; then
-	set -- "$@" --source "${__object}/stdin"
+source=$(cat "${__object:?}/parameter/source")
+if [ "${source}" = "-" ]
+then
+	set -- "$@" --source "${__object:?}/stdin"
 fi
 unset source
 
-__file "${home}/${file}" --owner "$user" --group "$primary_group" "$@"
+__file "${home}/${file}" --owner "${user}" --group "${primary_group}" "$@"

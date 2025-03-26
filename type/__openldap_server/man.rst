@@ -68,7 +68,7 @@ syncrepl-searchbase
     E.g. `dc=ungleich,dc=ch`. See `slapd.conf(5)`.
 
 admin-email
-    Passed to `cdist-type__letsencrypt_cert`; has otherwise no use.
+    Passed to :strong:`cdist-type__letsencrypt_cert`\ (7); has otherwise no use.
     Required if using `__letsencrypt_cert`.
     Where to send Let's Encrypt emails like "certificate needs renewal".
 
@@ -78,8 +78,8 @@ tls-cipher-suite
     See `slapd.conf(5)`.
 
 tls-cert
-    If defined, `__letsencrypt_cert` is not used and this must be the path in
-    the remote hosts to the PEM-encoded TLS certificate.
+    If defined, :strong:`cdist-type__letsencrypt_cert`\ (7) is not used and this
+	must be the path in the remote hosts to the PEM-encoded TLS certificate.
     Requires: `tls-privkey` and `tls-ca`.
     Permissions, existence and renewal of these files are left up to the
     type's user.
@@ -93,7 +93,7 @@ tls-ca
     Path in the remote hosts to the PEM-encoded CA certificate file.
 
 extra-config
-    Custom settings to be added in `slapd.conf(5)`.
+    Custom settings to be added in :strong:`slapd.conf`\ (5).
 
 
 OPTIONAL MULTIPLE PARAMETERS
@@ -103,31 +103,31 @@ syncrepl-host
     Set once per host that will replicate the directory.
 
 module
-    LDAP module to load. See `slapd.conf(5)`. Some dependencies might have to
+    LDAP module to load. See :strong:`slapd.conf`\ (5). Some dependencies might have to
     be installed beforehand. Default value is OS-dependent, see manifest.
 
 schema
     Name of LDAP schema to load. Must be the name without extension of a
-    `.schema` file in slapd's schema directory (usually `/etc/slapd/schema` or
-    `/usr/local/etc/openldap/schema`).
-    Example value: `inetorgperson`
+    ``.schema`` file in slapd's schema directory (usually ``/etc/slapd/schema`` or
+    ``/usr/local/etc/openldap/schema``).
+    Example value: ``inetorgperson``
     The type user must ensure that the schema file is deployed.
     This defaults to a sensible subset, for details see the type definition.
 
 description
-    The description of the base DN passed in the `suffix` parameter.
-    Defaults to `Managed by cdist, do not edit manually.`
+    The description of the base DN passed in the ``suffix`` parameter.
+    Defaults to: "Managed by skonfig, do not edit manually."
 
 
 BOOLEAN PARAMETERS
 ------------------
 staging
-    Passed to `cdist-type__letsencrypt_cert`; has otherwise no use.
+    Passed to :strong:`cdist-type__letsencrypt_cert`\ (7); has otherwise no use.
     Obtain a test certificate from a staging server.
 
 replicate
     Whether to setup replication or not.
-    If present `syncrepl-credentials` and `syncrepl-host` are also required.
+    If present ``syncrepl-credentials`` and ``syncrepl-host`` are also required.
 
 
 EXAMPLES
@@ -154,7 +154,7 @@ EXAMPLES
     # objectClass: top
     # objectClass: dcObject
     # objectClass: organization
-    # o: Managed by cdist, do not edit manually.
+    # o: Managed by skonfig, do not edit manually.
     # dc: camilion
     #
     # Do not change it manually, the type will overwrite your changes.
@@ -180,7 +180,7 @@ EXAMPLES
             --syncrepl-host 'ldap-test2.ungleich.ch' \
             --description 'Ungleich LDAP server'" \
             --staging \
-            | cdist config -i - -v ${host}
+            | skonfig -i - ${host}
         id=$((id + 1))
     done
 

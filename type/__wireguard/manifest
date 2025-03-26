@@ -18,24 +18,24 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global:?}"/explorer/os)"
+os=$(cat "${__global:?}"/explorer/os)
 
-case $os in
-	'alpine')
-		:
+case ${os}
+in
+	(alpine)
 		;;
-	*)
-		echo "This type has no implementation for $os. Aborting." >&2
-		exit 1;
+	(*)
+		echo "This type has no implementation for ${os}. Aborting." >&2
+		exit 1
 		;;
 esac
 
 __package "wireguard-tools-wg"
 
 # Template configuration
-private_key="$(cat "${__object:?}/parameter/privkey")"
+private_key=$(cat "${__object:?}/parameter/privkey")
 
-WG_ADDRESS="$(cat "${__object:?}/parameter/address")"
+WG_ADDRESS=$(cat "${__object:?}/parameter/address")
 WG_IFACE="${__object_id:?}"
 
 export WG_IFACE
@@ -44,12 +44,12 @@ export WG_ADDRESS
 WG_PORT=
 if [ -f "${__object:?}/parameter/port" ];
 then
-	WG_PORT="$(cat "${__object:?}/parameter/port")"
+	WG_PORT=$(cat "${__object:?}/parameter/port")
 fi
 export WG_PORT
 
 mkdir -p "${__object:?}/files/"
-"${__type:?}/files/wireguard.conf.sh" "$private_key" > "${__object:?}/files/wg-${__object_id:?}.conf"
+"${__type:?}/files/wireguard.conf.sh" "${private_key}" >"${__object:?}/files/wg-${__object_id:?}.conf"
 
 # Wireguard configuration. Configured using a block as it is also edited by
 # cdist-type__wireguard_peer(7).
@@ -67,7 +67,7 @@ __line source-interfaces \
 	--line 'source-directory /etc/network/interfaces.d/' \
 	--file '/etc/network/interfaces'
 
-"${__type:?}/files/interface.conf.sh" > "${__object:?}/files/iif-${__object_id:?}.conf"
+"${__type:?}/files/interface.conf.sh" >"${__object:?}/files/iif-${__object_id:?}.conf"
 require="__directory/etc/network/interfaces.d __line/source-interfaces __block/${__object_id:?}" \
 	__file "/etc/network/interfaces.d/${__object_id:?}.conf" \
 	--source "${__object:?}/files/iif-${__object_id:?}.conf" \

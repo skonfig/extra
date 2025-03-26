@@ -8,7 +8,7 @@ cdist-type__rbenv - Manage rbenv installation
 
 DESCRIPTION
 -----------
-This cdist type allows you to manage rbenv installations.
+This type allows you to manage rbenv installations.
 It also installs ruby-build.
 
 

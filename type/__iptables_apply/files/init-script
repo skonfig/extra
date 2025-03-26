@@ -18,7 +18,7 @@
 # 2013 Nico Schottelius (nico-cdist at schottelius.org)
 # 2020 Matthias Stecher (matthiasstecher at gmx.de)
 #
-# This file is distributed with cdist and licenced under the
+# This file is distributed with skonfig-extra and licenced under the
 # GNU GPLv3+ WITHOUT ANY WARRANTY.
 
 
@@ -37,7 +37,7 @@ gothrough() {
         echo "Appling iptables rule $rule ..."
 
         # execute it with all commands specificed
-        ruleparam="$(cat "$rule")"
+        ruleparam=$(cat "$rule")
         for cmd in "$@"; do
             # Command and Rule should be split.
             # shellcheck disable=SC2046
@@ -57,8 +57,9 @@ basedir=/etc/iptables.d
 status4="${basedir}/.pre-start"
 status6="${basedir}/.pre-start6"
 
-case $1 in
-    start)
+case $1
+in
+    (start)
         # Save status
         iptables-save > "$status4"
         ip6tables-save > "$status6"
@@ -68,9 +69,9 @@ case $1 in
         #gothrough "$basedir/v4"  iptables  # conflicts with $basedir
         gothrough "$basedir/v6"  ip6tables
         gothrough "$basedir/all" iptables  ip6tables
-    ;;
+        ;;
 
-    stop)
+    (stop)
         # Restore from status before, if there is something to restore
         if [ -f "$status4" ]; then
             iptables-restore < "$status4"
@@ -78,11 +79,11 @@ case $1 in
         if [ -f "$status6" ]; then
             ip6tables-restore < "$status6"
         fi
-    ;;
-    restart)
+        ;;
+    (restart)
         "$0" stop &&  "$0" start
-    ;;
-    reset)
+        ;;
+    (reset)
         for table in INPUT FORWARD OUTPUT; do
             iptables -P "$table" ACCEPT
             iptables -F "$table"
@@ -91,5 +92,5 @@ case $1 in
             iptables -t nat -P "$table" ACCEPT
             iptables -t nat -F "$table"
         done
-    ;;
+        ;;
 esac

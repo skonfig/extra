@@ -18,6 +18,7 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-if grep -qE "^__file/etc/nginx" "${__messages_in}"; then
+if grep -q "^__file/etc/nginx" "${__messages_in:?}"
+then
 	echo "service nginx reload"
 fi

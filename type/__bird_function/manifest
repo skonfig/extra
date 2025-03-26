@@ -21,21 +21,22 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
-'alpine'|'debian'|'ubuntu')
-	confdir=/etc/bird.d
-	;;
-*)
-	printf "Your operating system (%s) is currently not supported by __bird_filter\n" "$os" >&2
-	printf "Please contribute an implementation for it if you can.\n" >&2
-	exit 1
-	;;
+case ${os}
+in
+	(alpine|debian|ubuntu)
+		confdir=/etc/bird.d
+		;;
+	(*)
+		printf "Your operating system (%s) is currently not supported by __bird_filter\n" "${os}" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+		;;
 esac
 
 # Functions start with 0 because bird loads the config in alphanumerical order
 # and we need them to be defined to be used in the rest of the stuff.
-__file "$confdir/0-function-${__object_id:?}.conf" \
+__file "${confdir}/0-function-${__object_id:?}.conf" \
 	--owner root --group bird --mode 0640 \
-	--source - << EOF
+	--source - <<EOF
 $(cat "${__object:?}"/stdin)
 EOF

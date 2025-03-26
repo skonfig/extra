@@ -19,76 +19,81 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-old_version="$(cat "$__object/explorer/version")"
-VERSION=$(cat "$__object/parameter/version")
+old_version=$(cat "${__object:?}/explorer/version")
+VERSION=$(cat "${__object:?}/parameter/version")
 
-src="netbox-$VERSION"
-archive="v$VERSION.tar.gz"
-url="https://github.com/netbox-community/netbox/archive/$archive"
+src="netbox-${VERSION}"
+archive="v${VERSION}.tar.gz"
+url="https://github.com/netbox-community/netbox/archive/${archive}"
 install_dir=/opt/netbox/netbox
 
-if [ "$VERSION" != "$old_version" ]; then
-    cat << EOF
+if [ "${VERSION}" != "${old_version}" ]
+then
+    cat <<EOF
 # Ensure that coreutils is installed.
-if [ ! -x \$(which mktemp) ]; then
+if [ ! -x \$(which mktemp) ]
+then
   echo "mktemp is not available on the remote host." >&2
   exit 1
 fi
 
 # Create temporary working directory.
 tmpdir=\$(mktemp -d)
-cd "\$tmpdir"
+cd "\${tmpdir}"
 
 # Download and extract sources.
-curl -sS -L '$url' > '$archive'
-tar xf '$archive'
+curl -sS -L '${url}' >'${archive}'
+tar xf '${archive}'
 
 
 # virtualenv is given already by __pyvenv, just using it
 
 # backup requirement files
-if [ -f /opt/netbox/requirements.txt ]; then
+if [ -f /opt/netbox/requirements.txt ]
+then
     mv /opt/netbox/requirements.txt /opt/netbox/old-requirements.txt
 else
     # preseve file-not-found errors and warnings
     touch /opt/netbox/old-requirements.txt
 fi
-cp '$src/requirements.txt' /opt/netbox/
+cp '${src}/requirements.txt' /opt/netbox/
 
 # Uninstall packages not required anymore
 # if versions not be shortend, they will be ignored by pip, but not by comm
 # all of this could be done with grep, too, but it's still must be shortend with awk
-awk -F== '{print \$1}' '/opt/netbox/requirements.txt' | sort > "\$tmpdir/curr-reqs.txt"
-awk -F== '{print \$1}' '/opt/netbox/old-requirements.txt' | sort > "\$tmpdir/old-reqs.txt"
-comm -23 "\$tmpdir/old-reqs.txt" "\$tmpdir/curr-reqs.txt" > "\$tmpdir/pip-uninstall.txt"
+awk -F== '{print \$1}' '/opt/netbox/requirements.txt' | sort >"\${tmpdir}/curr-reqs.txt"
+awk -F== '{print \$1}' '/opt/netbox/old-requirements.txt' | sort >"\${tmpdir}/old-reqs.txt"
+comm -23 "\${tmpdir}/old-reqs.txt" "\${tmpdir}/curr-reqs.txt" >"\${tmpdir}/pip-uninstall.txt"
 
 # only uninstall if something is available (to avoid errors cause of this)
-if [ -s "\$tmpdir/pip-uninstall.txt" ]; then
-    /opt/netbox/venv/bin/pip3 uninstall -qy -r "\$tmpdir/pip-uninstall.txt"
+if [ -s "\${tmpdir}/pip-uninstall.txt" ]
+then
+    /opt/netbox/venv/bin/pip3 uninstall -qy -r "\${tmpdir}/pip-uninstall.txt"
 fi
 
 # Install python dependencies.
 #  avoid gunicorn, because it will be done in an other type
-grep -v "^gunicorn==" "\$tmpdir/$src/requirements.txt" \
-    > "\$tmpdir/$src/requirements.txt.new"
-/opt/netbox/venv/bin/pip3 install -q -r "\$tmpdir/$src/requirements.txt.new"
+grep -v "^gunicorn==" "\${tmpdir}/${src}/requirements.txt" \
+    >"\${tmpdir}/${src}/requirements.txt.new"
+/opt/netbox/venv/bin/pip3 install -q -r "\${tmpdir}/${src}/requirements.txt.new"
 
 EOF
 
-    if [ -f "$__object/parameter/ldap-server" ]; then
+    if [ -f "${__object:?}/parameter/ldap-server" ]
+    then
         echo "/opt/netbox/venv/bin/pip3 install -q django-auth-ldap"
     else
         echo "/opt/netbox/venv/bin/pip3 uninstall -qy django-auth-ldap"
     fi
 
-    cat << EOF
+    cat <<EOF
 
 # Deploy sources and restore configuration.
-rm -rf '$install_dir'
-cp -r '$src/netbox' '$install_dir'
+rm -rf '${install_dir}'
+cp -r '${src}/netbox' '${install_dir}'
 # force links to the cdist directory
-ln -fs /opt/netbox/cdist/configuration.py '$install_dir/netbox/configuration.py'
-ln -fs /opt/netbox/cdist/ldap_config.py '$install_dir/netbox/ldap_config.py'
+ln -fs /opt/netbox/cdist/configuration.py '${install_dir}/netbox/configuration.py'
+ln -fs /opt/netbox/cdist/ldap_config.py '${install_dir}/netbox/ldap_config.py'
 
 # Set final permissions.
 chown -R netbox /opt/netbox
@@ -106,33 +111,35 @@ sudo -u netbox /opt/netbox/venv/bin/python3 /opt/netbox/netbox/manage.py clearse
 
 # Remove temporary working directory.
 cd /
-rm -rf "\$tmpdir"
+rm -rf "\${tmpdir}"
 
 # Save version after successful installation
-printf "%s\\n" "$VERSION" > /opt/netbox/cdist/version
+printf "%s\\n" "${VERSION}" >/opt/netbox/cdist/version
 
 EOF
 
     # meta
-    printf "installed %s\n" "$VERSION" >> "$__messages_out"
+    printf "installed %s\n" "${VERSION}" >>"${__messages_out:?}"
     changes=yes
 fi
 
 # check if configuration changed
-if grep -q "^__file/opt/netbox/" "$__messages_in"; then
+if grep -q "^__file/opt/netbox/" "${__messages_in:?}"
+then
     # meta
-    printf "configured\n" >> "$__messages_out"
+    printf "configured\n" >>"${__messages_out:?}"
     changes=yes
 fi
 
 
 # Check for changes
-if [ "$changes" = "yes" ]; then
+if [ "${changes}" = "yes" ]
+then
     # After the upstream upgrade.sh script, it's ok to migrate while the
     # application is running ;)
 
     # restarting after changes
-    cat << EOF
+    cat <<EOF
 # Restart service. All required services are included with netbox.service.
 systemctl restart netbox
 EOF

@@ -19,13 +19,13 @@
 #
 
 service="consul"
-state="$(cat "$__object/parameter/state")"
+state=$(cat "${__object:?}/parameter/state")
 
-case "$state" in
-   present)
-      :
-   ;;
-   absent)
-      echo "service $service stop || true"
-   ;;
+case ${state}
+in
+   (present)
+      ;;
+   (absent)
+      echo "service ${service} stop || true"
+      ;;
 esac

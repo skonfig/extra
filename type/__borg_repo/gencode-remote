@@ -21,22 +21,23 @@
 passphrase=
 appendonly=
 
-case "$(cat "${__object:?}/parameter/encryption")" in
-	none)
+case $(cat "${__object:?}/parameter/encryption")
+in
+	(none)
 		enc=none
 		;;
-	repokey)
+	(repokey)
 		enc=repokey
 		if [ -f "${__object:?}/parameter/passphrase" ];
 		then
-			passphrase="$(cat "${__object:?}/parameter/passphrase")"
+			passphrase=$(cat "${__object:?}/parameter/passphrase")
 		else
 			echo "__borg_repo cannot use repokey encryption with no passphrase. Aborting." >&2;
 			exit 1;
 		fi
 		;;
-	*)
-		echo "$enc is not a known encryption mode for __borg_repo. Aborting." >&2
+	(*)
+		echo "${enc} is not a known encryption mode for __borg_repo. Aborting." >&2
 		exit 1;
 esac
 
@@ -50,10 +51,10 @@ then
 	doas="sudo -u '$(cat "${__object:?}/parameter/owner")'"
 fi
 
-cat <<- EOF
+cat <<-EOF
 	set -x
-	if [ ! -d "/${__object_id:?}" ]; then
-		$doas BORG_NEW_PASSPHRASE=$passphrase borg init -e ${enc:?} $appendonly /${__object_id:?}
+	if [ ! -d "/${__object_id:?}" ]
+	then
+		${doas} BORG_NEW_PASSPHRASE=${passphrase} borg init -e ${enc:?} ${appendonly} /${__object_id:?}
 	fi
 EOF
-

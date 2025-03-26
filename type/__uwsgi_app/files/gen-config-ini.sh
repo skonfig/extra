@@ -125,14 +125,14 @@ done <<EOF
 $(printf '%s\n' "${_PARAMS}" | sort -t ' ' -k 1)
 EOF
 
-# socket = $apphome/uwsgi.sock
-# chdir = $apphome
-# wsgi-file = $projectname/wsgi.py
-# touch-reload = $projectname/wsgi.py
+# socket = ${apphome}/uwsgi.sock
+# chdir = ${apphome}
+# wsgi-file = ${projectname}/wsgi.py
+# touch-reload = ${projectname}/wsgi.py
 # processes = 4
 # threads = 2
 # chmod-socket = 666
 # daemonize=true
 # vacuum = true
-# uid = $user
-# gid = $user
+# uid = ${user}
+# gid = ${user}

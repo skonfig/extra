@@ -20,11 +20,13 @@
 # Retrieve the md5sum of a file to be created, if it is already existing.
 #
 
-destination="/$__object_id"
+destination="/${__object_id:?}"
 
-if [ -e "$destination" ]; then
-    if [ -f  "$destination" ]; then
-        cksum < "$destination"
+if [ -e "${destination}" ]
+then
+    if [ -f "${destination}" ]
+    then
+        cksum <"${destination}"
     else
         echo "NO REGULAR FILE"
     fi

@@ -8,7 +8,7 @@ cdist-type__mail_alias - Manage mail aliases.
 
 DESCRIPTION
 -----------
-This cdist type allows you to configure mail aliases (/etc/aliases).
+This type allows you to configure mail aliases (``/etc/aliases``).
 
 
 REQUIRED PARAMETERS

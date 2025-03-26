@@ -8,7 +8,7 @@ cdist-type__keyboard - Set keyboard layout
 
 DESCRIPTION
 -----------
-This cdist type allows you to modify keyboard layout.
+This type allows you to modify keyboard layout.
 
 
 REQUIRED PARAMETERS

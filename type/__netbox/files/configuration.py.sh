@@ -21,7 +21,7 @@
 # Generate contents of configuration.py.
 #
 
-cat << EOF
+cat <<EOF
 #########################
 #                       #
 #   Required settings   #
@@ -32,16 +32,16 @@ cat << EOF
 # access to the server via any other hostnames. The first FQDN in the list will be treated as the preferred name.
 #
 # Example: ALLOWED_HOSTS = ['netbox.example.com', 'netbox.internal.local']
-ALLOWED_HOSTS = [$ALLOWED_HOSTS ]
+ALLOWED_HOSTS = [${ALLOWED_HOSTS}]
 
 # PostgreSQL database configuration. See the Django documentation for a complete list of available parameters:
 #   https://docs.djangoproject.com/en/stable/ref/settings/#databases
 DATABASE = {
-    'NAME': '$DATABASE_NAME', # Database name
-    'USER': '$DATABASE_USER', # PostgreSQL username
-    'PASSWORD': '$DATABASE_PASSWORD', # PostgreSQL password
-    'HOST': '$DATABASE_HOST', # Database server
-    'PORT': '$DATABASE_PORT', # Database port (leave blank for default)
+    'NAME': '${DATABASE_NAME}', # Database name
+    'USER': '${DATABASE_USER}', # PostgreSQL username
+    'PASSWORD': '${DATABASE_PASSWORD}', # PostgreSQL password
+    'HOST': '${DATABASE_HOST}', # Database server
+    'PORT': '${DATABASE_PORT}', # Database port (leave blank for default)
     'CONN_MAX_AGE': 300,      # Max database connection age
 }
 
@@ -50,24 +50,24 @@ DATABASE = {
 # to use two separate database IDs.
 REDIS = {
     'tasks': {
-        'HOST': '$REDIS_HOST',
-        'PORT': $REDIS_PORT,
+        'HOST': '${REDIS_HOST}',
+        'PORT': ${REDIS_PORT},
         # Comment out \`HOST\` and \`PORT\` lines and uncomment the following if using Redis Sentinel
         # 'SENTINELS': [('mysentinel.redis.example.com', 6379)],
         # 'SENTINEL_SERVICE': 'netbox',
-        'PASSWORD': '$REDIS_PASSWORD',
+        'PASSWORD': '${REDIS_PASSWORD}',
         'DATABASE': $((REDIS_DBID_OFFSET + 0)),
-        'SSL': $REDIS_SSL,
+        'SSL': ${REDIS_SSL},
     },
     'caching': {
-        'HOST': '$REDIS_HOST',
-        'PORT': $REDIS_PORT,
+        'HOST': '${REDIS_HOST}',
+        'PORT': ${REDIS_PORT},
         # Comment out \`HOST\` and \`PORT\` lines and uncomment the following if using Redis Sentinel
         # 'SENTINELS': [('mysentinel.redis.example.com', 6379)],
         # 'SENTINEL_SERVICE': 'netbox',
-        'PASSWORD': '$REDIS_PASSWORD',
+        'PASSWORD': '${REDIS_PASSWORD}',
         'DATABASE': $((REDIS_DBID_OFFSET + 1)),
-        'SSL': $REDIS_SSL,
+        'SSL': ${REDIS_SSL},
     }
 }
 RQ_DEFAULT_TIMEOUT = 300
@@ -76,7 +76,7 @@ RQ_DEFAULT_TIMEOUT = 300
 # For optimal security, SECRET_KEY should be at least 50 characters in length and contain a mix of letters, numbers, and
 # symbols. NetBox will not run without this defined. For more information, see
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-SECRET_KEY
-SECRET_KEY = '$SECRET_KEY'
+SECRET_KEY = '${SECRET_KEY}'
 
 
 #########################
@@ -106,7 +106,7 @@ BANNER_LOGIN = ''
 
 # Base URL path if accessing NetBox within a directory. For example, if installed at http://example.com/netbox/, set:
 # BASE_PATH = 'netbox/'
-BASE_PATH = '$BASEPATH'
+BASE_PATH = '${BASEPATH}'
 
 # Cache timeout in seconds. Set to 0 to dissable caching. Defaults to 900 (15 minutes)
 CACHE_TIMEOUT = 900
@@ -132,14 +132,14 @@ DEBUG = False
 
 # Email settings
 EMAIL = {
-    'SERVER': '$SMTP_HOST',
-    'PORT': $SMTP_PORT,
-    'USERNAME': '$SMTP_USER',
-    'PASSWORD': '$SMTP_PASSWORD',
-    'USE_SSL': $SMTP_USE_SSL,
-    'USE_TLS': $SMTP_USE_TLS,
+    'SERVER': '${SMTP_HOST}',
+    'PORT': ${SMTP_PORT},
+    'USERNAME': '${SMTP_USER}',
+    'PASSWORD': '${SMTP_PASSWORD}',
+    'USE_SSL': ${SMTP_USE_SSL},
+    'USE_TLS': ${SMTP_USE_TLS},
     'TIMEOUT': 10,  # seconds
-    'FROM_EMAIL': '$SMTP_FROM_EMAIL',
+    'FROM_EMAIL': '${SMTP_FROM_EMAIL}',
 }
 
 # Enforcement of unique IP space can be toggled on a per-VRF basis. To enforce unique IP space within the global table
@@ -156,27 +156,30 @@ EXEMPT_VIEW_PERMISSIONS = [
 
 EOF
 
-if [ "$HTTP_PROXY" != "" ] || [ "$HTTPS_PROXY" != "" ]; then
-    cat << EOF
+if [ "${HTTP_PROXY}" != "" ] || [ "${HTTPS_PROXY}" != "" ]
+then
+    cat <<EOF
 # HTTP proxies NetBox should use when sending outbound HTTP requests (e.g. for webhooks).
 HTTP_PROXIES = {
 EOF
-    if [ "$HTTP_PROXY" != "" ]; then
-        cat << EOF
-    'http': '$HTTP_PROXY',
+    if [ "${HTTP_PROXY}" != "" ]
+    then
+        cat <<EOF
+    'http': '${HTTP_PROXY}',
 EOF
     fi
-    if [ "$HTTPS_PROXY" != "" ]; then
-        cat << EOF
-    'https': '$HTTPS_PROXY',
+    if [ "${HTTPS_PROXY}" != "" ]
+    then
+        cat <<EOF
+    'https': '${HTTPS_PROXY}',
 EOF
     fi
-    cat << EOF
+    cat <<EOF
 }
 EOF
 fi
 
-cat << EOF
+cat <<EOF
 # IP addresses recognized as internal to the system. The debugging toolbar will be available only to clients accessing
 # NetBox from an internal IP.
 INTERNAL_IPS = ('127.0.0.1', '::1')
@@ -187,7 +190,7 @@ LOGGING = {}
 
 # Setting this to True will permit only authenticated users to access any part of NetBox. By default, anonymous users
 # are permitted to access most data in NetBox (excluding secrets) but not make any changes.
-LOGIN_REQUIRED = $LOGIN_REQUIRED
+LOGIN_REQUIRED = ${LOGIN_REQUIRED}
 
 # The length of time (in seconds) for which a user will remain logged into the web UI before being prompted to
 # re-authenticate. (Default: 1209600 [14 days])
@@ -203,16 +206,17 @@ MAX_PAGE_SIZE = 1000
 
 EOF
 
-if [ "$MEDIA_ROOT" != "" ]; then
-    cat << EOF
+if [ "${MEDIA_ROOT}" != "" ]
+then
+    cat <<EOF
 # The file path where uploaded media such as image attachments are stored. A trailing slash is not needed. Note that
 # the default value of this setting is derived from the installed location.
-MEDIA_ROOT = '$MEDIA_ROOT'
+MEDIA_ROOT = '${MEDIA_ROOT}'
 
 EOF
 fi
 
-cat << EOF
+cat <<EOF
 # By default uploaded media is stored on the local filesystem. Using Django-storages is also supported. Provide the
 # class path of the storage driver in STORAGE_BACKEND and any configuration options in STORAGE_CONFIG. For example:
 # STORAGE_BACKEND = 'storages.backends.s3boto3.S3Boto3Storage'
@@ -262,21 +266,22 @@ RACK_ELEVATION_DEFAULT_UNIT_WIDTH = 220
 
 EOF
 
-if [ "$USE_LDAP" ]; then
-    cat << EOF
+if [ "${USE_LDAP}" ]
+then
+    cat <<EOF
 # Remote authentication support with ldap
 REMOTE_AUTH_ENABLED = True
 REMOTE_AUTH_BACKEND = 'netbox.authentication.LDAPBackend'
 EOF
 else
-    cat << EOF
+    cat <<EOF
 # Remote authentication support
 REMOTE_AUTH_ENABLED = False
 REMOTE_AUTH_BACKEND = 'netbox.authentication.RemoteUserBackend'
 EOF
 fi
 
-cat << EOF
+cat <<EOF
 REMOTE_AUTH_HEADER = 'HTTP_REMOTE_USER'
 REMOTE_AUTH_AUTO_CREATE_USER = True
 REMOTE_AUTH_DEFAULT_GROUPS = []
@@ -290,37 +295,40 @@ RELEASE_CHECK_TIMEOUT = 24 * 3600
 
 EOF
 
-if [ "$UPDATE_CHECK" != "" ]; then
-    cat << EOF
+if [ "${UPDATE_CHECK}" != "" ]
+then
+    cat <<EOF
 RELEASE_CHECK_URL = 'https://api.github.com/repos/netbox-community/netbox/releases'
 
 EOF
 else
-    cat << EOF
+    cat <<EOF
 RELEASE_CHECK_URL = None
 
 EOF
 fi
 
-if [ "$REPORTS_ROOT" != "" ]; then
-    cat << EOF
+if [ "${REPORTS_ROOT}" != "" ]
+then
+    cat <<EOF
 # The file path where custom reports will be stored. A trailing slash is not needed. Note that the default value of
 # this setting is derived from the installed location.
-REPORTS_ROOT = '$REPORTS_ROOT'
+REPORTS_ROOT = '${REPORTS_ROOT}'
 
 EOF
 fi
 
-if [ "$SCRIPTS_ROOT" != "" ]; then
-    cat << EOF
+if [ "${SCRIPTS_ROOT}" != "" ]
+then
+    cat <<EOF
 # The file path where custom scripts will be stored. A trailing slash is not needed. Note that the default value of
 # this setting is derived from the installed location.
-SCRIPTS_ROOT = '$SCRIPTS_ROOT'
+SCRIPTS_ROOT = '${SCRIPTS_ROOT}'
 
 EOF
 fi
 
-cat << EOF
+cat <<EOF
 # By default, NetBox will store session data in the database. Alternatively, a file path can be specified here to use
 # local file storage instead. (This can be useful for enabling authentication on a standby instance with read-only
 # database access.) Note that the user as which NetBox runs must have read and write permissions to this path.

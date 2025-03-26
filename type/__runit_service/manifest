@@ -18,27 +18,29 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global}/explorer/os")"
-case "${os}" in
-	debian|devuan)
+os=$(cat "${__global:?}/explorer/os")
+case ${os}
+in
+	(debian|devuan)
 		svdir="/etc/service"
-	;;
-	*bsd)
+		;;
+	(*bsd)
 		svdir="/var/service"
-	;;
-	*)
+		;;
+	(*)
 		echo "Your OS '${OS}' is currently not supported." >&2
 		exit 1
-	;;
+		;;
 esac
 
-sv="${__object_id}"
-state="$(cat "${__object}/parameter/state")"
+sv=${__object_id:?}
+state=$(cat "${__object:?}/parameter/state")
 run_file="${svdir}/${sv}/run"
 
-source="$(cat "$__object/parameter/source")"
-if [ "$source" = "-" ]; then
-	source="$__object/stdin"
+source=$(cat "${__object:?}/parameter/source")
+if [ "${source}" = "-" ]
+then
+	source="${__object:?}/stdin"
 fi
 
 # Create this service's directory
@@ -46,12 +48,14 @@ __directory --state "${state}" "${svdir}/${sv}"
 
 export require="__directory${svdir}/${sv}"
 
-if [ "${state}" != "present" ]; then
+if [ "${state}" != "present" ]
+then
 	# We are done here, the service gets removed
 	exit
 fi
 
-if [ -f "${__object}/parameter/log" ]; then
+if [ -f "${__object:?}/parameter/log" ]
+then
 	# Setup logger if requested
 	__directory --parents "${svdir}/${sv}/log/main"
 	export require="${require} __directory${svdir}/${sv}/log/main"

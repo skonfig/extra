@@ -8,7 +8,7 @@ cdist-type__firewalld_start - start and enable firewalld
 
 DESCRIPTION
 -----------
-This cdist type allows you to start and enable firewalld.
+This type allows you to start and enable firewalld.
 
 
 REQUIRED PARAMETERS

@@ -95,7 +95,7 @@ validation
       del-script
          Executable script that deletes a TXT record.
 
-   Methods and parameters are specified as a single cdist parameter, e.g.:
+   Methods and parameters are specified as a single parameter, e.g.:
 
    - ``--validation http-01:webroot=/var/www``
    - ``--validation dns-01:add-script=/usr/local/bin/dns-add,del-script=/usr/local/bin/dns-del``
@@ -123,7 +123,7 @@ SEE ALSO
 
 AUTHORS
 -------
-Dennis Camera <skonfig--@--dtnr.ch>
+Dennis Camera <dennis.camera--@--riiengineering.ch>
 
 
 COPYING

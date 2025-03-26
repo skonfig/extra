@@ -20,7 +20,7 @@
 # Generate contents of netbox.service.
 #
 
-cat << EOF
+cat <<EOF
 [Unit]
 Description=Netbox uWSGI WSGI Service
 Documentation=https://netbox.readthedocs.io/en/stable/
@@ -29,11 +29,12 @@ Requires=netbox-rq.service
 EOF
 
 # Add dependency to own socket
-if [ "$(cat "$__object/files/systemd_socket")" = "yes" ]; then
+if [ "$(cat "${__object:?}/files/systemd_socket")" = "yes" ]
+then
     echo "Requires=uwsgi-netbox.socket"
 fi
 
-cat << EOF
+cat <<EOF
 Wants=network.target
 After=netbox.service
 After=network.target

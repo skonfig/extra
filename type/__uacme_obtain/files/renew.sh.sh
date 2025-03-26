@@ -21,7 +21,7 @@
 # Generate contents for renew.sh.
 #
 
-cat << EOF
+cat <<EOF
 #!/bin/sh
 
 UACME_CHALLENGE_PATH=${CHALLENGEDIR:?}
@@ -37,13 +37,14 @@ uacme -c ${CONFDIR:?} -h ${HOOKSCRIPT:?} ${DISABLE_OCSP?} ${MUST_STAPLE?} ${KEYT
 status=\$?
 
 # All is well: we can stop now.
-if [ \$status -eq 1 ];
+if [ \${status} -eq 1 ];
 then
 	exit 0
 fi
 
 # An error occured.
-if [ \$status -eq 2 ]; then
+if [ \${status} -eq 2 ]
+then
 	echo "Failed to renew certificate - exiting." >&2
 	exit 1
 fi
@@ -52,7 +53,7 @@ EOF
 # Re-deploy, if needed.
 if [ -n "${KEY_TARGET?}" ] && [ -n "${CERT_TARGET?}" ];
 then
-cat << EOF
+cat <<EOF
 
 # Deploy newly issued certificate.
 set -e
@@ -62,7 +63,8 @@ KEY_SOURCE=${CONFDIR:?}/private/${MAIN_DOMAIN:?}/key.pem
 
 mkdir -p -- $(dirname "${CERT_TARGET?}") $(dirname "${KEY_TARGET?}")
 
-if ! cmp \${CERT_SOURCE:?} ${CERT_TARGET?} >/dev/null 2>&1; then
+if ! cmp \${CERT_SOURCE:?} ${CERT_TARGET?} >/dev/null 2>&1
+then
 	install -m 0640 \${KEY_SOURCE:?} ${KEY_TARGET?}
 	install -m 0644 \${CERT_SOURCE:?} ${CERT_TARGET?}
 	chown ${OWNER?} ${KEY_TARGET?} ${CERT_TARGET?}

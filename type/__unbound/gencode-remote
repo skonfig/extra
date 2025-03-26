@@ -26,13 +26,15 @@ fi
 
 UNBOUND_CERTS_DIR=/etc/unbound
 
-if [ -f "${__object:?}/parameter/enable-rc" ]; then
-	echo "unbound-control-setup -d $UNBOUND_CERTS_DIR"
-	echo "chown unbound:unbound $UNBOUND_CERTS_DIR/*.pem $UNBOUND_CERTS_DIR/*.key"
+if [ -f "${__object:?}/parameter/enable-rc" ]
+then
+	echo "unbound-control-setup -d ${UNBOUND_CERTS_DIR}"
+	echo "chown unbound:unbound ${UNBOUND_CERTS_DIR}/*.pem ${UNBOUND_CERTS_DIR}/*.key"
 fi
 
-cat << EOF
-if pgrep unbound; then
+cat <<EOF
+if pgrep unbound >/dev/null
+then
 	service ${__object_id:?} reload
 else
 	service ${__object_id:?} start

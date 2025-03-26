@@ -18,32 +18,36 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os="$(cat "${__global:?}"/explorer/os)"
-init=$(cat "$__global/explorer/init")
+os=$(cat "${__global:?}"/explorer/os)
+init=$(cat "${__global:?}/explorer/init")
 nginx_confdir="/etc/nginx"
 
 # The nginx service is not automatically started on alpine.
-if [ "$os" = "alpine" ]; then
+if [ "${os}" = "alpine" ]
+then
 	echo "service nginx --ifstopped start"
 fi
 
-if grep -qE "^__file$nginx_confdir" "${__messages_in:?}"; then
-	case "$init" in
-		systemd)
+if grep -q "^__file${nginx_confdir}" "${__messages_in:?}"
+then
+	case ${init}
+	in
+		(systemd)
 			reload_hook="systemctl reload-or-restart nginx"
 			;;
-		busybox-init+openrc)
+		(busybox-init+openrc)
 			reload_hook="service nginx reload"
 			;;
-		*)
-			echo "Unknown init $init." >&2
+		(*)
+			echo "Unknown init ${init}." >&2
 			exit 1
 			;;
 	esac
 
-	cat <<- EOF
-	if nginx -t; then
-	  $reload_hook
+	cat <<-EOF
+	if nginx -t
+	then
+	  ${reload_hook}
 	else
 	  echo "NGINX configuration is invalid. Exiting." >2&
 	  nginx -t >2&

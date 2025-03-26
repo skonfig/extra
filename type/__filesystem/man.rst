@@ -8,7 +8,7 @@ cdist-type__filesystem - Create Filesystems.
 
 DESCRIPTION
 -----------
-This cdist type allows you to create filesystems on devices.
+This type allows you to create filesystems on devices.
 
 If the device is mounted on target, it refuses to do anything.
 

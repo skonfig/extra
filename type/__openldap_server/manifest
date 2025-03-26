@@ -20,25 +20,26 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-name="${__target_host}"
-manager_dn=$(cat "${__object}/parameter/manager-dn")
-manager_password_hash=$(cat "${__object}/parameter/manager-password-hash")
-serverid=$(cat "${__object}/parameter/serverid")
-suffix=$(cat "${__object}/parameter/suffix")
-slapd_modules=$(cat "${__object}/parameter/module" 2>/dev/null || true)
-schemas=$(cat "${__object}/parameter/schema")
-slapd_urls=$(tr '\n' ' ' < "${__object}/parameter/slapd-url")
-tls_cipher_suite=$(cat "${__object}/parameter/tls-cipher-suite" 2>/dev/null || true)
-extra_config=$(cat "${__object}/parameter/extra-config" || true)
+name=${__target_host:?}
+manager_dn=$(cat "${__object:?}/parameter/manager-dn")
+manager_password_hash=$(cat "${__object:?}/parameter/manager-password-hash")
+serverid=$(cat "${__object:?}/parameter/serverid")
+suffix=$(cat "${__object:?}/parameter/suffix")
+slapd_modules=$(cat "${__object:?}/parameter/module" 2>/dev/null || true)
+schemas=$(cat "${__object:?}/parameter/schema")
+slapd_urls=$(tr '\n' ' ' <"${__object:?}/parameter/slapd-url")
+tls_cipher_suite=$(cat "${__object:?}/parameter/tls-cipher-suite" 2>/dev/null || true)
+extra_config=$(cat "${__object:?}/parameter/extra-config" || true)
 
 
-os="$(cat "${__global}/explorer/os")"
+os=$(cat "${__global:?}/explorer/os")
 
 # Setup OS-dependent vars
 CONF_OWNER="root"
 CONF_GROUP="root"
-case "${os}" in
-    freebsd)
+case ${os}
+in
+    (freebsd)
         PKGS="openldap-server"
         ETC="/usr/local/etc"
         SLAPD_DIR="/usr/local/etc/openldap"
@@ -46,18 +47,20 @@ case "${os}" in
         SLAPD_RUN_DIR="/var/run/openldap"
         SLAPD_MODULE_PATH="/usr/local/libexec/openldap"
         SLAPD_MODULE_TYPE="la"
-        if [ -z "${slapd_modules}" ]; then
+        if [ -z "${slapd_modules}" ]
+        then
             # It looks like ppolicy and syncprov must be compiled
             slapd_modules="back_mdb back_monitor"
         fi
         CONF_OWNER="ldap"
         CONF_GROUP="ldap"
-        if [ -z "${tls_cipher_suite}" ]; then
+        if [ -z "${tls_cipher_suite}" ]
+        then
             # TODO: research default for FreeBSD. 'NORMAL' appears to not work
             tls_cipher_suite="HIGH:MEDIUM:+SSLv2"
         fi
         ;;
-    debian|ubuntu|devuan)
+    (debian|ubuntu|devuan)
         PKGS="slapd ldap-utils"
         ETC="/etc"
         SLAPD_DIR="/etc/ldap"
@@ -65,16 +68,18 @@ case "${os}" in
         SLAPD_RUN_DIR="/var/run/slapd"
         SLAPD_MODULE_PATH="/usr/lib/ldap"
         SLAPD_MODULE_TYPE="la"
-        if [ -z "${slapd_modules}" ]; then
+        if [ -z "${slapd_modules}" ]
+        then
             slapd_modules="back_mdb ppolicy syncprov back_monitor"
         fi
         CONF_OWNER="openldap"
         CONF_GROUP="openldap"
-        if [ -z "${tls_cipher_suite}" ]; then
+        if [ -z "${tls_cipher_suite}" ]
+        then
             tls_cipher_suite="NORMAL"
         fi
         ;;
-    alpine)
+    (alpine)
         PKGS="openldap openldap-clients"
         ETC="/etc"
         SLAPD_DIR="/etc/openldap"
@@ -82,18 +87,20 @@ case "${os}" in
         SLAPD_RUN_DIR="/var/run/openldap"
         SLAPD_MODULE_PATH="/usr/lib/openldap"
         SLAPD_MODULE_TYPE="so"
-        if [ -z "${slapd_modules}" ]; then
+        if [ -z "${slapd_modules}" ]
+        then
             slapd_modules="back_mdb ppolicy syncprov back_monitor"
-            PKGS="$PKGS openldap-back-mdb openldap-back-monitor openldap-overlay-all"
+            PKGS="${PKGS} openldap-back-mdb openldap-back-monitor openldap-overlay-all"
         fi
         CONF_OWNER="ldap"
-        CONF_GROUP="$SLAPD_USER"
-        if [ -z "${tls_cipher_suite}" ]; then
+        CONF_GROUP=${SLAPD_USER}
+        if [ -z "${tls_cipher_suite}" ]
+        then
             tls_cipher_suite="DEFAULT"
         fi
         ;;
-    *)
-        echo "Don't know the openldap defaults for: $os" >&2
+    (*)
+        echo "Don't know the openldap defaults for: ${os}" >&2
         exit 1
         ;;
 esac
@@ -102,64 +109,73 @@ PKG_MAIN=$(echo "${PKGS}" | awk '{print $1;}')
 
 
 # Determine if __letsencrypt_cert is to be used and setup vars accordingly
-if [ -f "${__object}/parameter/tls-cert" ]; then
-    tls_cert=$(cat "${__object}/parameter/tls-cert")
+if [ -f "${__object:?}/parameter/tls-cert" ]
+then
+    tls_cert=$(cat "${__object:?}/parameter/tls-cert")
 
-    if [ ! -f "${__object}/parameter/tls-privkey" ]; then
+    if [ ! -f "${__object:?}/parameter/tls-privkey" ]
+    then
         echo "When tls-cert is defined, tls-privkey is also required." >&2
         exit 1
     fi
-    tls_privkey=$(cat "${__object}/parameter/tls-privkey")
+    tls_privkey=$(cat "${__object:?}/parameter/tls-privkey")
 
-    if [ ! -f "${__object}/parameter/tls-ca" ]; then
+    if [ ! -f "${__object:?}/parameter/tls-ca" ]
+    then
         echo "When tls-cert is defined, tls-ca is also required." >&2
         exit 1
     fi
-    tls_ca=$(cat "${__object}/parameter/tls-ca")
+    tls_ca=$(cat "${__object:?}/parameter/tls-ca")
 
     _skip_letsencrypt_cert="YES"
 else
-    if [ ! -f "${__object}/parameter/admin-email" ]; then
+    if [ ! -f "${__object:?}/parameter/admin-email" ]
+    then
         echo "When using __letsencrypt_cert, admin-email is also required." >&2
         exit 1
     fi
-    admin_email=$(cat "${__object}/parameter/admin-email")
+    admin_email=$(cat "${__object:?}/parameter/admin-email")
 
     tls_cert="${SLAPD_DIR}/sasl2/cert.pem"
     tls_privkey="${SLAPD_DIR}/sasl2/privkey.pem"
     tls_ca="${SLAPD_DIR}/sasl2/chain.pem"
 fi
 
-mkdir "${__object}/files"
-ldapconf="${__object}/files/ldapconf"
+mkdir "${__object:?}/files"
+ldapconf="${__object:?}/files/ldapconf"
 
 replication=""
-if [ -f "${__object}/parameter/replicate" ]; then
+if [ -f "${__object:?}/parameter/replicate" ]
+then
     replication=yes
 
-    if [ ! -f "${__object}/parameter/syncrepl-searchbase" ]; then
+    if [ ! -f "${__object:?}/parameter/syncrepl-searchbase" ]
+    then
         echo "Requiring the searchbase for replication" >&2
         exit 1
     fi
-    syncrepl_searchbase=$(cat "${__object}/parameter/syncrepl-searchbase")
+    syncrepl_searchbase=$(cat "${__object:?}/parameter/syncrepl-searchbase")
 
-    if [ ! -f "${__object}/parameter/syncrepl-credentials" ]; then
+    if [ ! -f "${__object:?}/parameter/syncrepl-credentials" ]
+    then
         echo "Requiring credentials for replication" >&2
         exit 1
     fi
 
-    syncrepl_credentials=$(cat "${__object}/parameter/syncrepl-credentials")
+    syncrepl_credentials=$(cat "${__object:?}/parameter/syncrepl-credentials")
 
-    if [ ! -f "${__object}/parameter/syncrepl-host" ]; then
+    if [ ! -f "${__object:?}/parameter/syncrepl-host" ]
+    then
         echo "Requiring host(s) for replication" >&2
         exit 1
     fi
-    syncrepl_hosts=$(cat "${__object}/parameter/syncrepl-host")
+    syncrepl_hosts=$(cat "${__object:?}/parameter/syncrepl-host")
 
 fi
 
 # Install required packages
-for pkg in ${PKGS}; do
+for pkg in ${PKGS}
+do
     __package "${pkg}"
 done
 
@@ -167,17 +183,18 @@ done
 require="__package/${PKG_MAIN}" __start_on_boot slapd
 
 # Setup -h flag for the listeners. See man slapd (-h flag).
-case "${os}" in
-    freebsd)
+case ${os}
+in
+    (freebsd)
         require="__start_on_boot/slapd" __key_value \
                --file "/etc/rc.conf" \
                --key "slapd_flags" \
                --value "\"-h '${slapd_urls}'\"" \
                --delimiter "=" \
                --comment "# LDAP Listener URLs" \
-               "${__target_host}__slapd_flags"
+               "${__target_host:?}__slapd_flags"
         ;;
-    debian|ubuntu|devuan)
+    (debian|ubuntu|devuan)
         require="__package/${PKG_MAIN}" __line rm_slapd_conf \
                --file ${ETC}/default/slapd \
                --regex 'SLAPD_CONF=.*' \
@@ -198,20 +215,22 @@ case "${os}" in
                --line "SLAPD_SERVICES=\"${slapd_urls}\"" \
                --state present
         ;;
-    alpine)
+    (alpine)
         require="__package/${PKG_MAIN}" __line add_slapd_services \
                --file ${ETC}/conf.d/slapd \
                --line "command_args=\"-h '${slapd_urls}'\"" \
                --state present
         ;;
-    *)
+    (*)
         # Nothing to do here, move on.
         ;;
 esac
 
 
-if [ -z "${_skip_letsencrypt_cert}" ]; then
-    if [ -f "${__object}/parameter/staging" ]; then
+if [ -z "${_skip_letsencrypt_cert}" ]
+then
+    if [ -f "${__object:?}/parameter/staging" ]
+    then
         staging="--staging"
     else
         staging=""
@@ -227,7 +246,8 @@ fi
 
 require="__package/${PKG_MAIN}" __directory ${SLAPD_DIR}/slapd.d --state absent
 
-if [ -z "${_skip_letsencrypt_cert}" ]; then
+if [ -z "${_skip_letsencrypt_cert}" ]
+then
     require="__package/${PKG_MAIN} __letsencrypt_cert/${name}" \
            __file "${SLAPD_DIR}/slapd.conf" --owner "${CONF_OWNER}" --group "${CONF_GROUP}" --mode 644 \
            --source "${ldapconf}"
@@ -238,7 +258,7 @@ else
 fi
 
 # Start slapd.conf
-cat << EOF > "${ldapconf}"
+cat <<EOF >"${ldapconf}"
 pidfile ${SLAPD_RUN_DIR}/slapd.pid
 argsfile ${SLAPD_RUN_DIR}/slapd.args
 
@@ -253,18 +273,20 @@ security tls=1
 EOF
 
 # Add specified schemas
-for schema in ${schemas}; do
-    echo "include ${SLAPD_DIR}/schema/${schema}.schema" >> "${ldapconf}"
+for schema in ${schemas}
+do
+    echo "include ${SLAPD_DIR}/schema/${schema}.schema" >>"${ldapconf}"
 done
 
 # Add specified modules
-echo "modulepath ${SLAPD_MODULE_PATH}" >> "${ldapconf}"
-for module in ${slapd_modules}; do
-    echo "moduleload ${module}.${SLAPD_MODULE_TYPE}" >> "${ldapconf}"
+echo "modulepath ${SLAPD_MODULE_PATH}" >>"${ldapconf}"
+for module in ${slapd_modules}
+do
+    echo "moduleload ${module}.${SLAPD_MODULE_TYPE}" >>"${ldapconf}"
 done
 
 # Rest of the config
-cat << EOF >> "${ldapconf}"
+cat <<EOF >>"${ldapconf}"
 loglevel 1024
 
 database mdb
@@ -288,17 +310,19 @@ serverid ${serverid}
 EOF
 
 # Setup replication
-if [ "${replication}" ]; then
+if [ "${replication}" ]
+then
     rid=1;
-    for syncrepl in ${syncrepl_hosts}; do
+    for syncrepl in ${syncrepl_hosts}
+    do
     cat <<EOF >> "${ldapconf}"
 syncrepl rid=${rid}
  provider=ldap://${syncrepl}
  bindmethod=simple
  starttls=yes
- binddn="${manager_dn}"
+ binddn=${manager_dn}
  credentials=${syncrepl_credentials}
- searchbase="${syncrepl_searchbase}"
+ searchbase=${syncrepl_searchbase}
  type=refreshAndPersist
  retry="5 + 5 +"
  interval=00:00:00:05

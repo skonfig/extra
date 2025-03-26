@@ -76,14 +76,14 @@ EXAMPLES
             --source "$__files/$user/.vimrc"
     done
 
+
 SEE ALSO
 --------
+* :strong:`cdist-type__file`\ (7)
 
-**cdist-type__file**\ (7)
 
 COPYING
 -------
-
 Copyright (C) 2015 Dmitry Bogatov. Free use of this software is granted
 under the terms of the GNU General Public License version 3 or later
 (GPLv3+).

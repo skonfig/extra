@@ -21,8 +21,9 @@ if [ ! -d $l ]; then
   chown daemon $l
 fi
 
-case "$1" in
-    start)
+case $1
+in
+    (start)
         printf "Starting daemontools: "
         if  ! pidof svscan > /dev/null 2>&1; then
                 printf "svscan "
@@ -32,9 +33,9 @@ case "$1" in
                 echo "already running."
         fi
         ;;
-    stop)
+    (stop)
         printf "Stopping daemontools: "
-        pids="$(pidof svscan)"
+        pids=$(pidof svscan)
         if [ -n "${pids}" ]
         then
                 printf "svscan"
@@ -43,7 +44,7 @@ case "$1" in
                     # shellcheck disable=SC2086
                     kill ${pids}
                     printf "."
-                    pids="$(pidof svscan)"
+                    pids=$(pidof svscan)
                 done
         fi
         printf " services"
@@ -58,11 +59,11 @@ case "$1" in
         done
         echo ""
         ;;
-    restart|force-reload)
+    (restart|force-reload)
         $0 stop
         $0 start
         ;;
-    *)
+    (*)
         echo 'Usage: /etc/init.d/svscan {start|stop|restart|force-reload}'
         exit 1
 esac

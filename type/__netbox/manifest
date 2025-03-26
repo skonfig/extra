@@ -19,139 +19,157 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os=$(cat "$__global/explorer/os")
+os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
-    debian|ubuntu)
+case ${os}
+in
+    (debian|ubuntu)
         # Install netbox dependencies.
         for pkg in python3-pip python3-venv python3-dev build-essential libxml2-dev \
                    libxslt1-dev libffi-dev libpq-dev libssl-dev zlib1g-dev curl sudo; do
-            __package $pkg
+            __package ${pkg}
         done
 
-        if [ -f "$__object/parameter/ldap-server" ]; then
-            for pkg in libldap2-dev libsasl2-dev libssl-dev; do
-                __package $pkg
+        if [ -f "${__object:?}/parameter/ldap-server" ]
+        then
+            for pkg in libldap2-dev libsasl2-dev libssl-dev
+            do
+                __package ${pkg}
             done
         fi
         ;;
-    *)
-        printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
+    (*)
+        printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
         printf "Please contribute an implementation for it if you can.\n" >&2
         exit 1
         ;;
 esac
 
 
-DATABASE_NAME=$(cat "$__object/parameter/database")
+DATABASE_NAME=$(cat "${__object:?}/parameter/database")
 export DATABASE_NAME
-DATABASE_USER="$(cat "$__object/parameter/database-user")"
+DATABASE_USER=$(cat "${__object:?}/parameter/database-user")
 export DATABASE_USER
-DATABASE_PASSWORD=$(cat "$__object/parameter/database-password")
+DATABASE_PASSWORD=$(cat "${__object:?}/parameter/database-password")
 export DATABASE_PASSWORD
-DATABASE_HOST="$(cat "$__object/parameter/database-host")"
+DATABASE_HOST=$(cat "${__object:?}/parameter/database-host")
 export DATABASE_HOST
-DATABASE_PORT="$(cat "$__object/parameter/database-port")"
+DATABASE_PORT=$(cat "${__object:?}/parameter/database-port")
 export DATABASE_PORT
 
 # list of hosts
 ALLOWED_HOSTS=""
-while read -r hostname; do
+while read -r hostname
+do
     # shellcheck disable=SC2089
-    ALLOWED_HOSTS="$ALLOWED_HOSTS '$hostname',"
-done < "$__object/parameter/host"
+    ALLOWED_HOSTS="${ALLOWED_HOSTS} '${hostname}',"
+done <"${__object:?}/parameter/host"
 # shellcheck disable=SC2090
 export ALLOWED_HOSTS
 
-if [ -f "$__object/parameter/secret-key" ]; then
-    SECRET_KEY=$(cat "$__object/parameter/secret-key")
-elif [ -s "$__object/explorer/secretkey" ]; then
+if [ -f "${__object:?}/parameter/secret-key" ]
+then
+    SECRET_KEY=$(cat "${__object:?}/parameter/secret-key")
+elif [ -s "${__object:?}/explorer/secretkey" ]
+then
     # take the key that is already used
-    SECRET_KEY="$(cat "$__object/explorer/secretkey")"
+    SECRET_KEY=$(cat "${__object:?}/explorer/secretkey")
 else
     # Can be done over netbox/generate_secret_key.py too, but it can't be
     # generated right now where it's required (only if it's preloaded for
     # this type to execute it now).
     # Generates a 50-character long key with the same character set like
     # the helper script. Must escape the '-' to be no character range.
-    SECRET_KEY="$(tr -cd '!@#$%^&*(\-_=+)[:alnum:]' < /dev/urandom | head -c50)"
+    SECRET_KEY=$(tr -cd '!@#$%^&*(\-_=+)[:alnum:]' </dev/urandom | head -c50)
 fi
 export SECRET_KEY
 
-if [ -f "$__object/parameter/ldap-server" ]; then
-    LDAP_SERVER=$(cat "$__object/parameter/ldap-server")
+if [ -f "${__object:?}/parameter/ldap-server" ]
+then
+    LDAP_SERVER=$(cat "${__object:?}/parameter/ldap-server")
     USE_LDAP=yes
     export LDAP_SERVER
 fi
-if [ -f "$__object/parameter/ldap-bind-dn" ]; then
-    LDAP_BIND_DN=$(cat "$__object/parameter/ldap-bind-dn")
+if [ -f "${__object:?}/parameter/ldap-bind-dn" ]
+then
+    LDAP_BIND_DN=$(cat "${__object:?}/parameter/ldap-bind-dn")
     USE_LDAP=yes
     export LDAP_BIND_DN
 fi
-if [ -f "$__object/parameter/ldap-bind-password" ]; then
-    LDAP_BIND_PASSWORD=$(cat "$__object/parameter/ldap-bind-password")
+if [ -f "${__object:?}/parameter/ldap-bind-password" ]
+then
+    LDAP_BIND_PASSWORD=$(cat "${__object:?}/parameter/ldap-bind-password")
     USE_LDAP=yes
     export LDAP_BIND_PASSWORD
 fi
-if [ -f "$__object/parameter/ldap-user-base" ]; then
-    LDAP_USER_BASE=$(cat "$__object/parameter/ldap-user-base")
+if [ -f "${__object:?}/parameter/ldap-user-base" ]
+then
+    LDAP_USER_BASE=$(cat "${__object:?}/parameter/ldap-user-base")
     USE_LDAP=yes
     export LDAP_USER_BASE
 fi
-if [ -f "$__object/parameter/ldap-group-base" ]; then
-    LDAP_GROUP_BASE=$(cat "$__object/parameter/ldap-group-base")
+if [ -f "${__object:?}/parameter/ldap-group-base" ]
+then
+    LDAP_GROUP_BASE=$(cat "${__object:?}/parameter/ldap-group-base")
     export LDAP_GROUP_BASE
 fi
-if [ -f "$__object/parameter/ldap-require-group" ]; then
-    LDAP_REQUIRE_GROUP=$(cat "$__object/parameter/ldap-require-group")
+if [ -f "${__object:?}/parameter/ldap-require-group" ]
+then
+    LDAP_REQUIRE_GROUP=$(cat "${__object:?}/parameter/ldap-require-group")
     export LDAP_REQUIRE_GROUP
 fi
-if [ -f "$__object/parameter/ldap-superuser-group" ]; then
-    LDAP_SUPERUSER_GROUP=$(cat "$__object/parameter/ldap-superuser-group")
+if [ -f "${__object:?}/parameter/ldap-superuser-group" ]
+then
+    LDAP_SUPERUSER_GROUP=$(cat "${__object:?}/parameter/ldap-superuser-group")
     export LDAP_SUPERUSER_GROUP
 fi
-if [ -f "$__object/parameter/ldap-staff-group" ]; then
-    LDAP_STAFF_GROUP="$(cat "$__object/parameter/ldap-staff-group")"
+if [ -f "${__object:?}/parameter/ldap-staff-group" ]
+then
+    LDAP_STAFF_GROUP=$(cat "${__object:?}/parameter/ldap-staff-group")
     export LDAP_STAFF_GROUP
 fi
 # export if base ldap parameters are used
 export USE_LDAP
 
 # have default values
-REDIS_HOST="$(cat "$__object/parameter/redis-host")"
+REDIS_HOST=$(cat "${__object:?}/parameter/redis-host")
 export REDIS_HOST
-REDIS_PORT="$(cat "$__object/parameter/redis-port")"
+REDIS_PORT=$(cat "${__object:?}/parameter/redis-port")
 export REDIS_PORT
-REDIS_PASSWORD="$(cat "$__object/parameter/redis-password")"
+REDIS_PASSWORD=$(cat "${__object:?}/parameter/redis-password")
 export REDIS_PASSWORD
-REDIS_DBID_OFFSET="$(cat "$__object/parameter/redis-dbid-offset")"
+REDIS_DBID_OFFSET=$(cat "${__object:?}/parameter/redis-dbid-offset")
 export REDIS_DBID_OFFSET
-if [ -f "$__object/parameter/redis-ssl" ]; then
+if [ -f "${__object:?}/parameter/redis-ssl" ]
+then
     REDIS_SSL="True"
 else
     REDIS_SSL="False"
 fi
 export REDIS_SSL
 
-SMTP_HOST="$(cat "$__object/parameter/smtp-host")"
+SMTP_HOST=$(cat "${__object:?}/parameter/smtp-host")
 export SMTP_HOST
-SMTP_PORT="$(cat "$__object/parameter/smtp-port")"
+SMTP_PORT=$(cat "${__object:?}/parameter/smtp-port")
 export SMTP_PORT
-SMTP_USER="$(cat "$__object/parameter/smtp-user")"
+SMTP_USER=$(cat "${__object:?}/parameter/smtp-user")
 export SMTP_USER
-SMTP_PASSWORD="$(cat "$__object/parameter/smtp-password")"
+SMTP_PASSWORD=$(cat "${__object:?}/parameter/smtp-password")
 export SMTP_PASSWORD
-SMTP_FROM_EMAIL="$(cat "$__object/parameter/smtp-from-email")"
+SMTP_FROM_EMAIL=$(cat "${__object:?}/parameter/smtp-from-email")
 export SMTP_FROM_EMAIL
 
-if [ -f "$__object/parameter/smtp-use-ssl" ]; then
+if [ -f "${__object:?}/parameter/smtp-use-ssl" ]
+then
     SMTP_USE_SSL="True"
 else
     SMTP_USE_SSL="False"
 fi
 export SMTP_USE_SSL
-if [ -f "$__object/parameter/smtp-use-tls" ]; then
-    if [ "$SMTP_USE_SSL" = "True" ]; then
+if [ -f "${__object:?}/parameter/smtp-use-tls" ]
+then
+    if [ "${SMTP_USE_SSL}" = "True" ]
+    then
         echo "options --smtp-use-ssl and --smtp-use-tls are not compatible" >&2
         exit 2
     fi
@@ -161,44 +179,51 @@ else
 fi
 export SMTP_USE_TLS
 
-BASEPATH="$(cat "$__object/parameter/basepath")"
+BASEPATH=$(cat "${__object:?}/parameter/basepath")
 export BASEPATH
 
-if [ -f "$__object/parameter/http-proxy" ]; then
-    HTTP_PROXY=$(cat "$__object/parameter/http-proxy")
+if [ -f "${__object:?}/parameter/http-proxy" ]
+then
+    HTTP_PROXY=$(cat "${__object:?}/parameter/http-proxy")
     export HTTP_PROXY
 fi
-if [ -f "$__object/parameter/https-proxy" ]; then
-    HTTPS_PROXY=$(cat "$__object/parameter/https-proxy")
+if [ -f "${__object:?}/parameter/https-proxy" ]
+then
+    HTTPS_PROXY=$(cat "${__object:?}/parameter/https-proxy")
     export HTTPS_PROXY
 fi
 
-if [ -f "$__object/parameter/login-required" ]; then
+if [ -f "${__object:?}/parameter/login-required" ]
+then
     LOGIN_REQUIRED="True"
 else
     LOGIN_REQUIRED="False"
 fi
 export LOGIN_REQUIRED
 
-data_root="$(cat "$__object/parameter/data-root")"
-MEDIA_ROOT="$data_root/media"
-REPORTS_ROOT="$data_root/reports"
-SCRIPTS_ROOT="$data_root/scripts"
+data_root=$(cat "${__object:?}/parameter/data-root")
+MEDIA_ROOT="${data_root}/media"
+REPORTS_ROOT="${data_root}/reports"
+SCRIPTS_ROOT="${data_root}/scripts"
 
-if [ -f "$__object/parameter/media-root" ]; then
-    MEDIA_ROOT="$(cat "$__object/parameter/media-root")"
+if [ -f "${__object:?}/parameter/media-root" ]
+then
+    MEDIA_ROOT=$(cat "${__object:?}/parameter/media-root")
 fi
 export MEDIA_ROOT
-if [ -f "$__object/parameter/reports-root" ]; then
-    REPORTS_ROOT="$(cat "$__object/parameter/reports-root")"
+if [ -f "${__object:?}/parameter/reports-root" ]
+then
+    REPORTS_ROOT=$(cat "${__object:?}/parameter/reports-root")
 fi
 export REPORTS_ROOT
-if [ -f "$__object/parameter/scripts-root" ]; then
-    SCRIPTS_ROOT="$(cat "$__object/parameter/scripts-root")"
+if [ -f "${__object:?}/parameter/scripts-root" ]
+then
+    SCRIPTS_ROOT=$(cat "${__object:?}/parameter/scripts-root")
 fi
 export SCRIPTS_ROOT
 
-if [ -f "$__object/parameter/update-notify" ]; then
+if [ -f "${__object:?}/parameter/update-notify" ]
+then
     UPDATE_CHECK="yes"
     export UPDATE_CHECK
 fi
@@ -210,19 +235,20 @@ __user netbox --system --home /opt/netbox --create-home
 require="__user/netbox" __pyvenv /opt/netbox/venv/
 
 # Generate and upload netbox configuration.
-mkdir -p "$__object/files"
-"$__type/files/configuration.py.sh" > "$__object/files/configuration.py"
-"$__type/files/ldap_config.py.sh" > "$__object/files/ldap_config.py"
+mkdir -p "${__object:?}/files"
+"${__type:?}/files/configuration.py.sh" >"${__object:?}/files/configuration.py"
+"${__type:?}/files/ldap_config.py.sh" >"${__object:?}/files/ldap_config.py"
 
 require="__user/netbox" __directory /opt/netbox/cdist
 require="__directory/opt/netbox/cdist" __file \
     /opt/netbox/cdist/configuration.py --mode 640 --owner netbox \
-    --source "$__object/files/configuration.py"
+    --source "${__object:?}/files/configuration.py"
 
-if [ -f "$__object/parameter/ldap-server" ]; then
+if [ -f "${__object:?}/parameter/ldap-server" ]
+then
     require="__directory/opt/netbox/cdist" __file \
         /opt/netbox/cdist/ldap_config.py --mode 640 --owner netbox \
-        --source "$__object/files/ldap_config.py"
+        --source "${__object:?}/files/ldap_config.py"
 else
     require="__directory/opt/netbox/cdist" __file \
         /opt/netbox/cdist/ldap_config.py --state absent
@@ -230,16 +256,16 @@ fi
 
 # save secret
 require="__directory/opt/netbox/cdist" __file /opt/netbox/cdist/secretkey \
-    --mode 400 --owner netbox --source - << SECRET
-$SECRET_KEY
+    --mode 400 --owner netbox --source - <<SECRET
+${SECRET_KEY}
 SECRET
 
 
 # Upload systemd unit for worker and wsgi service
 # does not restart netbox on change cause it only restart all other services
 __systemd_unit netbox.service \
-    --source "$__type/files/netbox.service" \
+    --source "${__type:?}/files/netbox.service" \
     --enablement-state enabled
 __systemd_unit netbox-rq.service \
-    --source "$__type/files/netbox-rq.service" \
+    --source "${__type:?}/files/netbox-rq.service" \
     --enablement-state enabled --restart

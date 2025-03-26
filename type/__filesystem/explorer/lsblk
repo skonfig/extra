@@ -22,24 +22,27 @@
 
 os=$("${__explorer:?}/os")
 
-if [ -f "${__object:?}/parameter/device" ]; then
-    blkdev="$(cat "$__object/parameter/device")"
+if [ -f "${__object:?}/parameter/device" ]
+then
+    blkdev=$(cat "${__object:?}/parameter/device")
 else
-    blkdev="${__object_id:?}"
+    blkdev=${__object_id:?}
 fi
 
-case "$os" in
-    alpine|centos|fedora|gentoo|redhat|suse|ubuntu)
-        if [ ! -x "$(command -v lsblk)" ]; then
+case ${os}
+in
+    (alpine|centos|fedora|gentoo|redhat|suse|ubuntu)
+        if [ ! -x "$(command -v lsblk)" ]
+        then
             echo "lsblk is required for __filesystem type" >&2
             exit 1
         else
-            #echo -n $(lsblk -nd -P -o NAME,FSTYPE,LABEL,MOUNTPOINT "$blkdev" 2>/dev/null)
-            lsblk -nd -P -o NAME,FSTYPE,LABEL,MOUNTPOINT "$blkdev" 2>/dev/null
+            #echo -n $(lsblk -nd -P -o NAME,FSTYPE,LABEL,MOUNTPOINT "${blkdev}" 2>/dev/null)
+            lsblk -nd -P -o NAME,FSTYPE,LABEL,MOUNTPOINT "${blkdev}" 2>/dev/null
         fi
-    ;;
-    *)
-        echo "__filesystem type lacks implementation for os: $os" >&2
+        ;;
+    (*)
+        echo "__filesystem type lacks implementation for os: ${os}" >&2
         exit 1
-    ;;
+        ;;
 esac

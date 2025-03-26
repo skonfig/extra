@@ -19,41 +19,43 @@
 #
 
 
-os=$(cat "$__global/explorer/os")
+os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
-   scientific|centos|redhat)
+case ${os}
+in
+   (scientific|centos|redhat)
       # whitelist safeguard
       service_onchange='service consul-template status >/dev/null && service consul-template reload || true' \
-   ;;
-   archlinux)
+      ;;
+   (archlinux)
       service_onchange="systemctl status consul-template >/dev/null && systemctl reload consul-template || true"
-   ;;
-   *)
-      echo "Your operating system ($os) is currently not supported by this type (${__type##*/})." >&2
+       ;;
+   (*)
+      echo "Your operating system (${os}) is currently not supported by this type (${__type##*/})." >&2
       echo "Please contribute an implementation for it if you can." >&2
       exit 1
-   ;;
+      ;;
 esac
 
-versions_dir="$__type/files/versions"
-version="$(cat "$__object/parameter/version")"
-version_dir="$versions_dir/$version"
+versions_dir="${__type:?}/files/versions"
+version=$(cat "${__object:?}/parameter/version")
+version_dir="${versions_dir}/${version}"
 
-if [ ! -d "$version_dir" ]; then
-   echo "Unknown consul-template version '$version'. Expected one of:" >&2
-   ls "$versions_dir" >&2
+if [ ! -d "${version_dir}" ]
+then
+   echo "Unknown consul-template version '${version}'. Expected one of:" >&2
+   ls "${versions_dir}" >&2
    exit 1
 fi
 
-state="$(cat "$__object/parameter/state")"
+state=$(cat "${__object:?}/parameter/state")
 
 __staged_file /usr/local/bin/consul-template \
-   --source "$(cat "$version_dir/source")" \
-   --cksum "$(cat "$version_dir/cksum")" \
+   --source "$(cat "${version_dir}/source")" \
+   --cksum "$(cat "${version_dir}/cksum")" \
    --fetch-command 'curl -s -L "%s"' \
    --prepare-command 'unzip -p "%s"' \
-   --state "$state" \
+   --state "${state}" \
    --group root \
    --owner root \
    --mode 755
@@ -66,126 +68,142 @@ template_dir="/etc/consul-template/template"
 __directory /etc/consul-template \
    --owner root --group root --mode 750
 require="__directory/etc/consul-template" \
-   __directory "$conf_dir" \
+   __directory "${conf_dir}" \
       --owner root --group root --mode 750
 require="__directory/etc/consul-template" \
-   __directory "$template_dir" \
+   __directory "${template_dir}" \
       --owner root --group root --mode 750
 
 
 # Generate hcl config file
 (
-cd "$__object/parameter/"
-for param in *; do
-   case "$param" in
-      auth-password|state|ssl-*|syslog-*|version|vault-token|vault-ssl*) continue ;;
-      auth-username)
+cd "${__object:?}/parameter/"
+for param in *
+do
+   case ${param}
+   in
+      (auth-password|state|ssl-*|syslog-*|version|vault-token|vault-ssl*)
+         continue
+         ;;
+      (auth-username)
          printf 'auth {\n'
          printf '  enabled = true\n'
-         printf '  username = "%s"\n' "$(cat "$__object/parameter/auth-username")"
-         if [ -f "$__object/parameter/auth-password" ]; then
-            printf '  password = %s\n' "$(cat "$__object/parameter/auth-password")"
+         printf '  username = "%s"\n' "$(cat "${__object:?}/parameter/auth-username")"
+         if [ -f "${__object:?}/parameter/auth-password" ]
+         then
+            printf '  password = %s\n' "$(cat "${__object:?}/parameter/auth-password")"
          fi
          printf '}\n'
-      ;;
-      ssl)
+         ;;
+      (ssl)
          printf 'ssl {\n'
          printf '  enabled = true\n'
-         if [ -f "$__object/parameter/ssl-no-verify" ]; then
+         if [ -f "${__object:?}/parameter/ssl-no-verify" ]
+         then
             printf '  verify = false\n'
          fi
-         if [ -f "$__object/parameter/ssl-cert" ]; then
-            printf '  cert = "%s"\n' "$(cat "$__object/parameter/ssl-cert")"
+         if [ -f "${__object:?}/parameter/ssl-cert" ]
+         then
+            printf '  cert = "%s"\n' "$(cat "${__object:?}/parameter/ssl-cert")"
          fi
-         if [ -f "$__object/parameter/ssl-ca-cert" ]; then
-            printf '  ca_cert = "%s"\n' "$(cat "$__object/parameter/ssl-ca-cert")"
+         if [ -f "${__object:?}/parameter/ssl-ca-cert" ]
+         then
+            printf '  ca_cert = "%s"\n' "$(cat "${__object:?}/parameter/ssl-ca-cert")"
          fi
          printf '}\n'
-      ;;
-      syslog)
+         ;;
+      (syslog)
          printf 'syslog {\n'
          printf '  enabled = true\n'
-         if [ -f "$__object/parameter/syslog-facility" ]; then
-            printf '  facility = "%s"\n' "$(cat "$__object/parameter/syslog-facility")"
+         if [ -f "${__object:?}/parameter/syslog-facility" ]
+         then
+            printf '  facility = "%s"\n' "$(cat "${__object:?}/parameter/syslog-facility")"
          fi
          printf '}\n'
-      ;;
-      vault-address)
+         ;;
+      (vault-address)
          printf 'vault {\n'
-         printf '  address = "%s"\n' "$(cat "$__object/parameter/vault-address")"
-         if [ -f "$__object/parameter/vault-token" ]; then
-            printf '  token = "%s"\n' "$(cat "$__object/parameter/vault-token")"
+         printf '  address = "%s"\n' "$(cat "${__object:?}/parameter/vault-address")"
+         if [ -f "${__object:?}/parameter/vault-token" ]
+         then
+            printf '  token = "%s"\n' "$(cat "${__object:?}/parameter/vault-token")"
          fi
-         if [ -f "$__object/parameter/vault-ssl" ]; then
+         if [ -f "${__object:?}/parameter/vault-ssl" ]
+         then
          printf '  ssl {\n'
          printf '    enabled = true\n'
-         if [ -f "$__object/parameter/vault-ssl-no-verify" ]; then
+         if [ -f "${__object:?}/parameter/vault-ssl-no-verify" ]
+         then
             printf '    verify = false\n'
          fi
-         if [ -f "$__object/parameter/vault-ssl-cert" ]; then
-            printf '    cert = "%s"\n' "$(cat "$__object/parameter/vault-ssl-cert")"
+         if [ -f "${__object:?}/parameter/vault-ssl-cert" ]
+         then
+            printf '    cert = "%s"\n' "$(cat "${__object:?}/parameter/vault-ssl-cert")"
          fi
-         if [ -f "$__object/parameter/vault-ssl-ca-cert" ]; then
-            printf '    ca_cert = "%s"\n' "$(cat "$__object/parameter/vault-ssl-ca-cert")"
+         if [ -f "${__object:?}/parameter/vault-ssl-ca-cert" ]
+         then
+            printf '    ca_cert = "%s"\n' "$(cat "${__object:?}/parameter/vault-ssl-ca-cert")"
          fi
          printf '  }\n'
          fi
          printf '}\n'
-      ;;
-      *)
+         ;;
+      (*)
          # string key=value parameters
-         key="$(echo "$param" | tr '-' '_')"
-         printf '%s = "%s"\n' "$key" "$(cat "$__object/parameter/$param")"
-      ;;
+         key=$(echo "${param}" | tr '-' '_')
+         printf '%s = "%s"\n' "${key}" "$(cat "${__object:?}/parameter/${param}")"
+         ;;
    esac
 done
 ) | \
 require="__directory${conf_dir}" \
    __config_file "${conf_dir}/${conf_file}" \
       --owner root --group root --mode 640 \
-      --state "$state" \
-      --onchange "$service_onchange" \
+      --state "${state}" \
+      --onchange "${service_onchange}" \
       --source -
 
 
 # Install init script to start on boot
 service="consul-template"
-case "$os" in
-   centos|redhat)
-      os_version="$(sed 's/[^0-9.]//g' "$__global/explorer/os_version")"
+case ${os}
+in
+   (centos|redhat)
+      os_version=$(sed 's/[^0-9.]//g' "${__global:?}/explorer/os_version")
       major_version="${os_version%%.*}"
-      case "$major_version" in
-         7)
+      case ${major_version}
+      in
+         (7)
             __file "/lib/systemd/system/${service}.service" \
                --owner root --group root --mode 0555 \
-               --state "$state" \
-               --source "$__type/files/${service}.systemd"
+               --state "${state}" \
+               --source "${__type:?}/files/${service}.systemd"
             export require="__file/lib/systemd/system/${service}.service"
-         ;;
-         *)
+            ;;
+         (*)
             __file "/etc/init.d/${service}" \
                --owner root --group root --mode 0555 \
-               --state "$state" \
-               --source "$__type/files/${service}.sysv"
+               --state "${state}" \
+               --source "${__type:?}/files/${service}.sysv"
             export require="__file/etc/init.d/${service}"
-         ;;
+            ;;
       esac
-      __start_on_boot "$service" --state "$state"
-   ;;
-   ubuntu)
+      __start_on_boot "${service}" --state "${state}"
+      ;;
+   (ubuntu)
       __file "/etc/init/${service}.conf" \
          --owner root --group root --mode 0644 \
-         --state "$state" \
-         --source "$__type/files/${service}.upstart"
+         --state "${state}" \
+         --source "${__type:?}/files/${service}.upstart"
       export require="__file/etc/init/${service}.conf"
-      __start_on_boot "$service" --state "$state"
-   ;;
-   archlinux)
+      __start_on_boot "${service}" --state "${state}"
+      ;;
+   (archlinux)
       __file "/lib/systemd/system/${service}.service" \
          --owner root --group root --mode 0555 \
-         --state "$state" \
-         --source "$__type/files/${service}.systemd"
+         --state "${state}" \
+         --source "${__type:?}/files/${service}.systemd"
       export require="__file/lib/systemd/system/${service}.service"
-      __start_on_boot "$service" --state "$state"
-   ;;
+      __start_on_boot "${service}" --state "${state}"
+      ;;
 esac

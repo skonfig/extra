@@ -21,66 +21,69 @@
 # TODO: check if matrix-synapse package is installed (fail if not - it's not
 # this type's job to install it).
 
-name=$__object_id
-os=$(cat "$__global/explorer/os")
+name=${__object_id:?}
+os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
-	debian)
+case ${os}
+in
+	(debian)
 		synapse_conf_dir='/etc/matrix-synapse'
-		synapse_workers_conf_dir="$synapse_conf_dir/workers"
+		synapse_workers_conf_dir="${synapse_conf_dir}/workers"
 
 		# Synapse log configuration on debian - default value of config-log
 		# parameter.
-		WORKER_LOG_CONFIG="$synapse_conf_dir/log.yaml"
+		WORKER_LOG_CONFIG="${synapse_conf_dir}/log.yaml"
 
 		# As of writing, debian's matrix-synapse package does not install the
 		# matrix-synapse-worker@.service systemd unit.
 		systemd_worker_service_override=present
-		systemd_worker_service="matrix-synapse-worker@$name"
+		systemd_worker_service="matrix-synapse-worker@${name}"
 		;;
-	*)
-		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "$os" "${__type##*/}" >&2
+	(*)
+		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
 		printf "Please contribute an implementation for it if you can.\n" >&2
 		exit 1
 		;;
 esac
 
 # Type parameters.
-WORKER_NAME=$__object_id
-WORKER_APP=$(cat "$__object/parameter/app")
-WORKER_PORT=$(cat "$__object/parameter/port")
-WORKER_RESOURCES=$(cat "$__object/parameter/resource")
-WORKER_BIND_ADDRESSES=$(cat "$__object/parameter/bind-address")
+WORKER_NAME=${__object_id:?}
+WORKER_APP=$(cat "${__object:?}/parameter/app")
+WORKER_PORT=$(cat "${__object:?}/parameter/port")
+WORKER_RESOURCES=$(cat "${__object:?}/parameter/resource")
+WORKER_BIND_ADDRESSES=$(cat "${__object:?}/parameter/bind-address")
 export WORKER_APP WORKER_NAME WORKER_PORT WORKER_RESOURCES WORKER_BIND_ADDRESSES
 
-if [ -f "$__object/parameter/log-config" ]; then
-	WORKER_LOG_CONFIG=$(cat "$__object/parameter/log-config")
+if [ -f "${__object:?}/parameter/log-config" ]
+then
+	WORKER_LOG_CONFIG=$(cat "${__object:?}/parameter/log-config")
 fi
 export WORKER_LOG_CONFIG
 
-WORKER_REPLICATION_HOST=$(cat "$__object/parameter/replication-host")
-WORKER_REPLICATION_PORT=$(cat "$__object/parameter/replication-port")
+WORKER_REPLICATION_HOST=$(cat "${__object:?}/parameter/replication-host")
+WORKER_REPLICATION_PORT=$(cat "${__object:?}/parameter/replication-port")
 export WORKER_REPLICATION_HOST WORKER_REPLICATION_PORT
 
 # Generate and deploy configuration files.
-mkdir -p "$__object/files"
-"$__type/files/worker.yaml.sh" > "$__object/files/worker.yaml"
+mkdir -p "${__object:?}/files"
+"${__type:?}/files/worker.yaml.sh" >"${__object:?}/files/worker.yaml"
 
-__directory "$synapse_workers_conf_dir" --parents
-require="__directory/$synapse_workers_conf_dir" \
-	__file "$synapse_workers_conf_dir/$name.yaml" \
-	--source "$__object/files/worker.yaml" \
+__directory "${synapse_workers_conf_dir}" --parents
+require="__directory/${synapse_workers_conf_dir#/}" \
+	__file "${synapse_workers_conf_dir}/${name}.yaml" \
+	--source "${__object:?}/files/worker.yaml" \
 	--mode 0644
 
 __file "/etc/systemd/system/matrix-synapse-worker@.service" \
-	--source "$__type/files/matrix-synapse-worker@.service" \
+	--source "${__type:?}/files/matrix-synapse-worker@.service" \
 	--mode 0644 \
-	--state $systemd_worker_service_override
+	--state "${systemd_worker_service_override}"
 
 # Start service, enable at boot.
 service_req=
-if [ "$systemd_worker_service_override" ]; then
+if [ "${systemd_worker_service_override}" ]
+then
 	service_req="__file/etc/systemd/system/matrix-synapse-worker@.service"
 fi
-require="__file/$synapse_workers_conf_dir/$name.yaml $service_req" \
-	__start_on_boot "$systemd_worker_service"
+require="__file/${synapse_workers_conf_dir#/}/${name}.yaml ${service_req}" \
+	__start_on_boot "${systemd_worker_service}"

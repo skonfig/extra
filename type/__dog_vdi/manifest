@@ -18,20 +18,22 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-state_should="$(cat "$__object/parameter/state")"
+state_should=$(cat "${__object:?}/parameter/state")
 
-case "$state_should" in
-    present)
-        if [ ! -f "$__object/parameter/size" ]; then
+case ${state_should}
+in
+    (present)
+        if [ ! -f "${__object:?}/parameter/size" ]
+        then
             echo "Size is required when state is present" >&2
             exit 1
         fi
-    ;;
-    absent)
+        ;;
+    (absent)
         :
-    ;;
-    *)
-        echo "Unsupported state: $state_should" >&2
+        ;;
+    (*)
+        echo "Unsupported state: ${state_should}" >&2
         exit 1
-    ;;  
+        ;;
 esac

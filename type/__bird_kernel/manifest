@@ -21,19 +21,20 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
-	"alpine"|"debian"|"ubuntu")
-		confdir="/etc/bird.d"
-	;;
-	*)
-		printf "Your operating system (%s) is currently not supported by __bird_kernel\n" "$os" >&2
+case ${os}
+in
+	(alpine|debian|ubuntu)
+		confdir=/etc/bird.d
+		;;
+	(*)
+		printf "Your operating system (%s) is currently not supported by __bird_kernel\n" "${os}" >&2
 		printf "Please contribute an implementation for it if you can.\n" >&2
 		exit 1
-	;;
+		;;
 esac
 
 # Required parameters
-channel="$(cat "${__object:?}/parameter/channel")"
+channel=$(cat "${__object:?}/parameter/channel")
 
 # Boolean switches
 persist=
@@ -52,25 +53,25 @@ fi
 description=
 if [ -f "${__object:?}"/parameter/description ];
 then
-	description="$(cat "${__object:?}/parameter/description")"
+	description=$(cat "${__object:?}/parameter/description")
 fi
 
 import=
 if [ -f "${__object:?}"/parameter/import ];
 then
-	import="$(cat "${__object:?}/parameter/import")"
+	import=$(cat "${__object:?}/parameter/import")
 fi
 
 _export=
 if [ -f "${__object:?}"/parameter/export ];
 then
-	_export="$(cat "${__object:?}/parameter/export")"
+	_export=$(cat "${__object:?}/parameter/export")
 fi
 
 # Install resulting configuration
 __file "${confdir:?}"/kernel-"${__object_id:?}".conf \
 	--mode 0640 --owner root --group bird \
-	--source - << EOF
+	--source - <<EOF
 protocol kernel ${__object_id:?} {
 $([ -n "${description?}" ] && printf "\tdescription \"%s\";\n" "${description?}")
 $([ -n "${persist?}" ] && printf "\tpersist;\n")

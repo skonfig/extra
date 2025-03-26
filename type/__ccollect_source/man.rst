@@ -8,7 +8,7 @@ cdist-type__ccollect_source - Manage ccollect sources
 
 DESCRIPTION
 -----------
-This cdist type allows you to create or delete ccollect sources.
+This type allows you to create or delete ccollect sources.
 
 
 REQUIRED PARAMETERS
@@ -56,7 +56,7 @@ EXAMPLES
         --source doc.ungleich.ch:/ \
         --destination /backup/doc.ungleich.ch \
         --exclude '/proc/*' --exclude '/sys/*' \
-        --verbose \ 
+        --verbose \
         --create-destination
 
 

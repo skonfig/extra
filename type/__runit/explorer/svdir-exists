@@ -22,6 +22,7 @@
 
 svdir="/var/service"
 
-if [ -d "${svdir}" ]; then
+if [ -d "${svdir}" ]
+then
 	echo "YES"
 fi

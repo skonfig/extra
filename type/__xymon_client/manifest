@@ -18,38 +18,40 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-state=$(cat "$__object/parameter/state")
-servers=$(cat "$__object/parameter/servers")
+state=$(cat "${__object:?}/parameter/state")
+servers=$(cat "${__object:?}/parameter/servers")
 
-os=$(cat "$__global/explorer/os")
-case "$os" in
-	debian|ubuntu)
+os=$(cat "${__global:?}/explorer/os")
+case ${os}
+in
+	(debian|ubuntu)
 		:
-	;;
-	*)
-		echo "Your operating system ($os) is currently not supported by this type (${__type##*/})." >&2
+		;;
+	(*)
+		echo "Your operating system (${os}) is currently not supported by this type (${__type##*/})." >&2
 		echo "Please contribute an implementation for it if you can." >&2
 		exit 1
-	;;
+		;;
 esac
 
-__package xymon-client --state "$state"
+__package xymon-client --state "${state}"
 
-if [ -f "$__object/parameter/msgcache" ]; then
+if [ -f "${__object:?}/parameter/msgcache" ]
+then
 	require="__package/xymon-client" __line /etc/xymon/clientlaunch.cfg \
 		--regex DISABLED --state absent
 fi
 
 require="__package/xymon-client" __key_value CLIENTHOSTNAME \
 	--file /etc/default/xymon-client \
-	--value "'$__target_hostname'" \
+	--value "'${__target_hostname:?}'" \
 	--delimiter '=' \
-	--state "$state"
+	--state "${state}"
 require="__package/xymon-client" __key_value XYMONSERVERS \
 	--file /etc/default/xymon-client \
-	--value "'$servers'" \
+	--value "'${servers}'" \
 	--delimiter '=' \
-	--state "$state"
+	--state "${state}"
 
 ## CLI-usage often requires a shell:
-require="__package/xymon-client" __user xymon --shell "/bin/bash" --state "$state"
+require="__package/xymon-client" __user xymon --shell "/bin/bash" --state "${state}"

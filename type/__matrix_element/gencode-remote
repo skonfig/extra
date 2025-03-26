@@ -21,7 +21,7 @@
 # Function to compare version strings. Returns success (0) if the version
 # given by stdin is higher than the version provided by the argument.
 #
-# Taken from the cdist core type __sensible_editor.
+# Taken from cdist-type__sensible_editor(7).
 version_ge() {
 	awk -F '[^0-9.]' -v target="${1:?}" '
 	function max(x, y) { return x > y ? x : y; }
@@ -39,57 +39,61 @@ version_ge() {
 }
 
 
-VERSION=$(cat "$__object/parameter/version")
-INSTALL_DIR=$(cat "$__object/parameter/install_dir")
-OWNER=$(cat "$__object/parameter/owner")
+VERSION=$(cat "${__object:?}/parameter/version")
+INSTALL_DIR=$(cat "${__object:?}/parameter/install_dir")
+OWNER=$(cat "${__object:?}/parameter/owner")
 
 # tarball name changed due to application renaming
-if echo "$VERSION" | version_ge 1.7.14; then
-    src="element-v$VERSION"
+if echo "${VERSION}" | version_ge 1.7.14
+then
+    src="element-v${VERSION}"
 else
-    src="riot-v$VERSION"
+    src="riot-v${VERSION}"
 fi
-archive="$src.tar.gz"
-url="https://github.com/vector-im/riot-web/releases/download/v$VERSION/$archive"
+archive="${src}.tar.gz"
+url="https://github.com/vector-im/riot-web/releases/download/v${VERSION}/${archive}"
 
 # tar and curl are installed by the __matrix-riot manifest. mktemp is usually
 # provided by coreutils and assumed installed.
-cat << EOF
+cat <<EOF
 set -e
 
 # Ensure that coreutils is installed.
-if [ ! -x \$(which mktemp) ]; then
+if [ ! -x \$(command -v mktemp) ]
+then
   echo "mktemp is not available on the remote host." >&2
   exit 1
 fi
 
 # Create temporary working directory.
 tmpdir=\$(mktemp -d)
-custom_files_dir="\$tmpdir/custom_files"
-cd \$tmpdir
+custom_files_dir="\${tmpdir}/custom_files"
+cd \${tmpdir}
 
 # Download and extract sources.
-curl -L '$url' > $archive
-tar xf $archive
+curl -L '${url}' >${archive}
+tar xf ${archive}
 
 # Backup files deployed by __matrix_element.
-mkdir -p \$custom_files_dir
-for file in $INSTALL_DIR/cdist/*; do
-  cp "\$file" "\$custom_files_dir"
+mkdir -p \${custom_files_dir}
+for file in ${INSTALL_DIR}/cdist/*
+do
+  cp "\${file}" "\${custom_files_dir}"
 done
 
 # Deploy sources and restore configuration.
-rm -r '$INSTALL_DIR'
-mv '$src' '$INSTALL_DIR'
+rm -r '${INSTALL_DIR}'
+mv '${src}' '${INSTALL_DIR}'
 
-for file in \$custom_files_dir/*; do
-    cp "\$file" '$INSTALL_DIR'
+for file in \${custom_files_dir}/*
+do
+    cp "\${file}" '${INSTALL_DIR}'
 done
 
 # Chown deployed files to requested owner.
-chown -R '$OWNER' '$INSTALL_DIR'
+chown -R '${OWNER}' '${INSTALL_DIR}'
 
 # Remove temporary working directory.
 cd /
-rm -r \$tmpdir
+rm -r \${tmpdir}
 EOF

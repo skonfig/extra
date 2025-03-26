@@ -27,12 +27,12 @@ then
 	exit 1;
 fi
 
-cat <<- EOF
+cat <<-EOF
 	[Interface]
 	PrivateKey = ${1:?}
 EOF
 
-if [ -n "$WG_PORT" ];
+if [ -n "${WG_PORT}" ];
 then
 	echo "ListenPort = ${WG_PORT:?}"
 fi

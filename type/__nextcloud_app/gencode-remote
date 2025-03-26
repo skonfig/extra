@@ -26,74 +26,81 @@
 occ() {
     # su creates a new shell, so it does not affect the current session
     #  will not use -q as it supresses errors, too
-    cat << SHELL
-su -s /bin/sh -l "$www_user" -- -e <<'SU'
-cd '$cloud' && php occ --no-warnings --no-interaction --no-ansi $@
+    cat <<SHELL
+su -s /bin/sh -l "${www_user}" -- -e <<'SU'
+cd '${cloud}' && php occ --no-warnings --no-interaction --no-ansi $@
 SU
 SHELL
 }
 
 
 # Get the app id
-appid="$__object/parameter/appid"
-if [ -f "$appid" ]; then
-    appid="$(cat "$appid")"
+appid="${__object:?}/parameter/appid"
+if [ -f "${appid}" ]
+then
+    appid=$(cat "${appid}")
 else
-    appid="$__object_id"
+    appid=${__object_id:?}
 fi
 
 # Get the app state
-state_is="$(cat "$__object/explorer/state")"
-state_should="$(cat "$__object/parameter/state")"
+state_is=$(cat "${__object:?}/explorer/state")
+state_should=$(cat "${__object:?}/parameter/state")
 
 # Get general parameters
-cloud="$(cat "$__object/parameter/cloud")"
-www_user="$(cat "$__object/parameter/www-user")"
+cloud=$(cat "${__object:?}/parameter/cloud")
+www_user=$(cat "${__object:?}/parameter/www-user")
 
 
 # Abort if nextcloud is not installed
-if [ -z "$state_is" ]; then
-    printf "No nextcloud installation could be detected in '%s' ..\n" "$cloud" >&2
+if [ -z "${state_is}" ]
+then
+    printf "No nextcloud installation could be detected in '%s' ..\n" "${cloud}" >&2
     echo "Use the type __nextcloud to ensure the installation and mark it as dependency for this type!" >&2
     exit 2
 fi
 
 
 # Check if the state changes
-if [ "$state_is" != "$state_should" ]; then
+if [ "${state_is}" != "${state_should}" ]
+then
     # check what to do
-    case "$state_should" in
-        enabled)
-            if [ "$state_is" = "disabled" ]; then
-                occ app:enable "'$appid'"
-                echo enabled >> "$__messages_out"
+    case ${state_should}
+    in
+        (enabled)
+            if [ "${state_is}" = "disabled" ]
+            then
+                occ app:enable "'${appid}'"
+                echo enabled >>"${__messages_out:?}"
             else
-                occ app:install "'$appid'"
-                echo installed >> "$__messages_out"
+                occ app:install "'${appid}'"
+                echo installed >>"${__messages_out:?}"
             fi
             ;;
 
-        disabled)
-            if [ "$state_is" = "absent" ]; then
-                occ app:install --keep-disabled "'$appid'"
-                echo installed >> "$__messages_out"
+        (disabled)
+            if [ "${state_is}" = "absent" ]
+            then
+                occ app:install --keep-disabled "'${appid}'"
+                echo installed >>"${__messages_out:?}"
             else
-                occ app:disable "'$appid'"
-                echo disabled >> "$__messages_out"
+                occ app:disable "'${appid}'"
+                echo disabled >>"${__messages_out:?}"
             fi
             ;;
 
-        present)
-            if [ "$state_is" = "absent" ]; then
-                occ app:install "'$appid'"
-                echo installed >> "$__messages_out"
+        (present)
+            if [ "${state_is}" = "absent" ]
+            then
+                occ app:install "'${appid}'"
+                echo installed >>"${__messages_out:?}"
             fi
             # else, everything is ok
             ;;
 
-        absent)
-            occ app:remove "'$appid'"
-            echo removed >> "$__messages_out"
+        (absent)
+            occ app:remove "'${appid}'"
+            echo removed >>"${__messages_out:?}"
             ;;
     esac
 fi

@@ -20,7 +20,7 @@
 # Generate the Debian interface configuration.
 #
 
-cat <<- EOF
+cat <<-EOF
 	auto ${WG_IFACE:?}
 	iface ${WG_IFACE:?} inet6 static
 	address ${WG_ADDRESS:?}

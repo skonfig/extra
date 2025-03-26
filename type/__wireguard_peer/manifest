@@ -20,60 +20,61 @@
 
 # expected to be run with a required='__wireguard/ifname'
 
-os="$(cat "${__global:?}"/explorer/os)"
+os=$(cat "${__global:?}"/explorer/os)
 
-case "$os" in
-	alpine)
-		:
+case ${os}
+in
+	(alpine)
 		;;
-	*)
-		echo "This type has no implementation for $os. Aborting." >&2;
-		exit 1;
+	(*)
+		echo "This type has no implementation for ${os}. Aborting." >&2
+		exit 1
+		;;
 esac
 
-iface="$(cat "${__object:?}/parameter/iface")"
+iface=$(cat "${__object:?}/parameter/iface")
 
-PKEY="$(cat "${__object:?}/parameter/public-key")"
+PKEY=$(cat "${__object:?}/parameter/public-key")
 export PKEY
 
 ALLOWED_IPS=
 if [ -f "${__object:?}/parameter/allowed-ip" ];
 then
-	ALLOWED_IPS="$(cat "${__object:?}/parameter/allowed-ip")"
+	ALLOWED_IPS=$(cat "${__object:?}/parameter/allowed-ip")
 fi
 export ALLOWED_IPS
 
 ENDPOINT=
 if [ -f "${__object:?}/parameter/endpoint" ];
 then
-	ENDPOINT="$(cat "${__object:?}/parameter/endpoint")"
+	ENDPOINT=$(cat "${__object:?}/parameter/endpoint")
 fi
 export ENDPOINT
 
 PERSISTENT_KA=
 if [ -f "${__object:?}/parameter/persistent-keepalive" ];
 then
-	PERSISTENT_KA="$(cat "${__object:?}/parameter/persistent-keepalive")"
+	PERSISTENT_KA=$(cat "${__object:?}/parameter/persistent-keepalive")
 fi
 export PERSISTENT_KA
 
 state=present
 if [ -f "${__object:?}/parameter/state" ];
 then
-	state="$(cat "${__object:?}/parameter/state")"
+	state=$(cat "${__object:?}/parameter/state")
 fi
 
 presharedkey=
 if [ -f "${__object:?}/parameter/preshared-key" ];
 then
-	presharedkey="$(cat "${__object:?}/parameter/preshared-key")"
+	presharedkey=$(cat "${__object:?}/parameter/preshared-key")
 fi
 
 
 mkdir -p "${__object:?}/files"
-"${__type:?}/files/wg-peer.sh" "$presharedkey" > "${__object:?}/files/wg-peer"
+"${__type:?}/files/wg-peer.sh" "${presharedkey}" >"${__object:?}/files/wg-peer"
 
-required="__file/etc/wireguard/$iface.conf" \
-	__block "${__object_id:?}" --file "/etc/wireguard/$iface.conf" \
+required="__file/etc/wireguard/${iface}.conf" \
+	__block "${__object_id:?}" --file "/etc/wireguard/${iface}.conf" \
 		--text - <"${__object:?}/files/wg-peer" \
-		--state "$state"
+		--state "${state}"

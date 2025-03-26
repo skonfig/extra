@@ -19,28 +19,32 @@
 #
 
 state=$(cat "${__object:?}/parameter/state")
-swarm_state="$(cat "${__object}/explorer/swarm-state")"
+swarm_state=$(cat "${__object:?}/explorer/swarm-state")
 
-if [ -z "${swarm_state}" ]; then
+if [ -z "${swarm_state}" ]
+then
     echo "Unable to determine Swarm state. Is compatible version of Docker installed?" >&2
 
     exit 1
 fi
 
-case "${state}" in
-    absent)
-        if [ "${swarm_state}" = "active" ]; then
+case ${state}
+in
+    (absent)
+        if [ "${swarm_state}" = "active" ]
+        then
             echo "docker swarm leave --force"
         fi
-    ;;
-    present)
-        if [ "${swarm_state}" = "inactive" ]; then
+        ;;
+    (present)
+        if [ "${swarm_state}" = "inactive" ]
+        then
             echo "docker swarm init"
         fi
-    ;;
-    *)
+        ;;
+    (*)
         echo "Unsupported state: ${state}" >&2
 
         exit 1
-    ;;
+        ;;
 esac

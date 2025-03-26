@@ -22,27 +22,33 @@ config="${__object_id:?}"
 config_exists=$(cat "${__object:?}/explorer/config-exists")
 state=$(cat "${__object:?}/parameter/state")
 
-case "${state}" in
-	absent)
-		if [ "${config_exists}" != "yes" ]; then
+case ${state}
+in
+	(absent)
+		if [ "${config_exists}" != "yes" ]
+		then
 			exit 0
 		fi
 
 		echo "docker config rm \"${config}\""
-	;;
-	present)
-		source=$(cat "${__object}/parameter/source")
+		;;
+	(present)
+		source=$(cat "${__object:?}/parameter/source")
 
-		if [ -z "${source}" ]; then
+		if [ -z "${source}" ]
+		then
 			exit 0
 		fi
 
-		if [ "${source}" = "-" ]; then
-			source="${__object}/stdin"
+		if [ "${source}" = "-" ]
+		then
+			source="${__object:?}/stdin"
 		fi
 
-		if [ "${config_exists}" = "yes" ]; then
-			if cmp -s "${source}" "${__object}/explorer/config-data"; then
+		if [ "${config_exists}" = "yes" ]
+		then
+			if cmp -s "${source}" "${__object:?}/explorer/config-data"
+			then
 				exit 0
 			else
 				echo "docker config rm \"${config}\""
@@ -52,7 +58,7 @@ case "${state}" in
 		cat <<-EOF
 		source_file="\$(mktemp cdist.XXXXXXXXXX)"
 
-		base64 -d > "\${source_file}" << eof
+		base64 -d >"\${source_file}" <<eof
 		$(base64 "${source}")
 		eof
 
@@ -60,10 +66,10 @@ case "${state}" in
 
 		rm "\${source_file}"
 		EOF
-	;;
-	*)
+		;;
+	(*)
 		echo "Unsupported state: ${state}" >&2
 
 		exit 1
-	;;
+		;;
 esac

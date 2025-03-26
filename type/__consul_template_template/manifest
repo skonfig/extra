@@ -18,61 +18,68 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-name="$(cat "$__object/parameter/name" 2>/dev/null || echo "$__object_id")"
-state="$(cat "$__object/parameter/state")"
+name=$(cat "${__object:?}/parameter/name" 2>/dev/null || echo "${__object_id:?}")
+state=$(cat "${__object:?}/parameter/state")
 conf_dir="/etc/consul-template/conf.d"
 conf_file="template_${name}.hcl"
 template_dir="/etc/consul-template/template"
 require=""
 
 # Sanity checks
-if [ -f "$__object/parameter/source" ] && [ -f "$__object/parameter/source-file" ]; then
+if [ -f "${__object:?}/parameter/source" ] \
+   && [ -f "${__object:?}/parameter/source-file" ]
+then
    echo "Use either --source OR --source-file, but not both." >&2
    exit 1
 fi
-if [ ! -f "$__object/parameter/source" ] && [ ! -f "$__object/parameter/source-file" ]; then
+if [ ! -f "${__object:?}/parameter/source" ] \
+   && [ ! -f "${__object:?}/parameter/source-file" ]
+then
    echo "Either --source OR --source-file must be given." >&2
    exit 1
 fi
 
-if [ -f "$__object/parameter/source-file" ]; then
-    destination="${template_dir}/${name}"
-    require="__file${destination}"
+if [ -f "${__object:?}/parameter/source-file" ]
+then
+   destination="${template_dir}/${name}"
+   require="__file${destination}"
 fi
 
 # Generate hcl config file
 {
 printf 'template {\n'
-cd "$__object/parameter/"
-for param in *; do
-   case "$param" in
-      source-file)
-         source="$(cat "$__object/parameter/$param")"
-         if [ "$source" = "-" ]; then
-            source="$__object/stdin"
+cd "${__object:?}/parameter/"
+for param in *
+do
+   case ${param}
+   in
+      (source-file)
+         source=$(cat "${__object:?}/parameter/${param}")
+         if [ "${source}" = "-" ]
+         then
+            source="${__object:?}/stdin"
          fi
          require="__directory${template_dir}" \
-            __file "$destination" \
+            __file "${destination}" \
                --owner root --group root --mode 640 \
-               --source "$source" \
-               --state "$state"
-         printf '   source = "%s"\n' "$destination"
+               --source "${source}" \
+               --state "${state}"
+         printf '   source = "%s"\n' "${destination}"
 
-      ;;
-      source|destination|command|wait)
-         printf '   %s = "%s"\n' "$param" "$(cat "$__object/parameter/$param")"
-      ;;
-      *)
+         ;;
+      (source|destination|command|wait)
+         printf '   %s = "%s"\n' "${param}" "$(cat "${__object:?}/parameter/${param}")"
+         ;;
+      (*)
          # ignore unknown parameters
-         :
-      ;;
+         ;;
    esac
 done
 printf '}\n'
 } | \
-require="$require __directory${conf_dir}" \
+require="${require} __directory${conf_dir}" \
    __config_file "${conf_dir}/${conf_file}" \
       --owner root --group root --mode 640 \
-      --state "$state" \
+      --state "${state}" \
       --onchange 'service consul-template status >/dev/null && service consul-template reload || true' \
       --source -

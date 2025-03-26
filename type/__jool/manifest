@@ -21,46 +21,47 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
-'alpine')
-	packages="jool-tools jool-tools-openrc $(cat "${__object:?}"/explorer/alpine-kernel-modules)"
-	;;
-*)
-	printf "This type has no implementation for %s. Please contribute one if you can.\n" "$os"
-	exit 1
-	;;
+case ${os}
+in
+	(alpine)
+		packages="jool-tools jool-tools-openrc $(cat "${__object:?}"/explorer/alpine-kernel-modules)"
+		;;
+	(*)
+		printf "This type has no implementation for %s. Please contribute one if you can.\n" "${os}"
+		exit 1
+		;;
 esac
 
-for pkg in $packages;
+for pkg in ${packages}
 do
-	__package "$pkg"
+	__package "${pkg}"
 done
 
 instance="default"
 if [ -f "${__object:?}/parameter/instance" ];
 then
-	instance="$(cat "${__object:?}/parameter/instance")"
+	instance=$(cat "${__object:?}/parameter/instance")
 fi
 
 framework="netfilter"
 if [ -f "${__object:?}/parameter/framework" ];
 then
-	framework="$(cat "${__object:?}/parameter/framework")"
+	framework=$(cat "${__object:?}/parameter/framework")
 fi
 
 pool6="64:ff9b::/96"
 if [ -f "${__object:?}/parameter/pool6" ];
 then
-	pool6="$(cat "${__object:?}/parameter/pool6")"
+	pool6=$(cat "${__object:?}/parameter/pool6")
 fi
 
 require='__package/jool-tools' __file /etc/jool/jool.conf \
-	--source - <<- EOF
+	--source - <<-EOF
 	{
-	  "instance": "$instance",
-	  "framework": "$framework",
+	  "instance": "${instance}",
+	  "framework": "${framework}",
 	  "global": {
-	    "pool6": "$pool6"
+	    "pool6": "${pool6}"
 	  }
 	}
 	EOF

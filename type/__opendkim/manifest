@@ -20,46 +20,51 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
-'alpine')
-	:
-	;;
-*)
-	printf "__opendkim does not yet support %s.\n" "$os" >&2
-	printf "Please contribute an implementation if you can.\n" >&2
-	exit 1
-	;;
+case ${os}
+in
+	(alpine)
+		;;
+	(*)
+		printf "__opendkim does not yet support %s.\n" "${os}" >&2
+		printf "Please contribute an implementation if you can.\n" >&2
+		exit 1
+		;;
 esac
 
 __package opendkim
 
 # Required parameters
-SOCKET="$(cat "${__object:?}/parameter/socket")"
+SOCKET=$(cat "${__object:?}/parameter/socket")
 export SOCKET
 
 # Optional parameters
-if [ -f "${__object:?}/parameter/basedir" ]; then
-	BASEDIR="$(cat "${__object:?}/parameter/basedir")"
+if [ -f "${__object:?}/parameter/basedir" ]
+then
+	BASEDIR=$(cat "${__object:?}/parameter/basedir")
 	export BASEDIR
 fi
 
-if [ -f "${__object:?}/parameter/canonicalization" ]; then
-	CANON="$(cat "${__object:?}/parameter/canonicalization")"
+if [ -f "${__object:?}/parameter/canonicalization" ]
+then
+	CANON=$(cat "${__object:?}/parameter/canonicalization")
 	export CANON
 fi
 
-if [ -f "${__object:?}/parameter/subdomains" ]; then
-	SUBDOMAINS="$(cat "${__object:?}/parameter/subdomains")"
+if [ -f "${__object:?}/parameter/subdomains" ]
+then
+	SUBDOMAINS=$(cat "${__object:?}/parameter/subdomains")
 	export SUBDOMAINS
 fi
 
-if [ -f "${__object:?}/parameter/umask" ]; then
-	UMASK="$(cat "${__object:?}/parameter/umask")"
+if [ -f "${__object:?}/parameter/umask" ]
+then
+	UMASK=$(cat "${__object:?}/parameter/umask")
 	export UMASK
 fi
 
-if [ -f "${__object:?}/parameter/userid" ]; then
-	USERID="$(cat "${__object:?}/parameter/userid")"
+if [ -f "${__object:?}/parameter/userid" ]
+then
+	USERID=$(cat "${__object:?}/parameter/userid")
 	export USERID
 fi
 
@@ -72,16 +77,17 @@ target_file="/etc/opendkim/opendkim.conf"
 
 mkdir -p "${__object:?}/files"
 
-"${__type:?}/files/opendkim.conf.sh" >"$source_file"
+"${__type:?}/files/opendkim.conf.sh" >"${source_file}"
 
 # Add user custom config
-if [ -f "${__object:?}/parameter/custom-config" ]; then
-	echo "# Custom user config" >>"$source_file"
-	cat "${__object:?}/parameter/custom-config" >>"$source_file"
+if [ -f "${__object:?}/parameter/custom-config" ]
+then
+	echo "# Custom user config" >>"${source_file}"
+	cat "${__object:?}/parameter/custom-config" >>"${source_file}"
 fi
 
-require="__package/opendkim" __file "$target_file" \
-	--source "$source_file" --mode 0644
+require="__package/opendkim" __file "${target_file}" \
+	--source "${source_file}" --mode 0644
 
 require="__package/opendkim" __start_on_boot opendkim
 

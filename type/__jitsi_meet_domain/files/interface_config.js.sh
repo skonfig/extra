@@ -24,12 +24,13 @@
 # default jitsi logo in svg
 BRANDING_WATERMARK_PATH='images/watermark.svg'
 # overrides default jitsi logo with the provided custom png logo
-if [ -n "${BRANDING_WATERMARK}" ]; then
+if [ -n "${BRANDING_WATERMARK}" ]
+then
   BRANDING_WATERMARK_PATH='images/watermark.png'
 fi
 
 # shellcheck disable=SC2034  # This is intended to be included
-JITSI_INTERFACE_CONFIG_JS="$(cat <<EOF
+JITSI_INTERFACE_CONFIG_JS=$(cat <<EOF
 /* eslint-disable no-unused-vars, no-var, max-len */
 /* eslint sort-keys: ["error", "asc", {"caseSensitive": false}] */
 
@@ -318,4 +319,4 @@ var interfaceConfig = {
 
 /* eslint-enable no-unused-vars, no-var, max-len */
 EOF
-)"
+)

@@ -18,12 +18,14 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-servers=$(cat "$__object/parameter/servers")
+servers=$(cat "${__object:?}/parameter/servers")
 
-if grep -q ^__key_value/CLIENTHOSTNAME "$__messages_in" || grep -q ^__key_value/XYMONSERVERS "$__messages_in" ; then
+if grep -q ^__key_value/CLIENTHOSTNAME "${__messages_in:?}" \
+	|| grep -q ^__key_value/XYMONSERVERS "${__messages_in:?}"
+then
 	echo "systemctl restart xymon-client"
-	echo "restarted" >> "$__messages_out"
+	echo "restarted" >>"${__messages_out:?}"
 	cat <<-EOT
-		echo "xymon-client xymon-client/XYMONSERVERS string $servers" | debconf-set-selections
+		echo "xymon-client xymon-client/XYMONSERVERS string ${servers}" | debconf-set-selections
 	EOT
-fi	
+fi

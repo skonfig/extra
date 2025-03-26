@@ -36,10 +36,14 @@ OPTIONAL PARAMETERS
 port
   The port to listen on. If not specified, wireguard will choose one randomly.
 
+
 SEE ALSO
 --------
+* :strong:`wg`\ (8)
+* :strong:`wg-quick`\ (8)
+* :strong:`cdist-type__wireguard`\ (7)
+* :strong:`cdist-type__block`\ (7)
 
-`wg(8)`, `wg-quick(8)`, `cdist-type__wireguard(7)`, `cdist-type__block(7)`
 
 AUTHORS
 -------

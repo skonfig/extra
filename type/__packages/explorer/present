@@ -20,9 +20,10 @@
 # Prints a sorted list of the packages currently installed.
 #
 
-os=$("${__explorer}/os")
+os=$("${__explorer:?}/os")
 
-case "${os}" in
+case ${os}
+in
     (debian|ubuntu|devuan)
         dpkg-query -W -f '${Package}\n' | LC_ALL=C sort
         ;;

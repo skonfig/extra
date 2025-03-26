@@ -19,7 +19,7 @@
 #
 
 __file /etc/init.d/iptables \
-    --source "$__type/files/init-script" \
+    --source "${__type:?}/files/init-script" \
     --state present \
     --mode 0755
 

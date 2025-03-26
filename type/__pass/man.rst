@@ -9,7 +9,7 @@ cdist-type__pass - Generate and use passwords using pass(1).
 DESCRIPTION
 -----------
 This type allows a user to generate and query passwords stored using pass(1) on
-the host machine. The password is then printed to the cdist message system, so
+the host machine. The password is then printed to the message system, so
 types depending on this one should require it. This enables an administrator to
 ensure a password exists using this type and then, from another type, use it as
 need be.
@@ -41,7 +41,7 @@ EXAMPLES
 --------
 
 Assuming that __othertype takes the path of the password as an argument and
-looks up in the cdist messages to find it:
+looks up in the skonfig messages to find it:
 
 .. code-block:: sh
 
@@ -57,7 +57,8 @@ looks up in the cdist messages to find it:
 
 SEE ALSO
 --------
-`pass`\ (7), `cdist-type__pass_init`\ (7)
+* :strong:`pass`\ (1)
+* :strong:`cdist-type__pass_init`\ (7)
 
 
 AUTHORS

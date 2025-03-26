@@ -8,8 +8,7 @@ cdist-type__dma_auth - Configure SMTP logins for the DragonFly Mail Agent MTA.
 
 DESCRIPTION
 -----------
-This cdist type allows you to set up credentials to log in to remote SMTP
-servers.
+This type allows you to set up credentials to log in to remote SMTP servers.
 
 NB: dma currently (v0.13) does not differentiate between users on a host.
     It will use whatever user it finds in the ``auth.conf`` first.

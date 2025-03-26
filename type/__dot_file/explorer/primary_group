@@ -22,5 +22,5 @@
 
 set -eu
 
-user="$(cat "${__object}/parameter/user")"
+user=$(cat "${__object:?}/parameter/user")
 id -gn "${user}"

@@ -8,7 +8,7 @@ cdist-type__issue - Manage issue
 
 DESCRIPTION
 -----------
-This cdist type allows you to easily setup /etc/issue.
+This type allows you to easily setup /etc/issue.
 
 
 REQUIRED PARAMETERS
@@ -30,8 +30,11 @@ EXAMPLES
 
     __issue
 
+    # When called from manifest
+    __issue --source "${__files:?}/myfancyissue"
+
     # When called from another type
-    __issue --source "$__type/files/myfancyissue"
+    __issue --source "${__type:?}/files/myfancyissue"
 
 
 AUTHORS

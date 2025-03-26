@@ -8,7 +8,7 @@ cdist-type__iptables_apply - Apply the rules
 
 DESCRIPTION
 -----------
-This cdist type deploys an init script that triggers
+This type deploys an init script that triggers
 the configured rules and also re-applies them on
 configuration. Rules are written from __iptables_rule
 into the folder ``/etc/iptables.d/``.
@@ -46,7 +46,8 @@ None (__iptables_apply is used by __iptables_rule automatically)
 
 SEE ALSO
 --------
-:strong:`cdist-type__iptables_rule`\ (7), :strong:`iptables`\ (8)
+* :strong:`cdist-type__iptables_rule`\ (7)
+* :strong:`iptables`\ (8)
 
 
 AUTHORS

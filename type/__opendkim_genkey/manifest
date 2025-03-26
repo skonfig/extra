@@ -21,31 +21,31 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
-'alpine')
-	:
-;;
-*)
-	cat <<- EOF >&2
-	__opendkim_genkey currently only supports Alpine Linux. Please
-	contribute an implementation for $os if you can.
-	EOF
-;;
+case ${os}
+in
+	(alpine)
+		;;
+	(*)
+		cat <<-EOF >&2
+		__opendkim_genkey currently only supports Alpine Linux. Please
+		contribute an implementation for ${os} if you can.
+		EOF
+		;;
 esac
 
-SELECTOR="$(cat "${__object:?}/parameter/selector")"
-DOMAIN="$(cat "${__object:?}/parameter/domain")"
+SELECTOR=$(cat "${__object:?}/parameter/selector")
+DOMAIN=$(cat "${__object:?}/parameter/domain")
 
 DIRECTORY="/var/db/dkim/"
 if [ -f "${__object:?}/parameter/directory" ];
 then
-	DIRECTORY="$(cat "${__object:?}/parameter/directory")"
+	DIRECTORY=$(cat "${__object:?}/parameter/directory")
 fi
 
 SIGKEY="${DOMAIN:?}"
 if [ -f "${__object:?}/parameter/sigkey" ];
 then
-	SIGKEY="$(cat "${__object:?}/parameter/sigkey")"
+	SIGKEY=$(cat "${__object:?}/parameter/sigkey")
 fi
 
 __package opendkim-utils

@@ -19,7 +19,7 @@
 #
 
 # control state
-state="$(cat "$__object/parameter/state")"
+state=$(cat "${__object:?}/parameter/state")
 
 # Set capabilities to aquire privileaged ports as netbox user. Two modes are
 # available to efficiently set capabilites. Assumes libcap-bin is installed as
@@ -31,76 +31,88 @@ set_bind_cap() {
     cap_mode=""  # reset variable from the execution before
 
     # check if capabilites are required after given mode
-    case "$1" in
+    case $1
+    in
         # assumes capabilites are not set (cause of new binaries)
-        set)
-            if [ "$SYSTEMD_SOCKET" != "yes" ]; then
+        (set)
+            if [ "${SYSTEMD_SOCKET}" != "yes" ]
+            then
                 cap_mode="+ep"
             fi
             ;;
 
         # check if capabilities have changed
-        correct)
-            if [ -s "$__object/explorer/bind-capability" ]; then
+        (correct)
+            if [ -s "${__object:?}/explorer/bind-capability" ]
+            then
                 # capabilites are set
-                if [ "$SYSTEMD_SOCKET" = "yes" ]; then
+                if [ "${SYSTEMD_SOCKET}" = "yes" ]
+                then
                     cap_mode="-ep"  # unset
                 fi
             else
                 # capabilities are unset
-                if [ "$SYSTEMD_SOCKET" != "yes" ]; then
+                if [ "${SYSTEMD_SOCKET}" != "yes" ]
+                then
                     cap_mode="+ep"  # set
                 fi
             fi
             ;;
 
         # faulty mode
-        *)
+        (*)
             echo "called set_bind_cap incorrect (\$1 missing)" >&2
             ;;
     esac
 
     # set capabilities if any
-    if [ "$cap_mode" ]; then
-        printf "setcap -q CAP_NET_BIND_SERVICE%s /opt/netbox/venv/bin/uwsgi\n" "$cap_mode"
+    if [ "${cap_mode}" ]
+    then
+        printf "setcap -q CAP_NET_BIND_SERVICE%s /opt/netbox/venv/bin/uwsgi\n" "${cap_mode}"
     fi
 }
-SYSTEMD_SOCKET="$(cat "$__object/files/systemd_socket")"
+SYSTEMD_SOCKET=$(cat "${__object:?}/files/systemd_socket")
 
 
-case "$state" in
+case ${state}
+in
     # install uwsgi
-    enabled|disabled)
+    (enabled|disabled)
         # not installed
-        if ! [ -s "$__object/explorer/installed" ]; then
+        if ! [ -s "${__object:?}/explorer/installed" ]
+        then
             echo "/opt/netbox/venv/bin/pip3 install -q uwsgi"
             set_bind_cap set
             do_restart=yes
-            printf "installed\n" >> "$__messages_out"
+            printf "installed\n" >>"${__messages_out:?}"
 
         # updates available
-        elif [ -s "$__object/explorer/upgradeable" ]; then
+        elif [ -s "${__object:?}/explorer/upgradeable" ]
+        then
             echo "/opt/netbox/venv/bin/pip3 install -q --upgrade uwsgi"
             set_bind_cap set
             do_restart=yes
-            printf "upgraded\n" >> "$__messages_out"
+            printf "upgraded\n" >>"${__messages_out:?}"
         fi
 
         # changed configuration
-        if grep -q "^__file/opt/netbox/uwsgi.ini:" "$__messages_in"; then
+        if grep -q "^__file/opt/netbox/uwsgi.ini:" "${__messages_in:?}"
+        then
             do_restart=yes
-            printf "configured\n" >> "$__messages_out"
+            printf "configured\n" >>"${__messages_out:?}"
         fi
 
         # if no capabilities were set yet, check if any are required
-        if [ -z "$cap_mode" ]; then
+        if [ -z "${cap_mode}" ]
+        then
             set_bind_cap correct
         fi
 
 
         # restart uwsgi
-        if [ "$do_restart" ] && [ "$state" != "disabled" ]; then
-            cat << EOF
+        if [ "${do_restart}" ] && [ "${state}" != "disabled" ]
+        then
+            cat <<EOF
 # Restart service
 systemctl restart uwsgi-netbox
 EOF
@@ -108,12 +120,13 @@ EOF
         ;;
 
     # uninstall
-    absent)
+    (absent)
         # check if installed
-        if [ -s "$__object/explorer/installed" ]; then
+        if [ -s "${__object:?}/explorer/installed" ]
+        then
             # service already disabled
             echo "/opt/netbox/venv/bin/pip3 uninstall -qy uwsgi"
-            printf "uninstalled\n" >> "$__messages_out"
+            printf "uninstalled\n" >>"${__messages_out:?}"
         fi
         ;;
 esac

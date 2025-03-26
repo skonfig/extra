@@ -8,9 +8,9 @@ cdist-type__pass_init - Initialize a local password store.
 
 DESCRIPTION
 -----------
-This type is intented to be used as a prerequisite to the
-cdist-type__pass(7) type. It will set up a pass(1) password
-store with the provided GPP2(1) public encryption key IDs.
+This type is intented to be used as a prerequisite to
+:strong:`cdist-type__pass`\ (7). It will set up a :strong:`pass`\ (1) password
+store with the provided PGP public key IDs.
 
 
 REQUIRED PARAMETERS
@@ -23,7 +23,7 @@ storedir
 REQUIRED MULTIPLE PARAMETERS
 ----------------------------
 gpgid
-    The GPG IDs of the public keys used to encrypt the password store.
+    The PGP IDs of the public keys used to encrypt the password store.
 
 
 EXAMPLES
@@ -40,7 +40,8 @@ EXAMPLES
 
 SEE ALSO
 --------
-`pass`\ (7), `cdist-type__pass`\ (7)
+* :strong:`pass`\ (1)
+* :strong:`cdist-type__pass`\ (7)
 
 
 AUTHORS

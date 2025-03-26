@@ -44,49 +44,50 @@ stop() {
    return "$retcode"
 }
 
-case "$1" in
-   start)
+case $1
+in
+   (start)
       if status -p "$PID_FILE" "$NAME" >/dev/null; then
          echo "$NAME already running"
       else
          start
       fi
-   ;;
-   stop)
+      ;;
+   (stop)
       if status -p "$PID_FILE" "$NAME" >/dev/null; then
          stop
       else
          echo "$NAME not running"
       fi
-   ;;
-   status)
+      ;;
+   (status)
       status -p "$PID_FILE" "$NAME"
       exit $?
-   ;;
-   restart)
+      ;;
+   (restart)
       if status -p "$PID_FILE" "$NAME" >/dev/null; then
          stop
       fi
       start
-   ;;
-   reload)
+      ;;
+   (reload)
       if status -p "$PID_FILE" "$NAME" >/dev/null; then
           kill -HUP "$(cat "$PID_FILE")"
       else
          echo "$NAME not running"
       fi
-   ;;
-   condrestart)
+      ;;
+   (condrestart)
       if [ -f "/var/lock/subsys/$NAME" ]; then
          if status -p "$PID_FILE" "$NAME" >/dev/null; then
             stop
          fi
          start
       fi
-   ;;
-   *)
+      ;;
+   (*)
       echo "Usage: $NAME {start|stop|status|reload|restart}"
       exit 1
-   ;;
+      ;;
 esac
 exit $?

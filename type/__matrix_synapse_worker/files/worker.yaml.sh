@@ -21,17 +21,19 @@
 #
 
 generate_bind_addresses () {
-	if [ -n "$WORKER_BIND_ADDRESSES" ]; then
+	if [ -n "${WORKER_BIND_ADDRESSES}" ]
+	then
 		echo "bind_addresses:"
-		for addr in $WORKER_BIND_ADDRESSES; do
-			echo "    - '$addr'"
+		for addr in ${WORKER_BIND_ADDRESSES}
+		do
+			echo "    - '${addr}'"
 		done
 	else
 		echo "bind_addresses: []"
 	fi
 }
 
-cat << EOF
+cat <<EOF
 worker_app: "${WORKER_APP:?}"
 worker_name: "${WORKER_NAME:?}"
 
@@ -48,11 +50,12 @@ worker_listeners:
      - names:
 EOF
 
-for resource in ${WORKER_RESOURCES:?}; do
-echo "       - $resource"
+for resource in ${WORKER_RESOURCES:?}
+do
+echo "       - ${resource}"
 done
 
-cat << EOF
+cat <<EOF
 
 worker_log_config: "${WORKER_LOG_CONFIG:?}"
 EOF

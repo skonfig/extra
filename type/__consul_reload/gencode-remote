@@ -19,6 +19,7 @@
 #
 
 service="consul"
-if grep -q "^__file/etc/consul/conf.d/" "$__messages_in"; then
-   echo "service $service status && service $service reload || true"
+if grep -q '^__file/etc/consul/conf\.d/' "${__messages_in:?}"
+then
+   echo "service ${service} status && service ${service} reload || true"
 fi

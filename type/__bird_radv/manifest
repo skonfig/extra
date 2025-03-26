@@ -20,15 +20,16 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-case "$os" in
-'alpine'|'debian'|'ubuntu')
-	confdir='/etc/bird.d'
-;;
-*)
-	printf "Your operating system (%s) is currently not supported by __bird_radv\n" "$os" >&2
-	printf "Please contribute an implementation for it if you can.\n" >&2
-	exit 1
-;;
+case ${os}
+in
+	(alpine|debian|ubuntu)
+		confdir=/etc/bird.d
+		;;
+	(*)
+		printf "Your operating system (%s) is currently not supported by __bird_radv\n" "${os}" >&2
+		printf "Please contribute an implementation for it if you can.\n" >&2
+		exit 1
+		;;
 esac
 
 have_routes=no
@@ -40,7 +41,7 @@ fi
 RDNS=
 if [ -f "${__object:?}/parameter/ns" ];
 then
-	RDNS=$(cat << EOF
+	RDNS=$(cat <<EOF
 	rdnss {
 $(sed -e 's/^/\t\tns /' -e 's/$/;/' "${__object:?}/parameter/ns")
 	};
@@ -57,7 +58,7 @@ fi
 
 __file "${confdir:?}/radv-${__object_id:?}.conf" \
 	--mode 0640 --owner root --group bird \
-	--source - << EOF
+	--source - <<EOF
 ipv6 table radv_routes;
 
 protocol static {
@@ -73,9 +74,9 @@ protocol radv ${__object_id:?} {
 
 $(sed -e 's/^/\tinterface "/' -e 's/$/";/' "${__object:?}/parameter/interface")
 
-$RDNS
+${RDNS}
 
-$DNSSL
+${DNSSL}
 
 }
 EOF

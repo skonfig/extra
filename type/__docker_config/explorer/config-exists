@@ -20,7 +20,8 @@
 # Prints "yes" if the config is set, "no" otherwise.
 #
 
-if docker config ls | grep -q " ${__object_id:?} "; then
+if docker config ls | grep -qF " ${__object_id:?} "
+then
 	echo yes
 else
 	echo no

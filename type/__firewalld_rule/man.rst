@@ -8,8 +8,8 @@ cdist-type__firewalld_rule - Configure firewalld rules
 
 DESCRIPTION
 -----------
-This cdist type allows you to manage rules in firewalld
-using the *direct* way (i.e. no zone support).
+This type allows you to manage rules in firewalld using the *direct* way
+(i.e. no zone support).
 
 
 REQUIRED PARAMETERS

@@ -19,30 +19,31 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-gemset="$__object_id"
-ruby="$(echo "$gemset" | cut -d '@' -f 1)"
-gemsetname="$(echo "$gemset" | cut -d '@' -f 2)"
-state_is="$(cat "$__object/explorer/state")"
-user="$(cat "$__object/parameter/user")"
-state_should="$(cat "$__object/parameter/state")"
+gemset=${__object_id:?}
+ruby=$(echo "${gemset}" | cut -d '@' -f 1)
+gemsetname=$(echo "${gemset}" | cut -d '@' -f 2)
+state_is=$(cat "${__object:?}/explorer/state")
+user=$(cat "${__object:?}/parameter/user")
+state_should=$(cat "${__object:?}/parameter/state")
 
-[ "$state_is" = "$state_should" ] && exit 0
+[ "${state_is}" = "${state_should}" ] && exit 0
 
-case "$state_should" in
-    present)
-        cat << DONE
-su - "$user" -c "source ~/.rvm/scripts/rvm; rvm $gemset --create"
+case ${state_should}
+in
+    (present)
+        cat <<DONE
+su - "${user}" -c "source ~/.rvm/scripts/rvm; rvm ${gemset} --create"
 DONE
-        if [ -f "$__object/parameter/default" ]; then
-            cat << DONE
-su - "$user" -c "source ~/.rvm/scripts/rvm; rvm use --default $gemset"
+        if [ -f "${__object:?}/parameter/default" ]
+        then
+            cat <<DONE
+su - "${user}" -c "source ~/.rvm/scripts/rvm; rvm use --default ${gemset}"
 DONE
         fi
-
-    ;;
-    absent)
-        cat << DONE
-su - "$user" -c "source ~/.rvm/scripts/rvm; rvm use $ruby; rvm --force gemset delete $gemsetname"
+        ;;
+    (absent)
+        cat <<DONE
+su - "${user}" -c "source ~/.rvm/scripts/rvm; rvm use ${ruby}; rvm --force gemset delete ${gemsetname}"
 DONE
-    ;;
+        ;;
 esac

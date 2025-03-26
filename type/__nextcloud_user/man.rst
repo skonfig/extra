@@ -8,11 +8,11 @@ cdist-type__nextcloud_user - Setup a Nextcloud user
 
 DESCRIPTION
 -----------
-It manages a single Nextcloud user given by the object id or parameter `--user`.
+It manages a single Nextcloud user given by the object id or parameter ``--user``.
 This type can create and manage most properties of the Nextcloud user. If you
 only want to setup the user, but want that the user will take full control over
-all settings (so cdist will not touch the user anymore), use the parameter
-`--only-setup` or `--keep-*` for special parameters.
+all settings (so skonfig will not touch the user anymore), use the parameter
+``--only-setup`` or ``--keep-*`` for special parameters.
 
 
 REQUIRED PARAMETERS
@@ -120,7 +120,7 @@ keep-quota
 
 keep-groups
     Do not touch the user groups if the user is already set up. This will avoid
-    to delete group assosiactions not defined via cdist. If the parameter
+    to delete group assosiactions not defined via skonfig. If the parameter
     `--group` is set despite of this parameter, it will only be used in the user
     setup if he does not already exists.
 
@@ -158,7 +158,7 @@ EXAMPLES
         --quota "2 GB"
         --only-setup
 
-    # manages an admin user fully controlled by cdist
+    # manages an admin user fully controlled by skonfig
     require="__nextcloud/var/www/html/cloud" __nextcloud_user bar \
         --cloud /var/www/html/cloud/ \
         --displayname "Bar" \
@@ -193,7 +193,7 @@ This type may be extended by more user settings. If you think some
 configuration is missing, you are welcome to contribute!
 
 Sometimes, this type uses custom php code to hack into Nextcloud to gather some
-information not possible to get via the `occ` command or even set a value.
+information not possible to get via the ``occ`` command or even set a value.
 
 
 SEE ALSO

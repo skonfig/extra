@@ -11,9 +11,9 @@ DESCRIPTION
 This type write the configuration file for an instance of the static protocl to
 be ran bu the bird internet routing daemon, allowing an administrator to inject
 static routes into the daemon's routing tables. This protocol allows for only
-one of two channels to be used, either `ipv4` or `ipv6`, by default `ipv6` is
-used unless the `ipv4` flag is passed. This type **expects** to depend on the
-`cdist-type__bird_core(7)` type.
+one of two channels to be used, either ``ipv4`` or ``ipv6``, by default ``ipv6`` is
+used unless the `ipv4` flag is passed. This type **expects** to depend on
+:strong:`cdist-type__bird_core`\ (7).
 
 
 REQUIRED PARAMETERS

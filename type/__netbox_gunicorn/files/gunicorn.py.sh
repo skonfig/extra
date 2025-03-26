@@ -21,15 +21,10 @@
 # see https://docs.gunicorn.org/en/stable/settings.html
 #
 
-# fix missing $__explorer
-# see https://code.ungleich.ch/ungleich-public/cdist/-/issues/834
-__explorer="$__global/explorer"
-
 # size workes by cpu
-cores="$(cat "$__explorer/cpu_cores")"
+cores=$(cat "${__global:?}/explorer/cpu_cores")
 
-
-cat << EOF
+cat <<EOF
 # The IP address (typically localhost) and port that the Netbox WSGI process should listen on
 #bind = done via systemd socket 'gunicorn-netbox.socket'
 

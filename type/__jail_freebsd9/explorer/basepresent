@@ -24,8 +24,9 @@
 #exec >&2
 #set -x
 
-if [ -f "$__object/parameter/jaildir" ]; then
-   jaildir="$(cat "$__object/parameter/jaildir")"
+if [ -f "${__object:?}/parameter/jaildir" ]
+then
+   jaildir=$(cat "${__object:?}/parameter/jaildir")
 else
    jaildir="/usr/jail"
 fi
@@ -33,16 +34,19 @@ fi
 name="base:jailbase.tgz"
 out=""
 
-save_IFS="$IFS"
+save_IFS=${IFS}
 IFS=":"
-for cur in $name; do
-    if [ -e "${jaildir}/$cur" ]; then
+for cur in ${name}
+do
+    if [ -e "${jaildir}/${cur}" ]
+    then
         out="${out}:${cur}"
     fi
 done
-IFS="$save_IFS"
+IFS=${save_IFS}
 
-if [ -z "$out" ]; then
+if [ -z "${out}" ]
+then
     echo "NONE"
 else
     echo "${out}"
@@ -50,4 +54,3 @@ fi
 
 # Debug
 #set +x
-

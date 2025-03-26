@@ -25,25 +25,27 @@
 #  1: File which list all sockets to listen on (sepearated by \n)
 #
 
-if [ $# -ne 1 ]; then
+if [ $# -ne 1 ]
+then
     printf "netbox.socket.sh: argument \$1 missing or too much given!\n" >&2
     exit 1
 fi
 
 
-cat << UNIT
+cat <<UNIT
 [Unit]
-Description=Socket for NetBox via $TYPE
+Description=Socket for NetBox via ${TYPE}
 
 [Socket]
 UNIT
 
 # read all sockets to listen to
-while read -r line; do
-    printf "ListenStream=%s\n" "$line"
-done < "$1"
+while read -r line
+do
+    printf "ListenStream=%s\n" "${line}"
+done <"$1"
 
-cat << UNIT
+cat <<UNIT
 SocketUser=netbox
 SocketGroup=www-data
 

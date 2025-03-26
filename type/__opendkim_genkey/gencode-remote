@@ -19,32 +19,37 @@
 #
 
 # Required parameters
-DOMAIN="$(cat "${__object:?}/parameter/domain")"
-SELECTOR="$(cat "${__object:?}/parameter/selector")"
+DOMAIN=$(cat "${__object:?}/parameter/domain")
+SELECTOR=$(cat "${__object:?}/parameter/selector")
 
 # Optional parameters
 BITS=
-if [ -f "${__object:?}/parameter/bits" ]; then
+if [ -f "${__object:?}/parameter/bits" ]
+then
 	BITS="-b $(cat "${__object:?}/parameter/bits")"
 fi
 
 DIRECTORY="/var/db/dkim/"
-if [ -f "${__object:?}/parameter/directory" ]; then
-	DIRECTORY="$(cat "${__object:?}/parameter/directory")"
+if [ -f "${__object:?}/parameter/directory" ]
+then
+	DIRECTORY=$(cat "${__object:?}/parameter/directory")
 fi
 
 # Boolean parameters
 SUBDOMAINS=
-if [ -f "${__object:?}/parameter/no-subdomains" ]; then
+if [ -f "${__object:?}/parameter/no-subdomains" ]
+then
 	SUBDOMAINS='--nosubdomains'
 fi
 
 RESTRICTED='--restrict'
-if [ -f "${__object:?}/parameters/unrestricted" ]; then
+if [ -f "${__object:?}/parameters/unrestricted" ]
+then
 	RESTRICTED=
 fi
 
-if ! [ -f "${DIRECTORY}${SELECTOR}.private" ]; then
-	echo "opendkim-genkey $BITS --domain=$DOMAIN --directory=$DIRECTORY $RESTRICTED --selector=$SELECTOR $SUBDOMAINS"
+if ! [ -f "${DIRECTORY}${SELECTOR}.private" ]
+then
+	echo "opendkim-genkey ${BITS} --domain=${DOMAIN} --directory=${DIRECTORY} ${RESTRICTED} --selector=${SELECTOR} ${SUBDOMAINS}"
 	echo "chown opendkim:opendkim ${DIRECTORY}${SELECTOR}.private"
 fi
