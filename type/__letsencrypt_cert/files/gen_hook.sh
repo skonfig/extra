@@ -29,13 +29,6 @@ hook_contents_head="#!/bin/sh -e"
 hook_contents_logic=""
 hook_contents_tail=""
 
-# Backwards compatibility
-# Remove this when renew-hook is removed
-# Falling back to renew-hook if deploy-hook is not passed
-if [ "${hook}" = "deploy" ] && [ ! -f "${hook_source}" ]
-then
-	hook_source="${__object:?}/parameter/renew-hook"
-fi
 if [ "${state}" = "present" ] && \
 	[ -f "${hook_source}" ]; then
 	# This hook is to be installed, let's generate it with some
