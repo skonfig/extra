@@ -1,6 +1,0 @@
-ip-transparent
-dns64
-enable-rc
-control-use-certs
-disable-ip4
-disable-ip6
