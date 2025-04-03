@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2020 Dennis Camera (dennis.camera at riiengineering.ch)
+# 2020,2025 Dennis Camera (dennis.camera at riiengineering.ch)
 #
 # This file is part of skonfig-extra.
 #
@@ -30,6 +30,6 @@ dma_conf="${CONF_PATH:?}/dma.conf"
 
 test -f "${dma_conf}" || exit 0
 
-grep -v -e '^[ \t]*#\|^$' "${dma_conf}" \
-| sed -e 's/[ \t]*#.*$//' \
+# NOTE: uses non-POSIX sort(1) stable sort
+sed -e 's/[[:blank:]]*#.*$//' -e '/^$/d' "${dma_conf}" \
 | sort -s -k 1,1

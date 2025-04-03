@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2020 Dennis Camera (dennis.camera at riiengineering.ch)
+# 2020,2025 Dennis Camera (dennis.camera at riiengineering.ch)
 #
 # This file is part of skonfig-extra.
 #
@@ -20,31 +20,37 @@
 
 os=$(cat "${__global:?}/explorer/os")
 
-# Install DMA
+# install and enable DMA
 case ${os}
 in
 	(alpine)
 		__package dma --state present
-		export require='__package/dma'
 		;;
 	(debian|devuan|ubuntu)
 		__package dma --state present
-		export require='__package/dma'
 		;;
 	(freebsd)
-		# Stop sendmail if necessary
-		__process 'sendmail' --name 'sendmail.*' --state absent \
+		# stop sendmail if necessary
+		__process sendmail \
+			--state absent \
+			--name 'sendmail.*' \
 			--stop '/etc/rc.d/sendmail onestop'
 
-		# ... and disable it
-		__key_value 'rcconf-sendmail-enable' --file '/etc/rc.conf' \
-			--key 'sendmail_enable' --delimiter '=' --value '"NONE"' \
-			--exact_delimiter
+		# … and disable it
+		__key_value '/etc/rc.conf:sendmail_enable' \
+			--file '/etc/rc.conf' \
+			--delimiter '=' --exact_delimiter \
+			--key 'sendmail_enable' --value '"NONE"'
 
-		# Setup mailwrapper accordingly
-		__file '/etc/mail/mailer.conf' --mode 0644 --source - <<-'EOF'
+		# setup mailwrapper accordingly
+		__file /etc/mail/mailer.conf \
+			--owner 0 --group 0 --mode 0644 \
+			--source - <<-'EOF'
 			#
-			# Execute the "real" sendmail program, named /usr/libexec/sendmail/sendmail
+			# Execute the "real" sendmail program
+			#
+			# This file is managed by skonfig.
+			# Changes will be overwritten.
 			#
 			sendmail	/usr/libexec/dma
 			send-mail	/usr/libexec/dma

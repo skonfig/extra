@@ -18,8 +18,13 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-quote() { printf "'%s'" "$(printf '%s' "$*" | sed -e "s/'/'\\\\''/g")"; }
-drop_awk_comments() { quote "$(sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@")"; }
+shquot() {
+	# source: https://github.com/riiengineering/shfun/blob/main/lib/quote/shquot.sh
+	sed -e "s/'/'\\\\''/g" -e "1s/^/'/" -e "\$s/\$/'/" <<-EOF
+	$*
+	EOF
+}
+drop_awk_comments() { shquot "$(sed '/^[[:blank:]]*#.*$/d;/^$/d' "$@")"; }
 
 CONF_PATH=/etc/dma  # set in Makefile
 
@@ -141,11 +146,11 @@ then
 	#    at the end of the file.
 
 	cat <<-CODE
-	awk $(drop_awk_comments "${__type:?}/files/update_dma_conf.awk") $(quote "${dma_conf}") <<'EOF' >$(quote "${dma_conf}.tmp") \
-	&& cat $(quote "${dma_conf}.tmp") >$(quote "${dma_conf}")
+	awk $(drop_awk_comments "${__type:?}/files/update_dma_conf.awk") $(shquot "${dma_conf}") <<'EOF' >$(shquot "${dma_conf}.tmp") \
+	&& cat $(shquot "${dma_conf}.tmp") >$(shquot "${dma_conf}")
 	${conf_should}
 	EOF
-	rm $(quote "${dma_conf}.tmp")
+	rm $(shquot "${dma_conf}.tmp")
 	CODE
 
 	config_updated=true
@@ -156,9 +161,8 @@ fi
 # Send a test email if enabled and necessary (=configuration changed)
 if test -f "${__object:?}/parameter/send-test-mail"
 then
-	if grep -q '^__mail_alias/root:' "${__messages_in:?}" \
-	|| grep -q '^__dma_auth/' "${__messages_in:?}" \
-	|| ${config_updated}
+	if ${config_updated?} \
+	|| grep -q -e '^__mail_alias/root:' -e '^__dma_auth/' "${__messages_in:?}"
 	then
 		cat <<-CODE
 		sendmail root <<'EOF'
