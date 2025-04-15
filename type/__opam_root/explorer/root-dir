@@ -1,0 +1,62 @@
+#!/bin/sh -e
+#
+# 2022 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Prints the pathname of the OPAMROOT directory.
+#
+
+if test -s "${__object:?}/parameter/root"
+then
+	# use --root parameter
+	cat "${__object:?}/parameter/root"
+else
+	# default to ~user/.opam (as opam(1) would)
+
+	if test -s "${__object:?}/parameter/user"
+	then
+		read -r user <"${__object:?}/parameter/user"
+	elif test "${__object_name:?}" != "${__object_name#__opam_root/}"
+	then
+		# only fall back to __object_id if this explorer is called from an
+		# __opam_root object since this explorer is linked to
+		# type/__opam_switch, type/__opam_pin and type/__package_opam, too,
+		# where __object_id has a different meaning.
+		user=${__object_id:?}
+	else
+		echo 'cannot determine OPAM user.' >&2
+		exit 1
+	fi
+
+	home_dir=$(
+		if command -v getent >/dev/null 2>&1
+		then
+			getent passwd "${user}"
+		else
+			awk -F ':' -v user="${user}" '$1==user'
+		fi \
+		| cut -d ':' -f 6)
+
+	test -n "${home_dir}" || home_dir=$(eval "cd ~${user} && pwd -P")
+
+	test -d "${home_dir}" || {
+		printf 'Failed to determine home directory of user %s\n' "${user}" >&2
+		exit 1
+	}
+
+	printf '%s/.opam\n' "${home_dir}"
+fi

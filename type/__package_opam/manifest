@@ -1,0 +1,63 @@
+#!/bin/sh -e
+#
+# 2022 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+# Install depexts
+# NOTE: if the depexts explorer cannot determine the depexts (e.g. because opam
+#       is not (yet) available, it will print a ?).
+if test "$(cat "${__object:?}/explorer/depexts")" != '?'
+then
+	# https://github.com/ocaml-opam/opam-depext/blob/2.0/depext.ml#L180
+	os=$(cat "${__global:?}/explorer/os")
+	read -r opam_family <"${__object:?}/explorer/os-family"
+	case ${opam_family}
+	in
+		(arch|archlinux)
+			depexts_package_type=pacman ;;
+		(alpine)
+			depexts_package_type=apk ;;
+		(debian)
+			depexts_package_type=apt ;;
+		(gentoo)
+			depexts_package_type=emerge ;;
+		(rhel|centos|fedora|mageia|oraclelinux|ol)
+			depexts_package_type=yum ;;
+		(suse|opensuse)
+			depexts_package_type=zypper ;;
+		(bsd)
+			case ${os}
+			in
+				(freebsd)
+					depexts_package_type=pkgng_freebsd ;;
+				(netbsd)
+					depexts_package_type=pkgin ;;
+				(openbsd)
+					depexts_package_type=pkg_openbsd ;;
+			esac
+			;;
+		(*)
+			# unsupported
+			;;
+	esac
+	if test -n "${depexts_package_type-}"
+	then
+		xargs -L 1 __package --type "${depexts_package_type}" \
+			<"${__object:?}/explorer/depexts"
+	fi
+fi

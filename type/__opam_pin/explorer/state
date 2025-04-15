@@ -1,0 +1,85 @@
+#!/bin/sh -e
+#
+# 2022 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Prints the state of the opam pin.
+#
+
+quote() { printf '%s\n' "$*" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"; }
+
+# reverse engineered regex to parse the output of ‘opam pin list’
+# from https://github.com/ocaml/opam/blob/2.0/src/client/opamPinCommand.ml#L623
+# VERY likely to break!!
+# name:\1 version:\3 state:\4 kind:\5 target:\6 extra:\7
+pin_parse_regex='^\([^. ]*\)\(\.\([0-9.]*\)\)\{0,1\}  *\(([^)]*)\)\{0,1\}  *\([^ ]*\)  *\([^(]*\)\(\(([^)]*)\)*\)$'
+
+opam_vars='OPAMUTF8=never OPAMCOLOR=never OPAMROOTISOK=1 OPAMSTATUSLINE=never OPAMCLI=2.0'
+
+OPAMROOT=$("${__type_explorer:?}/root-dir")
+opam_vars="${opam_vars} OPAMROOT=$(quote "${OPAMROOT}")"
+
+read -r OPAMSWITCH <"${__object:?}/parameter/switch"
+opam_vars="${opam_vars} OPAMSWITCH=$(quote "${OPAMSWITCH}")"
+
+# shellcheck disable=SC2015
+command -v opam >/dev/null 2>&1 \
+&& {
+	# NOTE: check for presence of opam root always before executing opam(1) as
+	#       opam will create a lock file inside the $OPAMROOT even if it is not
+	#       a valid root, thus preventing creation of said root later on.
+	# cf. type/__opam_root/explorer/state
+	test -e "${OPAMROOT}/config" || test -e "${OPAMROOT}/aliases"
+} || {
+	# no opam (root) -> no pin
+	echo 'absent'
+	exit 0
+}
+
+read -r user <"${__object:?}/parameter/user"
+
+if test -s "${__object:?}/parameter/package"
+then
+	read -r name <"${__object:?}/parameter/package"
+else
+	name=${__object_id:?}
+fi
+if test -s "${__object:?}/parameter/target"
+then
+	read -r target_should <"${__object:?}/parameter/target"
+fi
+
+# NOTE: in case this type is executed on every run, even if nothing should be
+#       changed, it is likely that the ${pin_parse_regex} does not include one
+#       of the very special ideas the opam developers had.  So you may want to
+#       check the ‘opam pin list’ output and send a patch upstream :-)
+IFS=',' read -r package_name_is target_is <<EOF
+$(su - "${user}" -c "${opam_vars} exec opam pin list" | sed -n -e "/^${name%%.*}\./s/${pin_parse_regex}/\1,\6/p")
+EOF
+
+test "${package_name_is}" = "${name}" || {
+	# package_name_is could be empty if no match was found
+	echo 'absent'
+	exit 0
+}
+
+test -n "${target_should-}" -a  "${target_is}" = "${target_should-}" || {
+	echo 'wrong-target'
+	exit 0
+}
+
+echo 'present'

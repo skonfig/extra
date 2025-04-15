@@ -1,0 +1,53 @@
+#!/bin/sh -e
+#
+# 2022 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+# Prints the system packages which are required to be installed for this opam
+# package to be installed.
+#
+
+quote() { printf '%s\n' "$*" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"; }
+
+opam_vars='OPAMUTF8=never OPAMCOLOR=never OPAMROOTISOK=1 OPAMSTATUSLINE=never OPAMCLI=2.0'
+
+OPAMROOT=$("${__type_explorer:?}/root-dir")
+opam_vars="${opam_vars} OPAMROOT=$(quote "${OPAMROOT}")"
+
+if test -s "${__object:?}/parameter/switch"
+then
+	read -r OPAMSWITCH <"${__object:?}/parameter/switch"
+	opam_vars="${opam_vars} OPAMSWITCH=$(quote "${OPAMSWITCH}")"
+fi
+
+# shellcheck disable=SC2015
+command -v opam >/dev/null 2>&1 \
+&& {
+	# NOTE: check for presence of opam root always before executing opam(1) as
+	#       opam will create a lock file inside the $OPAMROOT even if it is not
+	#       a valid root, thus preventing creation of said root later on.
+	# cf. type/__opam_root/explorer/state
+	test -e "${OPAMROOT}/config" || test -e "${OPAMROOT}/aliases"
+} || {
+	# cannot determine opam os-family if no root was initialised
+	exit 0
+}
+
+
+read -r user <"${__object:?}/parameter/user"
+
+su - "${user}" -c "${opam_vars} exec opam var --readonly os-family"

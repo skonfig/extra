@@ -1,0 +1,54 @@
+#!/bin/sh -e
+#
+# 2022 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+quote() { printf '%s\n' "$*" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"; }
+
+
+read -r state_is <"${__object:?}/explorer/state"
+read -r state_should <"${__object:?}/parameter/state"
+
+if test -s "${__object:?}/parameter/user"
+then
+	read -r user <"${__object:?}/parameter/user"
+else
+	user=${__object_id:?}
+fi
+
+test "${state_is}" != "${state_should}" || exit 0
+
+OPAMROOT=$(cat "${__object:?}/explorer/root-dir")
+
+case ${state_should}
+in
+	(present)
+		opam_vars='OPAMROOTISOK=1 OPAMCOLOR=never OPAMCLI=2.0'
+		opam_init_cmd="opam init --bare -n --root=$(quote "${OPAMROOT}")"
+
+		printf 'su - %s -c %s\n' \
+			"${user}" "$(quote "${opam_vars} exec ${opam_init_cmd}")"
+		;;
+	(absent)
+		printf 'rm -R -f %s\n' "$(quote "${OPAMROOT}")"
+		;;
+	(*)
+		printf 'Invalid --state: %s\n' "${state_should}" >&2
+		exit 1
+		;;
+esac
