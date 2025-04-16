@@ -66,6 +66,7 @@ in
 		fi
 
 		opam_cmd "install $(quote "${name}") --yes ${opam_opts-}"
+		echo installed >>"${__messages_out:?}"
 		;;
 	(absent)
 		if test -f "${__object:?}/parameter/destdir"
@@ -75,6 +76,7 @@ in
 		fi
 
 		opam_cmd "remove $(quote "${name}") --yes"
+		echo removed >>"${__messages_out:?}"
 		;;
 	(*)
 		printf 'Invalid --state: %s\n' "${state_should}" >&2
