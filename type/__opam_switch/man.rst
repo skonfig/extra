@@ -61,6 +61,9 @@ EXAMPLES
    # Create a switch for a specific OCaml version
    __opam_switch 4.11.1
 
+   # Create a switch using the system compiler
+   __opam_switch test --name /usr/local/opam/test --compiler ocaml-system
+
 
 SEE ALSO
 --------
