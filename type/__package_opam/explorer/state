@@ -57,7 +57,7 @@ else
 fi
 
 if
-	su - "${user}" -c "${opam_vars} exec opam list --readonly --short --installed $(quote "${name}")" \
+	su - "${user}" -c "${opam_vars} exec opam list --readonly --short --installed-roots --resolve=$(quote "${name}")" \
 	| grep -qxF "${name}"
 then
 	echo 'present'
