@@ -49,6 +49,13 @@ else
 	name=${__object_id:?}
 fi
 
+case ${name}
+in
+	([!/]*/*)
+		# name is a relative path, make absolute
+		name="$(su - "${user}" -c 'pwd -P')/${name}"
+		;;
+esac
 
 su - "${user}" -c "${opam_vars} exec opam switch list" \
 | awk -v name="${name}" '

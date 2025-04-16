@@ -39,7 +39,14 @@ case ${state_should}
 in
 	(present)
 		opam_vars='OPAMROOTISOK=1 OPAMCOLOR=never OPAMCLI=2.0'
-		opam_init_cmd="opam init --bare -n --root=$(quote "${OPAMROOT}")"
+		opam_init_cmd="opam init --bare --root=$(quote "${OPAMROOT}") --yes"
+
+		if test -f "${__object:?}/parameter/shell-setup"
+		then
+			opam_init_cmd="${opam_init_cmd} --shell-setup --enable-shell-hook --enable-completion"
+		else
+			opam_init_cmd="${opam_init_cmd} --no-setup"
+		fi
 
 		printf 'su - %s -c %s\n' \
 			"${user}" "$(quote "${opam_vars} exec ${opam_init_cmd}")"

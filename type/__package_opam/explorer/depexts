@@ -65,4 +65,4 @@ else
 	name=${__object_id:?}
 fi
 
-su - "${user}" -c "${opam_vars} exec opam list --readonly --depexts --resolve=$(quote "${name}")"
+su - "${user}" -c "${opam_vars} exec opam list --readonly --available --depexts --resolve=$(quote "${name}")"
