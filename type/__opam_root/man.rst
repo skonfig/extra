@@ -40,7 +40,10 @@ user
 
 BOOLEAN PARAMETERS
 ------------------
-None.
+shell-setup
+   Set up the user's shell configuration for opam, i.e.
+   * register a shell hook to keep the shell environment up-to-date at every prompt,
+   * setup shell completion (for supported shells).
 
 
 EXAMPLES
@@ -49,6 +52,14 @@ EXAMPLES
 .. code-block:: sh
 
    # Create an opam root for the root user (not recommened by opam)
+   __opam_root root
+
+   # Create an opam root and install recommended packages
+   __package m4
+   __package git
+   __package darcs
+   __package hg
+   __package darcs
    __opam_root root
 
 
