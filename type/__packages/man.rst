@@ -16,7 +16,8 @@ large number of packages.
 Additionally, since this type is used to install group of packages, then
 it can be used as a requirement for follow-up types.
 
-Currently only Debian, Ubuntu and Devuan are supported.
+Currently only Debian, Ubuntu and Devuan are supported
+(see ``explorer/present``).
 
 
 OPTIONAL MULTIPLE PARAMETERS
@@ -42,11 +43,11 @@ then using it as a requirement for follow-up types.
     export require='__packages/mpd'
 
     __systemd_unit mpd.service \
-        --enablement-disabled \
+        --enablement-state disabled \
         --restart
 
     __systemd_unit mpd.socket \
-        --enablement-disabled \
+        --enablement-state disabled \
         --restart
 
     unset require

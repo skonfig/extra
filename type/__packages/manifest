@@ -18,25 +18,6 @@
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
 
-os=$(cat "${__global:?}/explorer/os")
-
-process_package() {
-    case "${os}"
-    in
-        (debian|ubuntu|devuan)
-            __package_apt "${1}" \
-                --state "${2}" \
-                --purge-if-absent \
-                </dev/null
-            ;;
-        (*)
-            __package "${1}" \
-                --state "${2}" \
-                </dev/null
-            ;;
-    esac
-}
-
 is_present="${__object:?}/explorer/present"
 should_present="${__object:?}/parameter/present"
 should_absent="${__object:?}/parameter/absent"
@@ -61,6 +42,9 @@ do
     | LC_ALL=C sort \
     | comm "$@" - "${is_present}" \
     | while read -r package_name
-    do process_package "${package_name}" "${package_state}"
+    do
+        __package "${package_name}" \
+            --state "${package_state}" \
+            </dev/null
     done
 done
