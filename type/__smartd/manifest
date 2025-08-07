@@ -37,7 +37,7 @@ version_ge() {
 os=$(cat "${__global:?}/explorer/os")
 os_version=$(cat "${__global:?}/explorer/os_version")
 
-state_should=present
+state_should=$(cat "${__object:?}/parameter/state")
 
 case ${os}
 in
