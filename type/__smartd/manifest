@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2020,2022,2023 Dennis Camera (dennis.camera at riiengineering.ch)
+# 2020,2022,2023,2025 Dennis Camera (dennis.camera at riiengineering.ch)
 #
 # This file is part of skonfig-extra.
 #
@@ -37,27 +37,62 @@ version_ge() {
 os=$(cat "${__global:?}/explorer/os")
 os_version=$(cat "${__global:?}/explorer/os_version")
 
-state_should=present
+state_should=$(cat "${__object:?}/parameter/state")
+
+mailer=$(cat "${__object:?}/explorer/mailer")
 
 case ${os}
 in
-	(debian|devuan)
-		mailer=$(cat "${__object:?}/explorer/mailer")
-		case ${mailer}
+	(alpine)
+		case ${state_should}/${mailer}
 		in
-			(mail)
+			(absent/*)
+				# don’t care if smartd should be removed anyway
+				;;
+			(*/mail)
+				;;
+			(*)
+				__package_apk mailx
+				require="${require-} __package_apk/mailx"
+				;;
+		esac
+
+		__package_apk smartmontools \
+			--state "${state_should}"
+
+		case ${state_should}
+		in
+			(present)
+				# tanken from Debian, seems to make sense :-)
+				devicescan_options='-d removable -n standby -m root'
+
+				require=__package_apk/smartmontools \
+				__sed /etc/smartd.conf:DEVICESCAN \
+					--file /etc/smartd.conf \
+					--script '1,/^DEVICESCAN/s#^DEVICESCAN.*$#DEVICESCAN '"${devicescan_options-}"'#' \
+					--onchange 'killall -HUP smartd'  # reload config
+
+				require='__package_apk/smartmontools __sed/etc/smartd.conf:DEVICESCAN' \
+				__start_on_boot smartd
+				;;
+		esac
+		;;
+	(debian|devuan)
+		case ${state_should}/${mailer}
+		in
+			(absent/*)
+				# don’t care if smartd should be removed anyway
+				;;
+			(*/mail)
 				sendmail_patch_state=absent
 				;;
-			(sendmail)
+			(*/sendmail)
 				sendmail_patch_state=present
 				;;
 			(*)
 				sendmail_patch_state=absent
-				if test "${state_should}" != absent
-				then
-					__package bsd-mailx
-					require=__package/bsd-mailx
-				fi
+				__package_apt bsd-mailx
+				require="${require-} __package_apt/bsd-mailx"
 				;;
 		esac
 
@@ -65,7 +100,7 @@ in
 		__file /etc/smartmontools/run.d/10sendmail \
 			--state "${sendmail_patch_state}" \
 			--owner 0 --group 0 --mode 0755 \
-			--source "${__type:?}/files/10sendmail"
+			--source "${__type:?}/files/debian/10sendmail"
 
 		require=${require-}$(test "${state_should}" != absent || echo ' __file/etc/smartmontools/run.d/10sendmail') \
 		__package_apt smartmontools \
@@ -79,20 +114,22 @@ in
 				(*) false ;;  # having one extra key doesn't hurt
 			esac && echo true || echo false)
 
-		if test "${state_should}" = present
-		then
-			# Enable smartd
-			# https://salsa.debian.org/debian/smartmontools/-/commit/f1420bd#9c96da0e9f91d7d8937b69b524702c106258f0d1_13_15
-			require=__package_apt/smartmontools \
-			__key_value /etc/default/smartmontools:start_smartd \
-				--state "$(! ${is_bullseye} && echo present || echo absent)" \
-				--file /etc/default/smartmontools \
-				--delimiter = --exact_delimiter \
-				--key start_smartd --value 'yes'
+		case ${state_should}
+		in
+			(present)
+				# Enable smartd
+				# https://salsa.debian.org/debian/smartmontools/-/commit/f1420bd#9c96da0e9f91d7d8937b69b524702c106258f0d1_13_15
+				require=__package_apt/smartmontools \
+				__key_value /etc/default/smartmontools:start_smartd \
+					--state "$(! ${is_bullseye} && echo present || echo absent)" \
+					--file /etc/default/smartmontools \
+					--delimiter = --exact_delimiter \
+					--key start_smartd --value 'yes'
 
-			require=__key_value/etc/default/smartmontools:start_smartd \
-			__start_on_boot smartmontools
-		fi
+				require=__key_value/etc/default/smartmontools:start_smartd \
+				__start_on_boot smartmontools
+				;;
+		esac
 		;;
 	(*)
 		: "${__type:?}"  # make shellcheck happy
