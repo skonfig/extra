@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2020 Dennis Camera (dennis.camera at riiengineering.ch)
+# 2020,2025 Dennis Camera (dennis.camera at riiengineering.ch)
 #
 # This file is part of skonfig-extra.
 #
@@ -17,14 +17,27 @@
 # You should have received a copy of the GNU General Public License
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
-# Determine which command to use to send e-mail.
+# Determine which command can be used to send e-mail.
 #
 
-# NOTE: path is hard-coded in /etc/smartmontools/run.d/10mail on Debian
-if test -x /usr/bin/mail
+if test -f /etc/smartmontools/run.d/10mail
 then
-	echo mail
-elif command -v sendmail >/dev/null 2>&1
-then
-	echo sendmail
+	# NOTE: Debian, special case because mail(1) path is hard-coded in
+	#       /etc/smartmontools/run.d/10mail
+	if test -x /usr/bin/mail
+	then
+		echo mail
+	elif command -v sendmail >/dev/null 2>&1
+	then
+		echo sendmail
+	fi
+else
+	if command -v mail >/dev/null 2>&1
+	then
+		echo mail
+	elif command -v sendmail >/dev/null 2>&1
+	then
+		echo sendmail
+	fi
+
 fi
