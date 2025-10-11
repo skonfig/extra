@@ -63,16 +63,17 @@ in
 		case ${state_should}
 		in
 			(present)
-				# tanken from Debian, seems to make sense :-)
+				# taken from Debian, seems to make sense :-)
 				devicescan_options='-d removable -n standby -m root'
 
+				# NOTE: sync with NetBSD
 				require=__package_apk/smartmontools \
 				__sed /etc/smartd.conf:DEVICESCAN \
 					--file /etc/smartd.conf \
 					--script '1,/^DEVICESCAN/s#^DEVICESCAN.*$#DEVICESCAN '"${devicescan_options-}"'#' \
 					--onchange 'killall -HUP smartd'  # reload config
 
-				require='__package_apk/smartmontools __sed/etc/smartd.conf:DEVICESCAN' \
+				require='__package_apk/smartmontools' \
 				__start_on_boot smartd
 				;;
 		esac
@@ -117,7 +118,7 @@ in
 		case ${state_should}
 		in
 			(present)
-				# Enable smartd
+				# enable smartd
 				# https://salsa.debian.org/debian/smartmontools/-/commit/f1420bd#9c96da0e9f91d7d8937b69b524702c106258f0d1_13_15
 				require=__package_apt/smartmontools \
 				__key_value /etc/default/smartmontools:start_smartd \
@@ -131,10 +132,32 @@ in
 				;;
 		esac
 		;;
+	(netbsd)
+		__package_pkgsrc smartmontools \
+			--state "${state_should}"
+
+		case ${state_should}
+		in
+			(present)
+				# taken from Debian, seems to make sense :-)
+				devicescan_options='-d removable -n standby -m root'
+
+				# NOTE: sync with Alpine Linux
+				require=__package_pkgsrc/smartmontools \
+				__sed /usr/pkg/etc/smartd.conf:DEVICESCAN \
+					--file /usr/pkg/etc/smartd.conf \
+					--script '1,/^DEVICESCAN/s#^DEVICESCAN.*$#DEVICESCAN '"${devicescan_options-}"'#' \
+					--onchange 'pkill -HUP smartd'  # reload config
+
+				require="__package_pkgsrc/smartmontools ${__object_name:?}" \
+				__start_on_boot smartd
+				;;
+		esac
+		;;
 	(*)
 		: "${__type:?}"  # make shellcheck happy
-		printf "Your operating system (%s) is currently not supported by this type (%s)\n" "${os}" "${__type##*/}" >&2
-		printf "Please contribute an implementation for it if you can.\n" >&2
+		printf 'Your operating system (%s) is currently not supported by this type (%s)\n' "${os}" "${__type##*/}" >&2
+		printf 'Please contribute an implementation for it if you can.\n' >&2
 		exit 1
 		;;
 esac

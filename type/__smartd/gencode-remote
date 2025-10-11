@@ -1,0 +1,36 @@
+#!/bin/sh -e
+#
+# 2025 Dennis Camera (dennis.camera at riiengineering.ch)
+#
+# This file is part of skonfig-extra.
+#
+# skonfig-extra is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# skonfig-extra is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
+#
+
+os=$(cat "${__global:?}/explorer/os")
+
+case ${os}
+in
+	(netbsd)
+		if grep -qxF '__package_pkgsrc/smartmontools:installed' "${__messages_in:?}"
+		then
+			# NetBSD/pkgsrc does not install the rc.d script automatically, so
+			# it needs to be done manually after the package installation,
+			# if it does not exist already.
+			cat <<-'EOF'
+			test -f /etc/rc.d/smartd || install -m 0555 /usr/pkg/share/examples/rc.d/smartd /etc/rc.d
+			EOF
+		fi
+		;;
+esac
