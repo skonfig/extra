@@ -64,7 +64,7 @@ in
 		in
 			(present)
 				# taken from Debian, seems to make sense :-)
-				devicescan_options='-d removable -n standby -m root'
+				devicescan_options='-a -d removable -n standby -m root'
 
 				# NOTE: sync with NetBSD
 				require=__package_apk/smartmontools \
@@ -140,7 +140,7 @@ in
 		in
 			(present)
 				# taken from Debian, seems to make sense :-)
-				devicescan_options='-d removable -n standby -m root'
+				devicescan_options='-a -d removable -n standby -m root'
 
 				# NOTE: sync with Alpine Linux
 				require=__package_pkgsrc/smartmontools \
