@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2020,2025 Dennis Camera (dennis.camera at riiengineering.ch)
+# 2025 Dennis Camera (dennis.camera at riiengineering.ch)
 #
 # This file is part of skonfig-extra.
 #
@@ -17,27 +17,20 @@
 # You should have received a copy of the GNU General Public License
 # along with skonfig-extra. If not, see <http://www.gnu.org/licenses/>.
 #
-# Determine which command can be used to send e-mail.
-#
 
-if test -f /etc/smartmontools/run.d/10mail
-then
-	# NOTE: Debian, special case because mail(1) path is hard-coded in
-	#       /etc/smartmontools/run.d/10mail
-	if test -x /usr/bin/mail
-	then
-		echo mail
-	elif command -v sendmail >/dev/null 2>&1
-	then
-		echo sendmail
-	fi
-else
-	if command -v mail >/dev/null 2>&1
-	then
-		echo mail
-	elif command -v sendmail >/dev/null 2>&1
-	then
-		echo sendmail
-	fi
+os=$(cat "${__global:?}/explorer/os")
 
-fi
+case ${os}
+in
+	(netbsd)
+		if grep -qxF '__package_pkgsrc/smartmontools:installed' "${__messages_in:?}"
+		then
+			# NetBSD/pkgsrc does not install the rc.d script automatically, so
+			# it needs to be done manually after the package installation,
+			# if it does not exist already.
+			cat <<-'EOF'
+			test -f /etc/rc.d/smartd || install -m 0555 /usr/pkg/share/examples/rc.d/smartd /etc/rc.d
+			EOF
+		fi
+		;;
+esac
