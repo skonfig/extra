@@ -1,6 +1,6 @@
 #!/bin/sh -e
 #
-# 2021 Dennis Camera (dennis.camera at riiengineering.ch)
+# 2021,2026 Dennis Camera (dennis.camera at riiengineering.ch)
 #
 # This file is part of skonfig-extra.
 #
@@ -25,6 +25,11 @@ DEST=/usr/local/bin
 CONF_DIR=/etc/getssl
 
 getssl_cfg=${CONF_DIR}/getssl.cfg
+
+state_should=$(cat "${__object:?}/parameter/state")
+
+# no need to update getssl.cfg if --state absent
+test "${state_should}" != absent || exit 0
 
 
 ################################################################################
